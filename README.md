@@ -16,7 +16,7 @@ DOCKER_BUILDKIT=1 docker build -t azavea/analyzer:13-3.1 -f analysis/Dpckerfile
 
 ### US Census API key
 
-- Go to https://api.census.gov/data/key_signup.html to rquest a census API key.
+- Go to <https://api.census.gov/data/key_signup.html> to request a census API key.
 - Create a `.env` file at with the key at the root of this project:
 
   ```bash

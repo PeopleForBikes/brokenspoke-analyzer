@@ -1,6 +1,6 @@
 set positional-arguments := true
 
-src_dir := "broken_analysis"
+src_dir := "brokenspoke_analyzer"
 
 # Meta task running ALL the CI tasks at onces.
 ci: lint docs test

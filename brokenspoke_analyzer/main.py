@@ -1,6 +1,5 @@
+"""Define the main application module."""
 import asyncio
-import logging
-import multiprocessing
 import pathlib
 import subprocess
 import sys
@@ -15,6 +14,7 @@ from us import states
 
 
 def main():
+    """Define the application's main entrypoint."""
     # Setup.
     load_dotenv()
     logger.remove()
@@ -23,6 +23,7 @@ def main():
 
 
 async def analyze():
+    """Run analysis."""
     # Provided inputs.
     # Sample 00: regular
     state = "arizona"
@@ -60,6 +61,8 @@ async def analyze():
 
 
 async def prepare(state, city, osm_relation_id):
+    # pylint: disable=too-many-locals
+    """Prepare and kicks off the analysis."""
     # Prepare the Rich output.
     console = Console()
 
@@ -83,13 +86,13 @@ async def prepare(state, city, osm_relation_id):
         # Download the census file.
         tiger_url = f"https://www2.census.gov/geo/tiger/TIGER2021/PLACE/tl_2021_{state_fips}_place.zip"
         tiger_file = output_dir / f"tl_2021_{state_fips}_place.zip"
-        with console.status("[bold green]Downloading the US census file...") as status:
+        with console.status("[bold green]Downloading the US census file..."):
             await download_file(session, tiger_url, tiger_file)
             console.log("US Census file downloaded.")
         census_place = gpd.read_file(tiger_file)
 
         # Prepare the boudary file.
-        with console.status("[bold green]Preparing the boudary file...") as status:
+        with console.status("[bold green]Preparing the boudary file..."):
             city_shp = output_dir / f"{slugify(city)}.shp"
             logger.debug(f"Saving data into {city_shp}...")
             city_gdf = census_place.loc[census_place["NAME"] == city.title()]
@@ -100,17 +103,17 @@ async def prepare(state, city, osm_relation_id):
         state_slug = state.lower().replace(" ", "-")
         region_file_url = f"https://download.geofabrik.de/{region}/{country}/{state_slug}-latest.osm.pbf"
         region_file_path = output_dir / region_file_name
-        with console.status("[bold green]Downloading the US OSM file...") as status:
+        with console.status("[bold green]Downloading the US OSM file..."):
             await download_file(session, region_file_url, region_file_path)
             console.log("Regional OSM file downloaded.")
 
         # Download the polygon file.
-        polygon_url = f"http://polygons.openstreetmap.fr/get_poly.py"
+        polygon_url = "http://polygons.openstreetmap.fr/get_poly.py"
         polygon_file_path = output_dir / poly_file_name
-        with console.status("[bold green]Downloading the polygon file...") as status:
+        with console.status("[bold green]Downloading the polygon file..."):
             # Need to warm up the database first.
             await fetch_text(
-                session, f"http://polygons.openstreetmap.fr/", {"id": osm_relation_id}
+                session, "http://polygons.openstreetmap.fr/", {"id": osm_relation_id}
             )
             polygon_file_path.write_text(
                 await fetch_text(
@@ -120,9 +123,7 @@ async def prepare(state, city, osm_relation_id):
             console.log("Polygon file downloaded.")
 
     # Reduce the osm file with osmosis.
-    with console.status(
-        f"[bold green]Reducing the OSM file for {city} with osmium..."
-    ) as status:
+    with console.status(f"[bold green]Reducing the OSM file for {city} with osmium..."):
         reduced_file_path = output_dir / pfb_osm_file
         if reduced_file_path.exists():
             logger.debug(f"{city} osm file already exists, skipping...")
@@ -172,17 +173,13 @@ async def prepare(state, city, osm_relation_id):
             "bna-mechanics/analyzer:13-3.1",
         ]
     )
-    with console.status(
-        "[bold green]Running the full analysis (may take a while)..."
-    ) as status:
+    with console.status("[bold green]Running the full analysis (may take a while)..."):
         run(docker_cmd)
         console.log(f"Analysis for {city} {state} complete.")
 
 
 async def download_file(session, url, output):
-    """
-    Download payload stream into a file.
-    """
+    """Download payload stream into a file."""
     if output.exists():
         logger.debug(f"the file {output} already exists, skipping...")
         return
@@ -196,6 +193,7 @@ async def download_file(session, url, output):
 async def fetch_text(session, url, params=None):
     """
     Fetch the data from a URL as text.
+
     :param aiohttp.ClientSession session: aiohttp session
     :param str url: request URL
     :param dict params: request parameters, defaults to None
@@ -210,9 +208,7 @@ async def fetch_text(session, url, params=None):
 
 
 def run(cmd):
-    """
-    Run an external command.
-    """
+    """Run an external command."""
     logger.debug(f"{cmd=}")
     try:
         pass
