@@ -43,10 +43,6 @@ test *extra_args='':
       --xdoctest \
       -x $@
 
-# Strip output from Jupyter notebooks.
-notebook-strip:
-    poetry run nbstripout notebooks/*.ipynb
-
 # Build the documentation
 docs:
     cd docs && poetry run make html

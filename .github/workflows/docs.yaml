@@ -19,12 +19,13 @@ jobs:
         run: just lint-sass
       - name: lint markdown
         run: just lint-md
-  # docs:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: build
-  #       uses: shalzz/zola-deploy-action@v0.14.1
-  #       env:
-  #         BUILD_DIR: .
-  #         BUILD_ONLY: true
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: build
+        uses: shalzz/zola-deploy-action@v0.14.1
+        env:
+          BUILD_DIR: .
+          BUILD_ONLY: true
