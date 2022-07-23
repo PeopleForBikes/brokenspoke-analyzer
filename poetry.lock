@@ -557,17 +557,6 @@ sphinx = ">=4.0,<6.0"
 sphinx-basic-ng = "*"
 
 [[package]]
-name = "gdal"
-version = "3.5.1"
-description = "GDAL: Geospatial Data Abstraction Library"
-category = "main"
-optional = false
-python-versions = ">=3.6.0"
-
-[package.extras]
-numpy = ["numpy (>1.0.0)"]
-
-[[package]]
 name = "geopandas"
 version = "0.11.0"
 description = "Geographic pandas extensions"
@@ -2163,7 +2152,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "63648adb5b59e4cb456db533a89989ae31423354e292de5f78fccc134c5edc11"
+content-hash = "d6ab0ed3f5c116f339036b643511ad5e5f3b16262f33c2b500e00d8c60e46af0"
 
 [metadata.files]
 aiohttp = [
@@ -2667,9 +2656,6 @@ frozenlist = [
 furo = [
     {file = "furo-2022.6.21-py3-none-any.whl", hash = "sha256:061b68e323345e27fcba024cf33a1e77f3dfd8d9987410be822749a706e2add6"},
     {file = "furo-2022.6.21.tar.gz", hash = "sha256:9aa983b7488a4601d13113884bfb7254502c8729942e073a0acb87a5512af223"},
-]
-gdal = [
-    {file = "GDAL-3.5.1.tar.gz", hash = "sha256:e2cfe1f338b9d84e8f6d93883712344d6d27ebaffaaa24733603a7713949a2be"},
 ]
 geopandas = [
     {file = "geopandas-0.11.0-py3-none-any.whl", hash = "sha256:0991f279d4f9e3a04e3666f32b1ac64d6ba439933da3d9654a26031e0ccea5dc"},
