@@ -22,32 +22,30 @@ DOCKER_BUILDKIT=1 docker build -t azavea/analyzer:13-3.1 -f analysis/Dpckerfile
   echo "CENSUS_API_KEY=7ff372e9483f5d8d60d7fd1bf0ec6f6b5997aa86" > .env
   ```
 
-## Quickstart
+## Install
 
-In the `broken_analysis/main.py` file, in the `analyze()` function, adjust the
-input to match the city you want to analyze:
-
-```py
-async def analyze():
-    # Provided inputs.
-    # Sample 00: regular
-    state = "arizona"
-    city = "flagstaff"
-    osm_relation_id = "110844"
-    await prepare(state, city, osm_relation_id)
-```
-
-A few remarks:
-
-- The name of the sate and the city must all be lower case.
-- The exaplanations to find the OSM relation of the city can be found on
-  [James Chevalier'page](https://github.com/JamesChevalier/cities#how-to-get-the-poly-file-for-a-specific-city=)
-
-Then from the root of the project, run the script, and all the steps will be
-performed automatically:
+Install the tool from GitHub directly:
 
 ```bash
-$ poetry run python broken_analysis/main.py
+pip install git+https://github.com/PeopleForBikes/brokenspoke-analyzer
+```
+
+This will add a new command named `bna`.
+
+## Quickstart
+
+To run an analysis, the tools needs 3 parameters:
+
+- The name of the state.
+- The name of the city.
+- The OSM Relation of ID of the city.
+  - The exaplanations to find the OSM relation of the city can be found on
+    [James Chevalier'page](https://github.com/JamesChevalier/cities#how-to-get-the-poly-file-for-a-specific-city=)
+
+Then simply run the tool, and all the steps will be performed automatically:
+
+```bash
+$ bna run arizona flagstaff 110844
 [18:50:14] US Census file downloaded.
 [18:50:15] Boundary file ready.
            Regional OSM file downloaded.
@@ -55,3 +53,5 @@ $ poetry run python broken_analysis/main.py
            OSM file for flagstaff ready.
            Analysis for flagstaff arizona complete.
 ```
+
+> **Be Aware that running an analysis can take several hours!**

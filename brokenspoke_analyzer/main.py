@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 from loguru import logger
 from rich.console import Console
 from slugify import slugify
-from us import states
 
 from brokenspoke_analyzer.core import analysis
 from brokenspoke_analyzer.core import processhelper
@@ -81,9 +80,7 @@ async def prepare(state, city, osm_relation_id, output_dir):
     slugged_city_state = slugify(f"{city}-{state}")
     polygon_file_name = f"{slugged_city_state}.poly"
     pfb_osm_file = f"{slugged_city_state}.osm"
-    state_abbrev = states.mapping("name", "abbr").get(state.title())
-    st = states.lookup(state_abbrev)
-    state_fips = st.fips
+    state_abbrev, state_fips = analysis.state_info(state)
 
     # Retrieve the US Census file.
     async with aiohttp.ClientSession(raise_for_status=True) as session:
