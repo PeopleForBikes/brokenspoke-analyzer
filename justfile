@@ -50,3 +50,11 @@ docs:
     @echo "Click this link to open the documentation in the browser:"
     @echo "  file://${PWD}/docs/build/html/index.html"
     @echo
+
+# Rebuild Sphinx documentation on changes, with live-reload in the browser
+docs-autobuild:
+    poetry run sphinx-autobuild docs/source docs/build/html
+
+# Clean the docs
+docs-clean:
+    rm -fr docs/build

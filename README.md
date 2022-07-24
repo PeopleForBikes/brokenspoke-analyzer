@@ -1,11 +1,18 @@
 # Brokenspoke-analyzer
 
+The Brokenspoke Analyzer is a tool allowing the user to run “Bicycle Network
+Analysis”
+
 ## Requirements
 
 - **docker**: [get started](https://www.docker.com/get-started/)
 - **osmosis**: [official page](https://osmcode.org/osmium-tool/)
 
 ### Build the Azavea docker image
+
+Azavea provides the code to build the Docker image that is used to run an
+analysis. There is no Image directly available at the time, thus it will
+necessary to build it manually.
 
 ```bash
 git clone git@github.com:azavea/pfb-network-connectivity.git
@@ -16,10 +23,10 @@ DOCKER_BUILDKIT=1 docker build -t azavea/analyzer:13-3.1 -f analysis/Dpckerfile
 ### US Census API key
 
 - Go to <https://api.census.gov/data/key_signup.html> to request a census API key.
-- Create a `.env` file at with the key at the root of this project:
+- Export the `CENSUS_API_KEY` variable:
 
   ```bash
-  echo "CENSUS_API_KEY=7ff372e9483f5d8d60d7fd1bf0ec6f6b5997aa86" > .env
+  export "CENSUS_API_KEY=7ff372e9483f5d8d60d7fd1bf0ec6f6b5997aa86"
   ```
 
 ## Install
