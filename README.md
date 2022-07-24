@@ -3,13 +3,12 @@
 ## Requirements
 
 - **docker**: [get started](https://www.docker.com/get-started/)
-- **gdal**: [official page](https://gdal.org/download.html)
 - **osmosis**: [official page](https://osmcode.org/osmium-tool/)
 
 ### Build the Azavea docker image
 
 ```bash
-git@github.com:azavea/pfb-network-connectivity.git
+git clone git@github.com:azavea/pfb-network-connectivity.git
 cd pfb-network-connectivity/src/
 DOCKER_BUILDKIT=1 docker build -t azavea/analyzer:13-3.1 -f analysis/Dpckerfile
 ```
