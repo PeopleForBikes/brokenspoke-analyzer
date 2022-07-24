@@ -3,6 +3,7 @@
 import geopandas as gpd
 from loguru import logger
 from slugify import slugify
+from us import states
 
 from brokenspoke_analyzer.core import aiohttphelper
 from brokenspoke_analyzer.core import processhelper
@@ -64,3 +65,19 @@ def prepare_city_file(output_dir, region_file_path, polygon_file_path, pfb_osm_f
     pfb_osm_file_path = output_dir / pfb_osm_file
     if not pfb_osm_file_path.exists():
         processhelper.run_osmium(polygon_file_path, region_file_path, pfb_osm_file_path)
+
+
+def state_info(state):
+    """
+    Given a state, returns the corresponding abbreviation and FIPS code.
+
+    Example:
+
+    >>> abbr, fips = state_info("texas")
+    >>> assert abbr == "TX"
+    >>> assert fips == "48"
+    """
+    abbrev = states.mapping("name", "abbr").get(state.title())
+    st = states.lookup(abbrev)
+    fips = st.fips
+    return (abbrev, fips)

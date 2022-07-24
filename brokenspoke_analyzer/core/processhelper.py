@@ -29,6 +29,7 @@ def run_with_status(cmd, status_msg="Running...", completion_msg="Complete."):
         console.log(completion_msg)
 
 
+# pylint: disable=too-many-arguments,duplicate-code
 def run_analysis(
     state_abbrev,
     state_fips,
@@ -36,7 +37,6 @@ def run_analysis(
     pfb_osm_file,
     output_dir,
 ):
-    # pylint: disable=too-many-arguments,duplicate-code
     """Run a BNA analysis."""
     #  / slugify(country) / slugify(state) / slugify(city)
     docker_cmd = " ".join(
