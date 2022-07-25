@@ -63,6 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/main' }}
     steps:
+      - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
         with:
           name: docs
@@ -71,4 +72,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/build/html/
+          publish_dir: docs/build/html/
