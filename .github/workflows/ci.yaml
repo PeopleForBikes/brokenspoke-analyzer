@@ -30,8 +30,15 @@ jobs:
         run: just lint-md
       - name: Lint Python files
         run: just lint-python
+
+      # Upload the docs if they built.
       - name: Lint the docs
         run: just docs
+      - name: Upload documentation for release
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs
+          path: docs/build/html/
 
   test:
     runs-on: ubuntu-latest
@@ -51,3 +58,17 @@ jobs:
         run: poetry install
       - name: Run the unit tests
         run: just test
+
+  docs:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: docs
+          path: docs/build/html
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/build/html/
