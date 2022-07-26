@@ -82,5 +82,10 @@ def run(
     ),
 ):
     """Prepare and run an analysis."""
-    params = asyncio.run(prepare(state, city, osm_relation_id, output_dir))
+    asyncio.run(prepare_and_run(state, city, osm_relation_id, output_dir))
+
+
+async def prepare_and_run(state, city, osm_relation_id, output_dir):
+    """Prepare and run an analysis."""
+    params = main.prepare(state, city, osm_relation_id, output_dir)
     main.analyze(state, city, *params)
