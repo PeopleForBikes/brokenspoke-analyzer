@@ -1,6 +1,7 @@
 *.csv
 *.egg
 *.egg-info/
+*.ipynb
 *.log
 *.manifest
 *.mo
@@ -26,6 +27,7 @@
 .vscode/
 __pycache__/
 build/
+cache/
 coverage.xml
 data/
 develop-eggs/
@@ -34,6 +36,7 @@ docs/_build/
 downloads/
 eggs/
 env/
+examples/data/
 htmlcov/
 lib/
 lib64/

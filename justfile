@@ -10,7 +10,7 @@ lint: lint-md lint-python
 
 # Lint markown files.
 lint-md:
-    npx --yes markdownlint-cli2 "**/*.md"
+    npx --yes markdownlint-cli2 "**/*.md" "#.venv"
 
 # Lint python files.
 lint-python:
@@ -35,13 +35,11 @@ fmt-md:
 fmt-python:
     poetry run isort .
     poetry run black {{ src_dir }}
+    poetry run black examples
 
 # Run the unit tests.
 test *extra_args='':
-    poetry run pytest \
-      --cov-report term-missing --cov-report html --cov={{ src_dir }} \
-      --xdoctest \
-      -x $@
+    poetry run pytest --cov={{ src_dir }} -x $@
 
 # Build the documentation
 docs:
@@ -58,3 +56,7 @@ docs-autobuild:
 # Clean the docs
 docs-clean:
     rm -fr docs/build
+
+# Run the US Cities examples
+example-uscities:
+    poetry run python examples/us-cities.py
