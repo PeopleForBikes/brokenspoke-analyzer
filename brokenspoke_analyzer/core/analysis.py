@@ -1,12 +1,22 @@
 """Define functions used to perform an analysis."""
+from enum import Enum
 
 import geopandas as gpd
 from loguru import logger
+from osmnx import geocoder
 from slugify import slugify
 from us import states
 
 from brokenspoke_analyzer.core import aiohttphelper
 from brokenspoke_analyzer.core import processhelper
+
+
+class PolygonFormat(Enum):
+    """Represent tha available polygon formats from polygons.openstreetmap.fr."""
+
+    WKT = "get_wkt.py"
+    GEOJSON = "get_geojson.py"
+    POLY = "get_poly.py"
 
 
 async def download_census_file(session, output_dir, state_fips):
@@ -40,25 +50,23 @@ async def download_osm_us_region_file(session, output_dir, state, region_file_na
 
 
 async def download_polygon_file(
-    session, output_dir, osm_relation_id, polygon_file_name
+    session, osm_relation_id, polygon_file, format_=PolygonFormat.POLY
 ):
-    """Download the polygon file for a specific city."""
+    """Download the polygon file for a specific city from polygons.openstreetmap.fr."""
     polygon_host = "http://polygons.openstreetmap.fr"
-    polygon_url = f"{polygon_host}/get_poly.py"
-    polygon_file_path = output_dir / polygon_file_name
+    polygon_url = f"{polygon_host}/{format_.value}"
     # Need to warm up the database first.
     await aiohttphelper.fetch_text(session, polygon_host, {"id": osm_relation_id})
-    polygon_file_path.write_text(
+    polygon_file.write_text(
         await aiohttphelper.fetch_text(
             session, polygon_url, {"id": osm_relation_id, "params": 0}
         )
     )
-    return polygon_file_path
 
 
 def prepare_city_file(output_dir, region_file_path, polygon_file_path, pfb_osm_file):
     """
-    Prepare the city file.
+    Prepare the city OSM file.
 
     Use osmium to extract the content limited by the polygon file from the region file.
     """
@@ -81,3 +89,28 @@ def state_info(state):
     st = states.lookup(abbrev)
     fips = st.fips
     return (abbrev, fips)
+
+
+def convert_with_geopandas(infile, outfile):
+    """Convert a vector-based spatial data file to another format with geopandas."""
+    gdf = gpd.read_file(infile)
+    gdf.to_file(outfile)
+
+
+def retrieve_city_boundaries(output, country, city, state=None):
+    """
+    Retrieve the city boundaries and save them as Shapefile and GeoJSON.
+
+    :return: the slugified query used to retrieve the city boundaries.
+    :rtype: str
+    """
+    query = ", ".join(filter(None, [city, state, country]))
+    logger.debug(f"Query used to retrieve the boundaries: {query}")
+    city_gdf = geocoder.geocode_to_gdf(query)
+
+    # Export the boundaries.
+    slug = slugify(query)
+    city_gdf.to_file(output / f"{slug}.shp")
+    city_gdf.to_file(output / f"{slug}.geojson")
+
+    return slug
