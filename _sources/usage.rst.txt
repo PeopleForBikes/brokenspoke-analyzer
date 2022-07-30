@@ -1,22 +1,7 @@
 Usage
 =====
 
-Finding the OSM Relation ID
----------------------------
-
-Several commands requires an OSM Relation ID. This number is an Open Street Map
-attribute linking objects together, like for instance a polygon representing the
-city boundaries and the city itself.
-
-To find a relation ID, go to `openstreet map <https://www.openstreetmap.org>`_
-and search for a specific city.
-
-Then, on the bottom left of the page, a subsection name "Part of" will indicate
-the relations. For instance for Flagstaff, one can read::
-
-  Relation Flagstaff (110844) (as outer)
-
-This is the number that must be passed to various commands.
+.. _prepare:
 
 Prepare
 -------
@@ -29,20 +14,32 @@ Usage
 
 .. program:: bna
 
-.. option:: bna prepare STATE CITY OSM_RELATION_ID [OUTPUT_DIR]
+.. option:: bna prepare COUNTRY CITY [STATE] [OUTPUT_DIR]
 
-- **STATE**: the full name of the state (e.g "arizona", "new mexico"). It is
-  case insensitive and must be quoted if there are spaces.
+- **COUNTRY**: the name of the country or a specific region available as an OSM
+  dataset. See the :ref:`datasets` page for more information.
 - **CITY**: the full name of the city (e.g "flagstaff", "san antonio"). It is
   case insensitive and must be quoted if there are spaces.
-- **OSM_RELATION_ID**: the number describing the relation between the polygon
-  repesenting the city boundaries and the city itself.
+- **STATE**: Only useful for US cities. It may generate incorrect results when
+  used for other countries.
 - **OUTPUT_DIR**: the last parameter and is an optional path to indicate where
   to store the results on disk.
 
-Example::
+Example: a US city::
 
-  bna prepare arizona flagstaff 110844
+  bna prepare usa flagstaff arizona
+  # Or simpler
+  bna prepare arizona flagstaff
+
+Example: a non-US city::
+
+  bna prepare spain valencia
+
+Example: a non-US city with a specific region::
+
+  bna prepare paris paris
+
+
 
 Analyze
 -------
@@ -55,15 +52,13 @@ Usage
 
 .. program:: bna
 
-.. option:: bna analyze STATE CITY CITY_SHP PFB_OSM_FILE [OUTPUT_DIR]
+.. option:: bna analyze STATE CITY_SHP PFB_OSM_FILE [OUTPUT_DIR]
 
 - **STATE**: the full name of the state (e.g "arizona", "new mexico"). It is
   case insensitive and must be quoted if there are spaces.
-- **CITY**: the full name of the city (e.g "flagstaff", "san antonio"). It is
-  case insensitive and must be quoted if there are spaces.
 - **CITY_SHP**: the shapefile repesenting the city boundaries.
 - **PFB_OSM_FILE**: the OSM file representing the city.
-- **OUTPUT_DIR** is the last parameter and is an optional path to indicate where
+- **OUTPUT_DIR**: is the last parameter and is an optional path to indicate where
   to store the results on disk.
 
 Example::
@@ -75,22 +70,15 @@ Run
 
 The ``run`` subcommand is a combination of ``prepare`` and ``analyze``.
 
+The syntax is identical to the :ref:`prepare` command.
+
 Usage
 ^^^^^
 
 .. program:: bna
 
-.. option:: bna run STATE CITY OSM_RELATION_ID [OUTPUT_DIR]
-
-- **STATE**: the full name of the state (e.g "arizona", "new mexico"). It is
-  case insensitive and must be quoted if there are spaces.
-- **CITY**: the full name of the city (e.g "flagstaff", "san antonio"). It is
-  case insensitive and must be quoted if there are spaces.
-- **OSM_RELATION_ID**: the number describing the relation between the polygon
-  repesenting the city boundaries and the city itself.
-- **OUTPUT_DIR**: the last parameter and is an optional path to indicate where
-  to store the results on disk.
+.. option:: bna run COUNTRY CITY [STATE] [OUTPUT_DIR]
 
 Example::
 
-  bna prepare arizona flagstaff 110844
+  bna run arizona flagstaff

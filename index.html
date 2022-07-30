@@ -5,10 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Usage" href="usage.html" />
 
-    <meta name="generator" content="sphinx-5.1.0, furo 2022.06.21"/>
+    <meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Brokenspoke Analyzer 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -157,6 +158,8 @@
   <p class="caption" role="heading"><span class="caption-text">GENERAL:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a></li>
 </ul>
 
 </div>
@@ -191,13 +194,14 @@
         </div>
         <article role="main">
           <section id="brokenspoke-analyzer">
-<h1>Brokenspoke Analyzer<a class="headerlink" href="#brokenspoke-analyzer" title="Permalink to this heading">#</a></h1>
-<p>The Brokenspoke Analyzer is a tool allowing the user to run “Bicycle Network Analysis”</p>
+<h1>Brokenspoke-analyzer<a class="headerlink" href="#brokenspoke-analyzer" title="Permalink to this heading">#</a></h1>
+<p>The Brokenspoke Analyzer is a tool allowing the user to run “Bicycle Network
+Analysis”</p>
 <section id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p><strong>docker</strong>: [get started](<a class="reference external" href="https://www.docker.com/get-started/">https://www.docker.com/get-started/</a>)</p></li>
-<li><p><strong>osmosis</strong>: [official page](<a class="reference external" href="https://osmcode.org/osmium-tool/">https://osmcode.org/osmium-tool/</a>)</p></li>
+<li><p><strong>docker</strong>: <a class="reference external" href="https://www.docker.com/get-started/">get started</a></p></li>
+<li><p><strong>osmosis</strong>: <a class="reference external" href="https://osmcode.org/osmium-tool/">official page</a></p></li>
 </ul>
 <section id="build-the-azavea-docker-image">
 <h3>Build the Azavea docker image<a class="headerlink" href="#build-the-azavea-docker-image" title="Permalink to this heading">#</a></h3>
@@ -206,51 +210,38 @@ analysis. There is no Image directly available at the time, thus it will
 necessary to build it manually.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:azavea/pfb-network-connectivity.git
 <span class="nb">cd</span> pfb-network-connectivity/src/
-<span class="nv">DOCKER_BUILDKIT</span><span class="o">=</span><span class="m">1</span> docker build -t azavea/analyzer:13-3.1 -f analysis/Dpckerfile
+<span class="nv">DOCKER_BUILDKIT</span><span class="o">=</span><span class="m">1</span> docker build -t azavea/analyzer:13-3.1 -f analysis/Dockerfile .
 </pre></div>
 </div>
-</section>
-<section id="us-census-api-key">
-<h3>US Census API key<a class="headerlink" href="#us-census-api-key" title="Permalink to this heading">#</a></h3>
-<ul>
-<li><p>Go to <a class="reference external" href="https://api.census.gov/data/key_signup.html">Census Key Signup</a> page
-to request a census API key.</p></li>
-<li><p>Export the <code class="docutils literal notranslate"><span class="pre">CENSUS_API_KEY</span></code> variable:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="s2">&quot;CENSUS_API_KEY=7ff372e9483f5d8d60d7fd1bf0ec6f6b5997aa86&quot;</span>
-</pre></div>
-</div>
-</li>
-</ul>
 </section>
 </section>
 <section id="install">
 <h2>Install<a class="headerlink" href="#install" title="Permalink to this heading">#</a></h2>
 <p>Install the tool from GitHub directly:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">PeopleForBikes</span><span class="o">/</span><span class="n">brokenspoke</span><span class="o">-</span><span class="n">analyzer</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install git+https://github.com/PeopleForBikes/brokenspoke-analyzer
 </pre></div>
 </div>
-<p>This will add a new command named <cite>bna</cite>.</p>
+<p>This will add a new command named <code class="docutils literal notranslate"><span class="pre">bna</span></code>.</p>
 </section>
 <section id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading">#</a></h2>
-<p>To run an analysis, the tools needs 3 parameters:</p>
+<p>To run an analysis, the tools needs 2 parameters:</p>
 <ul class="simple">
-<li><p>The name of the state.</p></li>
+<li><p>The name of the country or dataset where the city is located.</p></li>
 <li><p>The name of the city.</p></li>
-<li><p>The OSM Relation of ID of the city.
-- The exaplanations to find the OSM relation of the city can be found on
-<a class="reference external" href="https://github.com/JamesChevalier/cities#how-to-get-the-poly-file-for-a-specific-city=">James Chevalier’s page</a>.</p></li>
 </ul>
 <p>Then simply run the tool, and all the steps will be performed automatically:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ bna run arizona flagstaff <span class="m">110844</span>
-<span class="o">[</span><span class="m">18</span>:50:14<span class="o">]</span> US Census file downloaded.
-<span class="o">[</span><span class="m">18</span>:50:15<span class="o">]</span> Boundary file ready.
-          Regional OSM file downloaded.
-<span class="o">[</span><span class="m">18</span>:50:16<span class="o">]</span> Polygon file downloaded.
-          OSM file <span class="k">for</span> flagstaff ready.
-          Analysis <span class="k">for</span> flagstaff arizona complete.
+<span class="o">[</span><span class="m">17</span>:00:55<span class="o">]</span> Boundary files ready.
+Downloaded Protobuf data <span class="s1">&#39;arizona-latest.osm.pbf&#39;</span> <span class="o">(</span><span class="m">204</span>.86 MB<span class="o">)</span> to:
+<span class="s1">&#39;data/arizona-latest.osm.pbf&#39;</span>
+<span class="o">[</span><span class="m">17</span>:07:21<span class="o">]</span> OSM Region file downloaded.
+           OSM file <span class="k">for</span> flagstaff ready.
+           Analysis <span class="k">for</span> flagstaff complete.
 </pre></div>
 </div>
+</section>
+</section>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Be aware that running an analysis can take several hours!</p>
@@ -259,10 +250,10 @@ to request a census API key.</p></li>
 <p class="caption" role="heading"><span class="caption-text">GENERAL:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a></li>
 </ul>
 </div>
-</section>
-</section>
 
         </article>
       </div>
@@ -311,10 +302,9 @@ to request a census API key.</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Brokenspoke Analyzer</a><ul>
+<li><a class="reference internal" href="#">Brokenspoke-analyzer</a><ul>
 <li><a class="reference internal" href="#requirements">Requirements</a><ul>
 <li><a class="reference internal" href="#build-the-azavea-docker-image">Build the Azavea docker image</a></li>
-<li><a class="reference internal" href="#us-census-api-key">US Census API key</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#install">Install</a></li>
@@ -336,5 +326,7 @@ to request a census API key.</p></li>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/scripts/furo.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
     </body>
 </html>

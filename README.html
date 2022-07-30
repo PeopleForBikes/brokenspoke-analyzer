@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Datasets" href="datasets.html" /><link rel="prev" title="Brokenspoke-analyzer" href="index.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
 
     <meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
-        <title>Usage - Brokenspoke Analyzer 0.1.0 documentation</title>
+        <title>Brokenspoke-analyzer - Brokenspoke Analyzer 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -156,8 +156,8 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">GENERAL:</span></p>
-<ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Usage</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a></li>
 </ul>
@@ -193,86 +193,53 @@
           </label>
         </div>
         <article role="main">
-          <section id="usage">
-<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">#</a></h1>
-<section id="prepare">
-<span id="id1"></span><h2>Prepare<a class="headerlink" href="#prepare" title="Permalink to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">prepare</span></code> subcommand is in charge of collecting and preparing the files
-required to run an analysis.</p>
-<section id="id2">
-<h3>Usage<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-bna-arg-bna">
-<span class="sig-name descname"><span class="pre">bna</span></span><span class="sig-prename descclassname"> <span class="pre">prepare</span> <span class="pre">COUNTRY</span> <span class="pre">CITY</span> <span class="pre">[STATE]</span> <span class="pre">[OUTPUT_DIR]</span></span><a class="headerlink" href="#cmdoption-bna-arg-bna" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
+          <section id="brokenspoke-analyzer">
+<h1>Brokenspoke-analyzer<a class="headerlink" href="#brokenspoke-analyzer" title="Permalink to this heading">#</a></h1>
+<p>The Brokenspoke Analyzer is a tool allowing the user to run “Bicycle Network
+Analysis”</p>
+<section id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p><strong>COUNTRY</strong>: the name of the country or a specific region available as an OSM
-dataset. See the <a class="reference internal" href="datasets.html#datasets"><span class="std std-ref">Datasets</span></a> page for more information.</p></li>
-<li><p><strong>CITY</strong>: the full name of the city (e.g “flagstaff”, “san antonio”). It is
-case insensitive and must be quoted if there are spaces.</p></li>
-<li><p><strong>STATE</strong>: Only useful for US cities. It may generate incorrect results when
-used for other countries.</p></li>
-<li><p><strong>OUTPUT_DIR</strong>: the last parameter and is an optional path to indicate where
-to store the results on disk.</p></li>
+<li><p><strong>docker</strong>: <a class="reference external" href="https://www.docker.com/get-started/">get started</a></p></li>
+<li><p><strong>osmosis</strong>: <a class="reference external" href="https://osmcode.org/osmium-tool/">official page</a></p></li>
 </ul>
-<p>Example: a US city:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bna</span> <span class="n">prepare</span> <span class="n">usa</span> <span class="n">flagstaff</span> <span class="n">arizona</span>
-<span class="c1"># Or simpler</span>
-<span class="n">bna</span> <span class="n">prepare</span> <span class="n">arizona</span> <span class="n">flagstaff</span>
-</pre></div>
-</div>
-<p>Example: a non-US city:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bna</span> <span class="n">prepare</span> <span class="n">spain</span> <span class="n">valencia</span>
-</pre></div>
-</div>
-<p>Example: a non-US city with a specific region:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bna</span> <span class="n">prepare</span> <span class="n">paris</span> <span class="n">paris</span>
+<section id="build-the-azavea-docker-image">
+<h3>Build the Azavea docker image<a class="headerlink" href="#build-the-azavea-docker-image" title="Permalink to this heading">#</a></h3>
+<p>Azavea provides the code to build the Docker image that is used to run an
+analysis. There is no Image directly available at the time, thus it will
+necessary to build it manually.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:azavea/pfb-network-connectivity.git
+<span class="nb">cd</span> pfb-network-connectivity/src/
+<span class="nv">DOCKER_BUILDKIT</span><span class="o">=</span><span class="m">1</span> docker build -t azavea/analyzer:13-3.1 -f analysis/Dockerfile .
 </pre></div>
 </div>
 </section>
 </section>
-<section id="analyze">
-<h2>Analyze<a class="headerlink" href="#analyze" title="Permalink to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">analyze</span></code> subcommand will comsume the artifacts being generated by the
-<code class="docutils literal notranslate"><span class="pre">prepare</span></code> subcommand and start an analysis.</p>
-<section id="id3">
-<h3>Usage<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-bna-arg-0">
-<span class="sig-name descname"><span class="pre">bna</span></span><span class="sig-prename descclassname"> <span class="pre">analyze</span> <span class="pre">STATE</span> <span class="pre">CITY_SHP</span> <span class="pre">PFB_OSM_FILE</span> <span class="pre">[OUTPUT_DIR]</span></span><a class="headerlink" href="#cmdoption-bna-arg-0" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
+<section id="install">
+<h2>Install<a class="headerlink" href="#install" title="Permalink to this heading">#</a></h2>
+<p>Install the tool from GitHub directly:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install git+https://github.com/PeopleForBikes/brokenspoke-analyzer
+</pre></div>
+</div>
+<p>This will add a new command named <code class="docutils literal notranslate"><span class="pre">bna</span></code>.</p>
+</section>
+<section id="quickstart">
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading">#</a></h2>
+<p>To run an analysis, the tools needs 2 parameters:</p>
 <ul class="simple">
-<li><p><strong>STATE</strong>: the full name of the state (e.g “arizona”, “new mexico”). It is
-case insensitive and must be quoted if there are spaces.</p></li>
-<li><p><strong>CITY_SHP</strong>: the shapefile repesenting the city boundaries.</p></li>
-<li><p><strong>PFB_OSM_FILE</strong>: the OSM file representing the city.</p></li>
-<li><p><strong>OUTPUT_DIR</strong>: is the last parameter and is an optional path to indicate where
-to store the results on disk.</p></li>
+<li><p>The name of the country or dataset where the city is located.</p></li>
+<li><p>The name of the city.</p></li>
 </ul>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bna</span> <span class="n">analyze</span> <span class="n">arizona</span> <span class="n">flagstaff</span> <span class="n">flagstaff</span><span class="o">.</span><span class="n">shp</span> <span class="n">flagstaff</span><span class="o">-</span><span class="n">arizona</span><span class="o">.</span><span class="n">osm</span>
+<p>Then simply run the tool, and all the steps will be performed automatically:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ bna run arizona flagstaff <span class="m">110844</span>
+<span class="o">[</span><span class="m">17</span>:00:55<span class="o">]</span> Boundary files ready.
+Downloaded Protobuf data <span class="s1">&#39;arizona-latest.osm.pbf&#39;</span> <span class="o">(</span><span class="m">204</span>.86 MB<span class="o">)</span> to:
+<span class="s1">&#39;data/arizona-latest.osm.pbf&#39;</span>
+<span class="o">[</span><span class="m">17</span>:07:21<span class="o">]</span> OSM Region file downloaded.
+           OSM file <span class="k">for</span> flagstaff ready.
+           Analysis <span class="k">for</span> flagstaff complete.
 </pre></div>
 </div>
-</section>
-</section>
-<section id="run">
-<h2>Run<a class="headerlink" href="#run" title="Permalink to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">run</span></code> subcommand is a combination of <code class="docutils literal notranslate"><span class="pre">prepare</span></code> and <code class="docutils literal notranslate"><span class="pre">analyze</span></code>.</p>
-<p>The syntax is identical to the <a class="reference internal" href="#prepare"><span class="std std-ref">Prepare</span></a> command.</p>
-<section id="id4">
-<h3>Usage<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-bna-arg-1">
-<span class="sig-name descname"><span class="pre">bna</span></span><span class="sig-prename descclassname"> <span class="pre">run</span> <span class="pre">COUNTRY</span> <span class="pre">CITY</span> <span class="pre">[STATE]</span> <span class="pre">[OUTPUT_DIR]</span></span><a class="headerlink" href="#cmdoption-bna-arg-1" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bna</span> <span class="n">run</span> <span class="n">arizona</span> <span class="n">flagstaff</span>
-</pre></div>
-</div>
-</section>
 </section>
 </section>
 
@@ -281,26 +248,8 @@ to store the results on disk.</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="datasets.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Datasets</div>
-              </div>
-              <svg><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="index.html">
-              <svg><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title">Home</div>
-                
-              </div>
-            </a>
+          
+          
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -333,19 +282,13 @@ to store the results on disk.</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Usage</a><ul>
-<li><a class="reference internal" href="#prepare">Prepare</a><ul>
-<li><a class="reference internal" href="#id2">Usage</a></li>
+<li><a class="reference internal" href="#">Brokenspoke-analyzer</a><ul>
+<li><a class="reference internal" href="#requirements">Requirements</a><ul>
+<li><a class="reference internal" href="#build-the-azavea-docker-image">Build the Azavea docker image</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#analyze">Analyze</a><ul>
-<li><a class="reference internal" href="#id3">Usage</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#run">Run</a><ul>
-<li><a class="reference internal" href="#id4">Usage</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#install">Install</a></li>
+<li><a class="reference internal" href="#quickstart">Quickstart</a></li>
 </ul>
 </li>
 </ul>
