@@ -40,7 +40,7 @@ To run an analysis, the tools needs 2 parameters:
 Then simply run the tool, and all the steps will be performed automatically:
 
 ```bash
-$ bna run arizona flagstaff 110844
+$ bna run arizona flagstaff
 [17:00:55] Boundary files ready.
 Downloaded Protobuf data 'arizona-latest.osm.pbf' (204.86 MB) to:
 'data/arizona-latest.osm.pbf'
