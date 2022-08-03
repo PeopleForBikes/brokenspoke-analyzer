@@ -51,7 +51,11 @@ profile = "black"
 force_single_line = "true"
 
 [tool.coverage.run]
-omit = ["*/__init__.py", "brokenspoke_analyzer/cli.py", "main.py"]
+omit = [
+  "*/__init__.py",
+  "brokenspoke_analyzer/cli.py",
+  "brokenspoke_analyzer/main.py",
+]
 
 [tool.pytest.ini_options]
 minversion = "6.0"

@@ -2,6 +2,8 @@
 from enum import Enum
 
 import geopandas as gpd
+import numpy as np
+import shapely
 from loguru import logger
 from osmnx import geocoder
 from slugify import slugify
@@ -9,6 +11,10 @@ from us import states
 
 from brokenspoke_analyzer.core import aiohttphelper
 from brokenspoke_analyzer.core import processhelper
+
+# WGS 84 / Pseudo-Mercator -- Spherical Mercator.
+# https://epsg.io/3857
+PSEUDO_MERCATOR_CRS = "EPSG:3857"
 
 
 class PolygonFormat(Enum):
@@ -85,9 +91,17 @@ def state_info(state):
     >>> assert abbr == "TX"
     >>> assert fips == "48"
     """
+    # Lookup for the state name.
     abbrev = states.mapping("name", "abbr").get(state.title())
+    if not abbrev:
+        raise ValueError(f"cannot find state: {state}")
+
+    # Lookup for the state info.
     st = states.lookup(abbrev)
+    if not st:
+        raise ValueError(f"cannot find state info for: {state}, {abbrev}")
     fips = st.fips
+
     return (abbrev, fips)
 
 
@@ -114,3 +128,63 @@ def retrieve_city_boundaries(output, country, city, state=None):
     city_gdf.to_file(output / f"{slug}.geojson")
 
     return slug
+
+
+# pylint: disable=too-many-locals
+def create_synthetic_population(area, length, width, population=100):
+    """
+    Create a grid representing the synthetic population.
+
+    :param GeoDataFrame area: area to grid
+    :param int length: length of a cell of the grid in meters
+    :param int width: width of a cell of the grid in meters
+    :param int population: population to inject in each cell
+    :returns: a GeoDataFrame representing the synthetic population.
+    :rtype: GeoDataFrame
+    """
+    # Project the area into mercator.
+    mercator_area = area.to_crs(PSEUDO_MERCATOR_CRS)
+
+    # Prepare the rows and columns.
+    xmin, ymin, xmax, ymax = mercator_area.total_bounds
+    cols = list(np.arange(xmin, xmax + width, width))
+    rows = list(np.arange(ymin, ymax + length, length))
+
+    # Extract the biggest region.
+    boundaries = max(
+        mercator_area.geometry.explode(index_parts=True), key=lambda a: a.area
+    )
+
+    # Compute the cells.
+    cells = []
+    for col in cols[:-1]:
+        for row in rows[:-1]:
+            # Create a new grid cell.
+            cell = shapely.geometry.Polygon(
+                [
+                    (col, row),
+                    (col + width, row),
+                    (col + width, row + length),
+                    (col, row + length),
+                ]
+            )
+
+            # Append it if it intersects with the biggest region.
+            if cell.intersects(boundaries):
+                cells.append(cell)
+
+    # Create a geodataframe made of the cells overlapping with the area.
+    # Add new columns to simulate US census data.
+    rng = np.random.default_rng()
+    grid = gpd.GeoDataFrame(
+        {
+            "geometry": cells,
+            "POP10": population,
+            "BLOCKID10": rng.integers(
+                100000000000000, 999999999999999, size=len(cells)
+            ),
+        },
+        crs=PSEUDO_MERCATOR_CRS,
+    )
+
+    return grid

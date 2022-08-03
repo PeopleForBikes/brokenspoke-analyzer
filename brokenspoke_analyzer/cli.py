@@ -5,6 +5,7 @@ import sys
 from typing import Optional
 
 import aiohttp
+import geopandas as gpd
 import typer
 from loguru import logger
 from pyrosm import get_data
@@ -111,7 +112,20 @@ async def prepare_(country, state, city, output_dir):
         console.log(f"OSM file for {city} ready.")
 
     # Retrieve the state info if needed.
-    state_abbrev, state_fips = analysis.state_info(state) if state else (0, 0)
+    if state:
+        state_abbrev, state_fips = analysis.state_info(state)
+    else:
+        try:
+            state_abbrev, state_fips = analysis.state_info(country)
+        except ValueError:
+            state_abbrev, state_fips = (0, 0)
+
+    # For non-US cities, create synthetic population.
+    city_boundaries_gdf = gpd.read_file(city_shp)
+    synthetic_population = analysis.create_synthetic_population(
+        city_boundaries_gdf, 1000, 1000
+    )
+    synthetic_population.to_file(output_dir / f"{slug}-abblock2010_91_pophu.shp")
 
     # Return the parameters required to perform the analysis.
     # pylint: disable=duplicate-code
