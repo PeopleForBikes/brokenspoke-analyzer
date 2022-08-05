@@ -1,12 +1,12 @@
 # Brokenspoke-analyzer
 
 The Brokenspoke Analyzer is a tool allowing the user to run “Bicycle Network
-Analysis”
+Analysis”.
 
 ## Requirements
 
 - **docker**: [get started](https://www.docker.com/get-started/)
-- **osmosis**: [official page](https://osmcode.org/osmium-tool/)
+- **osmium**: [official page](https://osmcode.org/osmium-tool/)
 
 ### Build the Azavea docker image
 

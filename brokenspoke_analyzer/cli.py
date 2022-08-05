@@ -34,6 +34,8 @@ logger.add(sys.stderr, level="DEBUG")
 # Create the CLI app.
 app = typer.Typer()
 
+MAGIC_STATE_NUMBER = 91
+
 
 @app.command()
 def prepare(
@@ -78,10 +80,11 @@ def run(
 
 async def prepare_and_run(country, state, city, output_dir):
     """Prepare and run an analysis."""
-    params = prepare_(country, state, city, output_dir)
+    params = await prepare_(country, state, city, output_dir)
     analyze_(*params)
 
 
+# pylint: disable=too-many-locals
 async def prepare_(country, state, city, output_dir):
     """Prepare and kicks off the analysis."""
     # Prepare the output directory.
@@ -118,14 +121,27 @@ async def prepare_(country, state, city, output_dir):
         try:
             state_abbrev, state_fips = analysis.state_info(country)
         except ValueError:
-            state_abbrev, state_fips = (0, 0)
+            state_abbrev, state_fips = ("AL", MAGIC_STATE_NUMBER)
 
-    # For non-US cities, create synthetic population.
-    city_boundaries_gdf = gpd.read_file(city_shp)
-    synthetic_population = analysis.create_synthetic_population(
-        city_boundaries_gdf, 1000, 1000
-    )
-    synthetic_population.to_file(output_dir / f"{slug}-abblock2010_91_pophu.shp")
+    # For non-US cities:
+    if state_fips == MAGIC_STATE_NUMBER:
+        # Create synthetic population.
+        CELL_SIZE = (1000, 1000)
+        city_boundaries_gdf = gpd.read_file(city_shp)
+        synthetic_population = analysis.create_synthetic_population(
+            city_boundaries_gdf, *CELL_SIZE
+        )
+
+        # Simulate the census blocks.
+        analysis.simulate_census_blocks(
+            output_dir, slug, state_fips, synthetic_population
+        )
+
+        # Change the speed limit.
+        DEFAULT_SPEED_LIMIT_KMH = 50
+        analysis.change_speed_limit(
+            output_dir, city, state_abbrev, DEFAULT_SPEED_LIMIT_KMH
+        )
 
     # Return the parameters required to perform the analysis.
     # pylint: disable=duplicate-code

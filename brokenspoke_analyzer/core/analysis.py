@@ -1,4 +1,7 @@
 """Define functions used to perform an analysis."""
+import random
+import string
+import zipfile
 from enum import Enum
 
 import geopandas as gpd
@@ -175,16 +178,41 @@ def create_synthetic_population(area, length, width, population=100):
 
     # Create a geodataframe made of the cells overlapping with the area.
     # Add new columns to simulate US census data.
-    rng = np.random.default_rng()
+    BLOCKID_LEN = 15
     grid = gpd.GeoDataFrame(
         {
             "geometry": cells,
             "POP10": population,
-            "BLOCKID10": rng.integers(
-                100000000000000, 999999999999999, size=len(cells)
-            ),
+            "BLOCKID10": [
+                "".join(
+                    random.choice(string.ascii_lowercase) for x in range(BLOCKID_LEN)
+                )
+                for _ in range(len(cells))
+            ],
         },
         crs=PSEUDO_MERCATOR_CRS,
     )
 
-    return grid
+    return grid.to_crs(area.crs)
+
+
+def change_speed_limit(output, city, state_abbrev, speed):
+    """Change the speed limit."""
+    speedlimit_csv = output / "city_fips_speed.csv"
+    speedlimit_csv.write_text(
+        f"city,state,fips_code_city,speed\n{city},{state_abbrev.lower()},1234567,{speed}\n"
+    )
+
+
+def simulate_census_blocks(output, slug, state_fips, synthetic_population):
+    """Simulate census blocks."""
+    tabblock = f"tabblock2010_{state_fips}_pophu"
+    city_tabblock = f"{slug}-{tabblock}"
+    synthetic_population_shp = output / f"{city_tabblock}.shp"
+    synthetic_population.to_file(synthetic_population_shp)
+    # The shapefile components must be zipped at the root of one zip archive.
+    # https://github.com/azavea/pfb-network-connectivity/blob/a9a4bc9546e1c798c6a6e11ee57dcca5db438f3e/src/analysis/import/import_neighborhood.sh#L112-L114
+    synthetic_population_zip = output / f"{city_tabblock}.zip"
+    with zipfile.ZipFile(synthetic_population_zip, "w") as z:
+        for f in output.glob(f"{city_tabblock}.*"):
+            z.write(f, arcname=f"{tabblock}{f.suffix}")
