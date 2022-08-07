@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Usage" href="usage.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Contributing" href="CONTRIBUTING.html" /><link rel="prev" title="Changelog" href="CHANGELOG.html" />
 
     <meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
-        <title>Brokenspoke Analyzer 1.0.0-rc.1 documentation</title>
+        <title>Community Code of Conduct - Brokenspoke Analyzer 1.0.0-rc.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">Brokenspoke Analyzer 1.0.0-rc.1 documentation</div></a>
+      <a href="index.html"><div class="brand">Brokenspoke Analyzer 1.0.0-rc.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -135,7 +135,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -144,7 +144,7 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-      <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
   <span class="sidebar-brand-text">Brokenspoke Analyzer 1.0.0-rc.1 documentation</span>
@@ -163,8 +163,8 @@
 <li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">DEVELOPMENT:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="code-of-conduct.html">Community Code of Conduct</a></li>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Community Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contributing</a></li>
 </ul>
 
@@ -193,97 +193,43 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="brokenspoke-analyzer">
-<h1>Brokenspoke-analyzer<a class="headerlink" href="#brokenspoke-analyzer" title="Permalink to this heading">#</a></h1>
-<p>The Brokenspoke Analyzer is a tool allowing the user to run “Bicycle Network
-Analysis” locally.</p>
-<section id="requirements">
-<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p><strong>docker</strong>: <a class="reference external" href="https://www.docker.com/get-started/">get started</a></p></li>
-<li><p><strong>osmium</strong>: <a class="reference external" href="https://osmcode.org/osmium-tool/">official page</a></p></li>
-</ul>
-<section id="build-the-azavea-docker-image">
-<h3>Build the Azavea docker image<a class="headerlink" href="#build-the-azavea-docker-image" title="Permalink to this heading">#</a></h3>
-<p>Azavea provides the code to build the Docker image that is used to run an
-analysis. There is no Image directly available at the time, thus it will
-necessary to build it manually.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:azavea/pfb-network-connectivity.git
-<span class="nb">cd</span> pfb-network-connectivity/src/
-<span class="nv">DOCKER_BUILDKIT</span><span class="o">=</span><span class="m">1</span> docker build -t azavea/analyzer:13-3.1 -f analysis/Dockerfile .
-</pre></div>
-</div>
+          <section id="community-code-of-conduct">
+<h1>Community Code of Conduct<a class="headerlink" href="#community-code-of-conduct" title="Permalink to this heading">#</a></h1>
+<p>The Brokenspoke-analyzer project follows the
+<a class="reference external" href="https://peopleforbikes.github.io/code-of-conduct/">BNA Mechanics Code of Conduct</a>.</p>
 </section>
-</section>
-<section id="install">
-<h2>Install<a class="headerlink" href="#install" title="Permalink to this heading">#</a></h2>
-<p>Install the tool from GitHub directly:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install git+https://github.com/PeopleForBikes/brokenspoke-analyzer
-</pre></div>
-</div>
-<p>This will add a new command named <code class="docutils literal notranslate"><span class="pre">bna</span></code>.</p>
-</section>
-<section id="quickstart">
-<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading">#</a></h2>
-<p>To run an analysis, the tools needs 2 parameters:</p>
-<ul class="simple">
-<li><p>The name of the country or dataset where the city is located.</p></li>
-<li><p>The name of the city.</p></li>
-</ul>
-<p>Then simply run the tool, and all the steps will be performed automatically:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ bna run arizona flagstaff
-<span class="o">[</span><span class="m">17</span>:00:55<span class="o">]</span> Boundary files ready.
-Downloaded Protobuf data <span class="s1">&#39;arizona-latest.osm.pbf&#39;</span> <span class="o">(</span><span class="m">204</span>.86 MB<span class="o">)</span> to:
-<span class="s1">&#39;data/arizona-latest.osm.pbf&#39;</span>
-<span class="o">[</span><span class="m">17</span>:07:21<span class="o">]</span> OSM Region file downloaded.
-           OSM file <span class="k">for</span> flagstaff ready.
-           Analysis <span class="k">for</span> flagstaff complete.
-</pre></div>
-</div>
-</section>
-</section>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Be aware that running an analysis can take several hours!</p>
-</div>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">GENERAL:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a></li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">DEVELOPMENT:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="code-of-conduct.html">Community Code of Conduct</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contributing</a></li>
-</ul>
-</div>
 
         </article>
       </div>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="usage.html">
+          <a class="next-page" href="CONTRIBUTING.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Usage</div>
+                <div class="title">Contributing</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          
+          <a class="prev-page" href="CHANGELOG.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Changelog</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -304,32 +250,8 @@ Downloaded Protobuf data <span class="s1">&#39;arizona-latest.osm.pbf&#39;</span
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Brokenspoke-analyzer</a><ul>
-<li><a class="reference internal" href="#requirements">Requirements</a><ul>
-<li><a class="reference internal" href="#build-the-azavea-docker-image">Build the Azavea docker image</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#install">Install</a></li>
-<li><a class="reference internal" href="#quickstart">Quickstart</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
