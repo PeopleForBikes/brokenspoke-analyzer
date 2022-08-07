@@ -38,18 +38,19 @@ def run_analysis(
     output_dir,
 ):
     """Run a BNA analysis."""
-    #  / slugify(country) / slugify(state) / slugify(city)
+    dest = pathlib.Path("/") / output_dir.name
     docker_cmd = " ".join(
         [
             "docker",
             "run",
             "--rm",
-            f'-e PFB_SHPFILE="/{city_shp}"',
-            f'-e PFB_OSM_FILE="/{output_dir / pfb_osm_file}"',
+            f'-e PFB_SHPFILE="{dest / city_shp.name}"',
+            f'-e PFB_OSM_FILE="{dest / pfb_osm_file}"',
             f"-e PFB_STATE={state_abbrev.lower()}",
             f"-e PFB_STATE_FIPS={state_fips}",
-            f"-e NB_OUTPUT_DIR=/{output_dir}",
-            f'-v "{pathlib.Path.cwd()}/{output_dir}/":/{output_dir}/',
+            f"-e NB_OUTPUT_DIR={dest}",
+            "-e PFB_DEBUG=1",
+            f'-v "{output_dir}":{dest}',
             "azavea/analyzer:13-3.1",
         ]
     )
