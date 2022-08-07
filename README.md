@@ -1,7 +1,7 @@
 # Brokenspoke-analyzer
 
 The Brokenspoke Analyzer is a tool allowing the user to run “Bicycle Network
-Analysis”.
+Analysis” locally.
 
 ## Requirements
 

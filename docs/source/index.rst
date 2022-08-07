@@ -17,3 +17,11 @@
    usage
    datasets
    resources
+   CHANGELOG
+
+.. toctree::
+   :maxdepth: 1
+   :caption: DEVELOPMENT:
+
+   code-of-conduct
+   CONTRIBUTING
