@@ -1,6 +1,36 @@
 Usage
 =====
 
+.. _general:
+
+General
+-------
+
+.. program:: bna
+
+.. option:: bna [OPTIONS] COMMAND [ARGS]...
+
+This section describes the options that can be added on the CLI to alter some
+default behaviors of the commands.
+
+.. note::
+
+  The "OPTIONS" must always be placed between `bna` and the command to execute.
+
+Verbosity
+^^^^^^^^^
+
+The verbosity level can be adjusted by adding or removing `-v` flags.
+
+- None  : Initial log level is WARNING.
+- `-v`  : INFO
+- `-vv` : DEBUG
+- `-vvv`: TRACE
+
+Example: start a BNA run with the log level set to "TRACE"::
+
+  bna -vvv run arizona flagstaff
+
 .. _prepare:
 
 Prepare
@@ -38,7 +68,6 @@ Example: a non-US city::
 Example: a non-US city with a specific region::
 
   bna prepare paris paris
-
 
 
 Analyze
