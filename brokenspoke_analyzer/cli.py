@@ -1,5 +1,6 @@
 """Define the CLI frontend for this library."""
 import asyncio
+import logging
 import pathlib
 import sys
 from typing import Optional
@@ -25,12 +26,38 @@ OutputDir = typer.Argument(
 )
 
 
-# Configure the logger.
-logger.remove()
-logger.add(sys.stderr, level="DEBUG")
+def callback(verbose: int = typer.Option(0, "--verbose", "-v", count=True)):
+    """Define callback to configure global flags."""
+    # Configure the logger.
+
+    # Remove any predefined logger.
+    logger.remove()
+
+    # The log level gets adjusted by adding/removing `-v` flags:
+    #   None    : Initial log level is WARNING.
+    #   -v      : INFO
+    #   -vv     : DEBUG
+    #   -vvv    : TRACE
+    initial_log_level = logging.WARNING
+    log_format = (
+        "<level>{time:YYYY-MM-DDTHH:mm:ssZZ} {level:.3} {name}:{line} {message}</level>"
+    )
+    log_level = max(initial_log_level - verbose * 10, 0)
+
+    # Set the log colors.
+    logger.level("ERROR", color="<red><bold>")
+    logger.level("WARNING", color="<yellow>")
+    logger.level("SUCCESS", color="<green>")
+    logger.level("INFO", color="<cyan>")
+    logger.level("DEBUG", color="<blue>")
+    logger.level("TRACE", color="<magenta>")
+
+    # Add the logger.
+    logger.add(sys.stdout, format=log_format, level=log_level, colorize=True)
+
 
 # Create the CLI app.
-app = typer.Typer()
+app = typer.Typer(callback=callback)
 
 MAGIC_STATE_NUMBER = 91
 
