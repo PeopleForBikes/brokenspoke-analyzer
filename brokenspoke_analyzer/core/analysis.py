@@ -124,6 +124,11 @@ def retrieve_city_boundaries(output, country, city, state=None):
     query = ", ".join(filter(None, [city, state, country]))
     logger.debug(f"Query used to retrieve the boundaries: {query}")
     city_gdf = geocoder.geocode_to_gdf(query)
+    # Remove the display_name series to ensure there are no international
+    # characters in the dataframe. The import will fail if the analyzer finds
+    # non US characters.
+    # https://github.com/PeopleForBikes/brokenspoke-analyzer/issues/24
+    city_gdf.drop("display_name", axis=1)
 
     # Export the boundaries.
     slug = slugify(query)
