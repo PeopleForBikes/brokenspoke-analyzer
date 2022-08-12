@@ -36,6 +36,7 @@ def run_analysis(
     city_shp,
     pfb_osm_file,
     output_dir,
+    docker_image,
 ):
     """Run a BNA analysis."""
     dest = pathlib.Path("/") / output_dir.name
@@ -51,7 +52,7 @@ def run_analysis(
             f"-e NB_OUTPUT_DIR={dest}",
             "-e PFB_DEBUG=1",
             f'-v "{output_dir}":{dest}',
-            "azavea/analyzer:13-3.1",
+            docker_image,
         ]
     )
     run(docker_cmd)
