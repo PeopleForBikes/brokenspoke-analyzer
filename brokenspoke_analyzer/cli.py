@@ -24,6 +24,9 @@ OutputDir = typer.Argument(
     readable=True,
     resolve_path=True,
 )
+DockerImage = typer.Option(
+    "azavea/pfb-network-connectivity:0.16", help="BNA Docker image to use"
+)
 
 
 def callback(verbose: int = typer.Option(0, "--verbose", "-v", count=True)):
@@ -79,6 +82,7 @@ def analyze(
     city_shp: pathlib.Path,
     pfb_osm_file: pathlib.Path,
     output_dir: pathlib.Path = OutputDir,
+    docker_image: Optional[str] = DockerImage,
 ):
     """Run an analysis."""
     # Retrieve the state info if needed.
@@ -89,6 +93,7 @@ def analyze(
         city_shp,
         pfb_osm_file,
         output_dir,
+        docker_image,
     )
 
 
@@ -98,19 +103,20 @@ def run(
     city: str,
     state: Optional[str] = typer.Argument(None),
     output_dir: pathlib.Path = OutputDir,
+    docker_image: Optional[str] = DockerImage,
 ):
     """Prepare and run an analysis."""
-    asyncio.run(prepare_and_run(country, state, city, output_dir))
+    asyncio.run(prepare_and_run(country, state, city, output_dir, docker_image))
 
 
-async def prepare_and_run(country, state, city, output_dir):
+async def prepare_and_run(country, state, city, output_dir, docker_image):
     """Prepare and run an analysis."""
     speed_file = output_dir / "city_fips_speed.csv"
     speed_file.unlink(missing_ok=True)
     tabblock_file = output_dir / "tabblock2010_91_pophu.zip"
     tabblock_file.unlink(missing_ok=True)
     params = await prepare_(country, state, city, output_dir)
-    analyze_(*params)
+    analyze_(*params, docker_image)
 
 
 # pylint: disable=too-many-locals
@@ -193,20 +199,12 @@ async def prepare_(country, state, city, output_dir):
 
 # pylint: disable=too-many-arguments,duplicate-code
 def analyze_(
-    state_abbrev,
-    state_fips,
-    city_shp,
-    pfb_osm_file,
-    output_dir,
+    state_abbrev, state_fips, city_shp, pfb_osm_file, output_dir, docker_image
 ):
     """Run the analysis."""
     console = Console()
     with console.status("[bold green]Running the full analysis (may take a while)..."):
         processhelper.run_analysis(
-            state_abbrev,
-            state_fips,
-            city_shp,
-            pfb_osm_file,
-            output_dir,
+            state_abbrev, state_fips, city_shp, pfb_osm_file, output_dir, docker_image
         )
         console.log(f"Analysis for {city_shp} complete.")
