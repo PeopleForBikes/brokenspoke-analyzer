@@ -213,16 +213,33 @@ Analysis” locally.</p>
 <li><p><strong>docker</strong>: <a class="reference external" href="https://www.docker.com/get-started/">get started</a></p></li>
 <li><p><strong>osmium</strong>: <a class="reference external" href="https://osmcode.org/osmium-tool/">official page</a></p></li>
 </ul>
-<section id="build-the-azavea-docker-image">
-<h3>Build the Azavea docker image<a class="headerlink" href="#build-the-azavea-docker-image" title="Permalink to this heading">#</a></h3>
+<section id="pfb-network-connectivity-docker-image">
+<h3>pfb-network-connectivity Docker image<a class="headerlink" href="#pfb-network-connectivity-docker-image" title="Permalink to this heading">#</a></h3>
 <p>Azavea provides the code to build the Docker image that is used to run an
-analysis. There is no Image directly available at the time, thus it will
-necessary to build it manually.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:azavea/pfb-network-connectivity.git
-<span class="nb">cd</span> pfb-network-connectivity/src/
-<span class="nv">DOCKER_BUILDKIT</span><span class="o">=</span><span class="m">1</span> docker build -t azavea/analyzer:13-3.1 -f analysis/Dockerfile .
+analysis. There is no Image directly available at the time, thus it will be
+necessary to build it manually, or pull it from an unofficial source.</p>
+<section id="pull-the-image-from-an-unofficial-repository">
+<h4>Pull the image from an unofficial repository<a class="headerlink" href="#pull-the-image-from-an-unofficial-repository" title="Permalink to this heading">#</a></h4>
+<p>There is no official <code class="docutils literal notranslate"><span class="pre">azavea/pfb-network-connectivity</span></code> repository (yet 🤞), but
+it is possible to pull the image from an unofficial one, and rename it to the
+expected name.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker pull rgreinho/pfb-network-connectivity:0.16
+docker tag rgreinho/pfb-network-connectivity:0.16 azavea/pfb-network-connectivity:0.16
 </pre></div>
 </div>
+</section>
+<section id="build-the-azavea-docker-image">
+<h4>Build the Azavea docker image<a class="headerlink" href="#build-the-azavea-docker-image" title="Permalink to this heading">#</a></h4>
+<p>The official repository does not have tags (yet 🤞), therefore the image must be
+built from a fork.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:rgreinho/pfb-network-connectivity.git
+<span class="nb">cd</span> pfb-network-connectivity
+git checkout tags/0.16 -b <span class="m">0</span>.16
+<span class="nb">cd</span> src/
+<span class="nv">DOCKER_BUILDKIT</span><span class="o">=</span><span class="m">1</span> docker build -t azavea/pfb-network-connectivity:0.16 -f analysis/Dockerfile .
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 <section id="install">
@@ -299,7 +316,11 @@ Downloaded Protobuf data <span class="s1">&#39;arizona-latest.osm.pbf&#39;</span
             <ul>
 <li><a class="reference internal" href="#">Brokenspoke-analyzer</a><ul>
 <li><a class="reference internal" href="#requirements">Requirements</a><ul>
+<li><a class="reference internal" href="#pfb-network-connectivity-docker-image">pfb-network-connectivity Docker image</a><ul>
+<li><a class="reference internal" href="#pull-the-image-from-an-unofficial-repository">Pull the image from an unofficial repository</a></li>
 <li><a class="reference internal" href="#build-the-azavea-docker-image">Build the Azavea docker image</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#install">Install</a></li>
