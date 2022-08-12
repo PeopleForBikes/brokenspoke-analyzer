@@ -16,6 +16,7 @@
 
    usage
    datasets
+   workflow
    resources
    CHANGELOG
 

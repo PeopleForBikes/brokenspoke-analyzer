@@ -179,7 +179,7 @@ async def prepare_(
     console = Console()
 
     # Retrieve city boundaries.
-    with console.status("[bold green]Querying OSM to retrieve the city boudaries..."):
+    with console.status("[bold green]Querying OSM to retrieve the city boundaries..."):
         slug = analysis.retrieve_city_boundaries(output_dir, country, city, state)
         city_shp = output_dir / f"{slug}.shp"
         console.log("Boundary files ready.")
