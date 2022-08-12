@@ -25,7 +25,14 @@ OutputDir = typer.Argument(
     resolve_path=True,
 )
 DockerImage = typer.Option(
-    "azavea/pfb-network-connectivity:0.16", help="BNA Docker image to use"
+    "azavea/pfb-network-connectivity:0.16", help="override the BNA Docker image"
+)
+SpeedLimit = typer.Option(50, help="override the default speed limit (in km/h)")
+BlockSize = typer.Option(
+    500, help="size of a synthetic block for non-US cities (in meters)"
+)
+BlockPopulation = typer.Option(
+    100, help="population of a synthetic block for non-US cities"
 )
 
 
@@ -65,15 +72,29 @@ app = typer.Typer(callback=callback)
 MAGIC_STATE_NUMBER = 91
 
 
+# pylint: disable=too-many-arguments
 @app.command()
 def prepare(
     country: str,
     city: str,
     state: Optional[str] = typer.Argument(None),
-    output_dir: pathlib.Path = OutputDir,
+    output_dir: Optional[pathlib.Path] = OutputDir,
+    speed_limit: Optional[int] = SpeedLimit,
+    block_size: Optional[int] = BlockSize,
+    block_population: Optional[int] = BlockPopulation,
 ):
     """Prepare the required files for an analysis."""
-    asyncio.run(prepare_(country, state, city, output_dir))
+    asyncio.run(
+        prepare_(
+            country,
+            state,
+            city,
+            output_dir,
+            speed_limit,
+            block_size,
+            block_population,
+        )
+    )
 
 
 @app.command()
@@ -97,6 +118,7 @@ def analyze(
     )
 
 
+# pylint: disable=too-many-arguments
 @app.command()
 def run(
     country: str,
@@ -104,23 +126,51 @@ def run(
     state: Optional[str] = typer.Argument(None),
     output_dir: pathlib.Path = OutputDir,
     docker_image: Optional[str] = DockerImage,
+    speed_limit: Optional[int] = SpeedLimit,
+    block_size: Optional[int] = BlockSize,
+    block_population: Optional[int] = BlockPopulation,
 ):
     """Prepare and run an analysis."""
-    asyncio.run(prepare_and_run(country, state, city, output_dir, docker_image))
+    asyncio.run(
+        prepare_and_run(
+            country,
+            state,
+            city,
+            output_dir,
+            docker_image,
+            speed_limit,
+            block_size,
+            block_population,
+        )
+    )
 
 
-async def prepare_and_run(country, state, city, output_dir, docker_image):
+# pylint: disable=too-many-arguments
+async def prepare_and_run(
+    country,
+    state,
+    city,
+    output_dir,
+    docker_image,
+    speed_limit,
+    block_size,
+    block_population,
+):
     """Prepare and run an analysis."""
     speed_file = output_dir / "city_fips_speed.csv"
     speed_file.unlink(missing_ok=True)
     tabblock_file = output_dir / "tabblock2010_91_pophu.zip"
     tabblock_file.unlink(missing_ok=True)
-    params = await prepare_(country, state, city, output_dir)
+    params = await prepare_(
+        country, state, city, output_dir, speed_limit, block_size, block_population
+    )
     analyze_(*params, docker_image)
 
 
-# pylint: disable=too-many-locals
-async def prepare_(country, state, city, output_dir):
+# pylint: disable=too-many-locals,too-many-arguments
+async def prepare_(
+    country, state, city, output_dir, speed_limit, block_size, block_population
+):
     """Prepare and kicks off the analysis."""
     # Prepare the output directory.
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -162,10 +212,10 @@ async def prepare_(country, state, city, output_dir):
     if state_fips == MAGIC_STATE_NUMBER:
         # Create synthetic population.
         with console.status("[bold green]Prepare synthetic population..."):
-            CELL_SIZE = (1000, 1000)
+            CELL_SIZE = (block_size, block_size)
             city_boundaries_gdf = gpd.read_file(city_shp)
             synthetic_population = analysis.create_synthetic_population(
-                city_boundaries_gdf, *CELL_SIZE
+                city_boundaries_gdf, *CELL_SIZE, population=block_population
             )
             console.log("Synthetic population ready.")
 
@@ -178,13 +228,8 @@ async def prepare_(country, state, city, output_dir):
 
         # Change the speed limit.
         with console.status("[bold green]Adjust default speed limit..."):
-            DEFAULT_SPEED_LIMIT_KMH = 50
-            analysis.change_speed_limit(
-                output_dir, city, state_abbrev, DEFAULT_SPEED_LIMIT_KMH
-            )
-            console.log(
-                f"Default speed limit adjusted to {DEFAULT_SPEED_LIMIT_KMH} km/h."
-            )
+            analysis.change_speed_limit(output_dir, city, state_abbrev, speed_limit)
+            console.log(f"Default speed limit adjusted to {speed_limit} km/h.")
 
     # Return the parameters required to perform the analysis.
     # pylint: disable=duplicate-code
