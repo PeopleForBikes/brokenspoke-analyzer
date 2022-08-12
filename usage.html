@@ -205,14 +205,15 @@
 <span id="id1"></span><h2>General<a class="headerlink" href="#general" title="Permalink to this heading">#</a></h2>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-bna-arg-bna">
-<span class="sig-name descname"><span class="pre">bna</span></span><span class="sig-prename descclassname"> <span class="pre">[OPTIONS]</span> <span class="pre">COMMAND</span> <span class="pre">[ARGS]...</span></span><a class="headerlink" href="#cmdoption-bna-arg-bna" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">bna</span></span><span class="sig-prename descclassname"> <span class="pre">[OPTIONS]</span> <span class="pre">COMMAND</span> <span class="pre">[OPTIONS]</span> <span class="pre">[ARGS]...</span></span><a class="headerlink" href="#cmdoption-bna-arg-bna" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <p>This section describes the options that can be added on the CLI to alter some
 default behaviors of the commands.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The “OPTIONS” must always be placed between <cite>bna</cite> and the command to execute.</p>
+<p>The global “OPTIONS” must always be placed between <cite>bna</cite> and the command to
+execute.</p>
 </div>
 <section id="verbosity">
 <h3>Verbosity<a class="headerlink" href="#verbosity" title="Permalink to this heading">#</a></h3>
@@ -237,7 +238,7 @@ required to run an analysis.</p>
 <h3>Usage<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-bna-arg-0">
-<span class="sig-name descname"><span class="pre">bna</span></span><span class="sig-prename descclassname"> <span class="pre">prepare</span> <span class="pre">COUNTRY</span> <span class="pre">CITY</span> <span class="pre">[STATE]</span> <span class="pre">[OUTPUT_DIR]</span></span><a class="headerlink" href="#cmdoption-bna-arg-0" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">bna</span></span><span class="sig-prename descclassname"> <span class="pre">prepare</span> <span class="pre">[OPTIONS]</span> <span class="pre">COUNTRY</span> <span class="pre">CITY</span> <span class="pre">[STATE]</span> <span class="pre">[OUTPUT_DIR]</span></span><a class="headerlink" href="#cmdoption-bna-arg-0" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <ul class="simple">
@@ -250,6 +251,18 @@ used for other countries.</p></li>
 <li><p><strong>OUTPUT_DIR</strong>: the last parameter and is an optional path to indicate where
 to store the results on disk.</p></li>
 </ul>
+<section id="optional-flags">
+<h4>Optional flags<a class="headerlink" href="#optional-flags" title="Permalink to this heading">#</a></h4>
+<p>Optional flags are also available to customize the analysis for non-US cities:</p>
+<ul class="simple">
+<li><p><strong>–speed-limit</strong>: override the default speed limit (in km/h)                                                       │</p></li>
+<li><p><strong>–block-size</strong>: size of a synthetic block for non-US cities (in meters)                                           │</p></li>
+<li><p><strong>–block-population</strong>: population of a synthetic block for non-US cities</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These optional flags would simply be ignored if used for US cities.</p>
+</div>
 <p>Example: a US city:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bna</span> <span class="n">prepare</span> <span class="n">usa</span> <span class="n">flagstaff</span> <span class="n">arizona</span>
 <span class="c1"># Or simpler</span>
@@ -258,6 +271,9 @@ to store the results on disk.</p></li>
 </div>
 <p>Example: a non-US city:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bna</span> <span class="n">prepare</span> <span class="n">spain</span> <span class="n">valencia</span>
+
+<span class="c1"># With custom parameters</span>
+<span class="n">bna</span> <span class="n">prepare</span> <span class="n">spain</span> <span class="n">valencia</span> <span class="o">--</span><span class="n">speed</span><span class="o">-</span><span class="n">limit</span> <span class="mi">30</span> <span class="o">--</span><span class="n">block</span><span class="o">-</span><span class="n">size</span> <span class="mi">1000</span> <span class="o">--</span><span class="n">block</span><span class="o">-</span><span class="n">population</span> <span class="mi">200</span>
 </pre></div>
 </div>
 <p>Example: a non-US city with a specific region:</p>
@@ -266,15 +282,16 @@ to store the results on disk.</p></li>
 </div>
 </section>
 </section>
+</section>
 <section id="analyze">
 <h2>Analyze<a class="headerlink" href="#analyze" title="Permalink to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">analyze</span></code> subcommand will comsume the artifacts being generated by the
+<p>The <code class="docutils literal notranslate"><span class="pre">analyze</span></code> subcommand will consume the artifacts being generated by the
 <code class="docutils literal notranslate"><span class="pre">prepare</span></code> subcommand and start an analysis.</p>
 <section id="id4">
 <h3>Usage<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-bna-arg-1">
-<span class="sig-name descname"><span class="pre">bna</span></span><span class="sig-prename descclassname"> <span class="pre">analyze</span> <span class="pre">STATE</span> <span class="pre">CITY_SHP</span> <span class="pre">PFB_OSM_FILE</span> <span class="pre">[OUTPUT_DIR]</span></span><a class="headerlink" href="#cmdoption-bna-arg-1" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">bna</span></span><span class="sig-prename descclassname"> <span class="pre">analyze</span> <span class="pre">[OPTIONS]</span> <span class="pre">STATE</span> <span class="pre">CITY_SHP</span> <span class="pre">PFB_OSM_FILE</span> <span class="pre">[OUTPUT_DIR]</span></span><a class="headerlink" href="#cmdoption-bna-arg-1" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <ul class="simple">
@@ -285,27 +302,39 @@ case insensitive and must be quoted if there are spaces.</p></li>
 <li><p><strong>OUTPUT_DIR</strong>: is the last parameter and is an optional path to indicate where
 to store the results on disk.</p></li>
 </ul>
+<section id="id5">
+<h4>Optional flags<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>–docker-image</strong>: override the BNA Docker image</p></li>
+</ul>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bna</span> <span class="n">analyze</span> <span class="n">arizona</span> <span class="n">flagstaff</span> <span class="n">flagstaff</span><span class="o">.</span><span class="n">shp</span> <span class="n">flagstaff</span><span class="o">-</span><span class="n">arizona</span><span class="o">.</span><span class="n">osm</span>
 </pre></div>
 </div>
 </section>
 </section>
+</section>
 <section id="run">
 <h2>Run<a class="headerlink" href="#run" title="Permalink to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">run</span></code> subcommand is a combination of <code class="docutils literal notranslate"><span class="pre">prepare</span></code> and <code class="docutils literal notranslate"><span class="pre">analyze</span></code>.</p>
 <p>The syntax is identical to the <a class="reference internal" href="#prepare"><span class="std std-ref">Prepare</span></a> command.</p>
-<section id="id5">
-<h3>Usage<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
+<section id="id6">
+<h3>Usage<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-bna-arg-2">
-<span class="sig-name descname"><span class="pre">bna</span></span><span class="sig-prename descclassname"> <span class="pre">run</span> <span class="pre">COUNTRY</span> <span class="pre">CITY</span> <span class="pre">[STATE]</span> <span class="pre">[OUTPUT_DIR]</span></span><a class="headerlink" href="#cmdoption-bna-arg-2" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">bna</span></span><span class="sig-prename descclassname"> <span class="pre">run</span> <span class="pre">[OPTIONS]</span> <span class="pre">COUNTRY</span> <span class="pre">CITY</span> <span class="pre">[STATE]</span> <span class="pre">[OUTPUT_DIR]</span></span><a class="headerlink" href="#cmdoption-bna-arg-2" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
+<section id="id7">
+<h4>Optional flags<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>–docker-image</strong>: override the BNA Docker image</p></li>
+</ul>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bna</span> <span class="n">run</span> <span class="n">arizona</span> <span class="n">flagstaff</span>
 </pre></div>
 </div>
+</section>
 </section>
 </section>
 </section>
@@ -378,15 +407,24 @@ to store the results on disk.</p></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#prepare">Prepare</a><ul>
-<li><a class="reference internal" href="#id3">Usage</a></li>
+<li><a class="reference internal" href="#id3">Usage</a><ul>
+<li><a class="reference internal" href="#optional-flags">Optional flags</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#analyze">Analyze</a><ul>
-<li><a class="reference internal" href="#id4">Usage</a></li>
+<li><a class="reference internal" href="#id4">Usage</a><ul>
+<li><a class="reference internal" href="#id5">Optional flags</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#run">Run</a><ul>
-<li><a class="reference internal" href="#id5">Usage</a></li>
+<li><a class="reference internal" href="#id6">Usage</a><ul>
+<li><a class="reference internal" href="#id7">Optional flags</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
