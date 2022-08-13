@@ -13,16 +13,17 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-
+from importlib import metadata
 
 # -- Project information -----------------------------------------------------
 
 project = "Brokenspoke Analyzer"
 copyright = "2022, PeopleForBikes"
 author = "PeopleForBikes"
+package = "brokenspoke-analyzer"
 
 # The full version, including alpha/beta/rc tags
-release = "1.0.0-rc.1"
+release = metadata.version(package)
 
 
 # -- General configuration ---------------------------------------------------
