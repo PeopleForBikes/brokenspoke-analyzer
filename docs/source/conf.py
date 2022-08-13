@@ -81,4 +81,56 @@ html_theme_options = {
             "class": "",
         },
     ],
+    "light_css_variables": {
+        # for main text and headings
+        "color-foreground-primary": "#8B8A8D",
+        # for secondary text
+        "color-foreground-secondary": "#009EDB",
+        # for muted text
+        "color-foreground-muted": "#D71920",
+        # for content borders
+        "color-foreground-border": "#878787",
+        # for content
+        "color-background-primary": "#fcfaf6",
+        # for navigation + ToC
+        "color-background-secondary": "#fcfaf6",
+        # for navigation-item hover
+        "color-background-hover": "#effaffff",
+        "color-background-hover--transparent": "#effaff00",
+        # for UI borders
+        "color-background-border": "#eeebee",
+        # for "background" items (eg: copybutton)
+        "color-background-item": "#ccc",
+        # Brand colors
+        "color-brand-primary": "#009EDB",
+        "color-brand-content": "#8B8A8D",
+        # Fonts
+        "font-stack": 'Montserrat, "Open Sans", Helvetica, Arial, sans-serif',
+    },
+    "dark_css_variables": {
+        # for main text and headings
+        "color-foreground-primary": "#8B8A8D",
+        # for secondary text
+        "color-foreground-secondary": "#009EDB",
+        # for muted text
+        "color-foreground-muted": "#D71920",
+        # for content borders
+        "color-foreground-border": "878787",
+        # for content
+        "color-background-primary": "#00263E",
+        # for navigation + ToC
+        "color-background-secondary": "#00263E",
+        # for navigation-item hover
+        "color-background-hover": "#1e2124ff",
+        "color-background-hover--transparent": "#1e212400",
+        # for UI borders
+        "color-background-border": "#8B8A8D",
+        # for "background" items (eg: copybutton)
+        "color-background-item": "#ccc",
+        # Brand colors
+        "color-brand-primary": "#009EDB",
+        "color-brand-content": "#009EDB",
+        # Fonts
+        "font-stack": 'Montserrat, "Open Sans", Helvetica, Arial, sans-serif',
+    },
 }
