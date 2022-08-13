@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Datasets" href="datasets.html" /><link rel="prev" title="Brokenspoke-analyzer" href="index.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Resources" href="resources.html" /><link rel="prev" title="Datasets" href="datasets.html" />
 
     <meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
-        <title>Usage - Brokenspoke Analyzer 1.0.0-rc.1 documentation</title>
+        <title>Preparation Workflow - Brokenspoke Analyzer 1.0.0-rc.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -157,9 +157,9 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">GENERAL:</span></p>
 <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="workflow.html">Preparation Workflow</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Preparation Workflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a></li>
 </ul>
@@ -200,142 +200,145 @@
           </label>
         </div>
         <article role="main">
-          <section id="usage">
-<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">#</a></h1>
-<section id="general">
-<span id="id1"></span><h2>General<a class="headerlink" href="#general" title="Permalink to this heading">#</a></h2>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-bna-arg-bna">
-<span class="sig-name descname"><span class="pre">bna</span></span><span class="sig-prename descclassname"> <span class="pre">[OPTIONS]</span> <span class="pre">COMMAND</span> <span class="pre">[OPTIONS]</span> <span class="pre">[ARGS]...</span></span><a class="headerlink" href="#cmdoption-bna-arg-bna" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<p>This section describes the options that can be added on the CLI to alter some
-default behaviors of the commands.</p>
-<div class="admonition note">
+          <section class="tex2jax_ignore mathjax_ignore" id="preparation-workflow">
+<h1>Preparation Workflow<a class="headerlink" href="#preparation-workflow" title="Permalink to this heading">#</a></h1>
+<p>This page describes the steps to execute to manually prepare the files required
+to run an analysis.</p>
+<p>Normally the <code class="docutils literal notranslate"><span class="pre">bna</span> <span class="pre">prepare</span></code> command (or <code class="docutils literal notranslate"><span class="pre">bna</span> <span class="pre">run</span></code>) would execute all the actions
+automatically, but there can be some edge cases where the tool is not able to
+complete them all, therefore requiring the user to finalize them by hand.</p>
+<section id="steps">
+<h2>Steps<a class="headerlink" href="#steps" title="Permalink to this heading">#</a></h2>
+<p>This example will depict the process for the city of Valencia, Spain.</p>
+<section id="retrieve-the-city-boundaries">
+<h3>Retrieve the city boundaries<a class="headerlink" href="#retrieve-the-city-boundaries" title="Permalink to this heading">#</a></h3>
+<p>The first step consists in retrieving the city boundaries.</p>
+<p>For this we’re using the <a class="reference external" href="https://osmnx.readthedocs.io/en/stable/">OSMNX</a> library.</p>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="_images/valencia-spain-boundaries.png"><img alt="Valencia, Spain boundaries" src="_images/valencia-spain-boundaries.png" style="width: 300px;" /></a>
+<figcaption>
+<p><span class="caption-text">Administrative boundaries of the city of Valencia, Spain.</span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="download-the-osm-region-file">
+<h3>Download the OSM region file<a class="headerlink" href="#download-the-osm-region-file" title="Permalink to this heading">#</a></h3>
+<p>Then we need to download the OSM planet file for the region where the city is
+located.</p>
+<p>We can retrieve these files on the <a class="reference external" href="https://download.geofabrik.de">Geofabrik.de</a> site. They are orgranised by
+continents, regions, countries, and even some times cities themselves.</p>
+<p>We will need to download the <code class="docutils literal notranslate"><span class="pre">valencia-latest.osm.pbf</span></code> file from the page of the
+<a class="reference external" href="https://download.geofabrik.de/europe/spain/valencia.html">region of Valencia</a>.</p>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="_images/comunidad-valenciana-spain-geofabrik.png"><img alt="Comunidad Valenciana, Spain on Geofabrik.de" src="_images/comunidad-valenciana-spain-geofabrik.png" style="width: 300px;" /></a>
+<figcaption>
+<p><span class="caption-text">Comunidad Valenciana, Spain on <a class="reference external" href="https://download.geofabrik.de/europe/spain/valencia.html">Geofabrik.de</a>.</span><a class="headerlink" href="#id2" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="reduce-the-osm-file-to-the-city-limits">
+<h3>Reduce the OSM file to the city limits<a class="headerlink" href="#reduce-the-osm-file-to-the-city-limits" title="Permalink to this heading">#</a></h3>
+<p>Once we have both pieces, we can use them to extract the information from the
+planet file, which are contained within the city limits.</p>
+<p>This is done using a tool like <a class="reference external" href="https://osmcode.org/osmium-tool/">osmium</a>. We will use it to generate a file named
+<code class="docutils literal notranslate"><span class="pre">valencia-spain.osm</span></code>.</p>
+<div class="note admonition">
 <p class="admonition-title">Note</p>
-<p>The global “OPTIONS” must always be placed between <cite>bna</cite> and the command to
-execute.</p>
+<p>In a future version, these 3 steps will be combined.</p>
 </div>
-<section id="verbosity">
-<h3>Verbosity<a class="headerlink" href="#verbosity" title="Permalink to this heading">#</a></h3>
-<p>The verbosity level can be adjusted by adding or removing <cite>-v</cite> flags.</p>
-<ul class="simple">
-<li><p>None  : Initial log level is WARNING.</p></li>
-<li><p><cite>-v</cite>  : INFO</p></li>
-<li><p><cite>-vv</cite> : DEBUG</p></li>
-<li><p><cite>-vvv</cite>: TRACE</p></li>
-</ul>
-<p>Example: start a BNA run with the log level set to “TRACE”:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bna</span> <span class="o">-</span><span class="n">vvv</span> <span class="n">run</span> <span class="n">arizona</span> <span class="n">flagstaff</span>
+</section>
+<section id="retrieve-us-state-information">
+<h3>Retrieve US state information<a class="headerlink" href="#retrieve-us-state-information" title="Permalink to this heading">#</a></h3>
+<p>If the city is located in the US, we need to retrieve the FIPS State Numeric
+Code andthe Official USPS Code (i.e. abbreviation).</p>
+<p>For example, the state of Texas is abbreviated “TX” and has a FIPS code of 48.</p>
+<p>This information can be found on the
+<a class="reference external" href="https://www.census.gov/library/reference/code-lists/ansi.html">census page</a>.</p>
+<p>For non-US cities, an abbreviation of “ZZ” is used, and a FIPS code of 91.</p>
+</section>
+<section id="extra-steps-for-non-us-cities">
+<h3>Extra steps for non-US cities<a class="headerlink" href="#extra-steps-for-non-us-cities" title="Permalink to this heading">#</a></h3>
+<p>For non-US cities we need to simulate the information from the US census.</p>
+<section id="create-synthetic-population">
+<h4>Create synthetic population<a class="headerlink" href="#create-synthetic-population" title="Permalink to this heading">#</a></h4>
+<p>We need to create a grid which just overlaps the city boundaries. Each cell of
+the grid will contain the same amount of population.</p>
+<p>In our case, each cell is a square of 1000m x 1000m, and contains 100 people.</p>
+<figure class="align-center" id="id3">
+<a class="reference internal image-reference" href="_images/valencia-spain-synthetic-population.png"><img alt="Synthetic popupaltion for Valencia, Spain" src="_images/valencia-spain-synthetic-population.png" style="width: 300px;" /></a>
+<figcaption>
+<p><span class="caption-text">Synthetic popupaltion for Valencia, Spain</span><a class="headerlink" href="#id3" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="simulate-census-blocks">
+<h4>Simulate census blocks<a class="headerlink" href="#simulate-census-blocks" title="Permalink to this heading">#</a></h4>
+<p>This grid then needs to be exported to a shapefile, zipped without a top level
+folder. This will simulate the census dataset representing
+<a class="reference external" href="https://www.census.gov/geographies/mapping-files/2010/geo/tiger-line-file.html">Census Blocks with Population and Housing Counts</a>.</p>
+<p>This file must be named <code class="docutils literal notranslate"><span class="pre">tabblock2010_91_pophu.zip</span></code> and stored in the <code class="docutils literal notranslate"><span class="pre">data</span></code>
+directory.</p>
+</section>
+<section id="adjust-default-speed-limit">
+<h4>Adjust default speed limit<a class="headerlink" href="#adjust-default-speed-limit" title="Permalink to this heading">#</a></h4>
+<p>Default speed limits are different in each country, and infering them from Open
+Street Map is not always possible.</p>
+<p>In this case, a CSV file overriding the default values must be created with the
+following format:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>city,state,fips_code_city,speed
+valencia,al,1234567,50
 </pre></div>
 </div>
+<p>This file must be named <code class="docutils literal notranslate"><span class="pre">city_fips_speed.csv</span></code> and stored in the <code class="docutils literal notranslate"><span class="pre">data</span></code>
+directory.</p>
 </section>
 </section>
-<section id="prepare">
-<span id="id2"></span><h2>Prepare<a class="headerlink" href="#prepare" title="Permalink to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">prepare</span></code> subcommand is in charge of collecting and preparing the files
-required to run an analysis.</p>
-<section id="id3">
-<h3>Usage<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-bna-arg-0">
-<span class="sig-name descname"><span class="pre">bna</span></span><span class="sig-prename descclassname"> <span class="pre">prepare</span> <span class="pre">[OPTIONS]</span> <span class="pre">COUNTRY</span> <span class="pre">CITY</span> <span class="pre">[STATE]</span> <span class="pre">[OUTPUT_DIR]</span></span><a class="headerlink" href="#cmdoption-bna-arg-0" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<ul class="simple">
-<li><p><strong>COUNTRY</strong>: the name of the country or a specific region available as an OSM
-dataset. See the <a class="reference internal" href="datasets.html#datasets"><span class="std std-ref">Datasets</span></a> page for more information.</p></li>
-<li><p><strong>CITY</strong>: the full name of the city (e.g “flagstaff”, “san antonio”). It is
-case insensitive and must be quoted if there are spaces.</p></li>
-<li><p><strong>STATE</strong>: Only useful for US cities. It may generate incorrect results when
-used for other countries.</p></li>
-<li><p><strong>OUTPUT_DIR</strong>: the last parameter and is an optional path to indicate where
-to store the results on disk.</p></li>
-</ul>
-<section id="optional-flags">
-<h4>Optional flags<a class="headerlink" href="#optional-flags" title="Permalink to this heading">#</a></h4>
-<p>Optional flags are also available to customize the analysis for non-US cities:</p>
-<ul class="simple">
-<li><p><strong>–speed-limit</strong>: override the default speed limit (in km/h)                                                       │</p></li>
-<li><p><strong>–block-size</strong>: size of a synthetic block for non-US cities (in meters)                                           │</p></li>
-<li><p><strong>–block-population</strong>: population of a synthetic block for non-US cities</p></li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>These optional flags would simply be ignored if used for US cities.</p>
-</div>
-<p>Example: a US city:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bna</span> <span class="n">prepare</span> <span class="n">usa</span> <span class="n">flagstaff</span> <span class="n">arizona</span>
-<span class="c1"># Or simpler</span>
-<span class="n">bna</span> <span class="n">prepare</span> <span class="n">arizona</span> <span class="n">flagstaff</span>
+<section id="final-results">
+<h3>Final results<a class="headerlink" href="#final-results" title="Permalink to this heading">#</a></h3>
+<p>At the end of the process, the <code class="docutils literal notranslate"><span class="pre">./data</span></code> folder should contain the following
+files:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./data
+├── city_fips_speed.csv
+├── spain-latest.osm.pbf
+├── tabblock2010_91_pophu.zip
+├── valencia-spain.cpg
+├── valencia-spain.dbf
+├── valencia-spain.geojson
+├── valencia-spain.osm
+├── valencia-spain.prj
+├── valencia-spain.shp
+└── valencia-spain.shx
 </pre></div>
 </div>
-<p>Example: a non-US city:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bna</span> <span class="n">prepare</span> <span class="n">spain</span> <span class="n">valencia</span>
-
-<span class="c1"># With custom parameters</span>
-<span class="n">bna</span> <span class="n">prepare</span> <span class="n">spain</span> <span class="n">valencia</span> <span class="o">--</span><span class="n">speed</span><span class="o">-</span><span class="n">limit</span> <span class="mi">30</span> <span class="o">--</span><span class="n">block</span><span class="o">-</span><span class="n">size</span> <span class="mi">1000</span> <span class="o">--</span><span class="n">block</span><span class="o">-</span><span class="n">population</span> <span class="mi">200</span>
+<p>You can then run the analysis with the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna analyze spain valencia valencia-spain.shp valencia-spain.osm
 </pre></div>
 </div>
-<p>Example: a non-US city with a specific region:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bna</span> <span class="n">prepare</span> <span class="n">paris</span> <span class="n">paris</span>
+<p>After several hours (7+ hours), the result will be generated in a subfolder of
+the <code class="docutils literal notranslate"><span class="pre">data</span></code> directory and will look like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.
+├── neighborhood_census_blocks.geojson
+├── neighborhood_census_blocks.zip
+├── neighborhood_colleges.geojson
+├── neighborhood_community_centers.geojson
+├── neighborhood_connected_census_blocks.csv.zip
+├── neighborhood_dentists.geojson
+├── neighborhood_doctors.geojson
+├── neighborhood_hospitals.geojson
+├── neighborhood_overall_scores.csv
+├── neighborhood_parks.geojson
+├── neighborhood_pharmacies.geojson
+├── neighborhood_retail.geojson
+├── neighborhood_schools.geojson
+├── neighborhood_score_inputs.csv
+├── neighborhood_social_services.geojson
+├── neighborhood_supermarkets.geojson
+├── neighborhood_transit.geojson
+├── neighborhood_universities.geojson
+├── neighborhood_ways.zip
+└── residential_speed_limit.csv
 </pre></div>
 </div>
-</section>
-</section>
-</section>
-<section id="analyze">
-<h2>Analyze<a class="headerlink" href="#analyze" title="Permalink to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">analyze</span></code> subcommand will consume the artifacts being generated by the
-<code class="docutils literal notranslate"><span class="pre">prepare</span></code> subcommand and start an analysis.</p>
-<section id="id4">
-<h3>Usage<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-bna-arg-1">
-<span class="sig-name descname"><span class="pre">bna</span></span><span class="sig-prename descclassname"> <span class="pre">analyze</span> <span class="pre">[OPTIONS]</span> <span class="pre">STATE</span> <span class="pre">CITY_SHP</span> <span class="pre">PFB_OSM_FILE</span> <span class="pre">[OUTPUT_DIR]</span></span><a class="headerlink" href="#cmdoption-bna-arg-1" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<ul class="simple">
-<li><p><strong>STATE</strong>: the full name of the state (e.g “arizona”, “new mexico”). It is
-case insensitive and must be quoted if there are spaces.</p></li>
-<li><p><strong>CITY_SHP</strong>: the shapefile repesenting the city boundaries.</p></li>
-<li><p><strong>PFB_OSM_FILE</strong>: the OSM file representing the city.</p></li>
-<li><p><strong>OUTPUT_DIR</strong>: is the last parameter and is an optional path to indicate where
-to store the results on disk.</p></li>
-</ul>
-<section id="id5">
-<h4>Optional flags<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h4>
-<ul class="simple">
-<li><p><strong>–docker-image</strong>: override the BNA Docker image</p></li>
-</ul>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bna</span> <span class="n">analyze</span> <span class="n">arizona</span> <span class="n">flagstaff</span> <span class="n">flagstaff</span><span class="o">.</span><span class="n">shp</span> <span class="n">flagstaff</span><span class="o">-</span><span class="n">arizona</span><span class="o">.</span><span class="n">osm</span>
-</pre></div>
-</div>
-</section>
-</section>
-</section>
-<section id="run">
-<h2>Run<a class="headerlink" href="#run" title="Permalink to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">run</span></code> subcommand is a combination of <code class="docutils literal notranslate"><span class="pre">prepare</span></code> and <code class="docutils literal notranslate"><span class="pre">analyze</span></code>.</p>
-<p>The syntax is identical to the <a class="reference internal" href="#prepare"><span class="std std-ref">Prepare</span></a> command.</p>
-<section id="id6">
-<h3>Usage<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-bna-arg-2">
-<span class="sig-name descname"><span class="pre">bna</span></span><span class="sig-prename descclassname"> <span class="pre">run</span> <span class="pre">[OPTIONS]</span> <span class="pre">COUNTRY</span> <span class="pre">CITY</span> <span class="pre">[STATE]</span> <span class="pre">[OUTPUT_DIR]</span></span><a class="headerlink" href="#cmdoption-bna-arg-2" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<section id="id7">
-<h4>Optional flags<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h4>
-<ul class="simple">
-<li><p><strong>–docker-image</strong>: override the BNA Docker image</p></li>
-</ul>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bna</span> <span class="n">run</span> <span class="n">arizona</span> <span class="n">flagstaff</span>
-</pre></div>
-</div>
-</section>
 </section>
 </section>
 </section>
@@ -345,23 +348,23 @@ to store the results on disk.</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="datasets.html">
+          <a class="next-page" href="resources.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Datasets</div>
+                <div class="title">Resources</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="index.html">
+          <a class="prev-page" href="datasets.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Home</div>
+                <div class="title">Datasets</div>
                 
               </div>
             </a>
@@ -402,30 +405,19 @@ to store the results on disk.</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Usage</a><ul>
-<li><a class="reference internal" href="#general">General</a><ul>
-<li><a class="reference internal" href="#verbosity">Verbosity</a></li>
+<li><a class="reference internal" href="#">Preparation Workflow</a><ul>
+<li><a class="reference internal" href="#steps">Steps</a><ul>
+<li><a class="reference internal" href="#retrieve-the-city-boundaries">Retrieve the city boundaries</a></li>
+<li><a class="reference internal" href="#download-the-osm-region-file">Download the OSM region file</a></li>
+<li><a class="reference internal" href="#reduce-the-osm-file-to-the-city-limits">Reduce the OSM file to the city limits</a></li>
+<li><a class="reference internal" href="#retrieve-us-state-information">Retrieve US state information</a></li>
+<li><a class="reference internal" href="#extra-steps-for-non-us-cities">Extra steps for non-US cities</a><ul>
+<li><a class="reference internal" href="#create-synthetic-population">Create synthetic population</a></li>
+<li><a class="reference internal" href="#simulate-census-blocks">Simulate census blocks</a></li>
+<li><a class="reference internal" href="#adjust-default-speed-limit">Adjust default speed limit</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#prepare">Prepare</a><ul>
-<li><a class="reference internal" href="#id3">Usage</a><ul>
-<li><a class="reference internal" href="#optional-flags">Optional flags</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#analyze">Analyze</a><ul>
-<li><a class="reference internal" href="#id4">Usage</a><ul>
-<li><a class="reference internal" href="#id5">Optional flags</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#run">Run</a><ul>
-<li><a class="reference internal" href="#id6">Usage</a><ul>
-<li><a class="reference internal" href="#id7">Optional flags</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#final-results">Final results</a></li>
 </ul>
 </li>
 </ul>
