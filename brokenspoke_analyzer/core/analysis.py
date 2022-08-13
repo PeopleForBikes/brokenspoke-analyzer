@@ -158,10 +158,8 @@ def create_synthetic_population(area, length, width, population=100):
     cols = list(np.arange(xmin, xmax + width, width))
     rows = list(np.arange(ymin, ymax + length, length))
 
-    # Extract the biggest region.
-    boundaries = max(
-        mercator_area.geometry.explode(index_parts=True), key=lambda a: a.area
-    )
+    # Extract all the boundaries.
+    boundaries = mercator_area.geometry.explode(index_parts=True)
 
     # Compute the cells.
     cells = []
@@ -178,7 +176,7 @@ def create_synthetic_population(area, length, width, population=100):
             )
 
             # Append it if it intersects with the biggest region.
-            if cell.intersects(boundaries):
+            if any(map(cell.intersects, boundaries)):
                 cells.append(cell)
 
     # Create a geodataframe made of the cells overlapping with the area.
