@@ -8,6 +8,13 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.0.0] - 2022-08-14
+
+First stable version.
+
+[1.0.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0
+
 ## [1.0.0-rc.1] - 2022-08-07
 
 This is the first usable release. It is possible to run analysis for any city in
