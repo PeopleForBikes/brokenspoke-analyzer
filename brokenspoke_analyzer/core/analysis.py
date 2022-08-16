@@ -207,9 +207,9 @@ def change_speed_limit(output, city, state_abbrev, speed):
     )
 
 
-def simulate_census_blocks(output, slug, state_fips, synthetic_population):
+def simulate_census_blocks(output, slug, synthetic_population):
     """Simulate census blocks."""
-    tabblock = f"tabblock2010_{state_fips}_pophu"
+    tabblock = "population"
     city_tabblock = f"{slug}-{tabblock}"
     synthetic_population_shp = output / f"{city_tabblock}.shp"
     synthetic_population.to_file(synthetic_population_shp)

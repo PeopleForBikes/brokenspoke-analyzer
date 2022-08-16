@@ -26,8 +26,8 @@ it is possible to pull the image from an unofficial one, and rename it to the
 expected name.
 
 ```bash
-docker pull rgreinho/pfb-network-connectivity:0.16
-docker tag rgreinho/pfb-network-connectivity:0.16 azavea/pfb-network-connectivity:0.16
+docker pull rgreinho/pfb-network-connectivity:0.16.1
+docker tag rgreinho/pfb-network-connectivity:0.16.1 azavea/pfb-network-connectivity:0.16.1
 ```
 
 #### Build the Azavea docker image
@@ -36,11 +36,11 @@ The official repository does not have tags (yet 🤞), therefore the image must 
 built from a fork.
 
 ```bash
-git clone git@github.com:rgreinho/pfb-network-connectivity.git
+git clone git@github.com:azavea/pfb-network-connectivity.git
 cd pfb-network-connectivity
-git checkout tags/0.16 -b 0.16
+git checkout tags/0.16.1 -b 0.16.1
 cd src/
-DOCKER_BUILDKIT=1 docker build -t azavea/pfb-network-connectivity:0.16 -f analysis/Dockerfile .
+docker buildx build -t azavea/pfb-network-connectivity:0.16.1 -f analysis/Dockerfile .
 ```
 
 ## Install

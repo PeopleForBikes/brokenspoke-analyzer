@@ -25,7 +25,7 @@ OutputDir = typer.Argument(
     resolve_path=True,
 )
 DockerImage = typer.Option(
-    "azavea/pfb-network-connectivity:0.16", help="override the BNA Docker image"
+    "azavea/pfb-network-connectivity:0.16.1", help="override the BNA Docker image"
 )
 SpeedLimit = typer.Option(50, help="override the default speed limit (in km/h)")
 BlockSize = typer.Option(
@@ -68,8 +68,6 @@ def callback(verbose: int = typer.Option(0, "--verbose", "-v", count=True)):
 
 # Create the CLI app.
 app = typer.Typer(callback=callback)
-
-MAGIC_STATE_NUMBER = 91
 
 
 # pylint: disable=too-many-arguments
@@ -206,10 +204,13 @@ async def prepare_(
         try:
             state_abbrev, state_fips = analysis.state_info(country)
         except ValueError:
-            state_abbrev, state_fips = ("AL", MAGIC_STATE_NUMBER)
+            state_abbrev, state_fips = (
+                processhelper.NON_US_STATE_ABBREV,
+                processhelper.NON_US_STATE_FIPS,
+            )
 
     # For non-US cities:
-    if state_fips == MAGIC_STATE_NUMBER:
+    if state_fips == processhelper.NON_US_STATE_FIPS:
         # Create synthetic population.
         with console.status("[bold green]Prepare synthetic population..."):
             CELL_SIZE = (block_size, block_size)
@@ -221,9 +222,7 @@ async def prepare_(
 
         # Simulate the census blocks.
         with console.status("[bold green]Simulate census blocks..."):
-            analysis.simulate_census_blocks(
-                output_dir, slug, state_fips, synthetic_population
-            )
+            analysis.simulate_census_blocks(output_dir, slug, synthetic_population)
             console.log("Census blocks ready.")
 
         # Change the speed limit.
