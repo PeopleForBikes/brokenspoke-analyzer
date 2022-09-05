@@ -23,7 +23,7 @@ osmnx = "^1.2.2"
 [tool.poetry.dev-dependencies]
 pytest = "^7"
 black = "^22.8.0"
-bpython = "^0.22.1"
+bpython = "^0.23"
 isort = "^5.10.1"
 flake8 = "^5.0.2"
 furo = "^2022.6.21"
