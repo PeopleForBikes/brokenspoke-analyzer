@@ -8,12 +8,21 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.1.0] - 2022-10-08
+
+### Fixed
+
+- Add better support for international cities. [#52]
+
+### Changed
+
+- Updated the analyzer image to 0.16.1. [#52]
+
 ## [1.0.0] - 2022-08-14
 
 First stable version.
 
-[1.0.0]:
-  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0
+[1.0.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0
 
 ## [1.0.0-rc.1] - 2022-08-07
 
@@ -23,5 +32,4 @@ the world (although the analyzer will fail for some of them).
 The tool is still a bit rough on the edges, that is why this is a release
 candidate, but the quirks will be ironned out for 1.0.0.
 
-[1.0.0-rc.1]:
-  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0-rc.1
+[1.0.0-rc.1]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0-rc.1
