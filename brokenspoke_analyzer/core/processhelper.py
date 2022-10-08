@@ -7,6 +7,9 @@ import sys
 from loguru import logger
 from rich.console import Console
 
+NON_US_STATE_FIPS = 0
+NON_US_STATE_ABBREV = "ZZ"
+
 
 def run(cmd):
     """Run an external command."""
@@ -40,6 +43,14 @@ def run_analysis(
 ):
     """Run a BNA analysis."""
     dest = pathlib.Path("/") / output_dir.name
+    if state_fips == NON_US_STATE_FIPS:
+        pfb_country = "nonus"
+        pfb_state = ""
+        run_import_jobs = 0
+    else:
+        pfb_country = "usa"
+        pfb_state = state_abbrev.lower()
+        run_import_jobs = 1
     docker_cmd = " ".join(
         [
             "docker",
@@ -47,9 +58,11 @@ def run_analysis(
             "--rm",
             f'-e PFB_SHPFILE="{dest / city_shp.name}"',
             f'-e PFB_OSM_FILE="{dest / pfb_osm_file}"',
-            f"-e PFB_STATE={state_abbrev.lower()}",
+            f"-e PFB_COUNTRY={pfb_country}",
+            f"-e PFB_STATE={pfb_state}",
             f"-e PFB_STATE_FIPS={state_fips}",
             f"-e NB_OUTPUT_DIR={dest}",
+            f"-e RUN_IMPORT_JOBS={run_import_jobs}",
             "-e PFB_DEBUG=1",
             f'-v "{output_dir}":{dest}',
             docker_image,
