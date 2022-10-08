@@ -264,8 +264,8 @@ necessary to build it manually, or pull it from an unofficial source.</p>
 <p>There is no official <code class="docutils literal notranslate"><span class="pre">azavea/pfb-network-connectivity</span></code> repository (yet 🤞), but
 it is possible to pull the image from an unofficial one, and rename it to the
 expected name.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker pull rgreinho/pfb-network-connectivity:0.16
-docker tag rgreinho/pfb-network-connectivity:0.16 azavea/pfb-network-connectivity:0.16
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker pull rgreinho/pfb-network-connectivity:0.16.1
+docker tag rgreinho/pfb-network-connectivity:0.16.1 azavea/pfb-network-connectivity:0.16.1
 </pre></div>
 </div>
 </section>
@@ -273,11 +273,11 @@ docker tag rgreinho/pfb-network-connectivity:0.16 azavea/pfb-network-connectivit
 <h4>Build the Azavea docker image<a class="headerlink" href="#build-the-azavea-docker-image" title="Permalink to this heading">#</a></h4>
 <p>The official repository does not have tags (yet 🤞), therefore the image must be
 built from a fork.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:rgreinho/pfb-network-connectivity.git
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:azavea/pfb-network-connectivity.git
 <span class="nb">cd</span> pfb-network-connectivity
-git checkout tags/0.16 -b <span class="m">0</span>.16
+git checkout tags/0.16.1 -b <span class="m">0</span>.16.1
 <span class="nb">cd</span> src/
-<span class="nv">DOCKER_BUILDKIT</span><span class="o">=</span><span class="m">1</span> docker build -t azavea/pfb-network-connectivity:0.16 -f analysis/Dockerfile .
+docker buildx build -t azavea/pfb-network-connectivity:0.16.1 -f analysis/Dockerfile .
 </pre></div>
 </div>
 </section>
