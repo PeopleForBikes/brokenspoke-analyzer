@@ -18,6 +18,9 @@ and this project adheres to
 
 - Updated the analyzer image to 0.16.1. [#52]
 
+[#52]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/52
+[1.1.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.1.0
+
 ## [1.0.0] - 2022-08-14
 
 First stable version.
