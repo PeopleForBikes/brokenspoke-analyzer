@@ -599,7 +599,7 @@ sphinx-basic-ng = "*"
 
 [[package]]
 name = "geopandas"
-version = "0.12.1"
+version = "0.12.2"
 description = "Geographic pandas extensions"
 category = "main"
 optional = false
@@ -2313,7 +2313,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "13d63773fd225456bd843a2d4c6b3bc14b1639b656e2f2eff3a6eec80d4d5559"
+content-hash = "abe65fc48f71db6d08d33c23efc5a48f7e21234681b2e395cde708155ca5ab18"
 
 [metadata.files]
 aiohttp = [
@@ -2949,8 +2949,8 @@ furo = [
     {file = "furo-2022.12.7.tar.gz", hash = "sha256:d8008f8efbe7587a97ba533c8b2df1f9c21ee9b3e5cad0d27f61193d38b1a986"},
 ]
 geopandas = [
-    {file = "geopandas-0.12.1-py3-none-any.whl", hash = "sha256:0cf7f59a7b962bdbee09c1848b1715d1c445d5d27302f219f7f88b4484adef1c"},
-    {file = "geopandas-0.12.1.tar.gz", hash = "sha256:917655f25ee3022809114d833d45969d38afe9f7e5ff2a3b875a85f9bf686819"},
+    {file = "geopandas-0.12.2-py3-none-any.whl", hash = "sha256:0a470e4bf6f5367e6fd83ab6b40405e0b805c8174665bbcb7c4077ed90202912"},
+    {file = "geopandas-0.12.2.tar.gz", hash = "sha256:0acdacddefa176525e4da6d9aeeece225da26055c4becdc6e97cf40fa97c27f4"},
 ]
 greenlet = [
     {file = "greenlet-1.1.2-cp27-cp27m-macosx_10_14_x86_64.whl", hash = "sha256:58df5c2a0e293bf665a51f8a100d3e9956febfbf1d9aaf8c0677cf70218910c6"},
