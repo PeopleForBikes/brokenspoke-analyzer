@@ -17,7 +17,7 @@ python-slugify = "^7.0.0"
 rich = "^12.6.0"
 typer = "^0.7.0"
 us = "^2.0.2"
-osmnx = "^1.2.2"
+osmnx = "^1.2.3"
 
 
 [tool.poetry.dev-dependencies]
