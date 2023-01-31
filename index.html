@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Usage" href="usage.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
@@ -264,8 +264,8 @@ necessary to build it manually, or pull it from an unofficial source.</p>
 <p>There is no official <code class="docutils literal notranslate"><span class="pre">azavea/pfb-network-connectivity</span></code> repository (yet 🤞), but
 it is possible to pull the image from an unofficial one, and rename it to the
 expected name.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker pull rgreinho/pfb-network-connectivity:0.16.1
-docker tag rgreinho/pfb-network-connectivity:0.16.1 azavea/pfb-network-connectivity:0.16.1
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>rgreinho/pfb-network-connectivity:0.16.1
+docker<span class="w"> </span>tag<span class="w"> </span>rgreinho/pfb-network-connectivity:0.16.1<span class="w"> </span>azavea/pfb-network-connectivity:0.16.1
 </pre></div>
 </div>
 </section>
@@ -273,11 +273,11 @@ docker tag rgreinho/pfb-network-connectivity:0.16.1 azavea/pfb-network-connectiv
 <h4>Build the Azavea docker image<a class="headerlink" href="#build-the-azavea-docker-image" title="Permalink to this heading">#</a></h4>
 <p>The official repository does not have tags (yet 🤞), therefore the image must be
 built from a fork.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:azavea/pfb-network-connectivity.git
-<span class="nb">cd</span> pfb-network-connectivity
-git checkout tags/0.16.1 -b <span class="m">0</span>.16.1
-<span class="nb">cd</span> src/
-docker buildx build -t azavea/pfb-network-connectivity:0.16.1 -f analysis/Dockerfile .
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:azavea/pfb-network-connectivity.git
+<span class="nb">cd</span><span class="w"> </span>pfb-network-connectivity
+git<span class="w"> </span>checkout<span class="w"> </span>tags/0.16.1<span class="w"> </span>-b<span class="w"> </span><span class="m">0</span>.16.1
+<span class="nb">cd</span><span class="w"> </span>src/
+docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>azavea/pfb-network-connectivity:0.16.1<span class="w"> </span>-f<span class="w"> </span>analysis/Dockerfile<span class="w"> </span>.
 </pre></div>
 </div>
 </section>
@@ -286,7 +286,7 @@ docker buildx build -t azavea/pfb-network-connectivity:0.16.1 -f analysis/Docker
 <section id="install">
 <h2>Install<a class="headerlink" href="#install" title="Permalink to this heading">#</a></h2>
 <p>Install the tool from GitHub directly:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install git+https://github.com/PeopleForBikes/brokenspoke-analyzer
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/PeopleForBikes/brokenspoke-analyzer
 </pre></div>
 </div>
 <p>This will add a new command named <code class="docutils literal notranslate"><span class="pre">bna</span></code>.</p>
@@ -299,13 +299,13 @@ docker buildx build -t azavea/pfb-network-connectivity:0.16.1 -f analysis/Docker
 <li><p>The name of the city.</p></li>
 </ul>
 <p>Then simply run the tool, and all the steps will be performed automatically:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ bna run arizona flagstaff
-<span class="o">[</span><span class="m">17</span>:00:55<span class="o">]</span> Boundary files ready.
-Downloaded Protobuf data <span class="s1">&#39;arizona-latest.osm.pbf&#39;</span> <span class="o">(</span><span class="m">204</span>.86 MB<span class="o">)</span> to:
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>bna<span class="w"> </span>run<span class="w"> </span>arizona<span class="w"> </span>flagstaff
+<span class="o">[</span><span class="m">17</span>:00:55<span class="o">]</span><span class="w"> </span>Boundary<span class="w"> </span>files<span class="w"> </span>ready.
+Downloaded<span class="w"> </span>Protobuf<span class="w"> </span>data<span class="w"> </span><span class="s1">&#39;arizona-latest.osm.pbf&#39;</span><span class="w"> </span><span class="o">(</span><span class="m">204</span>.86<span class="w"> </span>MB<span class="o">)</span><span class="w"> </span>to:
 <span class="s1">&#39;data/arizona-latest.osm.pbf&#39;</span>
-<span class="o">[</span><span class="m">17</span>:07:21<span class="o">]</span> OSM Region file downloaded.
-           OSM file <span class="k">for</span> flagstaff ready.
-           Analysis <span class="k">for</span> flagstaff complete.
+<span class="o">[</span><span class="m">17</span>:07:21<span class="o">]</span><span class="w"> </span>OSM<span class="w"> </span>Region<span class="w"> </span>file<span class="w"> </span>downloaded.
+<span class="w">           </span>OSM<span class="w"> </span>file<span class="w"> </span><span class="k">for</span><span class="w"> </span>flagstaff<span class="w"> </span>ready.
+<span class="w">           </span>Analysis<span class="w"> </span><span class="k">for</span><span class="w"> </span>flagstaff<span class="w"> </span>complete.
 </pre></div>
 </div>
 </section>
