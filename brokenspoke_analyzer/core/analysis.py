@@ -12,8 +12,10 @@ from osmnx import geocoder
 from slugify import slugify
 from us import states
 
-from brokenspoke_analyzer.core import aiohttphelper
-from brokenspoke_analyzer.core import processhelper
+from brokenspoke_analyzer.core import (
+    aiohttphelper,
+    processhelper,
+)
 
 # WGS 84 / Pseudo-Mercator -- Spherical Mercator.
 # https://epsg.io/3857
@@ -30,7 +32,10 @@ class PolygonFormat(Enum):
 
 async def download_census_file(session, output_dir, state_fips):
     """Download the US Census file for a specific state."""
-    tiger_url = f"https://www2.census.gov/geo/tiger/TIGER2021/PLACE/tl_2021_{state_fips}_place.zip"
+    tiger_url = (
+        "https://www2.census.gov/geo/tiger/TIGER2021/PLACE/"
+        f"tl_2021_{state_fips}_place.zip"
+    )
     tiger_file = output_dir / f"tl_2021_{state_fips}_place.zip"
     await aiohttphelper.download_file(session, tiger_url, tiger_file)
     return tiger_file

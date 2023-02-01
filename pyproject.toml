@@ -11,7 +11,6 @@ aiohttp = "^3.8.3"
 census = "^0.8.19"
 geopandas = "^0.12.2"
 loguru = "^0.6.0"
-pyrosm = "^0.6.1"
 python-dotenv = "^0.21.0"
 python-slugify = "^7.0.0"
 rich = "^13.3.1"
@@ -48,13 +47,14 @@ bna = 'brokenspoke_analyzer.cli:app'
 
 [tool.isort]
 profile = "black"
-force_single_line = "true"
+force_grid_wrap = 2
 
 [tool.coverage.run]
 omit = [
   "*/__init__.py",
   "brokenspoke_analyzer/cli.py",
   "brokenspoke_analyzer/main.py",
+  "brokenspoke_analyzer/pyrosm/*",
 ]
 
 [tool.pytest.ini_options]

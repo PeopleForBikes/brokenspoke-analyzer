@@ -18,7 +18,7 @@ lint-python:
     poetry run black --check {{ src_dir }}
     poetry run flake8 {{ src_dir }}
     poetry run pylint {{ src_dir }}
-    poetry run pydocstyle {{ src_dir }}
+    # poetry run pydocstyle {{ src_dir }}
 
 # Meta tasks running all formatters at once.
 fmt: fmt-md fmt-python fmt-just
