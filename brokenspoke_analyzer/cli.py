@@ -8,11 +8,13 @@ from typing import Optional
 import geopandas as gpd
 import typer
 from loguru import logger
-from pyrosm import get_data
 from rich.console import Console
 
-from brokenspoke_analyzer.core import analysis
-from brokenspoke_analyzer.core import processhelper
+from brokenspoke_analyzer.core import (
+    analysis,
+    processhelper,
+)
+from brokenspoke_analyzer.pyrosm.data import get_data
 
 # Default values
 OutputDir = typer.Argument(

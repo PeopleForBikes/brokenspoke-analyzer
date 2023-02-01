@@ -18,7 +18,8 @@ def run(cmd):
         subprocess.run(cmd, shell=True, check=True, capture_output=True, cwd=None)
     except subprocess.CalledProcessError as cpe:
         print(
-            f'"{cpe.cmd}" failed to execute with error code {cpe.returncode} for the following reason:\n'
+            f'"{cpe.cmd}" failed to execute with error code {cpe.returncode} '
+            "for the following reason:\n"
             f"{cpe.stderr.decode('utf-8')}."
         )
         sys.exit(1)
