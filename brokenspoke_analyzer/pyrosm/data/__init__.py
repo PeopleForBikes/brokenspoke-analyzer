@@ -190,7 +190,8 @@ def get_data(dataset, update=False, directory=None):
     if dataset.replace(" ", "_") in sources._all_sources:
         return retrieve(search_source(dataset.replace(" ", "_")), update, directory)
 
-    # Users might pass country names with dashes instead of underscores (e.g. canary-islands)
+    # Users might pass country names with dashes instead of underscores
+    # (e.g. canary-islands)
     if dataset.replace("-", "_") in sources._all_sources:
         return retrieve(search_source(dataset.replace("-", "_")), update, directory)
 
