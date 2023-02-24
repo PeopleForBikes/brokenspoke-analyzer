@@ -14,11 +14,9 @@ lint-md:
 
 # Lint python files.
 lint-python:
-    poetry run isort . --check
+    poetry run isort --check .
     poetry run black --check {{ src_dir }}
-    poetry run flake8 {{ src_dir }}
-    poetry run pylint {{ src_dir }}
-    # poetry run pydocstyle {{ src_dir }}
+    poetry run ruff check {{ src_dir }}
 
 # Meta tasks running all formatters at once.
 fmt: fmt-md fmt-python fmt-just
@@ -36,6 +34,8 @@ fmt-python:
     poetry run isort .
     poetry run black {{ src_dir }}
     poetry run black examples
+    poetry run ruff check --fix {{ src_dir }}
+    poetry run ruff check --fix examples
 
 # Run the unit tests.
 test *extra_args='':

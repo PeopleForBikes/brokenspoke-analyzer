@@ -29,16 +29,16 @@ async def run_analysis():
     country = "usa"
     state = "arizona"
     city = "flagstaff"
-    osm_relation_id = "110844"
+    # osm_relation_id = "110844"
     # params = await prepare(state, city, osm_relation_id, output_dir)
-    params = await cli._prepare(country, state, city, output_dir)
+    await cli._prepare(country, state, city, output_dir)
     # analyze(state, city, *params)
 
     # Sample 01: state with space
     # Status: Buggy
     state = "new mexico"
     city = "socorro"
-    osm_relation_id = "171289"
+    # osm_relation_id = "171289"
     # params = await prepare(state, city, osm_relation_id, output_dir)
     # analyze(state, city, *params)
 
@@ -46,7 +46,7 @@ async def run_analysis():
     # Duration:  1h46m23s
     state = "texas"
     city = "san marcos"
-    osm_relation_id = "113329"
+    # osm_relation_id = "113329"
     # params = await prepare(state, city, osm_relation_id, output_dir)
     # analyze(state, city, *params)
 
@@ -54,7 +54,7 @@ async def run_analysis():
     # Duration: 3h34m48s
     state = "texas"
     city = "brownsville"
-    osm_relation_id = "115275"
+    # osm_relation_id = "115275"
     # params = await prepare(state, city, osm_relation_id, output_dir)
     # analyze(state, city, *params)
 
@@ -62,7 +62,7 @@ async def run_analysis():
     # Duration:  4h50m48s
     state = "massachusetts"
     city = "cambridge"
-    osm_relation_id = "1933745"
+    # osm_relation_id = "1933745"
     # params = await prepare(state, city, osm_relation_id, output_dir)
     # analyze(state, city, *params)
 
@@ -70,7 +70,7 @@ async def run_analysis():
     # Duration:
     state = "colorado"
     city = "englewood"
-    osm_relation_id = "7243979"
+    # osm_relation_id = "7243979"
     # params = await cli.prepare_no_census(state, city, osm_relation_id, output_dir)
 
 
