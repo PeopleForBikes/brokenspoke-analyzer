@@ -49,7 +49,7 @@ def run_analysis(
         pfb_state = ""
         run_import_jobs = 0
     else:
-        pfb_country = "usa"
+        pfb_country = "USA"
         pfb_state = state_abbrev.lower()
         run_import_jobs = 1
     docker_cmd = " ".join(

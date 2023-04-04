@@ -8,6 +8,12 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix BNA run parameters in case the target is a US city. [#152]
+
+[#152]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/152
+
 ## [1.1.0] - 2022-10-08
 
 ### Fixed
