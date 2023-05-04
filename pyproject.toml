@@ -14,7 +14,7 @@ loguru = "^0.7.0"
 python-dotenv = "^1.0.0"
 python-slugify = "^8.0.1"
 rich = "^13.3.4"
-typer = "^0.7.0"
+typer = "^0.9.0"
 us = "^2.0.2"
 osmnx = "^1.2.3"
 
