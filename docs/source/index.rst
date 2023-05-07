@@ -27,8 +27,3 @@
    code-of-conduct
    CONTRIBUTING
 
-.. toctree::
-   :maxdepth: 1
-   :caption: BNA:
-
-   pfb-network-connectivity

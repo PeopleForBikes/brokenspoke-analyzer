@@ -55,6 +55,9 @@ templates_path = ["_templates"]
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
+# Generate labels for heading anchors for h1, h2, and h3 level headings 
+# (corresponding to #, ##, and ### in markdown).
+myst_heading_anchors = 3
 
 # -- Options for HTML output -------------------------------------------------
 

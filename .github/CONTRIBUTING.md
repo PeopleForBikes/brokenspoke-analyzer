@@ -143,15 +143,15 @@ To develop the BNA, setup a development container by following these steps:
 3. Build the docker image using the `Dockerfile` in your fork by running the
    following from the `src` folder of your fork:
 
-```bash
-   docker buildx build -t azavea/pfb-network-connectivity:0.16.1 -f analysis/Dockerfile .
-```
+   ```bash
+      docker buildx build -t azavea/pfb-network-connectivity:0.16.1 -f analysis/Dockerfile .
+   ```
 
-:::{note}
-You can use any other name besides `azavea/pfb-network-connectivity:0.16.1`
-:::
+   ```{note}
+   You can use any other name besides `azavea/pfb-network-connectivity:0.16.1`
+   ```
 
-1. Rename the built image from step 3, if desired
+4. Rename the built image from step 3, if desired:
 
 ```bash
    docker tag azavea/pfb-network-connectivity:0.16.1 your_username/bna:0.0
