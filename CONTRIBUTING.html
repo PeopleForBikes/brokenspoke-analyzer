@@ -10,6 +10,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -257,10 +258,19 @@ Refer to them for general principles.</p>
 <li><p><a class="reference external" href="https://github.com/casey/just">Just</a> (See the “Administration tasks” section for details)</p></li>
 <li><p><a class="reference external" href="https://python-poetry.org/">Poetry</a></p></li>
 <li><p><a class="reference external" href="https://www.python.org/downloads/">Python</a> 3.10+</p></li>
+<li><p><a class="reference external" href="https://www.docker.com/get-started/">Docker</a></p></li>
+<li><p><a class="reference external" href="https://osmcode.org/osmium-tool/">Osmium</a></p></li>
 </ul>
 </section>
 <section id="setup">
 <h3>Setup<a class="headerlink" href="#setup" title="Permalink to this heading">#</a></h3>
+<p>Fork <a class="reference external" href="https://github.com/PeopleForBikes/brokenspoke-analyzer">brokenspoke-analyzer</a>
+into your account. Clone your fork for local development:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:your_username/brokenspoke-analyzer.git
+</pre></div>
+</div>
+<p>Then <code class="docutils literal notranslate"><span class="pre">cd</span></code> into <code class="docutils literal notranslate"><span class="pre">brokenspoke-analyzer</span></code>, and to setup the project and install
+dependencies, run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>install
 </pre></div>
 </div>
@@ -278,10 +288,120 @@ Refer to them for general principles.</p>
 <section id="administration-tasks">
 <h2>Administration tasks<a class="headerlink" href="#administration-tasks" title="Permalink to this heading">#</a></h2>
 <p>Administration tasks are being provided as convenience in a <code class="docutils literal notranslate"><span class="pre">justfile</span></code>.</p>
-<p>More information about <a class="reference external" href="https://github.com/casey/just">Just</a> can be find in their repository. The
+<p>More information about <a class="reference external" href="https://github.com/casey/just">Just</a> can be found in their repository. The
 <a class="reference external" href="https://github.com/casey/just#installation">installation</a> section of their
 documentation will guide you through the setup process.</p>
 <p>Run <code class="docutils literal notranslate"><span class="pre">just</span> <span class="pre">-l</span></code> to see the list of provided tasks.</p>
+</section>
+<section id="pfb-bicycle-network-analysis">
+<h2>PFB Bicycle Network Analysis<a class="headerlink" href="#pfb-bicycle-network-analysis" title="Permalink to this heading">#</a></h2>
+<p>The <a class="reference external" href="https://github.com/azavea/pfb-network-connectivity/tree/develop/src/analysis">Bicycle Network Analysis (BNA)</a>
+is a data analysis tool that measures how well
+bike networks connect people with the places they want to go. It is
+implemented in <a class="reference external" href="https://www.postgresql.org/">PostgreSQL</a> using
+the <a class="reference external" href="https://postgis.net/">PostGIS</a> spatial extension. As shown below, a
+series of shell
+scripts, running inside a <a class="reference external" href="https://www.docker.com/get-started/">Docker</a> container, are used to build the database and
+run the analysis.</p>
+<section id="script-organization-of-the-bna">
+<h3>Script organization of the BNA<a class="headerlink" href="#script-organization-of-the-bna" title="Permalink to this heading">#</a></h3>
+<p>The figure below shows where each shell script is called from.</p>
+<div class="graphviz"><img src="_images/graphviz-fdbd7d671fb91610894cde16781b720a53133ed4.png" alt="digraph {
+bgcolor=&quot;#fcfaf6&quot;;
+node [shape=&quot;box&quot;, style=&quot;rounded&quot;];
+{rank = same; &quot;entrypoint.sh&quot;}
+{rank = same; &quot;run_analysis.sh&quot;}
+{rank = same; &quot;import.sh&quot; &quot;run_connectivity.sh&quot; &quot;export_connectivity.sh&quot;}
+{rank = same; &quot;import/import_neighborhood.sh&quot; &quot;import/import_jobs.sh&quot; &quot;import/import_osm.sh&quot;}
+{rank = same; &quot;prepare_tables.sql&quot; &quot;clip_osm.sql&quot; &quot;features/*.sql&quot; &quot;stress/*.sql&quot;}
+{rank = same; &quot;connectivity/destinations/*.sql&quot; &quot;connectivity/*.sql&quot;}
+&quot;entrypoint.sh&quot; -&gt; &quot;run_analysis.sh&quot;;
+&quot;run_analysis.sh&quot; -&gt; &quot;import.sh&quot;;
+&quot;run_analysis.sh&quot; -&gt; &quot;run_connectivity.sh&quot;;
+&quot;run_analysis.sh&quot; -&gt; &quot;export_connectivity.sh&quot;;
+&quot;import.sh&quot; -&gt; &quot;import/import_neighborhood.sh&quot;;
+&quot;import.sh&quot; -&gt; &quot;import/import_jobs.sh&quot;;
+&quot;import.sh&quot; -&gt; &quot;import/import_osm.sh&quot;;
+&quot;import/import_osm.sh&quot; -&gt; &quot;prepare_tables.sql&quot;;
+&quot;import/import_osm.sh&quot; -&gt; &quot;clip_osm.sql&quot;;
+&quot;import/import_osm.sh&quot; -&gt; &quot;features/*.sql&quot;;
+&quot;import/import_osm.sh&quot; -&gt; &quot;stress/*.sql&quot;;
+&quot;run_connectivity.sh&quot; -&gt; &quot;connectivity/destinations/*.sql&quot;;
+&quot;run_connectivity.sh&quot; -&gt; &quot;connectivity/*.sql&quot;;
+}" class="graphviz" /></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The PostgreSQL Docker image will automatically run scripts found in <code class="docutils literal notranslate"><span class="pre">/docker-entrypoint-initdb.d/</span></code>. So
+<code class="docutils literal notranslate"><span class="pre">setup_database.sh</span></code>, which is not shown in the figure above, will run automatically.</p>
+</div>
+</section>
+<section id="control-flow-of-the-bna">
+<h3>Control flow of the BNA<a class="headerlink" href="#control-flow-of-the-bna" title="Permalink to this heading">#</a></h3>
+<p>The figure below shows the order in which the shell scripts are run.</p>
+<div class="graphviz"><img src="_images/graphviz-a82104d9e83cf47b89159ea4f48b1f958a0ba5d3.png" alt="digraph {
+bgcolor=&quot;#fcfaf6&quot;;
+node [shape=&quot;box&quot;, style=&quot;rounded&quot;];
+{rank = same; &quot;entrypoint.sh&quot; &quot;run_analysis.sh&quot; &quot;import.sh&quot;}
+{rank = same; &quot;import/import_neighborhood.sh&quot; &quot;import/import_jobs.sh&quot; &quot;import/import_osm.sh&quot;}
+{rank = same; &quot;prepare_tables.sql&quot; &quot;clip_osm.sql&quot; &quot;features/*.sql&quot; &quot;stress/*.sql&quot;}
+{rank = same; &quot;run_connectivity.sh&quot; &quot;connectivity/destinations/*.sql&quot; &quot;connectivity/*.sql&quot; &quot;export_connectivity.sh&quot;}
+&quot;entrypoint.sh&quot; -&gt; &quot;run_analysis.sh&quot; -&gt; &quot;import.sh&quot;;
+&quot;import.sh&quot; -&gt; &quot;import/import_neighborhood.sh&quot; -&gt; &quot;import/import_jobs.sh&quot; -&gt; &quot;import/import_osm.sh&quot;;
+&quot;import/import_osm.sh&quot; -&gt; &quot;prepare_tables.sql&quot; -&gt; &quot;clip_osm.sql&quot; -&gt; &quot;features/*.sql&quot; -&gt; &quot;stress/*.sql&quot;;
+&quot;stress/*.sql&quot; -&gt; &quot;run_connectivity.sh&quot; -&gt; &quot;connectivity/destinations/*.sql&quot; -&gt; &quot;connectivity/*.sql&quot; -&gt; &quot;export_connectivity.sh&quot;;
+&quot;entrypoint.sh&quot; -&gt; &quot;import/import_neighborhood.sh&quot; [style=invis];
+&quot;import/import_neighborhood.sh&quot; -&gt; &quot;prepare_tables.sql&quot; [style=invis];
+&quot;prepare_tables.sql&quot; -&gt; &quot;run_connectivity.sh&quot; [style=invis];
+}" class="graphviz" /></div>
+</section>
+<section id="bna-container-setup-for-development">
+<h3>BNA container setup for development<a class="headerlink" href="#bna-container-setup-for-development" title="Permalink to this heading">#</a></h3>
+<p>To develop the BNA, setup a development container by following these steps:</p>
+<ol class="arabic">
+<li><p>Fork the <a class="reference external" href="https://github.com/azavea/pfb-network-connectivity">azavea/pfb-network-connectivity</a>
+repository.</p></li>
+<li><p>Do SQL/Shell development on your fork. For more details on
+which SQL/Shell files implement the BNA see <a class="reference internal" href="#control-flow-of-the-bna">Control flow of the BNA</a>.</p></li>
+<li><p>Build the docker image using the <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> in your fork by running the
+following from the <code class="docutils literal notranslate"><span class="pre">src</span></code> folder of your fork:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">   </span>docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>azavea/pfb-network-connectivity:0.16.1<span class="w"> </span>-f<span class="w"> </span>analysis/Dockerfile<span class="w"> </span>.
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can use any other name besides <code class="docutils literal notranslate"><span class="pre">azavea/pfb-network-connectivity:0.16.1</span></code></p>
+</div>
+</li>
+<li><p>Rename the built image from step 3, if desired:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">   </span>docker<span class="w"> </span>tag<span class="w"> </span>azavea/pfb-network-connectivity:0.16.1<span class="w"> </span>your_username/bna:0.0
+</pre></div>
+</div>
+</section>
+<section id="running-the-bna-using-brokenspoke-analyzer">
+<h3>Running the BNA using Brokenspoke-analyzer<a class="headerlink" href="#running-the-bna-using-brokenspoke-analyzer" title="Permalink to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">brokenspoke-analyzer</span></code> can be run using the <code class="docutils literal notranslate"><span class="pre">bna</span></code> script defined in
+<code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> or by
+activating the virtual environment that was created by <a class="reference external" href="https://python-poetry.org/">Poetry</a> inside the
+project (given the poetry config file, <code class="docutils literal notranslate"><span class="pre">poetry.toml</span></code>)
+and running the cli commands. To run the modified BNA for a city in the US, for
+example Flagstaff, AZ, using the <code class="docutils literal notranslate"><span class="pre">bna</span></code> script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span>run<span class="w"> </span>arizona<span class="w"> </span>flagstaff
+</pre></div>
+</div>
+<p>To run using the virtual environment, activate the virtual environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>shell
+</pre></div>
+</div>
+<p>Then run any of the cli commands, for example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>main.py<span class="w"> </span>run<span class="w"> </span>arizona<span class="w"> </span>flagstaff
+</pre></div>
+</div>
+<p>To exit the virtual environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">exit</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -348,6 +468,13 @@ documentation will guide you through the setup process.</p>
 </li>
 <li><a class="reference internal" href="#serving-the-documentation-site">Serving the documentation site</a></li>
 <li><a class="reference internal" href="#administration-tasks">Administration tasks</a></li>
+<li><a class="reference internal" href="#pfb-bicycle-network-analysis">PFB Bicycle Network Analysis</a><ul>
+<li><a class="reference internal" href="#script-organization-of-the-bna">Script organization of the BNA</a></li>
+<li><a class="reference internal" href="#control-flow-of-the-bna">Control flow of the BNA</a></li>
+<li><a class="reference internal" href="#bna-container-setup-for-development">BNA container setup for development</a></li>
+<li><a class="reference internal" href="#running-the-bna-using-brokenspoke-analyzer">Running the BNA using Brokenspoke-analyzer</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
