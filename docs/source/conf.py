@@ -31,10 +31,9 @@ release = metadata.version(package)
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["myst_parser", "sphinx_copybutton", "sphinx.ext.githubpages"]
+extensions = ["myst_parser", "sphinx_copybutton", "sphinx.ext.githubpages", 'sphinx.ext.graphviz']
 myst_enable_extensions = [
     "amsmath",
-    "colon_fence",
     "deflist",
     "dollarmath",
     "fieldlist",
@@ -56,6 +55,9 @@ templates_path = ["_templates"]
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
+# Generate labels for heading anchors for h1, h2, and h3 level headings 
+# (corresponding to #, ##, and ### in markdown).
+myst_heading_anchors = 3
 
 # -- Options for HTML output -------------------------------------------------
 
