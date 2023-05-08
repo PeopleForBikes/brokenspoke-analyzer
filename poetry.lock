@@ -483,13 +483,14 @@ watch = ["watchdog"]
 
 [[package]]
 name = "census"
-version = "0.8.19"
+version = "0.8.20"
 description = "A wrapper for the US Census Bureau's API"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "census-0.8.19-py3-none-any.whl", hash = "sha256:07341123fcbffad5fef613320a4dce05139050f0c2b2e6963d254e5973258eae"},
+    {file = "census-0.8.20-py3-none-any.whl", hash = "sha256:55fcbce31393548688cb3b9357e3e2deaa9a619a133316d620c4dd58722016fb"},
+    {file = "census-0.8.20.tar.gz", hash = "sha256:88b6469bb5ad72968dc1032ffe9eb3730f4a258485cd6d9dd388e2355653a712"},
 ]
 
 [package.dependencies]
@@ -4361,4 +4362,4 @@ test = ["mypy", "pre-commit", "pytest", "pytest-asyncio", "websockets (>=10.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "cd4957176b325410e9269dc0de220d9a2c99c2056d4e66e7d026effd3ae708c4"
+content-hash = "c0e4b33de83b0803cb016a2285bda275840b984c092ec772cbdbd1adc7ea0210"
