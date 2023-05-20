@@ -27,7 +27,7 @@ OutputDir = typer.Argument(
     resolve_path=True,
 )
 DockerImage = typer.Option(
-    "azavea/pfb-network-connectivity:0.16.1", help="override the BNA Docker image"
+    "azavea/pfb-network-connectivity:0.18.0", help="override the BNA Docker image"
 )
 SpeedLimit = typer.Option(50, help="override the default speed limit (in km/h)")
 BlockSize = typer.Option(

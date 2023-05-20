@@ -21,26 +21,26 @@ necessary to build it manually, or pull it from an unofficial source.
 
 #### Pull the image from an unofficial repository
 
-There is no official `azavea/pfb-network-connectivity` repository (yet 🤞), but
-it is possible to pull the image from an unofficial one, and rename it to the
-expected name.
+There is no official `azavea/pfb-network-connectivity` docker repository (yet
+🤞), but it is possible to pull the image from an unofficial one, and rename it
+to the expected name. Please note that this image was built for the
+`linux/amd64` platform.
 
 ```bash
-docker pull rgreinho/pfb-network-connectivity:0.16.1
-docker tag rgreinho/pfb-network-connectivity:0.16.1 azavea/pfb-network-connectivity:0.16.1
+docker pull rgreinho/pfb-network-connectivity:0.18.0
+docker tag rgreinho/pfb-network-connectivity:0.18.0 azavea/pfb-network-connectivity:0.18.0
 ```
 
 #### Build the Azavea docker image
 
-The official repository does not have tags (yet 🤞), therefore the image must be
-built from a fork.
+Build the docker image from the latest tag.
 
 ```bash
 git clone git@github.com:azavea/pfb-network-connectivity.git
 cd pfb-network-connectivity
-git checkout tags/0.16.1 -b 0.16.1
+git checkout tags/0.18.0 -b 0.18.0
 cd src/
-docker buildx build -t azavea/pfb-network-connectivity:0.16.1 -f analysis/Dockerfile .
+docker buildx build -t azavea/pfb-network-connectivity:0.18.0 -f analysis/Dockerfile .
 ```
 
 ## Install

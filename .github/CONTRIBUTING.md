@@ -20,7 +20,8 @@ Specific instructions will be described in other sections on this page.
 
 ### Setup
 
-Fork [brokenspoke-analyzer](https://github.com/PeopleForBikes/brokenspoke-analyzer)
+Fork
+[brokenspoke-analyzer](https://github.com/PeopleForBikes/brokenspoke-analyzer)
 into your account. Clone your fork for local development:
 
 ```bash
@@ -64,14 +65,14 @@ Run `just -l` to see the list of provided tasks.
 
 ## PFB Bicycle Network Analysis
 
-The [Bicycle Network Analysis (BNA)](https://github.com/azavea/pfb-network-connectivity/tree/develop/src/analysis)
-is a data analysis tool that measures how well
-bike networks connect people with the places they want to go. It is
-implemented in [PostgreSQL](https://www.postgresql.org/) using
-the [PostGIS](https://postgis.net/) spatial extension. As shown below, a
-series of shell
-scripts, running inside a [Docker] container, are used to build the database and
-run the analysis.
+The
+[Bicycle Network Analysis (BNA)](https://github.com/azavea/pfb-network-connectivity/tree/develop/src/analysis)
+is a data analysis tool that measures how well bike networks connect people with
+the places they want to go. It is implemented in
+[PostgreSQL](https://www.postgresql.org/) using the
+[PostGIS](https://postgis.net/) spatial extension. As shown below, a series of
+shell scripts, running inside a [Docker] container, are used to build the
+database and run the analysis.
 
 ### Script organization of the BNA
 
@@ -134,11 +135,13 @@ node [shape="box", style="rounded"];
 
 To develop the BNA, setup a development container by following these steps:
 
-1. Fork the [azavea/pfb-network-connectivity](https://github.com/azavea/pfb-network-connectivity)
+1. Fork the
+   [azavea/pfb-network-connectivity](https://github.com/azavea/pfb-network-connectivity)
    repository.
 
-2. Do SQL/Shell development on your fork. For more details on
-   which SQL/Shell files implement the BNA see [Control flow of the BNA](#control-flow-of-the-bna).
+2. Do SQL/Shell development on your fork. For more details on which SQL/Shell
+   files implement the BNA see
+   [Control flow of the BNA](#control-flow-of-the-bna).
 
 3. Build the docker image using the `Dockerfile` in your fork by running the
    following from the `src` folder of your fork:
@@ -160,10 +163,9 @@ To develop the BNA, setup a development container by following these steps:
 ### Running the BNA using Brokenspoke-analyzer
 
 The `brokenspoke-analyzer` can be run using the `bna` script defined in
-`pyproject.toml` or by
-activating the virtual environment that was created by [Poetry] inside the
-project (given the poetry config file, `poetry.toml`)
-and running the cli commands. To run the modified BNA for a city in the US, for
+`pyproject.toml` or by activating the virtual environment that was created by
+[Poetry] inside the project (given the poetry config file, `poetry.toml`) and
+running the cli commands. To run the modified BNA for a city in the US, for
 example Flagstaff, AZ, using the `bna` script:
 
 ```bash
