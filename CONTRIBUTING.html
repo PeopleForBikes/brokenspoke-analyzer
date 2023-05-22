@@ -264,7 +264,8 @@ Refer to them for general principles.</p>
 </section>
 <section id="setup">
 <h3>Setup<a class="headerlink" href="#setup" title="Permalink to this heading">#</a></h3>
-<p>Fork <a class="reference external" href="https://github.com/PeopleForBikes/brokenspoke-analyzer">brokenspoke-analyzer</a>
+<p>Fork
+<a class="reference external" href="https://github.com/PeopleForBikes/brokenspoke-analyzer">brokenspoke-analyzer</a>
 into your account. Clone your fork for local development:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:your_username/brokenspoke-analyzer.git
 </pre></div>
@@ -295,14 +296,14 @@ documentation will guide you through the setup process.</p>
 </section>
 <section id="pfb-bicycle-network-analysis">
 <h2>PFB Bicycle Network Analysis<a class="headerlink" href="#pfb-bicycle-network-analysis" title="Permalink to this heading">#</a></h2>
-<p>The <a class="reference external" href="https://github.com/azavea/pfb-network-connectivity/tree/develop/src/analysis">Bicycle Network Analysis (BNA)</a>
-is a data analysis tool that measures how well
-bike networks connect people with the places they want to go. It is
-implemented in <a class="reference external" href="https://www.postgresql.org/">PostgreSQL</a> using
-the <a class="reference external" href="https://postgis.net/">PostGIS</a> spatial extension. As shown below, a
-series of shell
-scripts, running inside a <a class="reference external" href="https://www.docker.com/get-started/">Docker</a> container, are used to build the database and
-run the analysis.</p>
+<p>The
+<a class="reference external" href="https://github.com/azavea/pfb-network-connectivity/tree/develop/src/analysis">Bicycle Network Analysis (BNA)</a>
+is a data analysis tool that measures how well bike networks connect people with
+the places they want to go. It is implemented in
+<a class="reference external" href="https://www.postgresql.org/">PostgreSQL</a> using the
+<a class="reference external" href="https://postgis.net/">PostGIS</a> spatial extension. As shown below, a series of
+shell scripts, running inside a <a class="reference external" href="https://www.docker.com/get-started/">Docker</a> container, are used to build the
+database and run the analysis.</p>
 <section id="script-organization-of-the-bna">
 <h3>Script organization of the BNA<a class="headerlink" href="#script-organization-of-the-bna" title="Permalink to this heading">#</a></h3>
 <p>The figure below shows where each shell script is called from.</p>
@@ -358,10 +359,12 @@ node [shape=&quot;box&quot;, style=&quot;rounded&quot;];
 <h3>BNA container setup for development<a class="headerlink" href="#bna-container-setup-for-development" title="Permalink to this heading">#</a></h3>
 <p>To develop the BNA, setup a development container by following these steps:</p>
 <ol class="arabic">
-<li><p>Fork the <a class="reference external" href="https://github.com/azavea/pfb-network-connectivity">azavea/pfb-network-connectivity</a>
+<li><p>Fork the
+<a class="reference external" href="https://github.com/azavea/pfb-network-connectivity">azavea/pfb-network-connectivity</a>
 repository.</p></li>
-<li><p>Do SQL/Shell development on your fork. For more details on
-which SQL/Shell files implement the BNA see <a class="reference internal" href="#control-flow-of-the-bna">Control flow of the BNA</a>.</p></li>
+<li><p>Do SQL/Shell development on your fork. For more details on which SQL/Shell
+files implement the BNA see
+<a class="reference internal" href="#control-flow-of-the-bna">Control flow of the BNA</a>.</p></li>
 <li><p>Build the docker image using the <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> in your fork by running the
 following from the <code class="docutils literal notranslate"><span class="pre">src</span></code> folder of your fork:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">   </span>docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>azavea/pfb-network-connectivity:0.16.1<span class="w"> </span>-f<span class="w"> </span>analysis/Dockerfile<span class="w"> </span>.
@@ -381,10 +384,9 @@ following from the <code class="docutils literal notranslate"><span class="pre">
 <section id="running-the-bna-using-brokenspoke-analyzer">
 <h3>Running the BNA using Brokenspoke-analyzer<a class="headerlink" href="#running-the-bna-using-brokenspoke-analyzer" title="Permalink to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">brokenspoke-analyzer</span></code> can be run using the <code class="docutils literal notranslate"><span class="pre">bna</span></code> script defined in
-<code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> or by
-activating the virtual environment that was created by <a class="reference external" href="https://python-poetry.org/">Poetry</a> inside the
-project (given the poetry config file, <code class="docutils literal notranslate"><span class="pre">poetry.toml</span></code>)
-and running the cli commands. To run the modified BNA for a city in the US, for
+<code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> or by activating the virtual environment that was created by
+<a class="reference external" href="https://python-poetry.org/">Poetry</a> inside the project (given the poetry config file, <code class="docutils literal notranslate"><span class="pre">poetry.toml</span></code>) and
+running the cli commands. To run the modified BNA for a city in the US, for
 example Flagstaff, AZ, using the <code class="docutils literal notranslate"><span class="pre">bna</span></code> script:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span>run<span class="w"> </span>arizona<span class="w"> </span>flagstaff
 </pre></div>

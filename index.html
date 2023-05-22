@@ -262,23 +262,23 @@ analysis. There is no Image directly available at the time, thus it will be
 necessary to build it manually, or pull it from an unofficial source.</p>
 <section id="pull-the-image-from-an-unofficial-repository">
 <h4>Pull the image from an unofficial repository<a class="headerlink" href="#pull-the-image-from-an-unofficial-repository" title="Permalink to this heading">#</a></h4>
-<p>There is no official <code class="docutils literal notranslate"><span class="pre">azavea/pfb-network-connectivity</span></code> repository (yet 🤞), but
-it is possible to pull the image from an unofficial one, and rename it to the
-expected name.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>rgreinho/pfb-network-connectivity:0.16.1
-docker<span class="w"> </span>tag<span class="w"> </span>rgreinho/pfb-network-connectivity:0.16.1<span class="w"> </span>azavea/pfb-network-connectivity:0.16.1
+<p>There is no official <code class="docutils literal notranslate"><span class="pre">azavea/pfb-network-connectivity</span></code> docker repository (yet
+🤞), but it is possible to pull the image from an unofficial one, and rename it
+to the expected name. Please note that this image was built for the
+<code class="docutils literal notranslate"><span class="pre">linux/amd64</span></code> platform.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>rgreinho/pfb-network-connectivity:0.18.0
+docker<span class="w"> </span>tag<span class="w"> </span>rgreinho/pfb-network-connectivity:0.18.0<span class="w"> </span>azavea/pfb-network-connectivity:0.18.0
 </pre></div>
 </div>
 </section>
 <section id="build-the-azavea-docker-image">
 <h4>Build the Azavea docker image<a class="headerlink" href="#build-the-azavea-docker-image" title="Permalink to this heading">#</a></h4>
-<p>The official repository does not have tags (yet 🤞), therefore the image must be
-built from a fork.</p>
+<p>Build the docker image from the latest tag.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:azavea/pfb-network-connectivity.git
 <span class="nb">cd</span><span class="w"> </span>pfb-network-connectivity
-git<span class="w"> </span>checkout<span class="w"> </span>tags/0.16.1<span class="w"> </span>-b<span class="w"> </span><span class="m">0</span>.16.1
+git<span class="w"> </span>checkout<span class="w"> </span>tags/0.18.0<span class="w"> </span>-b<span class="w"> </span><span class="m">0</span>.18.0
 <span class="nb">cd</span><span class="w"> </span>src/
-docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>azavea/pfb-network-connectivity:0.16.1<span class="w"> </span>-f<span class="w"> </span>analysis/Dockerfile<span class="w"> </span>.
+docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>azavea/pfb-network-connectivity:0.18.0<span class="w"> </span>-f<span class="w"> </span>analysis/Dockerfile<span class="w"> </span>.
 </pre></div>
 </div>
 </section>
