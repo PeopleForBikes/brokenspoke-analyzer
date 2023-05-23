@@ -1249,20 +1249,20 @@ files = [
 
 [[package]]
 name = "furo"
-version = "2023.3.27"
+version = "2023.5.20"
 description = "A clean customisable Sphinx documentation theme."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "furo-2023.3.27-py3-none-any.whl", hash = "sha256:4ab2be254a2d5e52792d0ca793a12c35582dd09897228a6dd47885dabd5c9521"},
-    {file = "furo-2023.3.27.tar.gz", hash = "sha256:b99e7867a5cc833b2b34d7230631dd6558c7a29f93071fdbb5709634bb33c5a5"},
+    {file = "furo-2023.5.20-py3-none-any.whl", hash = "sha256:594a8436ddfe0c071f3a9e9a209c314a219d8341f3f1af33fdf7c69544fab9e6"},
+    {file = "furo-2023.5.20.tar.gz", hash = "sha256:40e09fa17c6f4b22419d122e933089226dcdb59747b5b6c79363089827dea16f"},
 ]
 
 [package.dependencies]
 beautifulsoup4 = "*"
 pygments = ">=2.7"
-sphinx = ">=5.0,<7.0"
+sphinx = ">=6.0,<8.0"
 sphinx-basic-ng = "*"
 
 [[package]]
@@ -4133,4 +4133,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "bb4230fde6af557e272b68cb4d832a24140650de286c08b8870695aea948521f"
+content-hash = "45073c6cdea6e8bb689c40bab9a132ee938495035892133ce618899c6ab8bad3"
