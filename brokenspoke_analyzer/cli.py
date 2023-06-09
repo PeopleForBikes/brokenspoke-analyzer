@@ -5,6 +5,7 @@ import pathlib
 import sys
 from typing import Optional
 
+import aiohttp
 import geopandas as gpd
 import typer
 from loguru import logger
@@ -17,7 +18,7 @@ from brokenspoke_analyzer.core import (
 from brokenspoke_analyzer.pyrosm.data import get_data
 
 # Default values
-OutputDir = typer.Argument(
+OutputDir = typer.Option(
     default="./data",
     exists=False,
     file_okay=False,
@@ -186,7 +187,7 @@ async def prepare_(
 
     # Download the OSM region file.
     with console.status("[bold green]Downloading the OSM region file..."):
-        dataset = ", ".join(filter(None, [country, state]))
+        dataset = state if state else country
         region_file_path = get_data(dataset, directory=output_dir)
         console.log("OSM Region file downloaded.")
 
@@ -211,7 +212,7 @@ async def prepare_(
                 processhelper.NON_US_STATE_FIPS,
             )
 
-    # For non-US cities:
+    # Perform some specific operations for non-US cities.
     if state_fips == processhelper.NON_US_STATE_FIPS:
         # Create synthetic population.
         with console.status("[bold green]Prepare synthetic population..."):
@@ -231,6 +232,40 @@ async def prepare_(
         with console.status("[bold green]Adjust default speed limit..."):
             analysis.change_speed_limit(output_dir, city, state_abbrev, speed_limit)
             console.log(f"Default speed limit adjusted to {speed_limit} km/h.")
+    else:
+        async with aiohttp.ClientSession() as session:
+            lodes_year = 2019
+            with console.status(
+                f"[bold green]Fetching {lodes_year} US employment data..."
+            ):
+                await analysis.download_lodes_data(
+                    session,
+                    output_dir,
+                    state_abbrev,
+                    "main",
+                    lodes_year,
+                )
+                await analysis.download_lodes_data(
+                    session,
+                    output_dir,
+                    state_abbrev,
+                    "aux",
+                    lodes_year,
+                )
+
+            with console.status("[bold green]Fetching US census waterblocks..."):
+                await analysis.download_census_waterblocks(session, output_dir)
+
+            with console.status("[bold green]Fetching 2010 US census blocks..."):
+                await analysis.download_2010_census_blocks(
+                    session, output_dir, state_fips
+                )
+
+            with console.status("[bold green]Fetching US state speed limits..."):
+                await analysis.download_state_speed_limits(session, output_dir)
+
+            with console.status("[bold green]Fetching US city speed limits..."):
+                await analysis.download_city_speed_limits(session, output_dir)
 
     # Return the parameters required to perform the analysis.
     # pylint: disable=duplicate-code

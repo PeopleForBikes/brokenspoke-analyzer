@@ -1,4 +1,5 @@
 """Define functions used to perform an analysis."""
+import gzip
 import random
 import string
 import zipfile
@@ -23,7 +24,7 @@ PSEUDO_MERCATOR_CRS = "EPSG:3857"
 
 
 class PolygonFormat(Enum):
-    """Represent tha available polygon formats from polygons.openstreetmap.fr."""
+    """Represent the available polygon formats from polygons.openstreetmap.fr."""
 
     WKT = "get_wkt.py"
     GEOJSON = "get_geojson.py"
@@ -224,3 +225,141 @@ def simulate_census_blocks(output, slug, synthetic_population):
     with zipfile.ZipFile(synthetic_population_zip, "w") as z:
         for f in output.glob(f"{city_tabblock}.*"):
             z.write(f, arcname=f"{tabblock}{f.suffix}")
+
+
+async def download_lodes_data(session, output_dir, state, part, year):
+    """
+    Download employment data from the US census website: https://lehd.ces.census.gov/.
+
+    LODES stands for LEHD Origin-Destination Employment Statistics.
+
+    OD means Origin-Data, which represents the jobs that are associated with
+    both a home census block and a work census block.
+
+    The filename has the folowing format: `[ST]_od_[PART]_[TYPE]_[YEAR].csv.gz`,
+    where:
+    - [ST] = lowercase, 2-letter postal code for a chosen state
+    - [PART] = Part of the state file, can have a value of either "main" or
+        "aux".
+        Complimentary parts of the state file, the main part includes jobs with
+        both workplace and residence in the state and the aux part includes jobs
+        with the workplace in the state and the residence outside of the state.
+    - [TYPE] = Job Type, can have a value of "JTOO" for All Jobs, "JT01" for
+        Primary Jobs, "JT02" for All Private Jobs, "JT03" for Private Primary
+        Jobs, "JT04" for All Federal Jobs, or "JT05" for Federal Primary Jobs.
+    - [YEAR] = Year of job data. Can have the value of 2002-2020 for most
+        states.
+
+    As an example, the main OD file of Primary Jobs in 2007 for California would
+    be the file: `ca_od_main_JTO1_2007.csv.gz`.
+
+    More information about the formast can be found on the website:
+    https://lehd.ces.census.gov/data/#lodes.
+    """
+    lehd_url = f"http://lehd.ces.census.gov/data/lodes/LODES7/{state.lower()}/od/"
+    lehd_filename = f"{state.lower()}_od_{part.lower()}_JT00_{year}.csv.gz"
+    gzipped_lehd_file = output_dir / lehd_filename
+    decompressed_lefh_file = output_dir / gzipped_lehd_file.stem
+
+    # Skip the download if the target file already exists.
+    if decompressed_lefh_file.exists():
+        return
+
+    # Download the file.
+    await aiohttphelper.download_file(
+        session, f"{lehd_url}/{lehd_filename}", gzipped_lehd_file
+    )
+
+    # Decompress it.
+    gunzip(gzipped_lehd_file, decompressed_lefh_file)
+
+
+async def download_census_waterblocks(session, output_dir):
+    """Download the census waterblocks."""
+    waterblock_url = (
+        "https://s3.amazonaws.com/pfb-public-documents/censuswaterblocks.zip"
+    )
+    zipped_waterblock_file = output_dir / "censuswaterblocks.zip"
+    decompressed_waterblock_file = output_dir / "censuswaterblocks.csv"
+
+    # Skip the download if the target file already exists.
+    if decompressed_waterblock_file.exists():
+        return
+
+    # Download the file.
+    await aiohttphelper.download_file(session, waterblock_url, zipped_waterblock_file)
+
+    # Unzip it.
+    unzip(zipped_waterblock_file, output_dir)
+
+
+async def download_2010_census_blocks(session, output_dir, fips):
+    """Download a 2010 census tabulation block code for a specific state."""
+    tabblk2010_url = "http://www2.census.gov/geo/tiger/TIGER2010BLKPOPHU/"
+    tabblk2010_filename = f"tabblock2010_{fips}_pophu.zip"
+    tabblk2010_file = output_dir / tabblk2010_filename
+    population_file = output_dir / "population.shp"
+
+    # Skip the download if the target file already exists.
+    if population_file.exists():
+        return
+
+    # Download the file.
+    await aiohttphelper.download_file(
+        session, f"{tabblk2010_url}/{tabblk2010_filename}", tabblk2010_file
+    )
+
+    # Unzip it.
+    unzip(tabblk2010_file, output_dir)
+
+    # Rename the tabulation block files to "population".
+    tabblk2010_files = output_dir.glob(f"{tabblk2010_file.stem}.*")
+    for file in tabblk2010_files:
+        file.rename(output_dir / f"population{file.suffix}")
+
+
+async def download_state_speed_limits(session, output_dir):
+    """Download the state speed limits."""
+    state_speed_filename = "state_fips_speed.csv"
+    state_speed_url = (
+        f"https://s3.amazonaws.com/pfb-public-documents/{state_speed_filename}"
+    )
+    state_speed_file = output_dir / state_speed_filename
+
+    # Download the file.
+    await aiohttphelper.download_file(session, state_speed_url, state_speed_file)
+
+
+async def download_city_speed_limits(session, output_dir):
+    """Download the city speed limits."""
+    city_speed_filename = "city_fips_speed.csv"
+    city_speed_url = (
+        f"https://s3.amazonaws.com/pfb-public-documents/{city_speed_filename}"
+    )
+    city_speed_file = output_dir / city_speed_filename
+
+    # Download the file.
+    await aiohttphelper.download_file(session, city_speed_url, city_speed_file)
+
+
+def unzip(zip_file, output_dir, delete_after=True):
+    """Unzip an archive into a specific directory."""
+    # Decompress it.
+    with zipfile.ZipFile(zip_file) as zipped:
+        zipped.extractall(output_dir)
+
+    # Delete the archive.
+    if delete_after:
+        zip_file.unlink()
+
+
+def gunzip(gzip_file, target, delete_after=True):
+    """Gunzip a file into a specific target."""
+    # Decompress it.
+    with gzip.open(gzip_file, "rb") as f:
+        content = f.read()
+        target.write_bytes(content)
+
+    # Delete the archive.
+    if delete_after:
+        gzip_file.unlink()
