@@ -2425,30 +2425,29 @@ files = [
 
 [[package]]
 name = "osmnx"
-version = "1.3.1.post0"
+version = "1.4.0"
 description = "Retrieve, model, analyze, and visualize OpenStreetMap street networks and other spatial data"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "osmnx-1.3.1.post0-py3-none-any.whl", hash = "sha256:721e516ca9703e981524c56b8312536e5b4353f8e313442bb96ff0bd5a168487"},
-    {file = "osmnx-1.3.1.post0.tar.gz", hash = "sha256:26247b18889e1be47f6b1249392972d2ec5f6c9772c3a3f853350769fa378ce5"},
+    {file = "osmnx-1.4.0-py3-none-any.whl", hash = "sha256:37860442e0b728649f721c8ce8a6eadd1e1c90840ae03f8a7d35c114ae522fda"},
+    {file = "osmnx-1.4.0.tar.gz", hash = "sha256:4eab2363a15abd16d0a8f48d614a46cf74397d8ea6e699fee0e5680b6d1e9e17"},
 ]
 
 [package.dependencies]
 geopandas = ">=0.12"
-matplotlib = ">=3.5"
-networkx = ">=2.8"
-numpy = ">=1.21"
-pandas = ">=1.5"
-pyproj = ">=3.4"
-requests = ">=2.28"
-Shapely = ">=2.0"
+networkx = ">=2.5"
+numpy = ">=1.20"
+pandas = ">=1.1"
+requests = ">=2.25"
+shapely = ">=2.0"
 
 [package.extras]
+all = ["gdal", "matplotlib", "rasterio", "scikit-learn", "scipy"]
 entropy = ["scipy"]
 nearest-neighbor = ["scikit-learn", "scipy"]
 raster = ["gdal", "rasterio"]
-web-map = ["folium"]
+visualization = ["matplotlib"]
 
 [[package]]
 name = "packaging"
@@ -4017,4 +4016,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "942229858aa286b618ff94ba066c23f5fae1cd1082f6ebc65cad68ea9df31a1a"
+content-hash = "4856ab520a821e8dc831e18b3e0afc7f0fab96085ef3443872b8f136b0a1072a"
