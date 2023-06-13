@@ -147,17 +147,17 @@ To develop the BNA, setup a development container by following these steps:
    following from the `src` folder of your fork:
 
    ```bash
-      docker buildx build -t azavea/pfb-network-connectivity:0.16.1 -f analysis/Dockerfile .
+      docker buildx build -t azavea/pfb-network-connectivity:0.18.0 -f analysis/Dockerfile .
    ```
 
    ```{note}
-   You can use any other name besides `azavea/pfb-network-connectivity:0.16.1`
+   You can use any other name besides `azavea/pfb-network-connectivity:0.18.0`
    ```
 
 4. Rename the built image from step 3, if desired:
 
 ```bash
-   docker tag azavea/pfb-network-connectivity:0.16.1 your_username/bna:0.0
+   docker tag azavea/pfb-network-connectivity:0.18.0 your_username/bna:0.0
 ```
 
 ### Running the BNA using Brokenspoke-analyzer
