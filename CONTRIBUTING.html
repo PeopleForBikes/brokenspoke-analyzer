@@ -367,17 +367,17 @@ files implement the BNA see
 <a class="reference internal" href="#control-flow-of-the-bna">Control flow of the BNA</a>.</p></li>
 <li><p>Build the docker image using the <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> in your fork by running the
 following from the <code class="docutils literal notranslate"><span class="pre">src</span></code> folder of your fork:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">   </span>docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>azavea/pfb-network-connectivity:0.16.1<span class="w"> </span>-f<span class="w"> </span>analysis/Dockerfile<span class="w"> </span>.
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">   </span>docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>azavea/pfb-network-connectivity:0.18.0<span class="w"> </span>-f<span class="w"> </span>analysis/Dockerfile<span class="w"> </span>.
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>You can use any other name besides <code class="docutils literal notranslate"><span class="pre">azavea/pfb-network-connectivity:0.16.1</span></code></p>
+<p>You can use any other name besides <code class="docutils literal notranslate"><span class="pre">azavea/pfb-network-connectivity:0.18.0</span></code></p>
 </div>
 </li>
 <li><p>Rename the built image from step 3, if desired:</p></li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">   </span>docker<span class="w"> </span>tag<span class="w"> </span>azavea/pfb-network-connectivity:0.16.1<span class="w"> </span>your_username/bna:0.0
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">   </span>docker<span class="w"> </span>tag<span class="w"> </span>azavea/pfb-network-connectivity:0.18.0<span class="w"> </span>your_username/bna:0.0
 </pre></div>
 </div>
 </section>
