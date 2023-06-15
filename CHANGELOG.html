@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Community Code of Conduct" href="code-of-conduct.html" /><link rel="prev" title="Resources" href="resources.html" />
 
     <!-- Generated with Sphinx 6.2.1 and Furo 2023.05.20 -->
-        <title>Changelog - Brokenspoke Analyzer 1.1.0 documentation</title>
+        <title>Changelog - Brokenspoke Analyzer 1.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -164,7 +164,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">Brokenspoke Analyzer 1.1.0 documentation</div></a>
+      <a href="index.html"><div class="brand">Brokenspoke Analyzer 1.2.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -187,7 +187,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">Brokenspoke Analyzer 1.1.0 documentation</span>
+  <span class="sidebar-brand-text">Brokenspoke Analyzer 1.2.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -249,17 +249,29 @@ and this project adheres to
 <a class="reference external" href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <section id="unreleased">
 <h2>[Unreleased]<a class="headerlink" href="#unreleased" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="id1">
+<h2>[1.2.0] - 2023-06-14<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="added">
+<h2>Added<a class="headerlink" href="#added" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">bna</span> <span class="pre">prepare</span></code> command to fetch all the required files even for US
+cities. <a class="reference external" href="https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/192">#192</a></p></li>
+</ul>
 <section id="fixed">
 <h3>Fixed<a class="headerlink" href="#fixed" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Fix BNA run parameters in case the target is a US city. <a class="reference external" href="https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/152">#152</a></p></li>
+<li><p>Fix invalid CLI arguments for the <code class="docutils literal notranslate"><span class="pre">bna</span> <span class="pre">prepare</span></code> command. <a class="reference external" href="https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/190">#190</a></p></li>
+<li><p>Fix the <code class="docutils literal notranslate"><span class="pre">output_dir</span></code> option of the <code class="docutils literal notranslate"><span class="pre">bna</span> <span class="pre">prepare</span></code> command. <a class="reference external" href="https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/191">#191</a></p></li>
 </ul>
 </section>
 </section>
-<section id="id1">
-<h2><a class="reference external" href="https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.1.0">1.1.0</a> - 2022-10-08<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
 <section id="id2">
-<h3>Fixed<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<h2><a class="reference external" href="https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.1.0">1.1.0</a> - 2022-10-08<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
+<section id="id3">
+<h3>Fixed<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Add better support for international cities. <a class="reference external" href="https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/52">#52</a></p></li>
 </ul>
@@ -271,8 +283,8 @@ and this project adheres to
 </ul>
 </section>
 </section>
-<section id="id3">
-<h2><a class="reference external" href="https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0">1.0.0</a> - 2022-08-14<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<section id="id4">
+<h2><a class="reference external" href="https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0">1.0.0</a> - 2022-08-14<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
 <p>First stable version.</p>
 </section>
 <section id="rc-1-2022-08-07">
@@ -347,16 +359,18 @@ candidate, but the quirks will be ironned out for 1.0.0.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
-<li><a class="reference internal" href="#unreleased">[Unreleased]</a><ul>
+<li><a class="reference internal" href="#unreleased">[Unreleased]</a></li>
+<li><a class="reference internal" href="#id1">[1.2.0] - 2023-06-14</a></li>
+<li><a class="reference internal" href="#added">Added</a><ul>
 <li><a class="reference internal" href="#fixed">Fixed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id1">1.1.0 - 2022-10-08</a><ul>
-<li><a class="reference internal" href="#id2">Fixed</a></li>
+<li><a class="reference internal" href="#id2">1.1.0 - 2022-10-08</a><ul>
+<li><a class="reference internal" href="#id3">Fixed</a></li>
 <li><a class="reference internal" href="#changed">Changed</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id3">1.0.0 - 2022-08-14</a></li>
+<li><a class="reference internal" href="#id4">1.0.0 - 2022-08-14</a></li>
 <li><a class="reference internal" href="#rc-1-2022-08-07">1.0.0-rc.1 - 2022-08-07</a></li>
 </ul>
 </li>

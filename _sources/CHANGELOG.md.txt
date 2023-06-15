@@ -8,11 +8,24 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.2.0] - 2023-06-14
+
+## Added
+
+- Update the `bna prepare` command to fetch all the required files even for US
+  cities. [#192]
+
+[#192]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/192
+
 ### Fixed
 
 - Fix BNA run parameters in case the target is a US city. [#152]
+- Fix invalid CLI arguments for the `bna prepare` command. [#190]
+- Fix the `output_dir` option of the `bna prepare` command. [#191]
 
 [#152]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/152
+[#190]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/190
+[#191]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/191
 
 ## [1.1.0] - 2022-10-08
 
