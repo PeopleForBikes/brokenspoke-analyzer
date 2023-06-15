@@ -17,7 +17,7 @@ from brokenspoke_analyzer.core import (
 from brokenspoke_analyzer.pyrosm.data import get_data
 
 # Default values
-OutputDir = typer.Argument(
+OutputDir = typer.Option(
     default="./data",
     exists=False,
     file_okay=False,
