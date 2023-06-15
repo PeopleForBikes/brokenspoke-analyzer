@@ -186,7 +186,7 @@ async def prepare_(
 
     # Download the OSM region file.
     with console.status("[bold green]Downloading the OSM region file..."):
-        dataset = ", ".join(filter(None, [country, state]))
+        dataset = state if state else country
         region_file_path = get_data(dataset, directory=output_dir)
         console.log("OSM Region file downloaded.")
 
