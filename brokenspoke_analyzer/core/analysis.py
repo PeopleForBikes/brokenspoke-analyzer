@@ -213,18 +213,21 @@ def change_speed_limit(output, city, state_abbrev, speed):
     )
 
 
-def simulate_census_blocks(output, slug, synthetic_population):
+def simulate_census_blocks(output, synthetic_population):
     """Simulate census blocks."""
     tabblock = "population"
-    city_tabblock = f"{slug}-{tabblock}"
-    synthetic_population_shp = output / f"{city_tabblock}.shp"
+    synthetic_population_shp = output / f"{tabblock}.shp"
     synthetic_population.to_file(synthetic_population_shp)
+    shapefile_parts = [
+        output / f"{tabblock}.{suffix}"
+        for suffix in ["cpg", "dbf", "prj", "shp", "shx"]
+    ]
     # The shapefile components must be zipped at the root of one zip archive.
     # https://github.com/azavea/pfb-network-connectivity/blob/a9a4bc9546e1c798c6a6e11ee57dcca5db438f3e/src/analysis/import/import_neighborhood.sh#L112-L114
     synthetic_population_zip = output / f"{tabblock}.zip"
     with zipfile.ZipFile(synthetic_population_zip, "w") as z:
-        for f in output.glob(f"{city_tabblock}.*"):
-            z.write(f, arcname=f"{tabblock}{f.suffix}")
+        for f in shapefile_parts:
+            z.write(f, arcname=f.name)
 
 
 async def download_lodes_data(session, output_dir, state, part, year):
