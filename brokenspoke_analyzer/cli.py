@@ -225,7 +225,7 @@ async def prepare_(
 
         # Simulate the census blocks.
         with console.status("[bold green]Simulate census blocks..."):
-            analysis.simulate_census_blocks(output_dir, slug, synthetic_population)
+            analysis.simulate_census_blocks(output_dir, synthetic_population)
             console.log("Census blocks ready.")
 
         # Change the speed limit.
