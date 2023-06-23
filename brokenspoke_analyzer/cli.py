@@ -201,16 +201,16 @@ async def prepare_(
         console.log(f"OSM file for {city} ready.")
 
     # Retrieve the state info if needed.
-    if state:
-        state_abbrev, state_fips = analysis.state_info(state)
-    else:
-        try:
+    try:
+        if state:
+            state_abbrev, state_fips = analysis.state_info(state)
+        else:
             state_abbrev, state_fips = analysis.state_info(country)
-        except ValueError:
-            state_abbrev, state_fips = (
-                processhelper.NON_US_STATE_ABBREV,
-                processhelper.NON_US_STATE_FIPS,
-            )
+    except ValueError:
+        state_abbrev, state_fips = (
+            processhelper.NON_US_STATE_ABBREV,
+            processhelper.NON_US_STATE_FIPS,
+        )
 
     # Perform some specific operations for non-US cities.
     if state_fips == processhelper.NON_US_STATE_FIPS:
