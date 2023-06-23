@@ -66,6 +66,7 @@ def run_analysis(
             f"-e RUN_IMPORT_JOBS={run_import_jobs}",
             "-e PFB_DEBUG=1",
             f'-v "{output_dir}":{dest}',
+            f'-v "{output_dir}/population.zip":/data/population.zip',
             docker_image,
         ]
     )
