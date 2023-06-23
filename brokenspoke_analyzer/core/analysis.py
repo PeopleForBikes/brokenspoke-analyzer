@@ -101,7 +101,10 @@ def state_info(state):
     >>> assert fips == "48"
     """
     # Lookup for the state name.
-    abbrev = states.mapping("name", "abbr").get(state.title())
+    state_map = states.mapping("name", "abbr")
+    if not state_map:
+        raise ValueError(f"cannot find state: {state}")
+    abbrev = state_map.get(state.title())
     if not abbrev:
         raise ValueError(f"cannot find state: {state}")
 
@@ -138,7 +141,7 @@ def retrieve_city_boundaries(output, country, city, state=None):
 
     # Export the boundaries.
     slug = slugify(query)
-    city_gdf.to_file(output / f"{slug}.shp")
+    city_gdf.to_file(output / f"{slug}.shp", encoding="utf-8")
     city_gdf.to_file(output / f"{slug}.geojson")
 
     return slug
