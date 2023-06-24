@@ -141,7 +141,7 @@ def retrieve_city_boundaries(output, country, city, state=None):
 
     # Export the boundaries.
     slug = slugify(query)
-    city_gdf.to_file(output / f"{slug}.shp")
+    city_gdf.to_file(output / f"{slug}.shp", encoding="utf-8")
     city_gdf.to_file(output / f"{slug}.geojson")
 
     return slug
