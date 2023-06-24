@@ -57,15 +57,15 @@ def run_analysis(
             "docker",
             "run",
             "--rm",
-            f'-e PFB_SHPFILE="{dest / city_shp.name}"',
-            f'-e PFB_OSM_FILE="{dest / pfb_osm_file}"',
-            f"-e PFB_COUNTRY={pfb_country}",
-            f"-e PFB_STATE={pfb_state}",
+            f'-e PFB_SHPFILE="{sanitize_values(str(dest / city_shp.name))}"',
+            f'-e PFB_OSM_FILE="{sanitize_values(str(dest / pfb_osm_file))}"',
+            f"-e PFB_COUNTRY={sanitize_values(str(pfb_country))}",
+            f"-e PFB_STATE={sanitize_values(str(pfb_state))}",
             f"-e PFB_STATE_FIPS={state_fips}",
-            f"-e NB_OUTPUT_DIR={dest}",
+            f'-e NB_OUTPUT_DIR="{sanitize_values(str(dest))}"',
             f"-e RUN_IMPORT_JOBS={run_import_jobs}",
             "-e PFB_DEBUG=1",
-            f'-v "{output_dir}":{dest}',
+            f'-v "{output_dir}":"{sanitize_values(str(dest))}"',
             f'-v "{output_dir}/population.zip":/data/population.zip',
             docker_image,
         ]
@@ -104,3 +104,20 @@ def run_osmosis(polygon_file_name, region_file_name, reduced_file_name):
         ]
     )
     run(osmosis_cmd)
+
+
+def sanitize_values(value: str) -> str:
+    """
+    Removes spaces and other invalid characters from the value.
+
+    Example:
+
+    >>> sanitize_values("a directory with spaces")
+    'a_directory_with_spaces'
+
+    >>> sanitize_values("")
+    None
+    """
+    if not value:
+        return None
+    return value.replace(" ", "_")
