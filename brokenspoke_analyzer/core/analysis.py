@@ -262,7 +262,7 @@ async def download_lodes_data(session, output_dir, state, part, year):
     More information about the formast can be found on the website:
     https://lehd.ces.census.gov/data/#lodes.
     """
-    lehd_url = f"http://lehd.ces.census.gov/data/lodes/LODES7/{state.lower()}/od/"
+    lehd_url = f"http://lehd.ces.census.gov/data/lodes/LODES7/{state.lower()}/od"
     lehd_filename = f"{state.lower()}_od_{part.lower()}_JT00_{year}.csv.gz"
     gzipped_lehd_file = output_dir / lehd_filename
     decompressed_lefh_file = output_dir / gzipped_lehd_file.stem
@@ -301,7 +301,7 @@ async def download_census_waterblocks(session, output_dir):
 
 async def download_2010_census_blocks(session, output_dir, fips):
     """Download a 2010 census tabulation block code for a specific state."""
-    tabblk2010_url = "http://www2.census.gov/geo/tiger/TIGER2010BLKPOPHU/"
+    tabblk2010_url = "http://www2.census.gov/geo/tiger/TIGER2010BLKPOPHU"
     tabblk2010_filename = f"tabblock2010_{fips}_pophu.zip"
     tabblk2010_file = output_dir / tabblk2010_filename
     population_file = output_dir / "population.shp"
