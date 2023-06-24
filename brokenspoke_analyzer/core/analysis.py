@@ -101,7 +101,10 @@ def state_info(state):
     >>> assert fips == "48"
     """
     # Lookup for the state name.
-    abbrev = states.mapping("name", "abbr").get(state.title())
+    if not state:
+        raise ValueError("the state to lookup was not specified")
+    state_map = states.mapping("name", "abbr")
+    abbrev = state_map.get(state.title())
     if not abbrev:
         raise ValueError(f"cannot find state: {state}")
 
