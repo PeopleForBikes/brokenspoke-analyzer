@@ -41,6 +41,7 @@ def run_analysis(
     pfb_osm_file,
     output_dir,
     docker_image,
+    container_name=None,
 ):
     """Run a BNA analysis."""
     dest = pathlib.Path("/") / output_dir.name
@@ -52,11 +53,11 @@ def run_analysis(
         pfb_country = "USA"
         pfb_state = state_abbrev.lower()
         run_import_jobs = 1
-    docker_cmd = " ".join(
+    docker_cmd_args = ["docker", "run", "--rm"]
+    if container_name:
+        docker_cmd_args.extend(["--name", container_name])
+    docker_cmd_args.extend(
         [
-            "docker",
-            "run",
-            "--rm",
             f'-e PFB_SHPFILE="{sanitize_values(str(dest / city_shp.name))}"',
             f'-e PFB_OSM_FILE="{sanitize_values(str(dest / pfb_osm_file))}"',
             f"-e PFB_COUNTRY={sanitize_values(str(pfb_country))}",
@@ -70,6 +71,7 @@ def run_analysis(
             docker_image,
         ]
     )
+    docker_cmd = " ".join(docker_cmd_args)
     run(docker_cmd)
 
 
