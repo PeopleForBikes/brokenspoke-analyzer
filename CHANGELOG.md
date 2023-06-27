@@ -8,6 +8,25 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+- Add an option to name the container running the analysis. [#215]
+- Ensure the District of Columbia is considered as a US state. [#220]
+
+## Fixed
+
+- Bind the `population.zip` file to the internal `/data` directory. [#211]
+- Ensure the boundary shapefile encoding is UTF-8. [#212]
+- Fix the logic t0 retrieve the state information. [#213]
+- Sanitize variables passed to the Docker container. [#214]
+
+[#211]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/211
+[#212]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/212
+[#213]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/213
+[#214]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/214
+[#215]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/215
+[#220]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/220
+
 ## [1.2.1] - 2023-06-18
 
 ### Fixed
@@ -17,8 +36,7 @@ and this project adheres to
 
 [#205]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/205
 [#206]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/206
-[1.2.1]:
-  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.2.1
+[1.2.1]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.2.1
 
 ## [1.2.0] - 2023-06-14
 
@@ -38,8 +56,7 @@ and this project adheres to
 [#152]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/152
 [#190]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/190
 [#191]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/191
-[1.2.0]:
-  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.2.0
+[1.2.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.2.0
 
 ## [1.1.0] - 2022-10-08
 
@@ -52,15 +69,13 @@ and this project adheres to
 - Updated the analyzer image to 0.16.1. [#52]
 
 [#52]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/52
-[1.1.0]:
-  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.1.0
+[1.1.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.1.0
 
 ## [1.0.0] - 2022-08-14
 
 First stable version.
 
-[1.0.0]:
-  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0
+[1.0.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0
 
 ## [1.0.0-rc.1] - 2022-08-07
 
@@ -70,5 +85,4 @@ the world (although the analyzer will fail for some of them).
 The tool is still a bit rough on the edges, that is why this is a release
 candidate, but the quirks will be ironned out for 1.0.0.
 
-[1.0.0-rc.1]:
-  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0-rc.1
+[1.0.0-rc.1]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0-rc.1
