@@ -37,6 +37,9 @@ BlockSize = typer.Option(
 BlockPopulation = typer.Option(
     100, help="population of a synthetic block for non-US cities"
 )
+ContainerName = typer.Option(
+    None, help="give a specific name to the container running the BNA."
+)
 
 
 def callback(verbose: int = typer.Option(0, "--verbose", "-v", count=True)):
@@ -105,6 +108,7 @@ def analyze(
     pfb_osm_file: pathlib.Path,
     output_dir: pathlib.Path = OutputDir,
     docker_image: Optional[str] = DockerImage,
+    container_name: Optional[str] = ContainerName,
 ):
     """Run an analysis."""
     # Retrieve the state info if needed.
@@ -116,6 +120,7 @@ def analyze(
         pfb_osm_file,
         output_dir,
         docker_image,
+        container_name,
     )
 
 
@@ -130,6 +135,7 @@ def run(
     speed_limit: Optional[int] = SpeedLimit,
     block_size: Optional[int] = BlockSize,
     block_population: Optional[int] = BlockPopulation,
+    container_name: Optional[str] = ContainerName,
 ):
     """Prepare and run an analysis."""
     asyncio.run(
@@ -142,6 +148,7 @@ def run(
             speed_limit,
             block_size,
             block_population,
+            container_name,
         )
     )
 
@@ -156,6 +163,7 @@ async def prepare_and_run(
     speed_limit,
     block_size,
     block_population,
+    container_name,
 ):
     """Prepare and run an analysis."""
     speed_file = output_dir / "city_fips_speed.csv"
@@ -165,7 +173,7 @@ async def prepare_and_run(
     params = await prepare_(
         country, state, city, output_dir, speed_limit, block_size, block_population
     )
-    analyze_(*params, docker_image)
+    analyze_(*params, docker_image, container_name)
 
 
 # pylint: disable=too-many-locals,too-many-arguments
@@ -280,12 +288,24 @@ async def prepare_(
 
 # pylint: disable=too-many-arguments,duplicate-code
 def analyze_(
-    state_abbrev, state_fips, city_shp, pfb_osm_file, output_dir, docker_image
+    state_abbrev,
+    state_fips,
+    city_shp,
+    pfb_osm_file,
+    output_dir,
+    docker_image,
+    container_name,
 ):
     """Run the analysis."""
     console = Console()
     with console.status("[bold green]Running the full analysis (may take a while)..."):
         processhelper.run_analysis(
-            state_abbrev, state_fips, city_shp, pfb_osm_file, output_dir, docker_image
+            state_abbrev,
+            state_fips,
+            city_shp,
+            pfb_osm_file,
+            output_dir,
+            docker_image,
+            container_name,
         )
         console.log(f"Analysis for {city_shp} complete.")
