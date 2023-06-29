@@ -1,5 +1,6 @@
 """Define functions used to perform an analysis."""
 import gzip
+import os
 import random
 import string
 import zipfile
@@ -11,7 +12,6 @@ import shapely
 from loguru import logger
 from osmnx import geocoder
 from slugify import slugify
-from us import states
 
 from brokenspoke_analyzer.core import (
     aiohttphelper,
@@ -99,12 +99,22 @@ def state_info(state):
     >>> abbr, fips = state_info("texas")
     >>> assert abbr == "TX"
     >>> assert fips == "48"
+
+    The Dictrict of Columbia is also recognized as a state:
+    >>> abbr, fips = state_info("district of columbia")
+    >>> assert abbr == "DC"
+    >>> assert fips == "11"
     """
+    # Ensure DC is considered a US state.
+    # https://github.com/unitedstates/python-us/issues/67
+    os.environ["DC_STATEHOOD"] = "1"
+    from us import states
+
     # Lookup for the state name.
     if not state:
         raise ValueError("the state to lookup was not specified")
     state_map = states.mapping("name", "abbr")
-    abbrev = state_map.get(state.title())
+    abbrev = state_map.get(state.title().replace(" Of ", " of "))
     if not abbrev:
         raise ValueError(f"cannot find state: {state}")
 
