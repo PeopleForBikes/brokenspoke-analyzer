@@ -3,6 +3,7 @@ import gzip
 import os
 import random
 import string
+import unicodedata
 import zipfile
 from enum import Enum
 
@@ -17,6 +18,7 @@ from brokenspoke_analyzer.core import (
     aiohttphelper,
     processhelper,
 )
+from brokenspoke_analyzer.pyrosm.data import get_data
 
 # WGS 84 / Pseudo-Mercator -- Spherical Mercator.
 # https://epsg.io/3857
@@ -50,18 +52,6 @@ def prepare_boundary_file(output_dir, city, tiger_file):
     city_gdf = census_place.loc[census_place["NAME"] == city.title()]
     city_gdf.to_file(city_shp)
     return city_shp
-
-
-async def download_osm_us_region_file(session, output_dir, state, region_file_name):
-    """Download the region file."""
-    host = "download.geofabrik.de"
-    region = "north-america"
-    country = "us"
-    state_slug = state.lower().replace(" ", "-")
-    region_file_url = f"https://{host}/{region}/{country}/{state_slug}-latest.osm.pbf"
-    region_file_path = output_dir / region_file_name
-    await aiohttphelper.download_file(session, region_file_url, region_file_path)
-    return region_file_path
 
 
 async def download_polygon_file(
@@ -140,8 +130,11 @@ def retrieve_city_boundaries(output, country, city, state=None):
     :return: the slugified query used to retrieve the city boundaries.
     :rtype: str
     """
+    # Prepare the query.
     query = ", ".join(filter(None, [city, state, country]))
     logger.debug(f"Query used to retrieve the boundaries: {query}")
+
+    # Retrieve the geodataframe.
     city_gdf = geocoder.geocode_to_gdf(query)
     # Remove the display_name series to ensure there are no international
     # characters in the dataframe. The import will fail if the analyzer finds
@@ -379,3 +372,13 @@ def gunzip(gzip_file, target, delete_after=True):
     # Delete the archive.
     if delete_after:
         gzip_file.unlink()
+
+
+def retrieve_region_file(region, output_dir):
+    """Retrieves the region file from Geofabrik or BBike."""
+    dataset = region.lower()
+    dataset = (
+        unicodedata.normalize("NFKD", dataset).encode("ASCII", "ignore").decode("utf-8")
+    )
+    region_file_path = get_data(dataset, directory=output_dir)
+    return region_file_path

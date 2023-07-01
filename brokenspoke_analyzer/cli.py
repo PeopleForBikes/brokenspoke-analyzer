@@ -15,7 +15,6 @@ from brokenspoke_analyzer.core import (
     analysis,
     processhelper,
 )
-from brokenspoke_analyzer.pyrosm.data import get_data
 
 # Default values
 OutputDir = typer.Option(
@@ -195,8 +194,8 @@ async def prepare_(
 
     # Download the OSM region file.
     with console.status("[bold green]Downloading the OSM region file..."):
-        dataset = state if state else country
-        region_file_path = get_data(dataset, directory=output_dir)
+        region = state if state else country
+        region_file_path = analysis.retrieve_region_file(region, output_dir)
         console.log("OSM Region file downloaded.")
 
     # Reduce the osm file with osmium.
