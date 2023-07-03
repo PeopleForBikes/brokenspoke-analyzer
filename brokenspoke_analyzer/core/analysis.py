@@ -215,7 +215,7 @@ def change_speed_limit(output, city, state_abbrev, speed):
     """Change the speed limit."""
     speedlimit_csv = output / "city_fips_speed.csv"
     speedlimit_csv.write_text(
-        f"city,state,fips_code_city,speed\n{city},{state_abbrev.lower()},1234567,{speed}\n"
+        f"city,state,fips_code_city,speed\n{city},{state_abbrev.lower()},{0:07},{speed}\n"
     )
 
 
