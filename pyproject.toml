@@ -16,7 +16,7 @@ python-slugify = "^8.0.1"
 rich = "^13.4.2"
 typer = "^0.9.0"
 us = "^3.1.1"
-osmnx = "^1.4.0"
+osmnx = "^1.5.0"
 
 
 [tool.poetry.dev-dependencies]
@@ -33,7 +33,7 @@ pytest-mock = "^3.11.1"
 pytest-rerunfailures = "^11.1"
 pytest-socket = "^0.6.0"
 pytest-xdist = "^3.3.1"
-ruff = "^0.0.275"
+ruff = "^0.0.276"
 Sphinx = "^7.0.1"
 sphinx-autobuild = "^2021.3.14"
 sphinx-copybutton = "^0.5.2"
