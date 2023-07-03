@@ -2425,13 +2425,13 @@ files = [
 
 [[package]]
 name = "osmnx"
-version = "1.4.0"
-description = "Retrieve, model, analyze, and visualize OpenStreetMap street networks and other spatial data"
+version = "1.5.0"
+description = "Download, model, analyze, and visualize street networks and other geospatial features from OpenStreetMap"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "osmnx-1.4.0-py3-none-any.whl", hash = "sha256:37860442e0b728649f721c8ce8a6eadd1e1c90840ae03f8a7d35c114ae522fda"},
-    {file = "osmnx-1.4.0.tar.gz", hash = "sha256:4eab2363a15abd16d0a8f48d614a46cf74397d8ea6e699fee0e5680b6d1e9e17"},
+    {file = "osmnx-1.5.0-py3-none-any.whl", hash = "sha256:f70f6aee34cc5c3051a97aff2ebdb29706cc04a33edb83f64e2ba381f2fa4c96"},
+    {file = "osmnx-1.5.0.tar.gz", hash = "sha256:8be0351fbd54f7066469b853e23771c70eab0d5f048fb5b39393fa2c673d2b10"},
 ]
 
 [package.dependencies]
@@ -2443,11 +2443,10 @@ requests = ">=2.25"
 shapely = ">=2.0"
 
 [package.extras]
-all = ["gdal", "matplotlib", "rasterio", "scikit-learn", "scipy"]
-entropy = ["scipy"]
-nearest-neighbor = ["scikit-learn", "scipy"]
-raster = ["gdal", "rasterio"]
-visualization = ["matplotlib"]
+entropy = ["scipy (>=1.5)"]
+neighbors = ["scikit-learn (>=0.23)", "scipy (>=1.5)"]
+raster = ["gdal", "rasterio (>=1.3)"]
+visualization = ["matplotlib (>=3.5)"]
 
 [[package]]
 name = "packaging"
@@ -4016,4 +4015,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "2c2f6c39b77e6b90c41e94fa3a39263c0bee9b4c53396b9b168d9641820a6783"
+content-hash = "a58bbedc026594fcd092d158f2f9a3dac6b713bcc61d4553f69ce989df98f2dd"
