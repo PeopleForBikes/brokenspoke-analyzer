@@ -194,8 +194,12 @@ async def prepare_(
 
     # Download the OSM region file.
     with console.status("[bold green]Downloading the OSM region file..."):
-        region = state if state else country
-        region_file_path = analysis.retrieve_region_file(region, output_dir)
+        try:
+            if not state:
+                raise ValueError
+            region_file_path = analysis.retrieve_region_file(state, output_dir)
+        except ValueError:
+            region_file_path = analysis.retrieve_region_file(country, output_dir)
         console.log("OSM Region file downloaded.")
 
     # Reduce the osm file with osmium.
