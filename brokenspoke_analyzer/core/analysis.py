@@ -375,10 +375,20 @@ def gunzip(gzip_file, target, delete_after=True):
 
 
 def retrieve_region_file(region, output_dir):
-    """Retrieves the region file from Geofabrik or BBike."""
-    dataset = region.lower()
-    dataset = (
-        unicodedata.normalize("NFKD", dataset).encode("ASCII", "ignore").decode("utf-8")
-    )
+    """Retrieve the region file from Geofabrik or BBike."""
+    dataset = normalize_unicode_name(region)
     region_file_path = get_data(dataset, directory=output_dir)
     return region_file_path
+
+
+def normalize_unicode_name(value):
+    """
+    Normalize unicode names.
+
+    Example:
+        >>> normalize_unicode_name("Québec")
+        quebec
+    """
+    n = value.lower()
+    n = unicodedata.normalize("NFKD", n).encode("ascii", "ignore").decode("utf-8")
+    return n
