@@ -37,8 +37,9 @@ BlockPopulation = typer.Option(
     100, help="population of a synthetic block for non-US cities"
 )
 ContainerName = typer.Option(
-    None, help="give a specific name to the container running the BNA."
+    None, help="give a specific name to the container running the BNA"
 )
+CityFIPS = typer.Option(None, help="city FIPS code")
 
 
 def callback(verbose: int = typer.Option(0, "--verbose", "-v", count=True)):
@@ -85,6 +86,7 @@ def prepare(
     speed_limit: Optional[int] = SpeedLimit,
     block_size: Optional[int] = BlockSize,
     block_population: Optional[int] = BlockPopulation,
+    city_fips: Optional[str] = CityFIPS,
 ):
     """Prepare the required files for an analysis."""
     asyncio.run(
@@ -96,6 +98,7 @@ def prepare(
             speed_limit,
             block_size,
             block_population,
+            city_fips,
         )
     )
 
@@ -108,6 +111,7 @@ def analyze(
     output_dir: pathlib.Path = OutputDir,
     docker_image: Optional[str] = DockerImage,
     container_name: Optional[str] = ContainerName,
+    city_fips: Optional[str] = CityFIPS,
 ):
     """Run an analysis."""
     # Retrieve the state info if needed.
@@ -120,6 +124,7 @@ def analyze(
         output_dir,
         docker_image,
         container_name,
+        city_fips,
     )
 
 
@@ -135,6 +140,7 @@ def run(
     block_size: Optional[int] = BlockSize,
     block_population: Optional[int] = BlockPopulation,
     container_name: Optional[str] = ContainerName,
+    city_fips: Optional[str] = CityFIPS,
 ):
     """Prepare and run an analysis."""
     asyncio.run(
@@ -148,6 +154,7 @@ def run(
             block_size,
             block_population,
             container_name,
+            city_fips,
         )
     )
 
@@ -163,6 +170,7 @@ async def prepare_and_run(
     block_size,
     block_population,
     container_name,
+    city_fips,
 ):
     """Prepare and run an analysis."""
     speed_file = output_dir / "city_fips_speed.csv"
@@ -172,7 +180,7 @@ async def prepare_and_run(
     params = await prepare_(
         country, state, city, output_dir, speed_limit, block_size, block_population
     )
-    analyze_(*params, docker_image, container_name)
+    analyze_(*params, docker_image, container_name, city_fips)
 
 
 # pylint: disable=too-many-locals,too-many-arguments
@@ -298,6 +306,7 @@ def analyze_(
     output_dir,
     docker_image,
     container_name,
+    city_fips,
 ):
     """Run the analysis."""
     console = Console()
@@ -310,5 +319,6 @@ def analyze_(
             output_dir,
             docker_image,
             container_name,
+            city_fips=city_fips,
         )
         console.log(f"Analysis for {city_shp} complete.")

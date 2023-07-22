@@ -42,6 +42,7 @@ def run_analysis(
     output_dir,
     docker_image,
     container_name=None,
+    city_fips=None,
 ):
     """Run a BNA analysis."""
     dest = pathlib.Path("/") / output_dir.name
@@ -56,6 +57,8 @@ def run_analysis(
     docker_cmd_args = ["docker", "run", "--rm"]
     if container_name:
         docker_cmd_args.extend(["--name", container_name])
+    if city_fips:
+        docker_cmd_args.extend([f"-e PFB_CITY_FIPS={city_fips}"])
     docker_cmd_args.extend(
         [
             f'-e PFB_SHPFILE="{sanitize_values(str(dest / city_shp.name))}"',
