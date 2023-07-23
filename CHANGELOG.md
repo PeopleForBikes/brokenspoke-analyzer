@@ -11,7 +11,6 @@ and this project adheres to
 ## Added
 
 - Add an option to name the container running the analysis. [#215]
-- Ensure the District of Columbia is considered as a US state. [#220]
 - Add a dataset to represent California. [#223]
 - Add a CLI flag to specify the city FIPS code. [#240]
 
@@ -19,10 +18,11 @@ and this project adheres to
 
 - Bind the `population.zip` file to the internal `/data` directory. [#211]
 - Ensure the boundary shapefile encoding is UTF-8. [#212]
-- Fix the logic t0 retrieve the state information. [#213]
+- Fix the logic to retrieve the state information. [#213]
 - Sanitize variables passed to the Docker container. [#214]
+- Ensure the District of Columbia is considered as a US state. [#220]
 - Ensure regions use only ASCII characters. [#225]
-- Use mph for the default speed limite instead of km/h. [#239]
+- Use mph for the default speed limit instead of km/h. [#239]
 
 [#211]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/211
 [#212]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/212
