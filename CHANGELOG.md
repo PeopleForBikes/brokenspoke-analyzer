@@ -12,6 +12,8 @@ and this project adheres to
 
 - Add an option to name the container running the analysis. [#215]
 - Ensure the District of Columbia is considered as a US state. [#220]
+- Add a dataset to represent California. [#223]
+- Add a CLI flag to specify the city FIPS code. [#240]
 
 ## Fixed
 
@@ -19,6 +21,8 @@ and this project adheres to
 - Ensure the boundary shapefile encoding is UTF-8. [#212]
 - Fix the logic t0 retrieve the state information. [#213]
 - Sanitize variables passed to the Docker container. [#214]
+- Ensure regions use only ASCII characters. [#225]
+- Use mph for the default speed limite instead of km/h. [#239]
 
 [#211]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/211
 [#212]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/212
@@ -26,6 +30,10 @@ and this project adheres to
 [#214]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/214
 [#215]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/215
 [#220]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/220
+[#223]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/223
+[#225]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/225
+[#239]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/239
+[#240]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/240
 
 ## [1.2.1] - 2023-06-18
 
