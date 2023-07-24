@@ -7,7 +7,7 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-aiohttp = "^3.8.4"
+aiohttp = "^3.8.5"
 census = "^0.8.20"
 geopandas = "^0.13.2"
 loguru = "^0.7.0"
