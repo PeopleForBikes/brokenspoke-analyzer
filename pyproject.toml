@@ -42,6 +42,15 @@ xdoctest = "^1.1.0"
 [tool.poetry.scripts]
 bna = 'brokenspoke_analyzer.cli:app'
 
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.4.1"
+types-pygments = "^2.15.0.2"
+types-colorama = "^0.4.15.12"
+types-decorator = "^5.1.8.4"
+types-jsonschema = "^4.17.0.10"
+types-python-slugify = "^8.0.0.3"
+types-six = "^1.16.21.9"
+
 [tool.isort]
 profile = "black"
 force_grid_wrap = 2
@@ -61,3 +70,14 @@ addopts = "-p no:warnings --cov-report term-missing --cov-report html --xdoctest
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+strict = "true"
+
+[[tool.mypy.overrides]]
+module = ["brokenspoke_analyzer.pyrosm.*", "brokenspoke_analyzer.cli.*"]
+ignore_errors = "true"
+
+[[tool.mypy.overrides]]
+module = ["geopandas", "osmnx", "shapely", "us"]
+ignore_missing_imports = "true"

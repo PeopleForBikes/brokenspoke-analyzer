@@ -17,6 +17,7 @@ lint-python:
     poetry run isort --check .
     poetry run black --check {{ src_dir }}
     poetry run ruff check {{ src_dir }}
+    poetry run mypy {{ src_dir }}
 
 # Meta tasks running all formatters at once.
 fmt: fmt-md fmt-python fmt-just
