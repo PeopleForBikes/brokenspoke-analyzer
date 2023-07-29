@@ -16,6 +16,8 @@ from brokenspoke_analyzer.core import (
     processhelper,
 )
 
+from tenacity import Retrying, stop_after_attempt
+
 # Default values
 OutputDir = typer.Option(
     default="./data",
@@ -39,6 +41,7 @@ BlockPopulation = typer.Option(
 ContainerName = typer.Option(
     None, help="give a specific name to the container running the BNA."
 )
+Retries = typer.Option(2, help="number of times to retry downloading files")
 
 
 def callback(verbose: int = typer.Option(0, "--verbose", "-v", count=True)):
@@ -85,6 +88,7 @@ def prepare(
     speed_limit: Optional[int] = SpeedLimit,
     block_size: Optional[int] = BlockSize,
     block_population: Optional[int] = BlockPopulation,
+    retries: Optional[int] = Retries,
 ):
     """Prepare the required files for an analysis."""
     asyncio.run(
@@ -96,6 +100,7 @@ def prepare(
             speed_limit,
             block_size,
             block_population,
+            retries,
         )
     )
 
@@ -135,6 +140,7 @@ def run(
     block_size: Optional[int] = BlockSize,
     block_population: Optional[int] = BlockPopulation,
     container_name: Optional[str] = ContainerName,
+    retries: Optional[int] = Retries,
 ):
     """Prepare and run an analysis."""
     asyncio.run(
@@ -148,6 +154,7 @@ def run(
             block_size,
             block_population,
             container_name,
+            retries,
         )
     )
 
@@ -163,6 +170,7 @@ async def prepare_and_run(
     block_size,
     block_population,
     container_name,
+    retries,
 ):
     """Prepare and run an analysis."""
     speed_file = output_dir / "city_fips_speed.csv"
@@ -170,14 +178,28 @@ async def prepare_and_run(
     tabblock_file = output_dir / "tabblock2010_91_pophu.zip"
     tabblock_file.unlink(missing_ok=True)
     params = await prepare_(
-        country, state, city, output_dir, speed_limit, block_size, block_population
+        country,
+        state,
+        city,
+        output_dir,
+        speed_limit,
+        block_size,
+        block_population,
+        retries,
     )
     analyze_(*params, docker_image, container_name)
 
 
 # pylint: disable=too-many-locals,too-many-arguments
 async def prepare_(
-    country, state, city, output_dir, speed_limit, block_size, block_population
+    country,
+    state,
+    city,
+    output_dir,
+    speed_limit,
+    block_size,
+    block_population,
+    retries,
 ):
     """Prepare and kicks off the analysis."""
     # Prepare the output directory.
@@ -186,16 +208,23 @@ async def prepare_(
     # Prepare the Rich output.
     console = Console()
 
+    # Create retrier instance to use for all downloads
+    retryer = Retrying(stop=stop_after_attempt(retries), reraise=True)
+
     # Retrieve city boundaries.
     with console.status("[bold green]Querying OSM to retrieve the city boundaries..."):
-        slug = analysis.retrieve_city_boundaries(output_dir, country, city, state)
+        slug = retryer(
+            analysis.retrieve_city_boundaries, output_dir, country, city, state
+        )
         city_shp = output_dir / f"{slug}.shp"
         console.log("Boundary files ready.")
 
     # Download the OSM region file.
     with console.status("[bold green]Downloading the OSM region file..."):
         region = state if state else country
-        region_file_path = analysis.retrieve_region_file(region, output_dir)
+        region_file_path = retryer(
+            analysis.retrieve_region_file, region, True, output_dir
+        )
         console.log("OSM Region file downloaded.")
 
     # Reduce the osm file with osmium.
@@ -245,14 +274,16 @@ async def prepare_(
             with console.status(
                 f"[bold green]Fetching {lodes_year} US employment data..."
             ):
-                await analysis.download_lodes_data(
+                await retryer(
+                    analysis.download_lodes_data,
                     session,
                     output_dir,
                     state_abbrev,
                     "main",
                     lodes_year,
                 )
-                await analysis.download_lodes_data(
+                await retryer(
+                    analysis.download_lodes_data,
                     session,
                     output_dir,
                     state_abbrev,
@@ -261,18 +292,21 @@ async def prepare_(
                 )
 
             with console.status("[bold green]Fetching US census waterblocks..."):
-                await analysis.download_census_waterblocks(session, output_dir)
+                await retryer(analysis.download_census_waterblocks, session, output_dir)
 
             with console.status("[bold green]Fetching 2010 US census blocks..."):
-                await analysis.download_2010_census_blocks(
-                    session, output_dir, state_fips
+                await retryer(
+                    analysis.download_2010_census_blocks,
+                    session,
+                    output_dir,
+                    state_fips,
                 )
 
             with console.status("[bold green]Fetching US state speed limits..."):
-                await analysis.download_state_speed_limits(session, output_dir)
+                await retryer(analysis.download_state_speed_limits, session, output_dir)
 
             with console.status("[bold green]Fetching US city speed limits..."):
-                await analysis.download_city_speed_limits(session, output_dir)
+                await retryer(analysis.download_city_speed_limits, session, output_dir)
 
     # Return the parameters required to perform the analysis.
     # pylint: disable=duplicate-code

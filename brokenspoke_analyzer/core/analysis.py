@@ -275,9 +275,13 @@ async def download_lodes_data(session, output_dir, state, part, year):
         return
 
     # Download the file.
-    await aiohttphelper.download_file(
-        session, f"{lehd_url}/{lehd_filename}", gzipped_lehd_file
-    )
+    # If an exception occurs, remove the file.
+    try:
+        await aiohttphelper.download_file(
+            session, f"{lehd_url}/{lehd_filename}", gzipped_lehd_file
+        )
+    except Exception:
+        gzipped_lehd_file.unlink()
 
     # Decompress it.
     gunzip(gzipped_lehd_file, decompressed_lefh_file)
@@ -296,7 +300,13 @@ async def download_census_waterblocks(session, output_dir):
         return
 
     # Download the file.
-    await aiohttphelper.download_file(session, waterblock_url, zipped_waterblock_file)
+    # If an exception occurs, remove the file.
+    try:
+        await aiohttphelper.download_file(
+            session, waterblock_url, zipped_waterblock_file
+        )
+    except Exception:
+        zipped_waterblock_file.unlink()
 
     # Unzip it.
     unzip(zipped_waterblock_file, output_dir)
@@ -314,9 +324,13 @@ async def download_2010_census_blocks(session, output_dir, fips):
         return
 
     # Download the file.
-    await aiohttphelper.download_file(
-        session, f"{tabblk2010_url}/{tabblk2010_filename}", tabblk2010_file
-    )
+    # If an exception occurs, remove the file.
+    try:
+        await aiohttphelper.download_file(
+            session, f"{tabblk2010_url}/{tabblk2010_filename}", tabblk2010_file
+        )
+    except Exception:
+        tabblk2010_file.unlink()
 
     # Unzip it.
     unzip(tabblk2010_file, output_dir)
@@ -336,7 +350,11 @@ async def download_state_speed_limits(session, output_dir):
     state_speed_file = output_dir / state_speed_filename
 
     # Download the file.
-    await aiohttphelper.download_file(session, state_speed_url, state_speed_file)
+    # If an exception occurs, remove the file.
+    try:
+        await aiohttphelper.download_file(session, state_speed_url, state_speed_file)
+    except Exception:
+        state_speed_file.unlink()
 
 
 async def download_city_speed_limits(session, output_dir):
@@ -348,7 +366,11 @@ async def download_city_speed_limits(session, output_dir):
     city_speed_file = output_dir / city_speed_filename
 
     # Download the file.
-    await aiohttphelper.download_file(session, city_speed_url, city_speed_file)
+    # If an exception occurs, remove the file.
+    try:
+        await aiohttphelper.download_file(session, city_speed_url, city_speed_file)
+    except Exception:
+        city_speed_file.unlink()
 
 
 def unzip(zip_file, output_dir, delete_after=True):
@@ -374,11 +396,11 @@ def gunzip(gzip_file, target, delete_after=True):
         gzip_file.unlink()
 
 
-def retrieve_region_file(region, output_dir):
+def retrieve_region_file(region, update, output_dir):
     """Retrieves the region file from Geofabrik or BBike."""
     dataset = region.lower()
     dataset = (
         unicodedata.normalize("NFKD", dataset).encode("ASCII", "ignore").decode("utf-8")
     )
-    region_file_path = get_data(dataset, directory=output_dir)
+    region_file_path = get_data(dataset, update, directory=output_dir)
     return region_file_path
