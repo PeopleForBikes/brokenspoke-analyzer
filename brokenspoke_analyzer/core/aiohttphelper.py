@@ -1,9 +1,14 @@
 """Define helper functions for aiohttp."""
+import pathlib
+import typing
 
+import aiohttp
 from loguru import logger
 
 
-async def download_file(session, url, output):
+async def download_file(
+    session: aiohttp.ClientSession, url: str, output: pathlib.Path
+) -> None:
     """Download payload stream into a file."""
     if output.exists():
         logger.debug(f"the file {output} already exists, skipping...")
@@ -15,7 +20,11 @@ async def download_file(session, url, output):
                 fd.write(chunk)
 
 
-async def fetch_text(session, url, params=None):
+async def fetch_text(
+    session: aiohttp.ClientSession,
+    url: str,
+    params: typing.Optional[dict[str, str]] = None,
+) -> str:
     """
     Fetch the data from a URL as text.
 

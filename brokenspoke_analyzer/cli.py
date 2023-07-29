@@ -86,7 +86,6 @@ def prepare(
     speed_limit: Optional[int] = SpeedLimit,
     block_size: Optional[int] = BlockSize,
     block_population: Optional[int] = BlockPopulation,
-    city_fips: Optional[str] = CityFIPS,
 ):
     """Prepare the required files for an analysis."""
     asyncio.run(
@@ -98,7 +97,6 @@ def prepare(
             speed_limit,
             block_size,
             block_population,
-            city_fips,
         )
     )
 

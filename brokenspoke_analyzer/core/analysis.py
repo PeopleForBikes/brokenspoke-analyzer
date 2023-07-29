@@ -1,12 +1,15 @@
 """Define functions used to perform an analysis."""
 import gzip
 import os
+import pathlib
 import random
 import string
+import typing
 import unicodedata
 import zipfile
 from enum import Enum
 
+import aiohttp
 import geopandas as gpd
 import numpy as np
 import shapely
@@ -18,7 +21,7 @@ from brokenspoke_analyzer.core import (
     aiohttphelper,
     processhelper,
 )
-from brokenspoke_analyzer.pyrosm.data import get_data
+from brokenspoke_analyzer.pyrosm import data
 
 # WGS 84 / Pseudo-Mercator -- Spherical Mercator.
 # https://epsg.io/3857
@@ -33,7 +36,9 @@ class PolygonFormat(Enum):
     POLY = "get_poly.py"
 
 
-async def download_census_file(session, output_dir, state_fips):
+async def download_census_file(
+    session: aiohttp.ClientSession, output_dir: pathlib.Path, state_fips: str
+) -> pathlib.Path:
     """Download the US Census file for a specific state."""
     tiger_url = (
         "https://www2.census.gov/geo/tiger/TIGER2021/PLACE/"
@@ -44,7 +49,9 @@ async def download_census_file(session, output_dir, state_fips):
     return tiger_file
 
 
-def prepare_boundary_file(output_dir, city, tiger_file):
+def prepare_boundary_file(
+    output_dir: pathlib.Path, city: str, tiger_file: pathlib.Path
+) -> pathlib.Path:
     """Extract the boundaries of a specific city from a census file."""
     city_shp = output_dir / f"{slugify(city)}.shp"
     logger.debug(f"Saving data into {city_shp}...")
@@ -55,8 +62,11 @@ def prepare_boundary_file(output_dir, city, tiger_file):
 
 
 async def download_polygon_file(
-    session, osm_relation_id, polygon_file, format_=PolygonFormat.POLY
-):
+    session: aiohttp.ClientSession,
+    osm_relation_id: str,
+    polygon_file: pathlib.Path,
+    format_: PolygonFormat = PolygonFormat.POLY,
+) -> None:
     """Download the polygon file for a specific city from polygons.openstreetmap.fr."""
     polygon_host = "http://polygons.openstreetmap.fr"
     polygon_url = f"{polygon_host}/{format_.value}"
@@ -64,12 +74,17 @@ async def download_polygon_file(
     await aiohttphelper.fetch_text(session, polygon_host, {"id": osm_relation_id})
     polygon_file.write_text(
         await aiohttphelper.fetch_text(
-            session, polygon_url, {"id": osm_relation_id, "params": 0}
+            session, polygon_url, {"id": osm_relation_id, "params": "0"}
         )
     )
 
 
-def prepare_city_file(output_dir, region_file_path, polygon_file_path, pfb_osm_file):
+def prepare_city_file(
+    output_dir: pathlib.Path,
+    region_file_path: pathlib.Path,
+    polygon_file_path: pathlib.Path,
+    pfb_osm_file: pathlib.Path,
+) -> None:
     """
     Prepare the city OSM file.
 
@@ -80,7 +95,7 @@ def prepare_city_file(output_dir, region_file_path, polygon_file_path, pfb_osm_f
         processhelper.run_osmium(polygon_file_path, region_file_path, pfb_osm_file_path)
 
 
-def state_info(state):
+def state_info(state: str) -> tuple[str, str]:
     """
     Given a state, returns the corresponding abbreviation and FIPS code.
 
@@ -117,18 +132,19 @@ def state_info(state):
     return (abbrev, fips)
 
 
-def convert_with_geopandas(infile, outfile):
+def convert_with_geopandas(infile: pathlib.Path, outfile: pathlib.Path) -> None:
     """Convert a vector-based spatial data file to another format with geopandas."""
     gdf = gpd.read_file(infile)
     gdf.to_file(outfile)
 
 
-def retrieve_city_boundaries(output, country, city, state=None):
+def retrieve_city_boundaries(
+    output: pathlib.Path, country: str, city: str, state: typing.Optional[str] = None
+) -> str:
     """
     Retrieve the city boundaries and save them as Shapefile and GeoJSON.
 
     :return: the slugified query used to retrieve the city boundaries.
-    :rtype: str
     """
     # Prepare the query.
     query = ", ".join(filter(None, [city, state, country]))
@@ -151,7 +167,12 @@ def retrieve_city_boundaries(output, country, city, state=None):
 
 
 # pylint: disable=too-many-locals
-def create_synthetic_population(area, length, width, population=100):
+def create_synthetic_population(
+    area: gpd.GeoDataFrame,
+    length: int,
+    width: int,
+    population: typing.Optional[int] = 100,
+) -> gpd.GeoDataFrame:
     """
     Create a grid representing the synthetic population.
 
@@ -211,7 +232,9 @@ def create_synthetic_population(area, length, width, population=100):
     return grid.to_crs(area.crs)
 
 
-def change_speed_limit(output, city, state_abbrev, speed):
+def change_speed_limit(
+    output: pathlib.Path, city: str, state_abbrev: str, speed: int
+) -> None:
     """Change the speed limit."""
     speedlimit_csv = output / "city_fips_speed.csv"
     speedlimit_csv.write_text(
@@ -219,7 +242,9 @@ def change_speed_limit(output, city, state_abbrev, speed):
     )
 
 
-def simulate_census_blocks(output, synthetic_population):
+def simulate_census_blocks(
+    output: pathlib.Path, synthetic_population: gpd.GeoDataFrame
+) -> None:
     """Simulate census blocks."""
     tabblock = "population"
     synthetic_population_shp = output / f"{tabblock}.shp"
@@ -236,7 +261,13 @@ def simulate_census_blocks(output, synthetic_population):
             z.write(f, arcname=f.name)
 
 
-async def download_lodes_data(session, output_dir, state, part, year):
+async def download_lodes_data(
+    session: aiohttp.ClientSession,
+    output_dir: pathlib.Path,
+    state: str,
+    part: str,
+    year: int,
+) -> None:
     """
     Download employment data from the US census website: https://lehd.ces.census.gov/.
 
@@ -283,7 +314,9 @@ async def download_lodes_data(session, output_dir, state, part, year):
     gunzip(gzipped_lehd_file, decompressed_lefh_file)
 
 
-async def download_census_waterblocks(session, output_dir):
+async def download_census_waterblocks(
+    session: aiohttp.ClientSession, output_dir: pathlib.Path
+) -> None:
     """Download the census waterblocks."""
     waterblock_url = (
         "https://s3.amazonaws.com/pfb-public-documents/censuswaterblocks.zip"
@@ -302,7 +335,9 @@ async def download_census_waterblocks(session, output_dir):
     unzip(zipped_waterblock_file, output_dir)
 
 
-async def download_2010_census_blocks(session, output_dir, fips):
+async def download_2010_census_blocks(
+    session: aiohttp.ClientSession, output_dir: pathlib.Path, fips: str
+) -> None:
     """Download a 2010 census tabulation block code for a specific state."""
     tabblk2010_url = "http://www2.census.gov/geo/tiger/TIGER2010BLKPOPHU"
     tabblk2010_filename = f"tabblock2010_{fips}_pophu.zip"
@@ -327,7 +362,9 @@ async def download_2010_census_blocks(session, output_dir, fips):
         file.rename(output_dir / f"population{file.suffix}")
 
 
-async def download_state_speed_limits(session, output_dir):
+async def download_state_speed_limits(
+    session: aiohttp.ClientSession, output_dir: pathlib.Path
+) -> None:
     """Download the state speed limits."""
     state_speed_filename = "state_fips_speed.csv"
     state_speed_url = (
@@ -339,7 +376,9 @@ async def download_state_speed_limits(session, output_dir):
     await aiohttphelper.download_file(session, state_speed_url, state_speed_file)
 
 
-async def download_city_speed_limits(session, output_dir):
+async def download_city_speed_limits(
+    session: aiohttp.ClientSession, output_dir: pathlib.Path
+) -> None:
     """Download the city speed limits."""
     city_speed_filename = "city_fips_speed.csv"
     city_speed_url = (
@@ -351,7 +390,11 @@ async def download_city_speed_limits(session, output_dir):
     await aiohttphelper.download_file(session, city_speed_url, city_speed_file)
 
 
-def unzip(zip_file, output_dir, delete_after=True):
+def unzip(
+    zip_file: pathlib.Path,
+    output_dir: pathlib.Path,
+    delete_after: typing.Optional[bool] = True,
+) -> None:
     """Unzip an archive into a specific directory."""
     # Decompress it.
     with zipfile.ZipFile(zip_file) as zipped:
@@ -362,7 +405,11 @@ def unzip(zip_file, output_dir, delete_after=True):
         zip_file.unlink()
 
 
-def gunzip(gzip_file, target, delete_after=True):
+def gunzip(
+    gzip_file: pathlib.Path,
+    target: pathlib.Path,
+    delete_after: typing.Optional[bool] = True,
+) -> None:
     """Gunzip a file into a specific target."""
     # Decompress it.
     with gzip.open(gzip_file, "rb") as f:
@@ -374,14 +421,14 @@ def gunzip(gzip_file, target, delete_after=True):
         gzip_file.unlink()
 
 
-def retrieve_region_file(region, output_dir):
+def retrieve_region_file(region: str, output_dir: pathlib.Path) -> typing.Any | str:
     """Retrieve the region file from Geofabrik or BBike."""
     dataset = normalize_unicode_name(region)
-    region_file_path = get_data(dataset, directory=output_dir)
+    region_file_path = data.get_data(dataset, directory=output_dir)  # type: ignore
     return region_file_path
 
 
-def normalize_unicode_name(value):
+def normalize_unicode_name(value: str) -> str:
     """
     Normalize unicode names.
 
