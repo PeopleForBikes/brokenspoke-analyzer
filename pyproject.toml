@@ -9,6 +9,7 @@ license = "MIT"
 python = "^3.10"
 aiohttp = "^3.8.5"
 census = "^0.8.20"
+# gdal = "~3.6.0"
 geopandas = "^0.13.2"
 loguru = "^0.7.0"
 osmnx = "^1.6.0"
@@ -36,6 +37,7 @@ pytest-xdist = "^3.3.1"
 ruff = "^0.0.282"
 Sphinx = "^7.1.2"
 sphinx-autobuild = "^2021.3.14"
+sphinx-autodoc-typehints = "^1.24.0"
 sphinx-copybutton = "^0.5.2"
 types-colorama = "^0.4.15.12"
 types-decorator = "^5.1.8.4"
@@ -56,6 +58,7 @@ force_grid_wrap = 2
 omit = [
   "*/__init__.py",
   "brokenspoke_analyzer/cli.py",
+  "brokenspoke_analyzer/core/downloader.py",
   "brokenspoke_analyzer/main.py",
   "brokenspoke_analyzer/pyrosm/*",
 ]
@@ -76,5 +79,5 @@ module = ["brokenspoke_analyzer.pyrosm.*", "brokenspoke_analyzer.cli.*"]
 ignore_errors = "true"
 
 [[tool.mypy.overrides]]
-module = ["geopandas", "osmnx", "shapely", "us"]
+module = ["geopandas", "osgeo", "osmnx", "shapely", "us"]
 ignore_missing_imports = "true"

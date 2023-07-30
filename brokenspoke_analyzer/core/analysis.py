@@ -1,15 +1,11 @@
 """Define functions used to perform an analysis."""
-import gzip
 import os
 import pathlib
 import random
 import string
 import typing
-import unicodedata
 import zipfile
-from enum import Enum
 
-import aiohttp
 import geopandas as gpd
 import numpy as np
 import shapely
@@ -18,65 +14,10 @@ from osmnx import geocoder
 from slugify import slugify
 
 from brokenspoke_analyzer.core import (
-    aiohttphelper,
-    processhelper,
+    runner,
+    utils,
 )
 from brokenspoke_analyzer.pyrosm import data
-
-# WGS 84 / Pseudo-Mercator -- Spherical Mercator.
-# https://epsg.io/3857
-PSEUDO_MERCATOR_CRS = "EPSG:3857"
-
-
-class PolygonFormat(Enum):
-    """Represent the available polygon formats from polygons.openstreetmap.fr."""
-
-    WKT = "get_wkt.py"
-    GEOJSON = "get_geojson.py"
-    POLY = "get_poly.py"
-
-
-async def download_census_file(
-    session: aiohttp.ClientSession, output_dir: pathlib.Path, state_fips: str
-) -> pathlib.Path:
-    """Download the US Census file for a specific state."""
-    tiger_url = (
-        "https://www2.census.gov/geo/tiger/TIGER2021/PLACE/"
-        f"tl_2021_{state_fips}_place.zip"
-    )
-    tiger_file = output_dir / f"tl_2021_{state_fips}_place.zip"
-    await aiohttphelper.download_file(session, tiger_url, tiger_file)
-    return tiger_file
-
-
-def prepare_boundary_file(
-    output_dir: pathlib.Path, city: str, tiger_file: pathlib.Path
-) -> pathlib.Path:
-    """Extract the boundaries of a specific city from a census file."""
-    city_shp = output_dir / f"{slugify(city)}.shp"
-    logger.debug(f"Saving data into {city_shp}...")
-    census_place = gpd.read_file(tiger_file)
-    city_gdf = census_place.loc[census_place["NAME"] == city.title()]
-    city_gdf.to_file(city_shp)
-    return city_shp
-
-
-async def download_polygon_file(
-    session: aiohttp.ClientSession,
-    osm_relation_id: str,
-    polygon_file: pathlib.Path,
-    format_: PolygonFormat = PolygonFormat.POLY,
-) -> None:
-    """Download the polygon file for a specific city from polygons.openstreetmap.fr."""
-    polygon_host = "http://polygons.openstreetmap.fr"
-    polygon_url = f"{polygon_host}/{format_.value}"
-    # Need to warm up the database first.
-    await aiohttphelper.fetch_text(session, polygon_host, {"id": osm_relation_id})
-    polygon_file.write_text(
-        await aiohttphelper.fetch_text(
-            session, polygon_url, {"id": osm_relation_id, "params": "0"}
-        )
-    )
 
 
 def prepare_city_file(
@@ -92,23 +33,19 @@ def prepare_city_file(
     """
     pfb_osm_file_path = output_dir / pfb_osm_file
     if not pfb_osm_file_path.exists():
-        processhelper.run_osmium(polygon_file_path, region_file_path, pfb_osm_file_path)
+        runner.run_osmium(polygon_file_path, region_file_path, pfb_osm_file_path)
 
 
 def state_info(state: str) -> tuple[str, str]:
     """
     Given a state, returns the corresponding abbreviation and FIPS code.
 
-    Example:
+    The District of Columbia is also recognized as a state.
 
-    >>> abbr, fips = state_info("texas")
-    >>> assert abbr == "TX"
-    >>> assert fips == "48"
+    Examples:
 
-    The Dictrict of Columbia is also recognized as a state:
-    >>> abbr, fips = state_info("district of columbia")
-    >>> assert abbr == "DC"
-    >>> assert fips == "11"
+    >>> assert ("TX", "48") = state_info("texas")
+    >>> assert ("DC", "11") = state_info("district of columbia")
     """
     # Ensure DC is considered a US state.
     # https://github.com/unitedstates/python-us/issues/67
@@ -132,10 +69,27 @@ def state_info(state: str) -> tuple[str, str]:
     return (abbrev, fips)
 
 
-def convert_with_geopandas(infile: pathlib.Path, outfile: pathlib.Path) -> None:
-    """Convert a vector-based spatial data file to another format with geopandas."""
-    gdf = gpd.read_file(infile)
-    gdf.to_file(outfile)
+def derive_state_info(state: str) -> typing.Tuple[str, str, str]:
+    """
+    Derive state information.
+
+    Returns the state abbreviation, the state fips, and whether the job
+    information can be retrieved from the census.
+
+    Examples:
+        >>> assert ("TX", "48", "1") == derive_state_info("texas")
+        >>> assert ("ZZ", "0", "0") == derive_state_info("spain")
+    """
+    try:
+        run_import_jobs = "1"
+        state_abbrev, state_fips = state_info(state)
+    except ValueError:
+        run_import_jobs = "0"
+        state_abbrev, state_fips = (
+            runner.NON_US_STATE_ABBREV,
+            runner.NON_US_STATE_FIPS,
+        )
+    return (state_abbrev, state_fips, run_import_jobs)
 
 
 def retrieve_city_boundaries(
@@ -184,7 +138,7 @@ def create_synthetic_population(
     :rtype: GeoDataFrame
     """
     # Project the area into mercator.
-    mercator_area = area.to_crs(PSEUDO_MERCATOR_CRS)
+    mercator_area = area.to_crs(utils.PSEUDO_MERCATOR_CRS)
 
     # Prepare the rows and columns.
     xmin, ymin, xmax, ymax = mercator_area.total_bounds
@@ -226,7 +180,7 @@ def create_synthetic_population(
                 for _ in range(len(cells))
             ],
         },
-        crs=PSEUDO_MERCATOR_CRS,
+        crs=utils.PSEUDO_MERCATOR_CRS,
     )
 
     return grid.to_crs(area.crs)
@@ -261,181 +215,8 @@ def simulate_census_blocks(
             z.write(f, arcname=f.name)
 
 
-async def download_lodes_data(
-    session: aiohttp.ClientSession,
-    output_dir: pathlib.Path,
-    state: str,
-    part: str,
-    year: int,
-) -> None:
-    """
-    Download employment data from the US census website: https://lehd.ces.census.gov/.
-
-    LODES stands for LEHD Origin-Destination Employment Statistics.
-
-    OD means Origin-Data, which represents the jobs that are associated with
-    both a home census block and a work census block.
-
-    The filename has the folowing format: `[ST]_od_[PART]_[TYPE]_[YEAR].csv.gz`,
-    where:
-    - [ST] = lowercase, 2-letter postal code for a chosen state
-    - [PART] = Part of the state file, can have a value of either "main" or
-        "aux".
-        Complimentary parts of the state file, the main part includes jobs with
-        both workplace and residence in the state and the aux part includes jobs
-        with the workplace in the state and the residence outside of the state.
-    - [TYPE] = Job Type, can have a value of "JTOO" for All Jobs, "JT01" for
-        Primary Jobs, "JT02" for All Private Jobs, "JT03" for Private Primary
-        Jobs, "JT04" for All Federal Jobs, or "JT05" for Federal Primary Jobs.
-    - [YEAR] = Year of job data. Can have the value of 2002-2020 for most
-        states.
-
-    As an example, the main OD file of Primary Jobs in 2007 for California would
-    be the file: `ca_od_main_JTO1_2007.csv.gz`.
-
-    More information about the formast can be found on the website:
-    https://lehd.ces.census.gov/data/#lodes.
-    """
-    lehd_url = f"http://lehd.ces.census.gov/data/lodes/LODES7/{state.lower()}/od"
-    lehd_filename = f"{state.lower()}_od_{part.lower()}_JT00_{year}.csv.gz"
-    gzipped_lehd_file = output_dir / lehd_filename
-    decompressed_lefh_file = output_dir / gzipped_lehd_file.stem
-
-    # Skip the download if the target file already exists.
-    if decompressed_lefh_file.exists():
-        return
-
-    # Download the file.
-    await aiohttphelper.download_file(
-        session, f"{lehd_url}/{lehd_filename}", gzipped_lehd_file
-    )
-
-    # Decompress it.
-    gunzip(gzipped_lehd_file, decompressed_lefh_file)
-
-
-async def download_census_waterblocks(
-    session: aiohttp.ClientSession, output_dir: pathlib.Path
-) -> None:
-    """Download the census waterblocks."""
-    waterblock_url = (
-        "https://s3.amazonaws.com/pfb-public-documents/censuswaterblocks.zip"
-    )
-    zipped_waterblock_file = output_dir / "censuswaterblocks.zip"
-    decompressed_waterblock_file = output_dir / "censuswaterblocks.csv"
-
-    # Skip the download if the target file already exists.
-    if decompressed_waterblock_file.exists():
-        return
-
-    # Download the file.
-    await aiohttphelper.download_file(session, waterblock_url, zipped_waterblock_file)
-
-    # Unzip it.
-    unzip(zipped_waterblock_file, output_dir)
-
-
-async def download_2010_census_blocks(
-    session: aiohttp.ClientSession, output_dir: pathlib.Path, fips: str
-) -> None:
-    """Download a 2010 census tabulation block code for a specific state."""
-    tabblk2010_url = "http://www2.census.gov/geo/tiger/TIGER2010BLKPOPHU"
-    tabblk2010_filename = f"tabblock2010_{fips}_pophu.zip"
-    tabblk2010_file = output_dir / tabblk2010_filename
-    population_file = output_dir / "population.shp"
-
-    # Skip the download if the target file already exists.
-    if population_file.exists():
-        return
-
-    # Download the file.
-    await aiohttphelper.download_file(
-        session, f"{tabblk2010_url}/{tabblk2010_filename}", tabblk2010_file
-    )
-
-    # Unzip it.
-    unzip(tabblk2010_file, output_dir)
-
-    # Rename the tabulation block files to "population".
-    tabblk2010_files = output_dir.glob(f"{tabblk2010_file.stem}.*")
-    for file in tabblk2010_files:
-        file.rename(output_dir / f"population{file.suffix}")
-
-
-async def download_state_speed_limits(
-    session: aiohttp.ClientSession, output_dir: pathlib.Path
-) -> None:
-    """Download the state speed limits."""
-    state_speed_filename = "state_fips_speed.csv"
-    state_speed_url = (
-        f"https://s3.amazonaws.com/pfb-public-documents/{state_speed_filename}"
-    )
-    state_speed_file = output_dir / state_speed_filename
-
-    # Download the file.
-    await aiohttphelper.download_file(session, state_speed_url, state_speed_file)
-
-
-async def download_city_speed_limits(
-    session: aiohttp.ClientSession, output_dir: pathlib.Path
-) -> None:
-    """Download the city speed limits."""
-    city_speed_filename = "city_fips_speed.csv"
-    city_speed_url = (
-        f"https://s3.amazonaws.com/pfb-public-documents/{city_speed_filename}"
-    )
-    city_speed_file = output_dir / city_speed_filename
-
-    # Download the file.
-    await aiohttphelper.download_file(session, city_speed_url, city_speed_file)
-
-
-def unzip(
-    zip_file: pathlib.Path,
-    output_dir: pathlib.Path,
-    delete_after: typing.Optional[bool] = True,
-) -> None:
-    """Unzip an archive into a specific directory."""
-    # Decompress it.
-    with zipfile.ZipFile(zip_file) as zipped:
-        zipped.extractall(output_dir)
-
-    # Delete the archive.
-    if delete_after:
-        zip_file.unlink()
-
-
-def gunzip(
-    gzip_file: pathlib.Path,
-    target: pathlib.Path,
-    delete_after: typing.Optional[bool] = True,
-) -> None:
-    """Gunzip a file into a specific target."""
-    # Decompress it.
-    with gzip.open(gzip_file, "rb") as f:
-        content = f.read()
-        target.write_bytes(content)
-
-    # Delete the archive.
-    if delete_after:
-        gzip_file.unlink()
-
-
 def retrieve_region_file(region: str, output_dir: pathlib.Path) -> typing.Any | str:
     """Retrieve the region file from Geofabrik or BBike."""
-    dataset = normalize_unicode_name(region)
+    dataset = utils.normalize_unicode_name(region)
     region_file_path = data.get_data(dataset, directory=output_dir)  # type: ignore
     return region_file_path
-
-
-def normalize_unicode_name(value: str) -> str:
-    """
-    Normalize unicode names.
-
-    Example:
-        >>> normalize_unicode_name("Québec")
-        quebec
-    """
-    n = value.lower()
-    n = unicodedata.normalize("NFKD", n).encode("ascii", "ignore").decode("utf-8")
-    return n
