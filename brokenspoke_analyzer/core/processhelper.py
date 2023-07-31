@@ -3,6 +3,7 @@ import multiprocessing
 import pathlib
 import subprocess
 import sys
+import typing
 
 from loguru import logger
 from rich.console import Console
@@ -11,7 +12,7 @@ NON_US_STATE_FIPS = 0
 NON_US_STATE_ABBREV = "ZZ"
 
 
-def run(cmd):
+def run(cmd: str) -> None:
     """Run an external command."""
     logger.debug(f"{cmd=}")
     try:
@@ -25,25 +26,29 @@ def run(cmd):
         sys.exit(1)
 
 
-def run_with_status(cmd, status_msg="Running...", completion_msg="Complete."):
+def run_with_status(
+    cmd: str,
+    status_msg: typing.Optional[str] = "Running...",
+    completion_msg: typing.Optional[str] = "Complete.",
+) -> None:
     """Run an external command with a spinner and its status."""
     console = Console()
-    with console.status(status_msg):
+    with console.status(status_msg):  # type: ignore
         run(cmd)
         console.log(completion_msg)
 
 
 # pylint: disable=too-many-arguments,duplicate-code
 def run_analysis(
-    state_abbrev,
-    state_fips,
-    city_shp,
-    pfb_osm_file,
-    output_dir,
-    docker_image,
-    container_name=None,
-    city_fips=None,
-):
+    state_abbrev: str,
+    state_fips: int,
+    city_shp: pathlib.Path,
+    pfb_osm_file: pathlib.Path,
+    output_dir: pathlib.Path,
+    docker_image: str,
+    container_name: typing.Optional[str] = None,
+    city_fips: typing.Optional[str] = None,
+) -> None:
     """Run a BNA analysis."""
     dest = pathlib.Path("/") / output_dir.name
     if state_fips == NON_US_STATE_FIPS:
@@ -78,7 +83,11 @@ def run_analysis(
     run(docker_cmd)
 
 
-def run_osmium(polygon_file_path, region_file_path, reduced_file_path):
+def run_osmium(
+    polygon_file_path: pathlib.Path,
+    region_file_path: pathlib.Path,
+    reduced_file_path: pathlib.Path,
+) -> None:
     """Reduce the OSM file to the boundaries."""
     osmium_cmd = " ".join(
         [
@@ -94,7 +103,11 @@ def run_osmium(polygon_file_path, region_file_path, reduced_file_path):
     run(osmium_cmd)
 
 
-def run_osmosis(polygon_file_name, region_file_name, reduced_file_name):
+def run_osmosis(
+    polygon_file_name: pathlib.Path,
+    region_file_name: pathlib.Path,
+    reduced_file_name: pathlib.Path,
+) -> None:
     """Reduce the OSM file to the boundaries."""
     osmosis_cmd = " ".join(
         [
@@ -121,8 +134,8 @@ def sanitize_values(value: str) -> str:
     'a_directory_with_spaces'
 
     >>> sanitize_values("")
-    None
+    ''
     """
     if not value:
-        return None
+        return ""
     return value.replace(" ", "_")
