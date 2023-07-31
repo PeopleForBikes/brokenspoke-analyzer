@@ -28,8 +28,9 @@ def unzip(
 ) -> None:
     """Unzip an archive into a specific directory."""
     # Decompress it.
+    zip_file = zip_file.resolve(strict=True)
     with zipfile.ZipFile(zip_file) as zipped:
-        zipped.extractall(output_dir)
+        zipped.extractall(output_dir.resolve(strict=True))
 
     # Delete the archive.
     if delete_after:
@@ -43,9 +44,10 @@ def gunzip(
 ) -> None:
     """Gunzip a file into a specific target."""
     # Decompress it.
+    gzip_file = gzip_file.resolve(strict=True)
     with gzip.open(gzip_file, "rb") as f:
         content = f.read()
-        target.write_bytes(content)
+        target.resolve().write_bytes(content)
 
     # Delete the archive.
     if delete_after:
@@ -55,7 +57,8 @@ def gunzip(
 def prepare_census_blocks(tabblk_file: pathlib.Path, output_dir: pathlib.Path) -> None:
     """Prepare the census block files to match our naming convention."""
     # Unzip it.
-    unzip(tabblk_file, output_dir)
+    output_dir = output_dir.resolve()
+    unzip(tabblk_file.resolve(strict=True), output_dir)
 
     # Rename the tabulation block files to "population".
     tabblk2010_files = output_dir.glob(f"{tabblk_file.stem}.*")
@@ -145,7 +148,7 @@ def prepare_city_inputs(
     # Prepare the directory structure.
     if not root:
         root = pathlib.Path("./data")
-    city_dir = root / normalized_city_name
+    city_dir = root.resolve(strict=True) / normalized_city_name
     city_data_file = city_dir / normalized_city_name
     city_osm_file = city_data_file.with_suffix(".osm")
     city_boundary_file = city_data_file.with_suffix(".shp")
@@ -157,6 +160,6 @@ def prepare_city_inputs(
 
 def get_srid(shapefile: pathlib.Path) -> str:
     """Get the SRID of a shapefile."""
-    gdf = gpd.read_file(shapefile)
+    gdf = gpd.read_file(shapefile.resolve(strict=True))
     utm = gdf.estimate_utm_crs()
     return str(utm.to_string()[5:])

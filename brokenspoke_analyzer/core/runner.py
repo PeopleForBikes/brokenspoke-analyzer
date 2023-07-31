@@ -1,43 +1,21 @@
 """Define helper function to run external commands."""
+import json
 import multiprocessing
 import pathlib
 import subprocess
-import sys
 import typing
+import urllib
 
 from loguru import logger
-from rich.console import Console
 from slugify import slugify
 
 NON_US_STATE_FIPS = "0"
 NON_US_STATE_ABBREV = "ZZ"
 
 
-def run(cmd: str) -> None:
-    """Run an external command."""
-    logger.debug(f"{cmd=}")
-    try:
-        subprocess.run(cmd, shell=True, check=True, capture_output=True, cwd=None)
-    except subprocess.CalledProcessError as cpe:
-        print(
-            f'"{cpe.cmd}" failed to execute with error code {cpe.returncode} '
-            "for the following reason:\n"
-            f"{cpe.stderr.decode('utf-8')}."
-        )
-        sys.exit(1)
-
-
-# TODO(rgreinho): this belongs to the CLI package.
-def run_with_status(
-    cmd: str,
-    status_msg: typing.Optional[str] = "Running...",
-    completion_msg: typing.Optional[str] = "Complete.",
-) -> None:
-    """Run an external command with a spinner and its status."""
-    console = Console()
-    with console.status(status_msg):  # type: ignore
-        run(cmd)
-        console.log(completion_msg)
+def run(cmd: typing.Sequence[str]) -> None:
+    logger.debug(f"cmd={' '.join(cmd)}")
+    subprocess.run(cmd, check=True)
 
 
 # pylint: disable=too-many-arguments,duplicate-code
@@ -61,12 +39,12 @@ def run_analysis(
         pfb_country = "USA"
         pfb_state = state_abbrev.lower()
         run_import_jobs = 1
-    docker_cmd_args = ["docker", "run", "--rm"]
+    docker_cmd = ["docker", "run", "--rm"]
     if container_name:
-        docker_cmd_args.extend(["--name", container_name])
+        docker_cmd.extend(["--name", container_name])
     if city_fips:
-        docker_cmd_args.extend([f"-e PFB_CITY_FIPS={city_fips}"])
-    docker_cmd_args.extend(
+        docker_cmd.extend([f"-e PFB_CITY_FIPS={city_fips}"])
+    docker_cmd.extend(
         [
             f'-e PFB_SHPFILE="{dest / city_shp.name}"',
             f'-e PFB_OSM_FILE="{dest / pfb_osm_file.name}"',
@@ -81,50 +59,25 @@ def run_analysis(
             docker_image,
         ]
     )
-    docker_cmd = " ".join(docker_cmd_args)
-    # logger.debug(f"{docker_cmd=}")
     run(docker_cmd)
 
 
-def run_osmium(
+def run_osmium_extract(
     polygon_file_path: pathlib.Path,
     region_file_path: pathlib.Path,
     reduced_file_path: pathlib.Path,
 ) -> None:
-    """Reduce the OSM file to the boundaries."""
-    osmium_cmd = " ".join(
-        [
-            "osmium",
-            "extract",
-            "-p",
-            f'"{polygon_file_path}"',
-            f'"{region_file_path}"',
-            "-o",
-            f'"{reduced_file_path}"',
-        ]
-    )
+    """Reduce the OSM file to the boundaries with OSMium."""
+    osmium_cmd = [
+        "osmium",
+        "extract",
+        "-p",
+        str(polygon_file_path.resolve(strict=True)),
+        str(region_file_path.resolve(strict=True)),
+        "-o",
+        str(reduced_file_path.resolve()),
+    ]
     run(osmium_cmd)
-
-
-def run_osmosis(
-    polygon_file_name: pathlib.Path,
-    region_file_name: pathlib.Path,
-    reduced_file_name: pathlib.Path,
-) -> None:
-    """Reduce the OSM file to the boundaries."""
-    osmosis_cmd = " ".join(
-        [
-            "osmosis",
-            "--read-pbf-fast",
-            f'file="{region_file_name}"',
-            f"workers={multiprocessing.cpu_count()}",
-            "--bounding-polygon",
-            f'file="{polygon_file_name}"',
-            "--write-xml",
-            f'file="{reduced_file_name}"',
-        ]
-    )
-    run(osmosis_cmd)
 
 
 def sanitize_values(value: str) -> str:
@@ -140,3 +93,102 @@ def sanitize_values(value: str) -> str:
     ''
     """
     return slugify(value, save_order=True, separator="_")
+
+
+def run_osm2pgrouting(
+    database_url: str,
+    schema: str,
+    prefix: str,
+    configuration_file: pathlib.Path,
+    osm_file: pathlib.Path,
+) -> None:
+    """Import OSM data into pgRouting."""
+    # Parse the database connection string.
+    urlparts = urllib.parse.urlparse(database_url)
+
+    # Prepare the command.
+    osm2pgrouting_cmd = [
+        "osm2pgrouting",
+        "--username",
+        str(urlparts.username),
+        "--password",
+        str(urlparts.password),
+        "--host",
+        str(urlparts.hostname),
+        "--port",
+        str(urlparts.port),
+        "--dbname",
+        str(urlparts.path[1:]),
+        "--file",
+        str(osm_file.resolve(strict=True)),
+        "--schema",
+        schema,
+        "--prefix",
+        prefix,
+        "--conf",
+        str(configuration_file.resolve(strict=True)),
+        "--clean",
+    ]
+    run(osm2pgrouting_cmd)
+
+
+def run_osm2pgsql(
+    database_url: str,
+    output_srid: int,
+    style_file: pathlib.Path,
+    osm_file: pathlib.Path,
+    number_processes: typing.Optional[int] = 0,
+    prefix: typing.Optional[str] = "neighborhood_osm_full",
+) -> None:
+    """Import OSM data into PostGIS."""
+    # Asserts are here to make MyPy happy.
+    assert number_processes is not None
+    assert prefix is not None
+    cores = multiprocessing.cpu_count() if number_processes == 0 else number_processes
+    osm2pgsql_cmd = [
+        "osm2pgsql",
+        "--database",
+        database_url,
+        "--create",
+        "--prefix",
+        prefix,
+        "--proj",
+        str(output_srid),
+        "--style",
+        str(style_file.resolve(strict=True)),
+        "--number-processes",
+        str(cores),
+        str(osm_file.resolve(strict=True)),
+    ]
+    run(osm2pgsql_cmd)
+
+
+def run_psql_command_string(database_url: str, command: str) -> None:
+    """Execute a one command string, command, and then exit."""
+    psql_cmd = ["psql", "-c", command, database_url]
+    run(psql_cmd)
+
+
+def run_osm_convert(
+    osm_file: pathlib.Path, bbox: tuple[float, float, float, float]
+) -> pathlib.Path:
+    """Convert OSM data."""
+    output = osm_file.with_suffix(".clipped.osm")
+    bbox_str = ",".join([str(i) for i in bbox])
+    osmconvert_cmd = [
+        "osmconvert",
+        str(osm_file.resolve(strict=True)),
+        "--drop-broken-refs",
+        f"-b={bbox_str}",
+        f"-o={output.resolve()}",
+    ]
+    run(osmconvert_cmd)
+    return output
+
+
+def run_docker_info() -> typing.Any:
+    """Returns a dict containing Docker system information."""
+    docker_info_cmd = ["docker", "info", "--format", "json"]
+    logger.debug(f"cmd={' '.join(docker_info_cmd)}")
+    docker_info = subprocess.run(docker_info_cmd, check=True, capture_output=True)
+    return json.loads(docker_info.stdout)
