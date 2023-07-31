@@ -2468,13 +2468,13 @@ files = [
 
 [[package]]
 name = "osmnx"
-version = "1.5.1"
+version = "1.6.0"
 description = "Download, model, analyze, and visualize street networks and other geospatial features from OpenStreetMap"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "osmnx-1.5.1-py3-none-any.whl", hash = "sha256:2340cfb1e9730e9d5863e53f0ae8521e9c21ccc15f7d2b0ee2415510e4d2e709"},
-    {file = "osmnx-1.5.1.tar.gz", hash = "sha256:1f83dc2fb10f55116096a1db867c7da42a034bace63d4a403f9fdd628a33c3be"},
+    {file = "osmnx-1.6.0-py3-none-any.whl", hash = "sha256:2ca7bcf02c8ce0122c235b9bf6280b3261c206fd0ccc9c0bc6839553ee010f63"},
+    {file = "osmnx-1.6.0.tar.gz", hash = "sha256:719c4dc00c2b489ea9e71a382b9e032721db462d9955edbbf740cd799d93feb3"},
 ]
 
 [package.dependencies]
@@ -2482,7 +2482,7 @@ geopandas = ">=0.12"
 networkx = ">=2.5"
 numpy = ">=1.20"
 pandas = ">=1.1"
-requests = ">=2.25"
+requests = ">=2.27"
 shapely = ">=2.0"
 
 [package.extras]
@@ -4150,4 +4150,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "a4246959e5d223a5056390051f47bd1731b79c5568f708831cab788a7dfc3197"
+content-hash = "e3a2d94e47de77a5e48fdd72ad6948d3d79ca509dd3699c55d7bc0ad281c87fe"
