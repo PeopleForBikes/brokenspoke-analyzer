@@ -4,6 +4,7 @@ import typing
 import zipfile
 from enum import Enum
 
+import geopandas as gpd
 from loguru import logger
 from slugify import slugify
 
@@ -152,3 +153,10 @@ def prepare_city_inputs(
     city_dir.mkdir(parents=True, exist_ok=True)
 
     return (city_dir, city_boundary_file, city_osm_file)
+
+
+def get_srid(shapefile: pathlib.Path) -> str:
+    """Get the SRID of a shapefile."""
+    gdf = gpd.read_file(shapefile)
+    utm = gdf.estimate_utm_crs()
+    return str(utm.to_string()[5:])
