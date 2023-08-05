@@ -31,7 +31,7 @@ OutputDir = typer.Option(
 DockerImage = typer.Option(
     "azavea/pfb-network-connectivity:0.18.0", help="override the BNA Docker image"
 )
-SpeedLimit = typer.Option(50, help="override the default speed limit (in km/h)")
+SpeedLimit = typer.Option(30, help="override the default speed limit (in mph)")
 BlockSize = typer.Option(
     500, help="size of a synthetic block for non-US cities (in meters)"
 )
@@ -39,9 +39,10 @@ BlockPopulation = typer.Option(
     100, help="population of a synthetic block for non-US cities"
 )
 ContainerName = typer.Option(
-    None, help="give a specific name to the container running the BNA."
+    None, help="give a specific name to the container running the BNA"
 )
 Retries = typer.Option(2, help="number of times to retry downloading files")
+CityFIPS = typer.Option(None, help="city FIPS code")
 
 
 def callback(verbose: int = typer.Option(0, "--verbose", "-v", count=True)):
@@ -113,6 +114,7 @@ def analyze(
     output_dir: pathlib.Path = OutputDir,
     docker_image: Optional[str] = DockerImage,
     container_name: Optional[str] = ContainerName,
+    city_fips: Optional[str] = CityFIPS,
 ):
     """Run an analysis."""
     # Retrieve the state info if needed.
@@ -125,6 +127,7 @@ def analyze(
         output_dir,
         docker_image,
         container_name,
+        city_fips,
     )
 
 
@@ -141,6 +144,7 @@ def run(
     block_population: Optional[int] = BlockPopulation,
     container_name: Optional[str] = ContainerName,
     retries: Optional[int] = Retries,
+    city_fips: Optional[str] = CityFIPS,
 ):
     """Prepare and run an analysis."""
     asyncio.run(
@@ -155,6 +159,7 @@ def run(
             block_population,
             container_name,
             retries,
+            city_fips,
         )
     )
 
@@ -171,6 +176,7 @@ async def prepare_and_run(
     block_population,
     container_name,
     retries,
+    city_fips,
 ):
     """Prepare and run an analysis."""
     speed_file = output_dir / "city_fips_speed.csv"
@@ -187,7 +193,7 @@ async def prepare_and_run(
         block_population,
         retries,
     )
-    analyze_(*params, docker_image, container_name)
+    analyze_(*params, docker_image, container_name, city_fips)
 
 
 # pylint: disable=too-many-locals,too-many-arguments
@@ -221,10 +227,16 @@ async def prepare_(
 
     # Download the OSM region file.
     with console.status("[bold green]Downloading the OSM region file..."):
-        region = state if state else country
-        region_file_path = retryer(
-            analysis.retrieve_region_file, region, True, output_dir
-        )
+        try:
+            if not state:
+                raise ValueError
+            region_file_path = retryer(
+                analysis.retrieve_region_file, state, True, output_dir
+            )
+        except ValueError:
+            region_file_path = retryer(
+                analysis.retrieve_region_file, country, True, output_dir
+            )
         console.log("OSM Region file downloaded.")
 
     # Reduce the osm file with osmium.
@@ -328,6 +340,7 @@ def analyze_(
     output_dir,
     docker_image,
     container_name,
+    city_fips,
 ):
     """Run the analysis."""
     console = Console()
@@ -340,5 +353,6 @@ def analyze_(
             output_dir,
             docker_image,
             container_name,
+            city_fips=city_fips,
         )
         console.log(f"Analysis for {city_shp} complete.")

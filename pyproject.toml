@@ -7,37 +7,43 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-aiohttp = "^3.8.4"
+aiohttp = "^3.8.5"
 census = "^0.8.20"
 geopandas = "^0.13.2"
 loguru = "^0.7.0"
+osmnx = "^1.6.0"
 python-dotenv = "^1.0.0"
 python-slugify = "^8.0.1"
-rich = "^13.4.2"
+rich = "^13.5.1"
 typer = "^0.9.0"
 us = "^3.1.1"
-osmnx = "^1.4.0"
 tenacity = "^8.2.2"
 
-
-[tool.poetry.dev-dependencies]
-pytest = "^7"
-black = "^23.3.0"
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
 bpython = "^0.24"
+furo = "^2023.7.26"
 isort = "^5.11.3"
-furo = "^2023.5.20"
-jupyterlab = "^4.0.2"
-matplotlib = "^3.7.0"
+jupyterlab = "^4.0.3"
+matplotlib = "^3.7.2"
+mypy = "^1.4.1"
 myst-parser = "^2.0.0"
+pytest = "^7"
 pytest-cov = "^4.1.0"
 pytest-mock = "^3.11.1"
-pytest-rerunfailures = "^11.1"
+pytest-rerunfailures = "^12.0"
 pytest-socket = "^0.6.0"
 pytest-xdist = "^3.3.1"
-ruff = "^0.0.275"
-Sphinx = "^7.0.1"
+ruff = "^0.0.281"
+Sphinx = "^7.1.1"
 sphinx-autobuild = "^2021.3.14"
 sphinx-copybutton = "^0.5.2"
+types-colorama = "^0.4.15.12"
+types-decorator = "^5.1.8.4"
+types-jsonschema = "^4.17.0.10"
+types-pygments = "^2.15.0.2"
+types-python-slugify = "^8.0.0.3"
+types-six = "^1.16.21.9"
 xdoctest = "^1.1.0"
 
 [tool.poetry.scripts]
@@ -62,3 +68,14 @@ addopts = "-p no:warnings --cov-report term-missing --cov-report html --xdoctest
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+strict = "true"
+
+[[tool.mypy.overrides]]
+module = ["brokenspoke_analyzer.pyrosm.*", "brokenspoke_analyzer.cli.*"]
+ignore_errors = "true"
+
+[[tool.mypy.overrides]]
+module = ["geopandas", "osmnx", "shapely", "us"]
+ignore_missing_imports = "true"
