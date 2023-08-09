@@ -15,5 +15,4 @@ Submodules
    brokenspoke_analyzer.core.analysis
    brokenspoke_analyzer.core.downloader
    brokenspoke_analyzer.core.runner
-   brokenspoke_analyzer.core.srid
    brokenspoke_analyzer.core.utils

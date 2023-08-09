@@ -8,8 +8,6 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.10"
 aiohttp = "^3.8.5"
-census = "^0.8.20"
-# gdal = "~3.6.0"
 geopandas = "^0.13.2"
 loguru = "^0.7.0"
 osmnx = "^1.6.0"
@@ -25,7 +23,6 @@ bpython = "^0.24"
 furo = "^2023.7.26"
 isort = "^5.11.3"
 jupyterlab = "^4.0.4"
-matplotlib = "^3.7.2"
 mypy = "^1.4.1"
 myst-parser = "^2.0.0"
 pytest = "^7"
@@ -79,5 +76,5 @@ module = ["brokenspoke_analyzer.pyrosm.*", "brokenspoke_analyzer.cli.*"]
 ignore_errors = "true"
 
 [[tool.mypy.overrides]]
-module = ["geopandas", "osgeo", "osmnx", "shapely", "us"]
+module = ["geopandas", "osmnx", "shapely", "us"]
 ignore_missing_imports = "true"
