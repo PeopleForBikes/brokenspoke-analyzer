@@ -13,7 +13,7 @@ from rich.console import Console
 
 from brokenspoke_analyzer.core import (
     analysis,
-    processhelper,
+    runner,
 )
 
 # Default values
@@ -225,12 +225,12 @@ async def prepare_(
             state_abbrev, state_fips = analysis.state_info(country)
     except ValueError:
         state_abbrev, state_fips = (
-            processhelper.NON_US_STATE_ABBREV,
-            processhelper.NON_US_STATE_FIPS,
+            runner.NON_US_STATE_ABBREV,
+            runner.NON_US_STATE_FIPS,
         )
 
     # Perform some specific operations for non-US cities.
-    if state_fips == processhelper.NON_US_STATE_FIPS:
+    if str(state_fips) == runner.NON_US_STATE_FIPS:
         # Create synthetic population.
         with console.status("[bold green]Prepare synthetic population..."):
             CELL_SIZE = (block_size, block_size)
@@ -309,7 +309,7 @@ def analyze_(
     """Run the analysis."""
     console = Console()
     with console.status("[bold green]Running the full analysis (may take a while)..."):
-        processhelper.run_analysis(
+        runner.run_analysis(
             state_abbrev,
             state_fips,
             city_shp,

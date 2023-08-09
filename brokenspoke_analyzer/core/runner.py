@@ -7,8 +7,9 @@ import typing
 
 from loguru import logger
 from rich.console import Console
+from slugify import slugify
 
-NON_US_STATE_FIPS = 0
+NON_US_STATE_FIPS = "0"
 NON_US_STATE_ABBREV = "ZZ"
 
 
@@ -26,6 +27,7 @@ def run(cmd: str) -> None:
         sys.exit(1)
 
 
+# TODO(rgreinho): this belongs to the CLI package.
 def run_with_status(
     cmd: str,
     status_msg: typing.Optional[str] = "Running...",
@@ -51,7 +53,7 @@ def run_analysis(
 ) -> None:
     """Run a BNA analysis."""
     dest = pathlib.Path("/") / output_dir.name
-    if state_fips == NON_US_STATE_FIPS:
+    if str(state_fips) == NON_US_STATE_FIPS:
         pfb_country = "nonus"
         pfb_state = ""
         run_import_jobs = 0
@@ -128,7 +130,7 @@ def sanitize_values(value: str) -> str:
     """
     Removes spaces and other invalid characters from the value.
 
-    Example:
+    Examples:
 
     >>> sanitize_values("a directory with spaces")
     'a_directory_with_spaces'
@@ -136,6 +138,4 @@ def sanitize_values(value: str) -> str:
     >>> sanitize_values("")
     ''
     """
-    if not value:
-        return ""
-    return value.replace(" ", "_")
+    return slugify(value, save_order=True, separator="_")

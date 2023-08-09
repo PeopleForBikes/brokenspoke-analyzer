@@ -20,7 +20,10 @@ jobs:
           python-version: "3.10"
           cache: "poetry"
       - name: Setup the project
-        run: poetry install
+        run: |
+          sudo apt-get install gdal-bin libgdal-dev
+          poetry install
+          .venv/bin/pip install gdal==$(gdal-config --version)
       - name: Lint markdown files
         run: just lint-md
       - name: Lint Python files
@@ -38,6 +41,11 @@ jobs:
         with:
           python-version: "3.10"
           cache: "poetry"
+      - name: Setup host
+        run: |
+          sudo apt-get install gdal-bin libgdal-dev
+          poetry install
+          .venv/bin/pip install gdal==$(gdal-config --version)
       - name: Setup the project
         run: poetry install
       - name: Run the unit tests
