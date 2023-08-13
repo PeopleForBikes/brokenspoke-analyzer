@@ -15,10 +15,11 @@ from loguru import logger
 from sqlalchemy import create_engine
 
 from brokenspoke_analyzer.core import (
+    compute,
     ingestor,
     runner,
 )
-from brokenspoke_analyzer.core.database import dbcore
+from brokenspoke_analyzer.database import dbcore
 
 
 def test_import_neighborhood():
@@ -169,3 +170,80 @@ def test_docker_info():
     d = runner.run_docker_info()
     assert d["NCPU"] == 4
     assert d["MemTotal"] == 2085761024
+
+
+def test_all():
+    database_url = "postgresql://postgres:postgres@localhost:5432/postgres"
+    engine = create_engine(
+        database_url.replace("postgresql://", "postgresql+psycopg://")
+    )
+
+    os.environ["DATABASE_URL"] = database_url
+    os.environ["PGPASSWORD"] = "postgres"
+    os.environ["PGUSER"] = "postgres"
+    os.environ["PGHOST"] = "localhost"
+    os.environ["PGDATABASE"] = "postgres"
+    os.environ["PGPORT"] = "5432"
+    os.environ["PFB_DEBUG"] = "1"
+
+    country = "USA"
+    state = "new mexico"
+    city_fips = "3570670"
+    buffer = 2680
+    output_srid = 32613
+    census_year = 2019
+    # state_fips = "35"
+    input_dir = pathlib.Path("data")
+    boundary_file = input_dir / "santa-rosa-new-mexico-usa.shp"
+    population_file = input_dir / "population.shp"
+    water_blocks_file = input_dir / "censuswaterblocks.csv"
+    osm_file = input_dir / "santa-rosa-new-mexico-usa.osm"
+    state_speed_limits_csv = input_dir / "state_fips_speed.csv"
+    city_speed_limits_csv = input_dir / "city_fips_speed.csv"
+
+    # compute params.
+    sql_script_dir = pathlib.Path("scripts/sql")
+    state_default_speed, city_default_speed = (30, None)
+    tolerance = compute.Tolerance()
+    path_constraint = compute.PathConstraint()
+    block_road = compute.BlockRoad()
+    score = compute.Score()
+    import_jobs = country == ingestor.COUNTRY_USA
+
+    # Prepare DB.
+    logger.debug("Configure the database")
+    docker_info = runner.run_docker_info()
+    docker_cores = docker_info["NCPU"]
+    docker_memory_mb = docker_info["MemTotal"] // (1024**2)
+    dbcore.configure_db(engine, docker_cores, docker_memory_mb, os.environ["PGUSER"])
+
+    ingestor.import_all(
+        engine,
+        country,
+        output_srid,
+        buffer,
+        boundary_file,
+        population_file,
+        water_blocks_file,
+        input_dir,
+        osm_file,
+        state_speed_limits_csv,
+        city_speed_limits_csv,
+        city_fips,
+        state,
+        census_year,
+    )
+
+    compute.compute_all(
+        engine,
+        sql_script_dir,
+        output_srid,
+        buffer,
+        state_default_speed,
+        city_default_speed,
+        tolerance,
+        path_constraint,
+        block_road,
+        score,
+        import_jobs,
+    )
