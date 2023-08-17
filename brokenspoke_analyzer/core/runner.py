@@ -43,7 +43,7 @@ def run_with_status(
 # pylint: disable=too-many-arguments,duplicate-code
 def run_analysis(
     state_abbrev: str,
-    state_fips: int,
+    state_fips: str,
     city_shp: pathlib.Path,
     pfb_osm_file: pathlib.Path,
     output_dir: pathlib.Path,
@@ -53,7 +53,7 @@ def run_analysis(
 ) -> None:
     """Run a BNA analysis."""
     dest = pathlib.Path("/") / output_dir.name
-    if str(state_fips) == NON_US_STATE_FIPS:
+    if state_fips == NON_US_STATE_FIPS:
         pfb_country = "nonus"
         pfb_state = ""
         run_import_jobs = 0
@@ -68,20 +68,21 @@ def run_analysis(
         docker_cmd_args.extend([f"-e PFB_CITY_FIPS={city_fips}"])
     docker_cmd_args.extend(
         [
-            f'-e PFB_SHPFILE="{sanitize_values(str(dest / city_shp.name))}"',
-            f'-e PFB_OSM_FILE="{sanitize_values(str(dest / pfb_osm_file))}"',
-            f"-e PFB_COUNTRY={sanitize_values(str(pfb_country))}",
-            f"-e PFB_STATE={sanitize_values(str(pfb_state))}",
+            f'-e PFB_SHPFILE="{dest / city_shp.name}"',
+            f'-e PFB_OSM_FILE="{dest / pfb_osm_file.name}"',
+            f"-e PFB_COUNTRY={pfb_country}",
+            f"-e PFB_STATE={sanitize_values(pfb_state)}",
             f"-e PFB_STATE_FIPS={state_fips}",
-            f'-e NB_OUTPUT_DIR="{sanitize_values(str(dest))}"',
+            f'-e NB_OUTPUT_DIR="{dest}"',
             f"-e RUN_IMPORT_JOBS={run_import_jobs}",
             "-e PFB_DEBUG=1",
-            f'-v "{output_dir}":"{sanitize_values(str(dest))}"',
+            f'-v "{output_dir}":"{dest}"',
             f'-v "{output_dir}/population.zip":/data/population.zip',
             docker_image,
         ]
     )
     docker_cmd = " ".join(docker_cmd_args)
+    # logger.debug(f"{docker_cmd=}")
     run(docker_cmd)
 
 

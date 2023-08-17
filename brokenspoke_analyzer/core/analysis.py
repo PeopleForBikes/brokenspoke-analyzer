@@ -215,8 +215,12 @@ def simulate_census_blocks(
             z.write(f, arcname=f.name)
 
 
-def retrieve_region_file(region: str, output_dir: pathlib.Path) -> typing.Any | str:
+def retrieve_region_file(region: str, output_dir: pathlib.Path) -> pathlib.Path:
     """Retrieve the region file from Geofabrik or BBike."""
     dataset = utils.normalize_unicode_name(region)
-    region_file_path = data.get_data(dataset, directory=output_dir)  # type: ignore
+    dataset_file = data.get_data(dataset, directory=output_dir)  # type: ignore
+    region_file_path: pathlib.Path = pathlib.Path(dataset_file)
+    region_file_path = region_file_path.resolve(strict=True)
+    if not region_file_path.exists():
+        raise ValueError(f"the path `{region_file_path}` does not exist")
     return region_file_path
