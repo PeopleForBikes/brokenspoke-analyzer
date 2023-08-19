@@ -45,13 +45,39 @@ docker buildx build -t azavea/pfb-network-connectivity:0.18.0 -f analysis/Docker
 
 ## Install
 
-Install the tool from GitHub directly:
+We recommend creating a virtual environment:
 
 ```bash
-pip install git+https://github.com/PeopleForBikes/brokenspoke-analyzer
+cd /tmp
+mkdir brokenspoke-analyzer
+cd brokenspoke-analyzer
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Then, installing the tool from GitHub directly:
+
+```bash
+pip install git+https://github.com/PeopleForBikes/brokenspoke-analyzer@1.2.1
 ```
 
 This will add a new command named `bna`.
+
+### From source
+
+If you are interested in using the source code from this repository directly,
+you can execute the following instructions instead (note that
+[poetry](https://python-poetry.org/) will be required):
+
+```bash
+git clone git@github.com:PeopleForBikes/brokenspoke-analyzer.git
+cd brokenspoke-analyzer
+git switch -c 1.2.1
+poetry install
+```
+
+For more information about using the source code, please refer to the
+[contributing](CONTRIBUTING.md) page.
 
 ## Quickstart
 
