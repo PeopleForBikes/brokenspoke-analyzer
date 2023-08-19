@@ -3,7 +3,7 @@ import asyncio
 import logging
 import pathlib
 import sys
-from typing import Optional
+import typing
 
 import aiohttp
 import geopandas as gpd
@@ -17,6 +17,7 @@ from tenacity import (
 
 from brokenspoke_analyzer.core import (
     analysis,
+    downloader,
     runner,
 )
 
@@ -47,7 +48,7 @@ CityFIPS = typer.Option(None, help="city FIPS code")
 Retries = typer.Option(2, help="number of times to retry downloading files")
 
 
-def callback(verbose: int = typer.Option(0, "--verbose", "-v", count=True)):
+def callback(verbose: int = typer.Option(0, "--verbose", "-v", count=True)) -> None:
     """Define callback to configure global flags."""
     # Configure the logger.
 
@@ -86,14 +87,27 @@ app = typer.Typer(callback=callback)
 def prepare(
     country: str,
     city: str,
-    state: Optional[str] = typer.Argument(None),
-    output_dir: Optional[pathlib.Path] = OutputDir,
-    speed_limit: Optional[int] = SpeedLimit,
-    block_size: Optional[int] = BlockSize,
-    block_population: Optional[int] = BlockPopulation,
-    retries: Optional[int] = Retries,
-):
+    state: typing.Optional[str] = typer.Argument(None),
+    output_dir: typing.Optional[pathlib.Path] = OutputDir,
+    speed_limit: typing.Optional[int] = SpeedLimit,
+    block_size: typing.Optional[int] = BlockSize,
+    block_population: typing.Optional[int] = BlockPopulation,
+    retries: typing.Optional[int] = Retries,
+) -> None:
     """Prepare the required files for an analysis."""
+    # Make MyPy happy.
+    if not output_dir:
+        raise ValueError("`output_dir` must be set")
+    if not speed_limit:
+        raise ValueError("`speed_limit` must be set")
+    if not block_size:
+        raise ValueError("`block_size` must be set")
+    if not block_population:
+        raise ValueError("`block_population` must be set")
+    if not retries:
+        raise ValueError("`retries` must be set")
+
+    # Prepare.
     asyncio.run(
         prepare_(
             country,
@@ -114,13 +128,21 @@ def analyze(
     city_shp: pathlib.Path,
     pfb_osm_file: pathlib.Path,
     output_dir: pathlib.Path = OutputDir,
-    docker_image: Optional[str] = DockerImage,
-    container_name: Optional[str] = ContainerName,
-    city_fips: Optional[str] = CityFIPS,
-):
+    docker_image: typing.Optional[str] = DockerImage,
+    container_name: typing.Optional[str] = ContainerName,
+    city_fips: typing.Optional[str] = CityFIPS,
+) -> None:
     """Run an analysis."""
+    # Make MyPy happy.
+    if not docker_image:
+        raise ValueError("`docker_image` must be set")
+
     # Retrieve the state info if needed.
-    state_abbrev, state_fips = analysis.state_info(state) if state else (0, 0)
+    state_abbrev, state_fips = analysis.state_info(state) if state else ("0", "0")
+    if not state_abbrev:
+        raise ValueError("`state_abbrev` must be set")
+    if not state_fips:
+        raise ValueError("`state_fips` must be set")
     analyze_(
         state_abbrev,
         state_fips,
@@ -138,17 +160,30 @@ def analyze(
 def run(
     country: str,
     city: str,
-    state: Optional[str] = typer.Argument(None),
+    state: typing.Optional[str] = typer.Argument(None),
     output_dir: pathlib.Path = OutputDir,
-    docker_image: Optional[str] = DockerImage,
-    speed_limit: Optional[int] = SpeedLimit,
-    block_size: Optional[int] = BlockSize,
-    block_population: Optional[int] = BlockPopulation,
-    container_name: Optional[str] = ContainerName,
-    city_fips: Optional[str] = CityFIPS,
-    retries: Optional[int] = Retries,
-):
+    docker_image: typing.Optional[str] = DockerImage,
+    speed_limit: typing.Optional[int] = SpeedLimit,
+    block_size: typing.Optional[int] = BlockSize,
+    block_population: typing.Optional[int] = BlockPopulation,
+    container_name: typing.Optional[str] = ContainerName,
+    city_fips: typing.Optional[str] = CityFIPS,
+    retries: typing.Optional[int] = Retries,
+) -> None:
     """Prepare and run an analysis."""
+    # Make MyPy happy.
+    if not docker_image:
+        raise ValueError("`docker_image` must be set")
+    if not speed_limit:
+        raise ValueError("`speed_limit` must be set")
+    if not block_size:
+        raise ValueError("`block_size` must be set")
+    if not block_population:
+        raise ValueError("`block_population` must be set")
+    if not retries:
+        raise ValueError("`retries` must be set")
+
+    # Prepare and run.
     asyncio.run(
         prepare_and_run(
             country,
@@ -168,18 +203,18 @@ def run(
 
 # pylint: disable=too-many-arguments
 async def prepare_and_run(
-    country,
-    state,
-    city,
-    output_dir,
-    docker_image,
-    speed_limit,
-    block_size,
-    block_population,
-    container_name,
-    city_fips,
-    retries,
-):
+    country: str,
+    state: str | None,
+    city: str,
+    output_dir: pathlib.Path,
+    docker_image: str,
+    speed_limit: int,
+    block_size: int,
+    block_population: int,
+    container_name: str | None,
+    city_fips: str | None,
+    retries: int,
+) -> None:
     """Prepare and run an analysis."""
     speed_file = output_dir / "city_fips_speed.csv"
     speed_file.unlink(missing_ok=True)
@@ -200,15 +235,15 @@ async def prepare_and_run(
 
 # pylint: disable=too-many-locals,too-many-arguments
 async def prepare_(
-    country,
-    state,
-    city,
-    output_dir,
-    speed_limit,
-    block_size,
-    block_population,
-    retries,
-):
+    country: str,
+    state: str | None,
+    city: str,
+    output_dir: pathlib.Path,
+    speed_limit: int,
+    block_size: int,
+    block_population: int,
+    retries: int,
+) -> typing.Tuple[str, str, pathlib.Path, pathlib.Path, pathlib.Path]:
     """Prepare and kicks off the analysis."""
     # Prepare the output directory.
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -237,13 +272,12 @@ async def prepare_(
             region_file_path = retryer(
                 analysis.retrieve_region_file, country, output_dir
             )
-
         console.log("OSM Region file downloaded.")
 
     # Reduce the osm file with osmium.
     with console.status(f"[bold green]Reducing the OSM file for {city} with osmium..."):
         polygon_file = output_dir / f"{slug}.geojson"
-        pfb_osm_file = f"{slug}.osm"
+        pfb_osm_file = output_dir / f"{slug}.osm"
         analysis.prepare_city_file(
             output_dir, region_file_path, polygon_file, pfb_osm_file
         )
@@ -288,7 +322,7 @@ async def prepare_(
                 f"[bold green]Fetching {lodes_year} US employment data..."
             ):
                 await retryer(
-                    analysis.download_lodes_data,
+                    downloader.download_lodes_data,
                     session,
                     output_dir,
                     state_abbrev,
@@ -296,7 +330,7 @@ async def prepare_(
                     lodes_year,
                 )
                 await retryer(
-                    analysis.download_lodes_data,
+                    downloader.download_lodes_data,
                     session,
                     output_dir,
                     state_abbrev,
@@ -305,21 +339,27 @@ async def prepare_(
                 )
 
             with console.status("[bold green]Fetching US census waterblocks..."):
-                await retryer(analysis.download_census_waterblocks, session, output_dir)
+                await retryer(
+                    downloader.download_census_waterblocks, session, output_dir
+                )
 
             with console.status("[bold green]Fetching 2010 US census blocks..."):
                 await retryer(
-                    analysis.download_2010_census_blocks,
+                    downloader.download_2010_census_blocks,
                     session,
                     output_dir,
                     state_fips,
                 )
 
             with console.status("[bold green]Fetching US state speed limits..."):
-                await retryer(analysis.download_state_speed_limits, session, output_dir)
+                await retryer(
+                    downloader.download_state_speed_limits, session, output_dir
+                )
 
             with console.status("[bold green]Fetching US city speed limits..."):
-                await retryer(analysis.download_city_speed_limits, session, output_dir)
+                await retryer(
+                    downloader.download_city_speed_limits, session, output_dir
+                )
 
     # Return the parameters required to perform the analysis.
     # pylint: disable=duplicate-code
@@ -334,15 +374,15 @@ async def prepare_(
 
 # pylint: disable=too-many-arguments,duplicate-code
 def analyze_(
-    state_abbrev,
-    state_fips,
-    city_shp,
-    pfb_osm_file,
-    output_dir,
-    docker_image,
-    container_name,
-    city_fips,
-):
+    state_abbrev: str,
+    state_fips: str,
+    city_shp: pathlib.Path,
+    pfb_osm_file: pathlib.Path,
+    output_dir: pathlib.Path,
+    docker_image: str,
+    container_name: str | None = None,
+    city_fips: str | None = None,
+) -> None:
     """Run the analysis."""
     console = Console()
     with console.status("[bold green]Running the full analysis (may take a while)..."):
