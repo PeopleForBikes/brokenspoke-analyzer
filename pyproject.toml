@@ -73,7 +73,7 @@ build-backend = "poetry.core.masonry.api"
 strict = "true"
 
 [[tool.mypy.overrides]]
-module = ["brokenspoke_analyzer.pyrosm.*", "brokenspoke_analyzer.cli.*"]
+module = ["brokenspoke_analyzer.pyrosm.*"]
 ignore_errors = "true"
 
 [[tool.mypy.overrides]]

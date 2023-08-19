@@ -27,6 +27,7 @@ __pycache__/
 *.so
 *.spec
 /data/
+/data-*/
 build/
 cache/
 coverage.xml
