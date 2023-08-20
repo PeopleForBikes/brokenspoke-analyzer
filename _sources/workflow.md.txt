@@ -108,7 +108,7 @@ following format:
 
 ```text
 city,state,fips_code_city,speed
-valencia,al,1234567,50
+valencia,al,0000000,50
 ```
 
 This file must be named `city_fips_speed.csv` and stored in the `data`

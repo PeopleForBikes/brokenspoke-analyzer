@@ -26,4 +26,7 @@
 
    code-of-conduct
    CONTRIBUTING
+   api/brokenspoke_analyzer
+
+
 

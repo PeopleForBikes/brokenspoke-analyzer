@@ -1,0 +1,481 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="brokenspoke_analyzer.core.runner module" href="brokenspoke_analyzer.core.runner.html" />
+
+    <!-- Generated with Sphinx 7.1.2 and Furo 2023.07.26 -->
+        <title>brokenspoke_analyzer.core.utils module - Brokenspoke Analyzer 1.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  --color-foreground-primary: #8B8A8D;
+  --color-foreground-secondary: #009EDB;
+  --color-foreground-muted: #D71920;
+  --color-foreground-border: #878787;
+  --color-background-primary: #fcfaf6;
+  --color-background-secondary: #fcfaf6;
+  --color-background-hover: #effaffff;
+  --color-background-hover--transparent: #effaff00;
+  --color-background-border: #eeebee;
+  --color-background-item: #ccc;
+  --color-brand-primary: #009EDB;
+  --color-brand-content: #8B8A8D;
+  --font-stack: Montserrat, "Open Sans", Helvetica, Arial, sans-serif;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-foreground-primary: #8B8A8D;
+  --color-foreground-secondary: #009EDB;
+  --color-foreground-muted: #D71920;
+  --color-foreground-border: 878787;
+  --color-background-primary: #00263E;
+  --color-background-secondary: #00263E;
+  --color-background-hover: #1e2124ff;
+  --color-background-hover--transparent: #1e212400;
+  --color-background-border: #8B8A8D;
+  --color-background-item: #ccc;
+  --color-brand-primary: #009EDB;
+  --color-brand-content: #009EDB;
+  --font-stack: Montserrat, "Open Sans", Helvetica, Arial, sans-serif;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-foreground-primary: #8B8A8D;
+  --color-foreground-secondary: #009EDB;
+  --color-foreground-muted: #D71920;
+  --color-foreground-border: 878787;
+  --color-background-primary: #00263E;
+  --color-background-secondary: #00263E;
+  --color-background-hover: #1e2124ff;
+  --color-background-hover--transparent: #1e212400;
+  --color-background-border: #8B8A8D;
+  --color-background-item: #ccc;
+  --color-brand-primary: #009EDB;
+  --color-brand-content: #009EDB;
+  --font-stack: Montserrat, "Open Sans", Helvetica, Arial, sans-serif;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Brokenspoke Analyzer 1.3.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">Brokenspoke Analyzer 1.3.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">GENERAL:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow.html">Preparation Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CHANGELOG.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">DEVELOPMENT:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../code-of-conduct.html">Community Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING.html">Contributing</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="brokenspoke_analyzer.html">brokenspoke_analyzer package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of brokenspoke_analyzer package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="brokenspoke_analyzer.core.html">brokenspoke_analyzer.core package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of brokenspoke_analyzer.core package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="brokenspoke_analyzer.core.analysis.html">brokenspoke_analyzer.core.analysis module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="brokenspoke_analyzer.core.downloader.html">brokenspoke_analyzer.core.downloader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="brokenspoke_analyzer.core.runner.html">brokenspoke_analyzer.core.runner module</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">brokenspoke_analyzer.core.utils module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="module-brokenspoke_analyzer.core.utils">
+<span id="brokenspoke-analyzer-core-utils-module"></span><h1>brokenspoke_analyzer.core.utils module<a class="headerlink" href="#module-brokenspoke_analyzer.core.utils" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.PolygonFormat">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">PolygonFormat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.PolygonFormat" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Represent the available polygon formats from polygons.openstreetmap.fr.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.PolygonFormat.GEOJSON">
+<span class="sig-name descname"><span class="pre">GEOJSON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'get_geojson.py'</span></em><a class="headerlink" href="#brokenspoke_analyzer.core.utils.PolygonFormat.GEOJSON" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.PolygonFormat.POLY">
+<span class="sig-name descname"><span class="pre">POLY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'get_poly.py'</span></em><a class="headerlink" href="#brokenspoke_analyzer.core.utils.PolygonFormat.POLY" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.PolygonFormat.WKT">
+<span class="sig-name descname"><span class="pre">WKT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'get_wkt.py'</span></em><a class="headerlink" href="#brokenspoke_analyzer.core.utils.PolygonFormat.WKT" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.get_srid">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">get_srid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shapefile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.get_srid" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the SRID of a shapefile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.gunzip">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">gunzip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gzip_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_after</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.gunzip" title="Permalink to this definition">#</a></dt>
+<dd><p>Gunzip a file into a specific target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.normalize_unicode_name">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">normalize_unicode_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.normalize_unicode_name" title="Permalink to this definition">#</a></dt>
+<dd><p>Normalize unicode names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+<dl>
+<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">normalize_unicode_name</span><span class="p">(</span><span class="s2">&quot;Québec&quot;</span><span class="p">)</span>
+<span class="go">quebec</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">normalize_unicode_name</span><span class="p">(</span><span class="s2">&quot;Cañon City&quot;</span><span class="p">)</span>
+<span class="go">canon city</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.prepare_census_blocks">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">prepare_census_blocks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tabblk_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.prepare_census_blocks" title="Permalink to this definition">#</a></dt>
+<dd><p>Prepare the census block files to match our naming convention.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.prepare_city_inputs">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">prepare_city_inputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">country</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">city</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.prepare_city_inputs" title="Permalink to this definition">#</a></dt>
+<dd><p>Prepare the directories and files that will be used to perform the analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a tuple containing the input directory created for the city, the
+boundary file and the OSM file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.prepare_environment">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">prepare_environment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">city</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">country</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">city_fips</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_fips</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_abbrev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_import_jobs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.prepare_environment" title="Permalink to this definition">#</a></dt>
+<dd><p>Prepare the environment variables required by the modular BNA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+</dl>
+<dl>
+<dt>Example:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">prepare_environment</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s2">&quot;washington&quot;</span><span class="p">,</span> <span class="s2">&quot;district of columbia&quot;</span><span class="p">,</span> <span class="s2">&quot;usa&quot;</span><span class="p">,</span> <span class="s2">&quot;1150000&quot;</span><span class="p">,</span> <span class="s2">&quot;11&quot;</span><span class="p">,</span> <span class="s2">&quot;DC&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">d</span> <span class="o">==</span> <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="s2">&quot;BNA_CITY_FIPS&quot;</span><span class="p">:</span> <span class="s2">&quot;1150000&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="s2">&quot;BNA_CITY&quot;</span><span class="p">:</span> <span class="s2">&quot;washington&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="s2">&quot;BNA_COUNTRY&quot;</span><span class="p">:</span> <span class="s2">&quot;usa&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="s2">&quot;BNA_FULL_STATE&quot;</span><span class="p">:</span> <span class="s2">&quot;district of columbia&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="s2">&quot;BNA_SHORT_STATE&quot;</span><span class="p">:</span> <span class="s2">&quot;dc&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="s2">&quot;BNA_STATE_FIPS&quot;</span><span class="p">:</span> <span class="s2">&quot;11&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="s2">&quot;CENSUS_YEAR&quot;</span><span class="p">:</span> <span class="s2">&quot;2019&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="s2">&quot;NB_COUNTRY&quot;</span><span class="p">:</span> <span class="s2">&quot;usa&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="s2">&quot;NB_INPUT_SRID&quot;</span><span class="p">:</span> <span class="s2">&quot;4326&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="s2">&quot;PFB_CITY_FIPS&quot;</span><span class="p">:</span> <span class="s2">&quot;1150000&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="s2">&quot;PFB_STATE_FIPS&quot;</span><span class="p">:</span> <span class="s2">&quot;11&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="s2">&quot;PFB_STATE&quot;</span><span class="p">:</span> <span class="s2">&quot;dc&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="s2">&quot;RUN_IMPORT_JOBS&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.unzip">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">unzip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_after</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.unzip" title="Permalink to this definition">#</a></dt>
+<dd><p>Unzip an archive into a specific directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          <a class="prev-page" href="brokenspoke_analyzer.core.runner.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">brokenspoke_analyzer.core.runner module</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022, PeopleForBikes
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/PeopleForBikes/brokenspoke-analyzer" aria-label="GitHub">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+            </a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">brokenspoke_analyzer.core.utils module</a><ul>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.PolygonFormat"><code class="docutils literal notranslate"><span class="pre">PolygonFormat</span></code></a><ul>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.PolygonFormat.GEOJSON"><code class="docutils literal notranslate"><span class="pre">PolygonFormat.GEOJSON</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.PolygonFormat.POLY"><code class="docutils literal notranslate"><span class="pre">PolygonFormat.POLY</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.PolygonFormat.WKT"><code class="docutils literal notranslate"><span class="pre">PolygonFormat.WKT</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.get_srid"><code class="docutils literal notranslate"><span class="pre">get_srid()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.gunzip"><code class="docutils literal notranslate"><span class="pre">gunzip()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.normalize_unicode_name"><code class="docutils literal notranslate"><span class="pre">normalize_unicode_name()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.prepare_census_blocks"><code class="docutils literal notranslate"><span class="pre">prepare_census_blocks()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.prepare_city_inputs"><code class="docutils literal notranslate"><span class="pre">prepare_city_inputs()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.prepare_environment"><code class="docutils literal notranslate"><span class="pre">prepare_environment()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.unzip"><code class="docutils literal notranslate"><span class="pre">unzip()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=3d533f9b"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    </body>
+</html>

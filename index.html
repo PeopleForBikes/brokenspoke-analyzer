@@ -2,16 +2,16 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Usage" href="usage.html" />
 
-    <!-- Generated with Sphinx 6.2.1 and Furo 2023.05.20 -->
-        <title>Brokenspoke Analyzer 1.2.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
-    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <!-- Generated with Sphinx 7.1.2 and Furo 2023.07.26 -->
+        <title>Brokenspoke Analyzer 1.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
     
     
 
@@ -164,7 +164,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">Brokenspoke Analyzer 1.2.1 documentation</div></a>
+      <a href="#"><div class="brand">Brokenspoke Analyzer 1.3.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -187,7 +187,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
   
   
-  <span class="sidebar-brand-text">Brokenspoke Analyzer 1.2.1 documentation</span>
+  <span class="sidebar-brand-text">Brokenspoke Analyzer 1.3.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -207,6 +207,16 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="code-of-conduct.html">Community Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contributing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/brokenspoke_analyzer.html">brokenspoke_analyzer package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of brokenspoke_analyzer package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/brokenspoke_analyzer.core.html">brokenspoke_analyzer.core package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of brokenspoke_analyzer.core package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/brokenspoke_analyzer.core.analysis.html">brokenspoke_analyzer.core.analysis module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/brokenspoke_analyzer.core.downloader.html">brokenspoke_analyzer.core.downloader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/brokenspoke_analyzer.core.runner.html">brokenspoke_analyzer.core.runner module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/brokenspoke_analyzer.core.utils.html">brokenspoke_analyzer.core.utils module</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
 </div>
@@ -286,11 +296,33 @@ docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"
 </section>
 <section id="install">
 <h2>Install<a class="headerlink" href="#install" title="Permalink to this heading">#</a></h2>
-<p>Install the tool from GitHub directly:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/PeopleForBikes/brokenspoke-analyzer
+<p>We recommend creating a virtual environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/tmp
+mkdir<span class="w"> </span>brokenspoke-analyzer
+<span class="nb">cd</span><span class="w"> </span>brokenspoke-analyzer
+python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+</pre></div>
+</div>
+<p>Then, installing the tool from GitHub directly:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/PeopleForBikes/brokenspoke-analyzer@1.3.0
 </pre></div>
 </div>
 <p>This will add a new command named <code class="docutils literal notranslate"><span class="pre">bna</span></code>.</p>
+<section id="from-source">
+<h3>From source<a class="headerlink" href="#from-source" title="Permalink to this heading">#</a></h3>
+<p>If you are interested in using the source code from this repository directly,
+you can execute the following instructions instead (note that
+<a class="reference external" href="https://python-poetry.org/">poetry</a> will be required):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:PeopleForBikes/brokenspoke-analyzer.git
+<span class="nb">cd</span><span class="w"> </span>brokenspoke-analyzer
+git<span class="w"> </span>switch<span class="w"> </span>-c<span class="w"> </span><span class="m">1</span>.3.0
+poetry<span class="w"> </span>install
+</pre></div>
+</div>
+<p>For more information about using the source code, please refer to the
+<a class="reference internal" href="CONTRIBUTING.html"><span class="std std-doc">contributing</span></a> page.</p>
+</section>
 </section>
 <section id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading">#</a></h2>
@@ -330,6 +362,7 @@ Downloaded<span class="w"> </span>Protobuf<span class="w"> </span>data<span clas
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="code-of-conduct.html">Community Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/brokenspoke_analyzer.html">brokenspoke_analyzer package</a></li>
 </ul>
 </div>
 
@@ -394,7 +427,10 @@ Downloaded<span class="w"> </span>Protobuf<span class="w"> </span>data<span clas
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#install">Install</a></li>
+<li><a class="reference internal" href="#install">Install</a><ul>
+<li><a class="reference internal" href="#from-source">From source</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#quickstart">Quickstart</a></li>
 </ul>
 </li>
@@ -407,11 +443,11 @@ Downloaded<span class="w"> </span>Protobuf<span class="w"> </span>data<span clas
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
-    <script src="_static/scripts/furo.js"></script>
-    <script src="_static/clipboard.min.js"></script>
-    <script src="_static/copybutton.js"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=3d533f9b"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
     </body>
 </html>
