@@ -8,11 +8,18 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.3.0] - 2023-08-20
+
 ## Added
 
 - Add an option to name the container running the analysis. [#215]
 - Add a dataset to represent California. [#223]
 - Add a CLI flag to specify the city FIPS code. [#240]
+- Add capability to retry and cleanup partial downloads. [#272]
+
+## Changed
+
+- Replaced GDAL dependency with pandas. [#259]
 
 ## Fixed
 
@@ -34,6 +41,10 @@ and this project adheres to
 [#225]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/225
 [#239]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/239
 [#240]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/240
+[#259]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/259
+[#272]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/272
+[1.3.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.3.0
 
 ## [1.2.1] - 2023-06-18
 
