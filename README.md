@@ -58,7 +58,7 @@ source .venv/bin/activate
 Then, installing the tool from GitHub directly:
 
 ```bash
-pip install git+https://github.com/PeopleForBikes/brokenspoke-analyzer@1.2.1
+pip install git+https://github.com/PeopleForBikes/brokenspoke-analyzer@1.3.0
 ```
 
 This will add a new command named `bna`.
@@ -72,7 +72,7 @@ you can execute the following instructions instead (note that
 ```bash
 git clone git@github.com:PeopleForBikes/brokenspoke-analyzer.git
 cd brokenspoke-analyzer
-git switch -c 1.2.1
+git switch -c 1.3.0
 poetry install
 ```
 
