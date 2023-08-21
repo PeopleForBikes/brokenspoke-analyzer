@@ -25,7 +25,7 @@ numpy = "1.25.1"
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
 bpython = "^0.24"
-furo = "^2023.7.26"
+furo = "^2023.8.19"
 isort = "^5.11.3"
 jupyterlab = "^4.0.5"
 mypy = "^1.5.1"
