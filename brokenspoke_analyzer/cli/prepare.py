@@ -32,8 +32,20 @@ def all(
     block_size: typing.Optional[int] = common.BlockSize,
     block_population: typing.Optional[int] = common.BlockPopulation,
     retries: typing.Optional[int] = common.Retries,
-):
+) -> None:
     """Prepare all the required files for an analysis."""
+    # Make MyPy happy.
+    if not output_dir:
+        raise ValueError("`output_dir` must be set")
+    if not speed_limit:
+        raise ValueError("`speed_limit` must be set")
+    if not block_size:
+        raise ValueError("`block_size` must be set")
+    if not block_population:
+        raise ValueError("`block_population` must be set")
+    if not retries:
+        raise ValueError("`retries` must be set")
+
     asyncio.run(
         prepare_(
             country,
@@ -50,15 +62,15 @@ def all(
 
 # pylint: disable=too-many-locals,too-many-arguments
 async def prepare_(
-    country,
-    state,
-    city,
-    output_dir,
-    speed_limit,
-    block_size,
-    block_population,
-    retries,
-):
+    country: str,
+    state: str | None,
+    city: str,
+    output_dir: pathlib.Path,
+    speed_limit: int,
+    block_size: int,
+    block_population: int,
+    retries: int,
+) -> typing.Tuple[str, str, pathlib.Path, pathlib.Path, pathlib.Path]:
     """Prepare and kicks off the analysis."""
     # Prepare the output directory.
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -87,13 +99,12 @@ async def prepare_(
             region_file_path = retryer(
                 analysis.retrieve_region_file, country, output_dir
             )
-
         console.log("OSM Region file downloaded.")
 
     # Reduce the osm file with osmium.
     with console.status(f"[bold green]Reducing the OSM file for {city} with osmium..."):
         polygon_file = output_dir / f"{slug}.geojson"
-        pfb_osm_file = f"{slug}.osm"
+        pfb_osm_file = output_dir / f"{slug}.osm"
         analysis.prepare_city_file(
             output_dir, region_file_path, polygon_file, pfb_osm_file
         )

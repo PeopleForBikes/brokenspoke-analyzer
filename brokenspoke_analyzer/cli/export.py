@@ -1,17 +1,16 @@
-import asyncio
-
 import typer
 
 app = typer.Typer()
 
 
 @app.command()
-def s3():
+def s3() -> None:
     """Export results to S3."""
     # Retrieve the state info if needed.
-    asyncio.run(s3_())
+    s3_()
 
 
 # pylint: disable=too-many-arguments,duplicate-code
-def s3_():
+def s3_() -> None:
     """Export results to S3."""
+    return None
