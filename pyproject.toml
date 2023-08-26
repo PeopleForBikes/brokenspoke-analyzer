@@ -50,7 +50,7 @@ types-six = "^1.16.21.9"
 xdoctest = "^1.1.0"
 
 [tool.poetry.scripts]
-bna = 'brokenspoke_analyzer.cli:app'
+bna = 'brokenspoke_analyzer.cli.root:app'
 
 [tool.isort]
 profile = "black"

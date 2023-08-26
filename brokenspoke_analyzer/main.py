@@ -1,5 +1,5 @@
 """Define the main application module."""
-from brokenspoke_analyzer import cli
+from brokenspoke_analyzer.cli import root
 
 if __name__ == "__main__":
-    cli.app()
+    root.app()
