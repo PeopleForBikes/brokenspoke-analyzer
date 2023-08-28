@@ -1,5 +1,4 @@
 """Define functions used to manipulate database data."""
-import os
 import pathlib
 
 from sqlalchemy import text
@@ -49,7 +48,9 @@ def import_csv_file_with_header(
     #             # while data := f.read(8096):
     #             #     copy.write(data)
     #     conn.commit()
-    database_url = os.environ["DATABASE_URL"]
+    database_url = engine.engine.url.set(drivername="postgresql").render_as_string(
+        hide_password=False
+    )
     psql_cmd = (
         f"\\copy {table} FROM '{csvfile.resolve(strict=True)}' "
         "DELIMITER ',' CSV HEADER;"
@@ -60,12 +61,21 @@ def import_csv_file_with_header(
 def load_csv_file(
     engine: Engine, sqlfile: pathlib.Path, csvfile: pathlib.Path, table: str
 ) -> None:
-    """Create a table and load the data from the CSV."""
+    """Create a table and load the data from the CSV file."""
     # Run the script to create the table.
     execute_sql_file(engine, sqlfile)
 
     # Load the data from the CSV file.
     import_csv_file_with_header(engine, csvfile, table)
+
+
+def export_to_csv(engine: Engine, csvfile: pathlib.Path, table: str) -> None:
+    """Dump the table content into a CSV file."""
+    psql_cmd = f"\\copy {table} TO '{csvfile.resolve()}' " "WITH (FORMAT CSV, HEADER);"
+    database_url = engine.engine.url.set(drivername="postgresql").render_as_string(
+        hide_password=False
+    )
+    runner.run_psql_command_string(database_url, psql_cmd)
 
 
 def configure_db(engine: Engine, cores: int, memory_mb: int, pguser: str) -> None:

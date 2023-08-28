@@ -17,7 +17,7 @@ from brokenspoke_analyzer.core import (
     constant,
     runner,
 )
-from brokenspoke_analyzer.database import dbcore
+from brokenspoke_analyzer.core.database import dbcore
 
 # Define table constants.
 BOUNDARY_TABLE = "neighborhood_boundary"

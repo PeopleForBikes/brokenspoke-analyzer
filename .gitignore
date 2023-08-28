@@ -5,7 +5,6 @@ __pycache__/
 .DS_Store
 .dump/
 .eggs/
-.env
 .idea/
 .installed.cfg
 .ipynb_checkpoints
