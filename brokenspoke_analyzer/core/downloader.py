@@ -25,6 +25,7 @@ async def download_file(
     :param output: path where to write the file
     :param skip_existing: skip the download if the output file already exists
     """
+    output = output.resolve()
     if skip_existing and output.exists():
         logger.debug(f"the file {output} already exists, skipping...")
         return
@@ -95,6 +96,8 @@ async def download_lodes_data(
     lehd_filename = f"{state.lower()}_od_{part.lower()}_JT00_{year}.csv.gz"
     gzipped_lehd_file = output_dir / lehd_filename
     decompressed_lefh_file = output_dir / gzipped_lehd_file.stem
+    decompressed_lefh_file = decompressed_lefh_file.resolve()
+    gzipped_lehd_file = gzipped_lehd_file.resolve()
 
     # Skip the download if the target file already exists.
     if decompressed_lefh_file.exists():
@@ -113,7 +116,9 @@ async def download_census_waterblocks(
     """Download the census waterblocks."""
     waterblock_url = f"{PFB_PUBLIC_DOCUMENTS_URL}/censuswaterblocks.zip"
     zipped_waterblock_file = output_dir / "censuswaterblocks.zip"
+    zipped_waterblock_file = zipped_waterblock_file.resolve()
     decompressed_waterblock_file = output_dir / "censuswaterblocks.csv"
+    decompressed_waterblock_file = decompressed_waterblock_file.resolve()
 
     # Skip the download if the target file already exists.
     if decompressed_waterblock_file.exists():
@@ -133,7 +138,9 @@ async def download_2010_census_blocks(
     tabblk2010_url = f"{TIGER_URL}/TIGER2010BLKPOPHU"
     tabblk2010_filename = f"tabblock2010_{fips}_pophu.zip"
     tabblk2010_file = output_dir / tabblk2010_filename
+    tabblk2010_file = tabblk2010_file.resolve()
     population_file = output_dir / "population.shp"
+    population_file = population_file.resolve()
 
     # Skip the download if the target file already exists.
     if population_file.exists():
@@ -145,7 +152,7 @@ async def download_2010_census_blocks(
     )
 
     # Unzip and rename the tabulation block files to "population".
-    utils.prepare_census_blocks(tabblk2010_file, output_dir)
+    utils.prepare_census_blocks(tabblk2010_file, output_dir.resolve(strict=True))
 
 
 # # TODO(rgreinho): not used.
@@ -155,12 +162,13 @@ async def download_2021_census_blocks(
     """Download a 2021 census tabulation block code for a specific state."""
     tiger_url = f"{TIGER_URL}/TIGER2021/PLACE/tl_2021_{state_fips}_place.zip"
     tabblk_file = output_dir / f"tl_2021_{state_fips}_place.zip"
+    tabblk_file = tabblk_file.resolve()
 
     # Download the file.
     await download_file(session, tiger_url, tabblk_file)
 
     # Unzip and rename the tabulation block files to "population".
-    utils.prepare_census_blocks(tabblk_file, output_dir)
+    utils.prepare_census_blocks(tabblk_file, output_dir.resolve(strict=True))
 
 
 async def download_state_speed_limits(
@@ -170,6 +178,7 @@ async def download_state_speed_limits(
     state_speed_filename = "state_fips_speed.csv"
     state_speed_url = f"{PFB_PUBLIC_DOCUMENTS_URL}/{state_speed_filename}"
     state_speed_file = output_dir / state_speed_filename
+    state_speed_file = state_speed_file.resolve()
 
     # Download the file.
     await download_file(session, state_speed_url, state_speed_file)
@@ -182,6 +191,7 @@ async def download_city_speed_limits(
     city_speed_filename = "city_fips_speed.csv"
     city_speed_url = f"{PFB_PUBLIC_DOCUMENTS_URL}/{city_speed_filename}"
     city_speed_file = output_dir / city_speed_filename
+    city_speed_file = city_speed_file.resolve()
 
     # Download the file.
     await download_file(session, city_speed_url, city_speed_file)

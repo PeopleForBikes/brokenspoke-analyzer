@@ -2,7 +2,7 @@ import asyncio
 import logging
 import pathlib
 import sys
-from typing import Optional
+import typing
 
 import typer
 from loguru import logger
@@ -10,6 +10,7 @@ from rich.console import Console
 
 from brokenspoke_analyzer.cli import (
     common,
+    configure,
     export,
     importer,
     prepare,
@@ -52,6 +53,9 @@ def callback(verbose: int = typer.Option(0, "--verbose", "-v", count=True)) -> N
 
 # Create the CLI app.
 app = typer.Typer()
+app.add_typer(
+    configure.app, name="configure", help="Configure a database for an analysis."
+)
 app.add_typer(prepare.app, name="prepare", help="Prepare files needed for an analysis.")
 app.add_typer(importer.app, name="import", help="Import files into database.")
 app.add_typer(export.app, name="export", help="Export tables from database.")
@@ -63,9 +67,9 @@ def compute(
     city_shp: pathlib.Path,
     pfb_osm_file: pathlib.Path,
     output_dir: pathlib.Path = common.OutputDir,
-    docker_image: Optional[str] = common.DockerImage,
-    container_name: Optional[str] = common.ContainerName,
-    city_fips: Optional[str] = common.CityFIPS,
+    docker_image: typing.Optional[str] = common.DockerImage,
+    container_name: typing.Optional[str] = common.ContainerName,
+    city_fips: common.FIPSCode = None,
 ) -> None:
     """Run an analysis."""
     # Make MyPy happy.
@@ -121,15 +125,15 @@ def compute_(
 def run(
     country: str,
     city: str,
-    state: Optional[str] = typer.Argument(None),
+    state: typing.Optional[str] = typer.Argument(None),
     output_dir: pathlib.Path = common.OutputDir,
-    docker_image: Optional[str] = common.DockerImage,
-    speed_limit: Optional[int] = common.SpeedLimit,
-    block_size: Optional[int] = common.BlockSize,
-    block_population: Optional[int] = common.BlockPopulation,
-    container_name: Optional[str] = common.ContainerName,
-    city_fips: Optional[str] = common.CityFIPS,
-    retries: Optional[int] = common.Retries,
+    docker_image: typing.Optional[str] = common.DockerImage,
+    speed_limit: typing.Optional[int] = common.SpeedLimit,
+    block_size: typing.Optional[int] = common.BlockSize,
+    block_population: typing.Optional[int] = common.BlockPopulation,
+    container_name: typing.Optional[str] = common.ContainerName,
+    city_fips: common.FIPSCode = "0",
+    retries: typing.Optional[int] = common.Retries,
 ) -> None:
     """Prepare all files and run an analysis."""
     # Make MyPy happy.

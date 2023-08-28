@@ -13,14 +13,15 @@ python = "^3.10"
 aiohttp = "^3.8.5"
 geopandas = "^0.13.2"
 loguru = "^0.7.0"
+numpy = "1.25.2"
 osmnx = "^1.6.0"
 python-dotenv = "^1.0.0"
 python-slugify = "^8.0.1"
-rich = "^13.5.2"
+rich = "^13.4.2"
+sqlalchemy = { extras = ["asyncio", "postgresql_psycopg"], version = "^2.0.19" }
+tenacity = "^8.2.3"
 typer = "^0.9.0"
 us = "^3.1.1"
-tenacity = "^8.2.3"
-numpy = "1.25.2"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
@@ -41,6 +42,7 @@ Sphinx = "^7.2.2"
 sphinx-autobuild = "^2021.3.14"
 sphinx-autodoc-typehints = "^1.24.0"
 sphinx-copybutton = "^0.5.2"
+sqlfluff = "^2.1.4"
 types-colorama = "^0.4.15.12"
 types-decorator = "^5.1.8.4"
 types-jsonschema = "^4.17.0.10"
@@ -59,8 +61,12 @@ force_grid_wrap = 2
 [tool.coverage.run]
 omit = [
   "*/__init__.py",
-  "brokenspoke_analyzer/cli.py",
+  "brokenspoke_analyzer/cli_.py",
+  "brokenspoke_analyzer/cli/*",
+  "brokenspoke_analyzer/core/constant.py",
+  "brokenspoke_analyzer/core/database/*",
   "brokenspoke_analyzer/core/downloader.py",
+  "brokenspoke_analyzer/core/ingestor.py",
   "brokenspoke_analyzer/main.py",
   "brokenspoke_analyzer/pyrosm/*",
 ]
@@ -83,3 +89,7 @@ ignore_errors = "true"
 [[tool.mypy.overrides]]
 module = ["geopandas", "osmnx", "shapely", "us"]
 ignore_missing_imports = "true"
+
+[tool.sqlfluff.core]
+dialect = "postgres"
+large_file_skip_byte_limit = 40000

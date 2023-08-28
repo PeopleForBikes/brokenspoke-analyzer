@@ -20,10 +20,21 @@ from brokenspoke_analyzer.core import (
 from brokenspoke_analyzer.pyrosm import data
 
 
+def osmnx_query(country: str, city: str, state: str | None) -> typing.Tuple[str, str]:
+    """
+    Prepare the osmnx.
+
+    Returns: the OSMNX query and its slugified version.
+    """
+    query = ", ".join(filter(None, [city, state, country]))
+    slug = slugify(query)
+    return (query, slug)
+
+
 def prepare_city_file(
     output_dir: pathlib.Path,
     region_file_path: pathlib.Path,
-    polygon_file_path: pathlib.Path,
+    boundary_file_path: pathlib.Path,
     pfb_osm_file: pathlib.Path,
 ) -> None:
     """
@@ -33,7 +44,11 @@ def prepare_city_file(
     """
     pfb_osm_file_path = output_dir / pfb_osm_file
     if not pfb_osm_file_path.exists():
-        runner.run_osmium(polygon_file_path, region_file_path, pfb_osm_file_path)
+        runner.run_osmium_extract(
+            boundary_file_path.resolve(),
+            region_file_path.resolve(),
+            pfb_osm_file_path.resolve(),
+        )
 
 
 def state_info(state: str) -> tuple[str, str]:
@@ -69,7 +84,7 @@ def state_info(state: str) -> tuple[str, str]:
     return (abbrev, fips)
 
 
-def derive_state_info(state: str) -> typing.Tuple[str, str, str]:
+def derive_state_info(state: str | None) -> typing.Tuple[str, str, str]:
     """
     Derive state information.
 
@@ -81,6 +96,8 @@ def derive_state_info(state: str) -> typing.Tuple[str, str, str]:
         >>> assert ("ZZ", "0", "0") == derive_state_info("spain")
     """
     try:
+        if not state:
+            raise ValueError("no 'state' was provided")
         run_import_jobs = "1"
         state_abbrev, state_fips = state_info(state)
     except ValueError:
@@ -101,7 +118,7 @@ def retrieve_city_boundaries(
     :return: the slugified query used to retrieve the city boundaries.
     """
     # Prepare the query.
-    query = ", ".join(filter(None, [city, state, country]))
+    query, slug = osmnx_query(country, city, state)
     logger.debug(f"Query used to retrieve the boundaries: {query}")
 
     # Retrieve the geodataframe.
@@ -113,7 +130,6 @@ def retrieve_city_boundaries(
     city_gdf.drop("display_name", axis=1)
 
     # Export the boundaries.
-    slug = slugify(query)
     city_gdf.to_file(output / f"{slug}.shp", encoding="utf-8")
     city_gdf.to_file(output / f"{slug}.geojson")
 

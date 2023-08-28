@@ -58,6 +58,11 @@ docs-autobuild:
 docs-clean:
     rm -fr docs/build
 
-# Run the US Cities examples
-example-uscities:
-    poetry run python examples/us-cities.py
+# Build the Docker image for local usage.
+docker-build:
+    docker buildx build -t bna:mechanics .
+
+# Clean up docker resources.
+docker-clean:
+    docker-compose rm -sfv
+    docker volume rm brokenspoke-analyzer_postgres

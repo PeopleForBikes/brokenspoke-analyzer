@@ -14,6 +14,7 @@ from tenacity import (
 from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core import (
     analysis,
+    constant,
     downloader,
     runner,
 )
@@ -26,7 +27,10 @@ app = typer.Typer()
 def all(
     country: str,
     city: str,
-    state: typing.Optional[str] = typer.Argument(None),
+    state: typing.Optional[str] = typer.Argument(
+        None, help="state, province or region"
+    ),
+    fips_code: common.FIPSCode = "0",
     output_dir: typing.Optional[pathlib.Path] = common.OutputDir,
     speed_limit: typing.Optional[int] = common.SpeedLimit,
     block_size: typing.Optional[int] = common.BlockSize,
@@ -45,6 +49,13 @@ def all(
         raise ValueError("`block_population` must be set")
     if not retries:
         raise ValueError("`retries` must be set")
+
+    # Ensure US/USA cities have the right parameters.
+    if country.upper() == "US":
+        country = "usa"
+    if country.upper() == constant.COUNTRY_USA:
+        if not state and fips_code == "0":
+            raise ValueError("`state` and `fips_code` are required for US cities")
 
     asyncio.run(
         prepare_(
@@ -72,7 +83,11 @@ async def prepare_(
     retries: int,
 ) -> typing.Tuple[str, str, pathlib.Path, pathlib.Path, pathlib.Path]:
     """Prepare and kicks off the analysis."""
+    # Compute the city slug.
+    _, slug = analysis.osmnx_query(country, city, state)
+
     # Prepare the output directory.
+    output_dir /= slug
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Prepare the Rich output.
@@ -86,7 +101,7 @@ async def prepare_(
         slug = retryer(
             analysis.retrieve_city_boundaries, output_dir, country, city, state
         )
-        city_shp = output_dir / f"{slug}.shp"
+        boundary_file = output_dir / f"{slug}.shp"
         console.log("Boundary files ready.")
 
     # Download the OSM region file.
@@ -127,7 +142,7 @@ async def prepare_(
         # Create synthetic population.
         with console.status("[bold green]Prepare synthetic population..."):
             CELL_SIZE = (block_size, block_size)
-            city_boundaries_gdf = gpd.read_file(city_shp)
+            city_boundaries_gdf = gpd.read_file(boundary_file)
             synthetic_population = analysis.create_synthetic_population(
                 city_boundaries_gdf, *CELL_SIZE, population=block_population
             )
@@ -193,7 +208,7 @@ async def prepare_(
     return (
         state_abbrev,
         state_fips,
-        city_shp,
+        boundary_file,
         pfb_osm_file,
         output_dir,
     )
