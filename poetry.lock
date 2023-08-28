@@ -3414,13 +3414,13 @@ files = [
 
 [[package]]
 name = "sphinx"
-version = "7.2.3"
+version = "7.2.4"
 description = "Python documentation generator"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "sphinx-7.2.3-py3-none-any.whl", hash = "sha256:6379ea22c49955a44ed4e62bde8c94575e9544303cc0554eaa97099ae5853a3a"},
-    {file = "sphinx-7.2.3.tar.gz", hash = "sha256:ece68bb4d77b7dc090573825db45a6f9183e74098d1c21573485de250b1d1e3f"},
+    {file = "sphinx-7.2.4-py3-none-any.whl", hash = "sha256:9b3aa23254ffc5be468646810543e491653bf5a67f3f23e4ccd4e515b0bd0b9c"},
+    {file = "sphinx-7.2.4.tar.gz", hash = "sha256:1aeec862bf1edff4374012ac38082e0d1daa066c9e327841a846401164797988"},
 ]
 
 [package.dependencies]
@@ -4262,4 +4262,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "373f0c898e450b17b61b19151116b416bee25e34c6f0068b7dbac329c7dd4f8a"
+content-hash = "bb2753ac66e2a3b678d0358e6fe5ad43f1d6690fe96798448caa8cf5b66eea23"
