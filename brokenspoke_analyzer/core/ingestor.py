@@ -17,7 +17,7 @@ from brokenspoke_analyzer.core import (
     constant,
     runner,
 )
-from brokenspoke_analyzer.core.database import dbcore
+from brokenspoke_analyzer.database import dbcore
 
 # Define table constants.
 BOUNDARY_TABLE = "neighborhood_boundary"
@@ -38,9 +38,15 @@ def import_and_transform_shapefile(
     """Imports a shapefile into PostGIS with shp2pgsql."""
     logger.info(f"Importing {shapefile} into {table} with SRID {input_srid}")
     database_url = os.environ["DATABASE_URL"]
+
+    # Note(rgreinho): I was not able to validate that this is truly needed, but
+    # since it was in the original script, I added it back here. It would
+    # require move investigation to ensure we do not need this line.
+    #
+    # Create the table first to prevent the transform_query to fail.
     shp2pgsql_cmd = [
         "shp2pgsql",
-        "-d",
+        "-p",
         "-I",
         "-D",
         "-s",
@@ -48,6 +54,14 @@ def import_and_transform_shapefile(
         str(shapefile),
         table,
     ]
+    logger.debug(f"{' '.join(shp2pgsql_cmd)}")
+    shp2pgsql = subprocess.run(
+        shp2pgsql_cmd, capture_output=True, encoding="utf-8", check=True
+    )
+
+    # Drop the table and creates a new one with the data in the Shape file.
+    shp2pgsql_cmd.remove("-p")
+    shp2pgsql_cmd.insert(1, "-d")
     logger.debug(f"{' '.join(shp2pgsql_cmd)}")
     shp2pgsql = subprocess.run(
         shp2pgsql_cmd, capture_output=True, encoding="utf-8", check=True
@@ -61,6 +75,8 @@ def import_and_transform_shapefile(
         check=True,
         text=True,
     )
+
+    # Reproject the geometry to the `output_srid`.
     transform_query = (
         f"ALTER TABLE {table} "
         f"ALTER COLUMN geom TYPE geometry(MultiPolygon,{output_srid}) "
@@ -171,7 +187,7 @@ def load_jobs(
 ) -> None:
     """Load employment data from the US census website."""
     # Create table.
-    table = f"{state}_od_{lodes_part.value}_JT00"
+    table = f"state_od_{lodes_part.value}_JT00"
     query = (
         f"DROP TABLE IF EXISTS {table};"
         f"CREATE TABLE {table} ("
@@ -307,14 +323,18 @@ def manage_speed_limits(
 
     # Validate data to prevent moving forward with corrupted values.
     logger.info("Validating the speed data...")
-    query = f"SELECT count(*) FROM {RESIDENTIAL_SPEED_LIMIT_TABLE};"
+    retrieve_default_speed_limits(engine)
+
+
+def retrieve_default_speed_limits(engine: Engine) -> tuple[str, str]:
+    """Retrieve the state and city default speed limits."""
+    query = f"SELECT state_speed, city_speed FROM {RESIDENTIAL_SPEED_LIMIT_TABLE};"
     with engine.connect() as conn:
         result = conn.execute(text(query))
         row = result.first()
-        if not row:
-            raise ValueError(
-                f"no value found in the {RESIDENTIAL_SPEED_LIMIT_TABLE} table"
-            )
+        if row:
+            return row.state_speed, row.city_speed
+    raise ValueError(f"no value found in the {RESIDENTIAL_SPEED_LIMIT_TABLE} table")
 
 
 def rename_neighborhood_tables(engine: Engine) -> None:
@@ -443,6 +463,7 @@ def import_all(
         buffer,
     )
     state_abbrev, state_fips, run_import_jobs = analysis.derive_state_info(state)
+    logger.debug(f"{run_import_jobs=}")
     if run_import_jobs == "1":
         if not census_year:
             raise ValueError("'census_year' is required when importing job data")

@@ -16,6 +16,7 @@ docker compose up -d
 bna configure docker
 bna prepare all usa "santa rosa" "new mexico" 3570670
 bna import all usa "santa rosa" "new mexico" 3570670 --input-dir data/santa-rosa-new-mexico-usa
+bna compute usa "santa rosa" "new mexico" --input-dir data/santa-rosa-new-mexico-usa
 docker-compose rm -sfv && docker volume rm brokenspoke-analyzer_postgres
 ```
 
@@ -26,5 +27,6 @@ docker compose up -d
 bna configure docker
 bna prepare all canada "ancienne-lorette" québec
 bna import all canada "ancienne-lorette" québec --input-dir data/ancienne-lorette-quebec-canada
+bna compute canada "ancienne-lorette" québec --input-dir data/ancienne-lorette-quebec-canada
 docker-compose rm -sfv && docker volume rm brokenspoke-analyzer_postgres
 ```
