@@ -34,9 +34,7 @@ fmt-md:
 fmt-python:
     poetry run isort .
     poetry run black {{ src_dir }}
-    poetry run black examples
     poetry run ruff check --fix {{ src_dir }}
-    poetry run ruff check --fix examples
 
 # Run the unit tests.
 test *extra_args='':
@@ -60,7 +58,7 @@ docs-clean:
 
 # Build the Docker image for local usage.
 docker-build:
-    docker buildx build -t bna:mechanics .
+    docker buildx build -t peopleforbikes/bna .
 
 # Clean up docker resources.
 docker-clean:
