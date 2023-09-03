@@ -60,7 +60,17 @@ docs-clean:
 docker-build:
     docker buildx build -t peopleforbikes/bna .
 
+docker-prepare-all *args:
+    echo "$@"
+    docker run --rm \
+      -u $(id -u):$(id -g) \
+      -v ./data/container:/usr/src/app/data peopleforbikes/bna:latest \
+      prepare \
+      all \
+      --output-dir /usr/src/app/data \
+      "$@"
+
 # Clean up docker resources.
-docker-clean:
+compose-clean:
     docker-compose rm -sfv
     docker volume rm brokenspoke-analyzer_postgres

@@ -46,9 +46,9 @@ export DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
 # docker run --rm --network brokenspoke-analyzer_default -e DATABASE_URL peopleforbikes/bna:latest configure docker
 # Use `docker info to get the `CPUs` and `Total Memory`.
 docker run --rm --network brokenspoke-analyzer_default -e DATABASE_URL peopleforbikes/bna:latest configure custom 4 1943 postgres
-docker run --rm -v ./data/container:/usr/src/app/data peopleforbikes/bna:latest prepare all usa "santa rosa" "new mexico" 3570670 --output-dir /usr/src/app/data
+docker run --rm -u $(id -u):$(id -g) -v ./data/container:/usr/src/app/data peopleforbikes/bna:latest prepare all usa "santa rosa" "new mexico" 3570670 --output-dir /usr/src/app/data
 docker run --rm --network brokenspoke-analyzer_default -v ./data/container:/usr/src/app/data -e DATABASE_URL peopleforbikes/bna:latest import all usa "santa rosa" "new mexico" 3570670 --input-dir /usr/src/app/data/santa-rosa-new-mexico-usa
-docker run --rm --network brokenspoke-analyzer_default -v ./data/container:/usr/src/app/data -e DATABASE_URL peopleforbikes/bna:latest compute usa "santa rosa" "new mexico" --input-dir /usr/src/app/data/santa-rosa-new-mexico-usa
+docker run --rm --network brokenspoke-analyzer_default -e DATABASE_URL peopleforbikes/bna:latest compute usa "santa rosa" "new mexico" --input-dir /usr/src/app/data/santa-rosa-new-mexico-usa
 ```
 
 ## Might be useful later
