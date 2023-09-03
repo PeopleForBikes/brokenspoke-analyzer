@@ -14,7 +14,9 @@ RUN apt-get update \
 
 WORKDIR /usr/src/app
 COPY . .
-RUN mkdir -p deps \
+RUN poetry self update \
+  && poetry export -f requirements.txt --output requirements.txt \
+  && mkdir -p deps \
   && pip wheel -r requirements.txt -w deps \
   && poetry build -f wheel
 
@@ -32,10 +34,11 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+ENV BNA_OSMNX_CACHE 0
 WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/deps ./pkg/deps
 COPY --from=builder /usr/src/app/dist ./pkg/dist
-RUN pip install pkg/deps/Fiona-1.9.4.post1-cp311-cp311-linux_aarch64.whl \
+RUN pip install pkg/deps/Fiona-1.9.4.post1-*.whl \
   && pip install pkg/deps/* \
   && pip install pkg/dist/brokenspoke_analyzer-1.3.0-py3-none-any.whl \
   && rm -fr /usr/src/app/pkg \

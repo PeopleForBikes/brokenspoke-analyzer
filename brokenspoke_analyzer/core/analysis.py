@@ -10,7 +10,10 @@ import geopandas as gpd
 import numpy as np
 import shapely
 from loguru import logger
-from osmnx import geocoder
+from osmnx import (
+    geocoder,
+    settings,
+)
 from slugify import slugify
 
 from brokenspoke_analyzer.core import (
@@ -122,6 +125,7 @@ def retrieve_city_boundaries(
     logger.debug(f"Query used to retrieve the boundaries: {query}")
 
     # Retrieve the geodataframe.
+    settings.use_cache = os.getenv("BNA_OSMNX_CACHE", "1") == "1"
     city_gdf = geocoder.geocode_to_gdf(query)
     # Remove the display_name series to ensure there are no international
     # characters in the dataframe. The import will fail if the analyzer finds
