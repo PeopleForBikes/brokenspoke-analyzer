@@ -7,6 +7,7 @@ import pathlib
 import subprocess
 import typing
 from enum import Enum
+from importlib import resources
 
 from loguru import logger
 from sqlalchemy import text
@@ -26,6 +27,7 @@ CITY_SPEED_TABLE = "city_speed"
 STATE_SPEED_TABLE = "state_speed"
 WATER_BLOCKS_TABLE = "water_blocks"
 RESIDENTIAL_SPEED_LIMIT_TABLE = "residential_speed_limit"
+script_dir = resources.files("brokenspoke_analyzer.scripts")
 
 
 def import_and_transform_shapefile(
@@ -97,9 +99,10 @@ def delete_block_outside_buffer(engine: Engine, buffer: int) -> None:
 
 def load_water_blocks(engine: Engine, csvfile: pathlib.Path) -> None:
     """Create the water blocks table and load the data into it from a CSV file."""
+    sql_script_dir = pathlib.Path(script_dir._paths[0]) / "sql"  # type: ignore
     dbcore.load_csv_file(
         engine,
-        pathlib.Path("scripts/sql/create_us_water_blocks_table.sql"),
+        sql_script_dir / "create_us_water_blocks_table.sql",
         csvfile,
         WATER_BLOCKS_TABLE,
     )
@@ -282,7 +285,8 @@ def manage_speed_limits(
 ) -> None:
     """Manage the state and city speed limits.."""
     # Prepare speed tables.
-    speed_table_script = pathlib.Path("scripts/sql/speed_tables.sql")
+    sql_script_dir = pathlib.Path(script_dir._paths[0]) / "sql"  # type: ignore
+    speed_table_script = sql_script_dir / "speed_tables.sql"
     dbcore.execute_sql_file(engine, speed_table_script)
 
     # Manage state speed limit.
@@ -393,12 +397,13 @@ def import_osm_data(
     # Note(rgreinho): do we still need this step too?
 
     # Import the osm with highways.
+    dir_ = pathlib.Path(script_dir._paths[0])  # type: ignore
     logger.info("Importing OSM data with highways...")
     runner.run_osm2pgrouting(
         database_url,
         "received",
         "neighborhood_",
-        pathlib.Path("scripts/mapconfig_highway.xml"),
+        dir_ / "mapconfig_highway.xml",
         clipped_osm_file,
     )
 
@@ -409,7 +414,7 @@ def import_osm_data(
         database_url,
         "scratch",
         "neighborhood_cycwys_",
-        pathlib.Path("scripts/mapconfig_cycleway.xml"),
+        dir_ / "mapconfig_cycleway.xml",
         clipped_osm_file,
     )
 
@@ -420,7 +425,7 @@ def import_osm_data(
     # Import full osm to fill out additional data needs not met by osm2pgrouting.
     logger.info("Importing all OSM data...")
     runner.run_osm2pgsql(
-        database_url, output_srid, pathlib.Path("scripts/pfb.style"), clipped_osm_file
+        database_url, output_srid, dir_ / "pfb.style", clipped_osm_file
     )
 
     # Manage speed limits.

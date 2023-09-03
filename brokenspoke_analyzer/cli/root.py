@@ -1,6 +1,7 @@
 import logging
 import pathlib
 import sys
+from importlib import resources
 
 import typer
 from loguru import logger
@@ -83,7 +84,9 @@ def compute_cmd(
 
     # Prepare directories.
     _, slug = analysis.osmnx_query(country, city, state)
-    sql_script_dir = pathlib.Path("scripts/sql")
+    traversable = resources.files("brokenspoke_analyzer.scripts.sql")
+    res = pathlib.Path(traversable._paths[0])  # type: ignore
+    sql_script_dir = res.resolve(strict=True)
     boundary_file = input_dir / f"{slug}.shp"
 
     # Prepare compute params.
