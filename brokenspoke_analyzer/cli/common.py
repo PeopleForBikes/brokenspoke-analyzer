@@ -44,6 +44,16 @@ City = Annotated[str, typer.Argument()]
 State = Annotated[typing.Optional[str], typer.Argument(help="US state")]
 Buffer = Annotated[typing.Optional[int], typer.Option(help="define the buffer area")]
 CensusYear = Annotated[typing.Optional[int], typer.Argument()]
+ExportDir = Annotated[
+    pathlib.Path,
+    typer.Argument(
+        file_okay=False,
+        dir_okay=True,
+        writable=True,
+        readable=True,
+        help="local directory where to export the results",
+    ),
+]
 
 # Default constant.
 DEFAULT_BUFFER = 2680

@@ -9,7 +9,7 @@ import typing
 from loguru import logger
 from sqlalchemy.engine import Engine
 
-from brokenspoke_analyzer.database import dbcore
+from brokenspoke_analyzer.core.database import dbcore
 
 
 def execute_sqlfile_with_substitutions(
