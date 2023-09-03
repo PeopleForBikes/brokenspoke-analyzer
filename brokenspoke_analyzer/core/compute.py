@@ -30,7 +30,10 @@ def execute_sqlfile_with_substitutions(
 
 
 def compute_features(
-    engine: Engine, sql_script_dir: pathlib.Path, output_srid: int, boundary_buffer: int
+    engine: Engine,
+    sql_script_dir: pathlib.Path,
+    output_srid: int,
+    boundary_buffer: int,
 ) -> None:
     """Compute the BNA features"""
     sql_script_dir = sql_script_dir.resolve(strict=True)
