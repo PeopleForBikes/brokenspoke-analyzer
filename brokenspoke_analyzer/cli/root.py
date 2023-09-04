@@ -15,6 +15,7 @@ from brokenspoke_analyzer.cli import (
     export,
     importer,
     prepare,
+    run_with,
 )
 from brokenspoke_analyzer.core import (
     analysis,
@@ -63,6 +64,7 @@ app.add_typer(
 app.add_typer(prepare.app, name="prepare", help="Prepare files needed for an analysis.")
 app.add_typer(importer.app, name="import", help="Import files into database.")
 app.add_typer(export.app, name="export", help="Export tables from database.")
+app.add_typer(run_with.app, name="run-with", help="Run an analysis in different ways.")
 
 
 @app.command(name="compute")
@@ -140,81 +142,21 @@ def run(
     census_year: common.CensusYear = common.DEFAULT_CENSUS_YEAR,
     retries: typing.Optional[int] = common.Retries,
     max_trip_distance: typing.Optional[int] = 2680,
+    # with_compose: Annotated[bool, typer.Option(help="Manage Docker compose")] = True,
 ) -> None:
     """Run an analysis."""
-    # Make mypy happy.
-    if not output_dir:
-        raise ValueError("`output_dir` must be set")
-
-    # Prepare the database connection.
-    engine = create_engine(
-        database_url.replace("postgresql://", "postgresql+psycopg://")
-    )
-
-    # Prepare.
-    logger.info("Prepare")
-    prepare.all(
+    run_with.run_(
+        database_url=database_url,
         country=country,
         city=city,
         state=state,
-        fips_code=fips_code,
         output_dir=output_dir,
+        fips_code=fips_code,
+        buffer=buffer,
         speed_limit=speed_limit,
         block_size=block_size,
         block_population=block_population,
-        retries=retries,
-    )
-
-    # Import.
-    logger.info("Import")
-    _, slug = analysis.osmnx_query(country, city, state)
-    input_dir = output_dir / slug
-    importer.all(
-        database_url=database_url,
-        input_dir=input_dir,
-        country=country,
-        city=city,
-        state=state,
         census_year=census_year,
-        buffer=buffer,
-    )
-
-    # Compute.
-    logger.info("Compute")
-    traversable = resources.files("brokenspoke_analyzer.scripts.sql")
-    res = pathlib.Path(traversable._paths[0])  # type: ignore
-    sql_script_dir = res.resolve(strict=True)
-    boundary_file = input_dir / f"{slug}.shp"
-    output_srid = utils.get_srid(boundary_file.resolve(strict=True))
-    state_default_speed, city_default_speed = ingestor.retrieve_default_speed_limits(
-        engine
-    )
-    if country.upper() == "US":
-        country = "usa"
-    import_jobs = country.upper() == constant.COUNTRY_USA
-
-    compute.all(
-        database_url=database_url,
-        sql_script_dir=sql_script_dir,
-        output_srid=output_srid,
-        buffer=buffer,
-        state_default_speed=state_default_speed,
-        city_default_speed=city_default_speed,
-        tolerance=compute.Tolerance(),
-        path_constraint=compute.PathConstraint(),
-        block_road=compute.BlockRoad(),
-        score=compute.Score(),
-        import_jobs=import_jobs,
+        retries=retries,
         max_trip_distance=max_trip_distance,
-    )
-
-    # Export.
-    logger.info("Export")
-    export.local_calver(
-        database_url=database_url,
-        country=country,
-        city=city,
-        region=state,
-        force=False,
-        export_dir=input_dir / "results",
     )

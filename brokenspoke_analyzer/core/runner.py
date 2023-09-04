@@ -18,7 +18,6 @@ def run(cmd: typing.Sequence[str]) -> None:
     subprocess.run(cmd, check=True)
 
 
-# pylint: disable=too-many-arguments,duplicate-code
 def run_analysis(
     state_abbrev: str,
     state_fips: str,
@@ -30,7 +29,7 @@ def run_analysis(
     city_fips: typing.Optional[str] = None,
 ) -> None:
     """Run a BNA analysis."""
-    dest = pathlib.Path("/") / output_dir.name
+    dest = pathlib.Path("/data") / output_dir.name
     if state_fips == NON_US_STATE_FIPS:
         pfb_country = "nonus"
         pfb_state = ""
@@ -43,23 +42,35 @@ def run_analysis(
     if container_name:
         docker_cmd.extend(["--name", container_name])
     if city_fips:
-        docker_cmd.extend([f"-e PFB_CITY_FIPS={city_fips}"])
+        docker_cmd.extend(["-e", f"PFB_CITY_FIPS={city_fips}"])
     docker_cmd.extend(
         [
-            f'-e PFB_SHPFILE="{dest / city_shp.name}"',
-            f'-e PFB_OSM_FILE="{dest / pfb_osm_file.name}"',
-            f"-e PFB_COUNTRY={pfb_country}",
-            f"-e PFB_STATE={sanitize_values(pfb_state)}",
-            f"-e PFB_STATE_FIPS={state_fips}",
-            f'-e NB_OUTPUT_DIR="{dest}"',
-            f"-e RUN_IMPORT_JOBS={run_import_jobs}",
-            "-e PFB_DEBUG=1",
-            f'-v "{output_dir}":"{dest}"',
-            f'-v "{output_dir}/population.zip":/data/population.zip',
+            "-e",
+            f'PFB_SHPFILE="{dest / city_shp.name}"',
+            "-e",
+            f'PFB_OSM_FILE="{dest / pfb_osm_file.name}"',
+            "-e",
+            f"PFB_COUNTRY={pfb_country}",
+            "-e",
+            f"PFB_STATE={sanitize_values(pfb_state)}",
+            "-e",
+            f"PFB_STATE_FIPS={state_fips}",
+            "-e",
+            f'NB_OUTPUT_DIR="{dest}"',
+            "-e",
+            f"RUN_IMPORT_JOBS={run_import_jobs}",
+            "-e",
+            "PFB_DEBUG=1",
+            "-v",
+            f'"{output_dir}":"{dest}"',
+            "-v",
+            f'"{output_dir}/population.zip":"/data/population.zip"',
             docker_image,
         ]
     )
-    run(docker_cmd)
+    cmd = " ".join(docker_cmd)
+    logger.debug(f"{cmd=}")
+    subprocess.run(cmd, shell=True, check=True)
 
 
 def run_osmium_extract(
