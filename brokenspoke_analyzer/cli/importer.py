@@ -96,7 +96,7 @@ def neighborhood(
         boundary_file=boundary_file,
         population_file=population_file.resolve(strict=True),
         water_blocks_file=water_blocks_file.resolve(),
-        output_srid=int(output_srid),
+        output_srid=output_srid,
         buffer=buffer,
     )
 
@@ -154,7 +154,7 @@ def osm(
     city_speed_limits_csv = input_dir / "city_fips_speed.csv"
 
     # Compute the output SRID from the boundary file.
-    output_srid = int(utils.get_srid(boundary_file.resolve(strict=True)))
+    output_srid = utils.get_srid(boundary_file.resolve(strict=True))
     logger.debug(f"{output_srid=}")
 
     # Derive state FIPS code from state name.

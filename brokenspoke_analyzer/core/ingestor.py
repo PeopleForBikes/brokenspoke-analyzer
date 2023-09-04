@@ -330,15 +330,17 @@ def manage_speed_limits(
     retrieve_default_speed_limits(engine)
 
 
-def retrieve_default_speed_limits(engine: Engine) -> tuple[str, str]:
+def retrieve_default_speed_limits(engine: Engine) -> tuple[int | None, int | None]:
     """Retrieve the state and city default speed limits."""
     query = f"SELECT state_speed, city_speed FROM {RESIDENTIAL_SPEED_LIMIT_TABLE};"
     with engine.connect() as conn:
         result = conn.execute(text(query))
         row = result.first()
         if row:
-            return row.state_speed, row.city_speed
-    raise ValueError(f"no value found in the {RESIDENTIAL_SPEED_LIMIT_TABLE} table")
+            state_speed = int(row.state_speed) if row.state_speed else None
+            city_speed = int(row.city_speed) if row.city_speed else None
+            return state_speed, city_speed
+        raise ValueError(f"no value found in the {RESIDENTIAL_SPEED_LIMIT_TABLE} table")
 
 
 def rename_neighborhood_tables(engine: Engine) -> None:

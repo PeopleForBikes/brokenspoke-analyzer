@@ -234,7 +234,7 @@ def test_all():
         census_year,
     )
 
-    compute.compute_all(
+    compute.all(
         engine,
         sql_script_dir,
         output_srid,

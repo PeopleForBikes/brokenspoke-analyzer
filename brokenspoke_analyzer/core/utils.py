@@ -158,8 +158,8 @@ def prepare_city_inputs(
     return (city_dir, city_boundary_file, city_osm_file)
 
 
-def get_srid(shapefile: pathlib.Path) -> str:
+def get_srid(shapefile: pathlib.Path) -> int:
     """Get the SRID of a shapefile."""
     gdf = gpd.read_file(shapefile.resolve(strict=True))
     utm = gdf.estimate_utm_crs()
-    return str(utm.to_string()[5:])
+    return int(str(utm.to_string()[5:]))
