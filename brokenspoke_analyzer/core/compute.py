@@ -7,8 +7,10 @@ import pathlib
 import typing
 
 from loguru import logger
+from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 
+from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core.database import dbcore
 
 
@@ -29,7 +31,7 @@ def execute_sqlfile_with_substitutions(
     dbcore.execute_query(engine, statements)
 
 
-def compute_features(
+def features(
     engine: Engine,
     sql_script_dir: pathlib.Path,
     output_srid: int,
@@ -79,7 +81,7 @@ def compute_features(
         dbcore.execute_sql_file(engine, sql_script)
 
 
-def compute_stress(
+def stress(
     engine: Engine,
     sql_script_dir: pathlib.Path,
     state_default_speed: int | None,
@@ -249,7 +251,7 @@ class Access:
     max_score: int = 1
 
 
-def compute_conectivity(
+def conectivity(
     engine: Engine,
     sql_script_dir: pathlib.Path,
     output_srid: int,
@@ -455,11 +457,10 @@ def compute_conectivity(
     execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
 
 
-def compute_all(
-    engine: Engine,
+def all(
+    database_url: common.DatabaseURL,
     sql_script_dir: pathlib.Path,
     output_srid: int,
-    buffer: int,
     state_default_speed: int | None,
     city_default_speed: int | None,
     tolerance: Tolerance,
@@ -467,16 +468,26 @@ def compute_all(
     block_road: BlockRoad,
     score: Score,
     import_jobs: bool,
+    buffer: common.Buffer = common.DEFAULT_BUFFER,
     max_trip_distance: typing.Optional[int] = 2680,
 ) -> None:
     """Compute all features."""
+    # Make mypy happy.
+    if not buffer:
+        raise ValueError("`buffer` must be set")
+
+    # Prepare the database connection.
+    engine = create_engine(
+        database_url.replace("postgresql://", "postgresql+psycopg://")
+    )
+
     # Compute features.
     logger.info("Compute features")
-    compute_features(engine, sql_script_dir, output_srid, buffer)
+    features(engine, sql_script_dir, output_srid, buffer)
 
     # Compute stress.
     logger.info("Compute stress")
-    compute_stress(
+    stress(
         engine,
         sql_script_dir,
         state_default_speed,
@@ -485,7 +496,7 @@ def compute_all(
 
     # Compute connectivity.
     logger.info("Compute connectivity")
-    compute_conectivity(
+    conectivity(
         engine,
         sql_script_dir,
         output_srid,
