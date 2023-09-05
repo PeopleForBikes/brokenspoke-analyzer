@@ -49,13 +49,14 @@ def local_calver(
     region: Region = None,
     force: Force = False,
     export_dir: common.ExportDir = pathlib.Path("data/results"),
-) -> None:
+) -> pathlib.Path:
     """Export results into a directory following the calver convention."""
     dir_ = exporter.create_calver_directories(
         country, city, region, base_dir=export_dir
     )
     logger.debug(f"{dir_=}")
     _local(database_url=database_url, export_dir=dir_, force=force)
+    return dir_
 
 
 def _local(database_url: str, export_dir: pathlib.Path, force: bool) -> None:

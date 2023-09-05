@@ -17,8 +17,11 @@ from brokenspoke_analyzer.core import (
     compute,
     ingestor,
     runner,
+    utils,
 )
 from brokenspoke_analyzer.core.database import dbcore
+
+DELTA = 10
 
 
 def test_import_neighborhood():
@@ -232,3 +235,16 @@ def test_all():
         score,
         import_jobs,
     )
+
+
+def test_compare():
+    brokenspoke_csv = pathlib.Path(
+        "data/santa-rosa-new-mexico-usa/results/usa/new mexico/santa rosa/23.9.3/neighborhood_overall_scores.csv"
+    )
+    original_csv = pathlib.Path(
+        "data/santa-rosa-new-mexico-usa/local-analysis-2023-09-05-0203/neighborhood_overall_scores.csv"
+    )
+    output_csv = pathlib.Path("data/compare/santa-rosa-new-mexico-usa.csv")
+    df = utils.compare_bna_results(brokenspoke_csv, original_csv, output_csv)
+
+    assert all(df.delta.apply(lambda x: -DELTA <= x <= DELTA))

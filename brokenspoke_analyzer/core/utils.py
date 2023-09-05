@@ -5,6 +5,7 @@ import zipfile
 from enum import Enum
 
 import geopandas as gpd
+import pandas as pd
 from loguru import logger
 from slugify import slugify
 
@@ -163,3 +164,35 @@ def get_srid(shapefile: pathlib.Path) -> int:
     gdf = gpd.read_file(shapefile.resolve(strict=True))
     utm = gdf.estimate_utm_crs()
     return int(str(utm.to_string()[5:]))
+
+
+def compare_bna_results(
+    brokenspoke_scores: pathlib.Path,
+    original_scores: pathlib.Path,
+    output_csv: pathlib.Path,
+) -> pd.DataFrame:
+    """Compare the Brokenaspoke and the original BNA results."""
+
+    brokenspoke_df = pd.read_csv(
+        brokenspoke_scores, usecols=["score_id", "score_normalized"]
+    )
+    brokenspoke_df = brokenspoke_df.rename(columns={"score_normalized": "brokenspoke"})
+    original_df = pd.read_csv(original_scores, usecols=["score_id", "score_normalized"])
+    original_df = original_df.rename(columns={"score_normalized": "original"})
+
+    # Make some adjustments to the dataframes.
+    df = pd.concat([brokenspoke_df, original_df.original.to_frame()], axis=1)
+    df = df.drop(df[df.score_id == "total_miles_low_stress"].index)
+    df = df.drop(df[df.score_id == "total_miles_high_stress"].index)
+    df = df.dropna()
+
+    # Compute the deltas.
+    df["delta"] = (df["brokenspoke"] * 100).astype(int) - (df["original"] * 100).astype(
+        int
+    )
+
+    # Export for human consumption.
+    output_csv.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(output_csv)
+
+    return df
