@@ -1,6 +1,5 @@
 import typer
 from loguru import logger
-from sqlalchemy import create_engine
 from typing_extensions import Annotated
 
 from brokenspoke_analyzer.cli import common
@@ -10,6 +9,7 @@ from brokenspoke_analyzer.core import (
     ingestor,
     utils,
 )
+from brokenspoke_analyzer.core.database import dbcore
 
 app = typer.Typer()
 
@@ -75,9 +75,7 @@ def neighborhood(
         raise ValueError("`state` is required for US cities")
 
     # Prepare the database connection.
-    engine = create_engine(
-        database_url.replace("postgresql://", "postgresql+psycopg://")
-    )
+    engine = dbcore.create_psycopg_engine(database_url)
 
     # Prepare the files to import.
     _, slug = analysis.osmnx_query(country, city, state)
@@ -119,9 +117,7 @@ def jobs(
         raise ValueError("a state abbreviation must be 2 letter long")
 
     # Prepare the database connection.
-    engine = create_engine(
-        database_url.replace("postgresql://", "postgresql+psycopg://")
-    )
+    engine = dbcore.create_psycopg_engine(database_url)
 
     # Import the jobs.
     ingestor.import_jobs(engine, state_abbreviation, census_year, input_dir)
@@ -142,9 +138,7 @@ def osm(
         raise ValueError("`fips_code` must be set")
 
     # Prepare the database connection.
-    engine = create_engine(
-        database_url.replace("postgresql://", "postgresql+psycopg://")
-    )
+    engine = dbcore.create_psycopg_engine(database_url)
 
     # Prepare the files to import.
     _, slug = analysis.osmnx_query(country, city, state)

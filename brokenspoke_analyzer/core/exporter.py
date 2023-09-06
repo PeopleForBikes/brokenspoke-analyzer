@@ -2,7 +2,6 @@ import pathlib
 import typing
 from datetime import date
 
-from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 
 from brokenspoke_analyzer.core import runner
@@ -73,9 +72,7 @@ def auto_export(
 ) -> None:
     """Export PostgreSQL/PostGIS tables to their repective files."""
     # Prepare the database connection.
-    engine = create_engine(
-        database_url.replace("postgresql://", "postgresql+psycopg://")
-    )
+    engine = dbcore.create_psycopg_engine(database_url)
 
     # Export the tables per target.
     export_to_shp(export_dir, tables.get("shp", []), database_url)

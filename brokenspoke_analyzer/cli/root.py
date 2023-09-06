@@ -7,7 +7,6 @@ from importlib import resources
 import typer
 from loguru import logger
 from rich.console import Console
-from sqlalchemy import create_engine
 
 from brokenspoke_analyzer.cli import (
     common,
@@ -24,6 +23,7 @@ from brokenspoke_analyzer.core import (
     ingestor,
     utils,
 )
+from brokenspoke_analyzer.core.database import dbcore
 
 
 def callback(verbose: int = typer.Option(0, "--verbose", "-v", count=True)) -> None:
@@ -82,9 +82,7 @@ def compute_cmd(
         raise ValueError("`buffer` must be set")
 
     # Prepare the database connection.
-    engine = create_engine(
-        database_url.replace("postgresql://", "postgresql+psycopg://")
-    )
+    engine = dbcore.create_psycopg_engine(database_url)
 
     # Prepare directories.
     _, slug = analysis.osmnx_query(country, city, state)
