@@ -77,6 +77,21 @@ omit = [
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-p no:warnings --cov-report term-missing --cov-report html --xdoctest"
+markers = [
+  "australia",
+  "canada",
+  "europe",
+  "france",
+  "spain",
+  "usa",
+  "main: main test suite",
+  "xs: runs under 5min",
+  "s: runs under 15min",
+  "m: runs under 60min (1h)",
+  "l: runs under 180min (2h)",
+  "xl: runs under 360min (6h)",
+  "xxl: runs under 720min (12h / 1/2day)",
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

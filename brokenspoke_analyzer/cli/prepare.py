@@ -5,6 +5,7 @@ import typing
 import aiohttp
 import geopandas as gpd
 import typer
+from loguru import logger
 from rich.console import Console
 from tenacity import (
     Retrying,
@@ -57,6 +58,7 @@ def all(
         if not state and fips_code == "0":
             raise ValueError("`state` and `fips_code` are required for US cities")
 
+    logger.debug(f"{output_dir=}")
     asyncio.run(
         prepare_(
             country,
@@ -119,7 +121,11 @@ async def prepare_(
     # Reduce the osm file with osmium.
     with console.status(f"[bold green]Reducing the OSM file for {city} with osmium..."):
         polygon_file = output_dir / f"{slug}.geojson"
-        pfb_osm_file = output_dir / f"{slug}.osm"
+        pfb_osm_file = pathlib.Path(f"{slug}.osm")
+        logger.debug(f"{output_dir=}")
+        logger.debug(f"{region_file_path=}")
+        logger.debug(f"{polygon_file=}")
+        logger.debug(f"{pfb_osm_file=}")
         analysis.prepare_city_file(
             output_dir, region_file_path, polygon_file, pfb_osm_file
         )
