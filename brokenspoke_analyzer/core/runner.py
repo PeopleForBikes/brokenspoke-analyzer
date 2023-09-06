@@ -62,9 +62,9 @@ def run_analysis(
             "-e",
             "PFB_DEBUG=1",
             "-v",
-            f'"{output_dir}":"{dest}"',
+            f'"{output_dir.resolve(strict=True)}":"{dest}"',
             "-v",
-            f'"{output_dir}/population.zip":"/data/population.zip"',
+            f'"{output_dir.resolve(strict=True)}/population.zip":"/data/population.zip"',
             docker_image,
         ]
     )

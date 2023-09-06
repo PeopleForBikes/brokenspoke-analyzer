@@ -3,6 +3,7 @@ import subprocess
 import typing
 from importlib import resources
 
+import pandas as pd
 import typer
 from loguru import logger
 from rich.console import Console
@@ -127,7 +128,7 @@ def compare(
     census_year: common.CensusYear = common.DEFAULT_CENSUS_YEAR,
     retries: typing.Optional[int] = common.Retries,
     max_trip_distance: typing.Optional[int] = 2680,
-) -> None:
+) -> pd.DataFrame:
     # Make mypy happy.
     if not output_dir:
         raise ValueError("`output_dir` must be set")
@@ -154,7 +155,7 @@ def compare(
     logger.info("Run with original BNA")
     _, slug = analysis.osmnx_query(country, city, state)
     city_shp = output_dir / f"{slug}.shp"
-    pfb_osm_file = output_dir.with_suffix(".osm")
+    pfb_osm_file = city_shp.with_suffix(".osm")
     original_export_dir = original_bna(
         state=state,
         output_dir=output_dir / slug,
@@ -168,8 +169,9 @@ def compare(
     logger.info("Compare the results")
     brokenspoke_scores = brokenspoke_export_dir / "neighborhood_overall_scores.csv"
     original_scores = original_export_dir / "neighborhood_overall_scores.csv"
-    output_csv = output_dir / f"{slug}.csv"
-    utils.compare_bna_results(brokenspoke_scores, original_scores, output_csv)
+    output_csv = output_dir / slug / f"{slug}.csv"
+    logger.debug(f"{output_csv=}")
+    return utils.compare_bna_results(brokenspoke_scores, original_scores, output_csv)
 
 
 def run_(
@@ -197,6 +199,7 @@ def run_(
 
     # Prepare.
     logger.info("Prepare")
+    logger.debug(f"{output_dir=}")
     prepare.all(
         country=country,
         city=city,
