@@ -239,12 +239,12 @@ def test_all():
 
 def test_compare():
     brokenspoke_csv = pathlib.Path(
-        "data/santa-rosa-new-mexico-usa/results/usa/new mexico/santa rosa/23.9.3/neighborhood_overall_scores.csv"
+        "data/crested-butte-colorado-usa/results/usa/colorado/crested butte/23.9.1/neighborhood_overall_scores.csv"
     )
     original_csv = pathlib.Path(
-        "data/santa-rosa-new-mexico-usa/local-analysis-2023-09-05-0203/neighborhood_overall_scores.csv"
+        "data/crested-butte-colorado-usa/local-analysis-2023-09-07-1935/neighborhood_overall_scores.csv"
     )
-    output_csv = pathlib.Path("data/compare/santa-rosa-new-mexico-usa.csv")
+    output_csv = pathlib.Path("data/compare/crested-butte-colorado-usa.csv")
     df = utils.compare_bna_results(brokenspoke_csv, original_csv, output_csv)
 
     assert all(df.delta.apply(lambda x: -DELTA <= x <= DELTA))

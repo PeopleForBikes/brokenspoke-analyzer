@@ -21,7 +21,7 @@ def all(
     country: common.Country,
     city: common.City,
     state: common.State = None,
-    fips_code: common.FIPSCode = "0",
+    fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
     census_year: common.CensusYear = common.DEFAULT_CENSUS_YEAR,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
 ) -> None:
@@ -83,7 +83,7 @@ def neighborhood(
     population_file = input_dir / "population.shp"
     water_blocks_file = input_dir / "censuswaterblocks.csv"
 
-    # compute the outpur SRID from the boundary file.
+    # compute the output SRID from the boundary file.
     output_srid = utils.get_srid(boundary_file.resolve(strict=True))
     logger.debug(f"{output_srid=}")
 
@@ -130,7 +130,7 @@ def osm(
     country: common.Country,
     city: common.City,
     state: common.State = None,
-    fips_code: common.FIPSCode = "0",
+    fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
 ) -> None:
     """Import OSM data."""
     # Make mypy happy.

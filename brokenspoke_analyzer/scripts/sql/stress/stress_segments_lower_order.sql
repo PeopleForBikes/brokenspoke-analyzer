@@ -10,7 +10,7 @@
 --      :default_roadway_width -> assumed width of roadway
 ----------------------------------------
 UPDATE  received.neighborhood_ways SET ft_seg_stress=NULL, tf_seg_stress=NULL
-WHERE   functional_class = :'class';
+WHERE   functional_class = ':class';
 
 UPDATE  received.neighborhood_ways
 SET     ft_seg_stress =
@@ -51,4 +51,4 @@ SET     ft_seg_stress =
             WHEN COALESCE(speed_limit,:default_speed) <= 20 THEN 1
             ELSE 3
             END
-WHERE   functional_class = :'class';
+WHERE   functional_class = ':class';

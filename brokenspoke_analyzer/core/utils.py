@@ -182,8 +182,8 @@ def compare_bna_results(
 
     # Make some adjustments to the dataframes.
     df = pd.concat([brokenspoke_df, original_df.original.to_frame()], axis=1)
-    df = df.drop(df[df.score_id == "total_miles_low_stress"].index)
-    df = df.drop(df[df.score_id == "total_miles_high_stress"].index)
+    # df = df.drop(df[df.score_id == "total_miles_low_stress"].index)
+    # df = df.drop(df[df.score_id == "total_miles_high_stress"].index)
     df = df.dropna()
 
     # Compute the deltas.

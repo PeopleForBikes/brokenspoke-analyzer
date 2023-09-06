@@ -12,6 +12,8 @@ from sqlalchemy.engine import Engine
 from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core.database import dbcore
 
+NB_SIGCTL_SEARCH_DIST = 25
+
 
 def execute_sqlfile_with_substitutions(
     engine: Engine,
@@ -24,9 +26,9 @@ def execute_sqlfile_with_substitutions(
     if bind_params:
         binding_names = sorted(bind_params.keys(), key=len, reverse=True)
         for binding_name in binding_names:
-            statements = statements.replace(
-                f":{binding_name}", f"{bind_params[binding_name] or 'NULL'}"
-            )
+            param = bind_params[binding_name]
+            substitute = param if param else "NULL"
+            statements = statements.replace(f":{binding_name}", f"{substitute}")
     dbcore.execute_query(engine, statements)
 
 
@@ -74,10 +76,16 @@ def features(
         "park.sql",
         "bike_infra.sql",
         "class_adjustments.sql",
+        "legs.sql",
     ]
     for script in sql_scripts:
         sql_script = sql_feature_script_dir / script
         dbcore.execute_sql_file(engine, sql_script)
+    sql_scripts = ["signalized.sql", "stops.sql", "rrfb.sql", "island.sql"]
+    bind_params = {"sigctl_search_dist": NB_SIGCTL_SEARCH_DIST}
+    for script in sql_scripts:
+        sql_script = sql_feature_script_dir / script
+        execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
 
 
 def stress(
@@ -149,15 +157,13 @@ def stress(
 
     # Unclassified.
     logger.info("Unclassified")
-    sql_script = sql_stress_script_dir / "stress_segments_lower_order_res.sql"
+    sql_script = sql_stress_script_dir / "stress_segments_lower_order.sql"
     bind_params = {
-        "city_default": city_default_speed,
         "class": "unclassified",
         "default_speed": 25,
         "default_lanes": 1,
         "default_parking": 1,
         "default_roadway_width": 27,
-        "state_default": state_default_speed,
     }
     execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
     sql_scripts = [
@@ -254,16 +260,18 @@ def conectivity(
     engine: Engine,
     sql_script_dir: pathlib.Path,
     output_srid: int,
-    tolerance: Tolerance,
-    path_constraint: PathConstraint,
-    block_road: BlockRoad,
-    score: Score,
     import_jobs: bool,
-    max_trip_distance: typing.Optional[int] = 2680,
+    max_trip_distance: typing.Optional[int] = common.DEFAULT_MAX_TRIP_DISTANCE,
 ) -> None:
     """Compute BNA connectivity scores."""
     # Makes MyPy happy.
     assert max_trip_distance
+
+    # Prepare computation variables.
+    tolerance = Tolerance()
+    path_constraint = PathConstraint()
+    block_road = BlockRoad()
+    score = Score()
 
     # Prepare the paths.
     sql_script_dir = sql_script_dir.resolve(strict=True)
@@ -392,7 +400,7 @@ def conectivity(
         Access("colleges", first=0.7),
         Access("community_centers", first=0.4, second=0.2, third=0.1),
         Access("doctors", first=0.4, second=0.2, third=0.1),
-        Access("dentists", first=0.7, second=0.2, third=0.1),
+        Access("dentists", first=0.4, second=0.2, third=0.1),
         Access("hospitals", first=0.7),
         Access("pharmacies", first=0.4, second=0.2, third=0.1),
         Access("parks", first=0.3, second=0.2, third=0.2),
@@ -462,13 +470,9 @@ def all(
     output_srid: int,
     state_default_speed: int | None,
     city_default_speed: int | None,
-    tolerance: Tolerance,
-    path_constraint: PathConstraint,
-    block_road: BlockRoad,
-    score: Score,
     import_jobs: bool,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
-    max_trip_distance: typing.Optional[int] = 2680,
+    max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
 ) -> None:
     """Compute all features."""
     # Make mypy happy.
@@ -497,10 +501,6 @@ def all(
         engine,
         sql_script_dir,
         output_srid,
-        tolerance,
-        path_constraint,
-        block_road,
-        score,
         import_jobs,
         max_trip_distance,
     )

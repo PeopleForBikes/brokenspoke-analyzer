@@ -30,21 +30,21 @@ app = typer.Typer()
 
 @app.command()
 def compose(
-    database_url: common.DatabaseURL,
     country: common.Country,
     city: common.City,
     state: common.State = None,
-    output_dir: typing.Optional[pathlib.Path] = common.OutputDir,
-    fips_code: common.FIPSCode = "0",
+    output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
+    fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
-    speed_limit: typing.Optional[int] = common.SpeedLimit,
-    block_size: typing.Optional[int] = common.BlockSize,
-    block_population: typing.Optional[int] = common.BlockPopulation,
+    speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
+    block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
+    block_population: common.BlockPopulation = common.DEFAULT_BLOCK_POPULATION,
     census_year: common.CensusYear = common.DEFAULT_CENSUS_YEAR,
-    retries: typing.Optional[int] = common.Retries,
-    max_trip_distance: typing.Optional[int] = 2680,
+    retries: common.Retries = common.DEFAULT_RETRIES,
+    max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
 ) -> pathlib.Path:
     """Manage Docker Compose when running the analysis."""
+    database_url = "postgresql://postgres:postgres@localhost:5432/postgres"
     try:
         subprocess.run(["docker", "compose", "up", "-d"], check=True)
         subprocess.run(
@@ -79,13 +79,13 @@ def compose(
 
 @app.command()
 def original_bna(
-    state: str,
+    state: str | None,
     city_shp: pathlib.Path,
     pfb_osm_file: pathlib.Path,
-    output_dir: typing.Optional[pathlib.Path] = common.OutputDir,
-    docker_image: typing.Optional[str] = common.DockerImage,
-    container_name: typing.Optional[str] = common.ContainerName,
-    city_fips: common.FIPSCode = "0",
+    output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
+    docker_image: common.DockerImage = common.DEFAULT_DOCKER_IMAGE,
+    container_name: common.ContainerName = common.DEFAULT_CONTAINER_NAME,
+    city_fips: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
 ) -> pathlib.Path:
     """Use the original BNA Docker image to run the analysis."""
     # Make mypy happy.
@@ -98,7 +98,14 @@ def original_bna(
 
     console = Console()
     with console.status("[bold green]Running the full analysis (may take a while)..."):
-        state_abbrev, state_fips = analysis.state_info(state) if state else ("0", "0")
+        state_abbrev, state_fips = (
+            analysis.state_info(state)
+            if state
+            else (
+                runner.NON_US_STATE_ABBREV,
+                runner.NON_US_STATE_FIPS,
+            )
+        )
         runner.run_analysis(
             state_abbrev,
             state_fips,
@@ -110,34 +117,34 @@ def original_bna(
             city_fips=city_fips,
         )
         console.log(f"Analysis for {city_shp} complete.")
-    return list(output_dir.glob("local-analysis-*"))[0]
+
+    # Grab the last result directory.
+    result_dirs = list(output_dir.glob("local-analysis-*"))
+    result_dirs.sort()
+    return result_dirs[-1]
 
 
 @app.command()
 def compare(
-    database_url: common.DatabaseURL,
     country: common.Country,
     city: common.City,
     state: common.State = None,
-    output_dir: typing.Optional[pathlib.Path] = common.OutputDir,
-    fips_code: common.FIPSCode = "0",
+    output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
+    fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
-    speed_limit: typing.Optional[int] = common.SpeedLimit,
-    block_size: typing.Optional[int] = common.BlockSize,
-    block_population: typing.Optional[int] = common.BlockPopulation,
+    speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
+    block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
+    block_population: common.BlockPopulation = common.DEFAULT_BLOCK_POPULATION,
     census_year: common.CensusYear = common.DEFAULT_CENSUS_YEAR,
-    retries: typing.Optional[int] = common.Retries,
-    max_trip_distance: typing.Optional[int] = 2680,
+    retries: common.Retries = common.DEFAULT_RETRIES,
+    max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
 ) -> pd.DataFrame:
     # Make mypy happy.
     if not output_dir:
         raise ValueError("`output_dir` must be set")
-    if not state:
-        raise ValueError("`state` must be set")
 
     logger.info("Run with compose")
     brokenspoke_export_dir = compose(
-        database_url=database_url,
         country=country,
         city=city,
         state=state,
@@ -162,7 +169,7 @@ def compare(
         city_shp=city_shp,
         pfb_osm_file=pfb_osm_file,
         city_fips=fips_code,
-        docker_image=common.DEFAULT_AZAVEA_IMAGE,
+        docker_image=common.DEFAULT_DOCKER_IMAGE,
         container_name=common.DEFAULT_CONTAINER_NAME,
     )
 
@@ -179,11 +186,11 @@ def run_(
     country: str,
     city: str,
     state: typing.Optional[str] = None,
-    output_dir: typing.Optional[pathlib.Path] = pathlib.Path("./data"),
-    fips_code: typing.Optional[str] = "0",
+    output_dir: typing.Optional[pathlib.Path] = common.DEFAULT_OUTPUT_DIR,
+    fips_code: typing.Optional[str] = common.DEFAULT_CITY_FIPS_CODE,
     buffer: typing.Optional[int] = common.DEFAULT_BUFFER,
     speed_limit: typing.Optional[int] = common.DEFAULT_CITY_SPEED_LIMIT,
-    block_size: typing.Optional[int] = common.DEFAULT_BLOCKSIZE,
+    block_size: typing.Optional[int] = common.DEFAULT_BLOCK_SIZE,
     block_population: typing.Optional[int] = common.DEFAULT_BLOCK_POPULATION,
     census_year: common.CensusYear = common.DEFAULT_CENSUS_YEAR,
     retries: typing.Optional[int] = common.DEFAULT_RETRIES,
@@ -193,6 +200,10 @@ def run_(
     # Make mypy happy.
     if not output_dir:
         raise ValueError("`output_dir` must be set")
+    if not block_size:
+        raise ValueError("`block_size` must be set")
+    if not block_population:
+        raise ValueError("`block_population` must be set")
 
     # Prepare the database connection.
     engine = dbcore.create_psycopg_engine(database_url)
@@ -224,6 +235,7 @@ def run_(
         state=state,
         census_year=census_year,
         buffer=buffer,
+        fips_code=fips_code,
     )
 
     # Compute.
@@ -236,6 +248,8 @@ def run_(
     state_default_speed, city_default_speed = ingestor.retrieve_default_speed_limits(
         engine
     )
+    logger.debug(f"{state_default_speed=}")
+    logger.debug(f"{city_default_speed=}")
     if country.upper() == "US":
         country = "usa"
     import_jobs = country.upper() == constant.COUNTRY_USA
@@ -247,10 +261,6 @@ def run_(
         buffer=buffer,
         state_default_speed=state_default_speed,
         city_default_speed=city_default_speed,
-        tolerance=compute.Tolerance(),
-        path_constraint=compute.PathConstraint(),
-        block_road=compute.BlockRoad(),
-        score=compute.Score(),
         import_jobs=import_jobs,
         max_trip_distance=max_trip_distance,
     )
