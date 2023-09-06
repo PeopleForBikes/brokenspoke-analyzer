@@ -58,7 +58,7 @@ def prepare_census_blocks(tabblk_file: pathlib.Path, output_dir: pathlib.Path) -
     """Prepare the census block files to match our naming convention."""
     # Unzip it.
     output_dir = output_dir.resolve()
-    unzip(tabblk_file.resolve(strict=True), output_dir)
+    unzip(tabblk_file.resolve(strict=True), output_dir, False)
 
     # Rename the tabulation block files to "population".
     tabblk2010_files = output_dir.glob(f"{tabblk_file.stem}.*")

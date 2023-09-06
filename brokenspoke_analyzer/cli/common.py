@@ -4,6 +4,17 @@ import typing
 import typer
 from typing_extensions import Annotated
 
+# Default constant.
+DEFAULT_BLOCK_POPULATION = 100
+DEFAULT_BLOCKSIZE = 500
+DEFAULT_BUFFER = 2680
+DEFAULT_CENSUS_YEAR = 2019
+DEFAULT_CITY_FIPS_CODE = "0"  # "0" means an non-US city.
+DEFAULT_CITY_SPEED_LIMIT = 30
+DEFAULT_CONTAINER_NAME = "brokenspoke-analyzer"
+DEFAULT_RETRIES = 2
+DEFAULT_MAX_TRIP_DISTANCE = 2680
+
 # Default Typer Arguments/Options.
 OutputDir = typer.Option(
     default="./data",
@@ -18,17 +29,21 @@ DockerImage = typer.Option(
     "azavea/pfb-network-connectivity:0.18.0", help="override the BNA Docker image"
 )
 ContainerName = typer.Option(
-    None, help="give a specific name to the container running the BNA"
+    DEFAULT_CONTAINER_NAME, help="give a specific name to the container running the BNA"
 )
 FIPSCode = Annotated[typing.Optional[str], typer.Argument(help="US city FIPS code")]
-SpeedLimit = typer.Option(30, help="override the default speed limit (in mph)")
+SpeedLimit = typer.Option(
+    DEFAULT_CITY_SPEED_LIMIT, help="override the default speed limit (in mph)"
+)
 BlockSize = typer.Option(
-    500, help="size of a synthetic block for non-US cities (in meters)"
+    DEFAULT_BLOCKSIZE, help="size of a synthetic block for non-US cities (in meters)"
 )
 BlockPopulation = typer.Option(
-    100, help="population of a synthetic block for non-US cities"
+    DEFAULT_BLOCK_POPULATION, help="population of a synthetic block for non-US cities"
 )
-Retries = typer.Option(2, help="number of times to retry downloading files")
+Retries = typer.Option(
+    DEFAULT_RETRIES, help="number of times to retry downloading files"
+)
 DatabaseURL = Annotated[str, typer.Option(help="database URL", envvar="DATABASE_URL")]
 InputDir = Annotated[
     pathlib.Path,
@@ -54,9 +69,3 @@ ExportDir = Annotated[
         help="local directory where to export the results",
     ),
 ]
-
-# Default constant.
-DEFAULT_BUFFER = 2680
-DEFAULT_CENSUS_YEAR = 2019
-# A city FIPS code of "0" means an non-US city.
-DEFAULT_CITY_FIPS_CODE = "0"
