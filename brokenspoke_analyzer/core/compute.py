@@ -7,7 +7,6 @@ import pathlib
 import typing
 
 from loguru import logger
-from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 
 from brokenspoke_analyzer.cli import common
@@ -477,9 +476,7 @@ def all(
         raise ValueError("`buffer` must be set")
 
     # Prepare the database connection.
-    engine = create_engine(
-        database_url.replace("postgresql://", "postgresql+psycopg://")
-    )
+    engine = dbcore.create_psycopg_engine(database_url)
 
     # Compute features.
     logger.info("Compute features")

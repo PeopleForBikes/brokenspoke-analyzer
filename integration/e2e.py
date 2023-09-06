@@ -12,21 +12,18 @@ import os
 import pathlib
 
 from loguru import logger
-from sqlalchemy import create_engine
 
 from brokenspoke_analyzer.core import (
     compute,
     ingestor,
     runner,
 )
-from brokenspoke_analyzer.database import dbcore
+from brokenspoke_analyzer.core.database import dbcore
 
 
 def test_import_neighborhood():
     database_url = "postgresql://postgres:postgres@localhost:5432/postgres"
-    engine = create_engine(
-        database_url.replace("postgresql://", "postgresql+psycopg://")
-    )
+    engine = dbcore.create_psycopg_engine(database_url)
 
     os.environ["DATABASE_URL"] = database_url
 
@@ -55,9 +52,7 @@ def test_import_neighborhood():
 
 def test_retrieve_population():
     database_url = "postgresql://postgres:postgres@localhost:5432/postgres"
-    engine = create_engine(
-        database_url.replace("postgresql://", "postgresql+psycopg://")
-    )
+    engine = dbcore.create_psycopg_engine(database_url)
     population = ingestor.retrieve_population(engine)
     print(f"{population=}")
     assert population == 3199
@@ -66,18 +61,14 @@ def test_retrieve_population():
 def test_import_jobs():
     database_url = "postgresql://postgres:postgres@localhost:5432/postgres"
     os.environ["DATABASE_URL"] = database_url
-    engine = create_engine(
-        database_url.replace("postgresql://", "postgresql+psycopg://")
-    )
+    engine = dbcore.create_psycopg_engine(database_url)
     input_dir = pathlib.Path("data")
     ingestor.import_jobs(engine, "nm", 2019, input_dir)
 
 
 def test_import_all():
     database_url = "postgresql://postgres:postgres@localhost:5432/postgres"
-    engine = create_engine(
-        database_url.replace("postgresql://", "postgresql+psycopg://")
-    )
+    engine = dbcore.create_psycopg_engine(database_url)
 
     os.environ["DATABASE_URL"] = database_url
     os.environ["PGPASSWORD"] = "postgres"
@@ -129,9 +120,7 @@ def test_import_all():
 
 def test_retrieve_boundary_box():
     database_url = "postgresql://postgres:postgres@localhost:5432/postgres"
-    engine = create_engine(
-        database_url.replace("postgresql://", "postgresql+psycopg://")
-    )
+    engine = dbcore.create_psycopg_engine(database_url)
 
     bbox = ingestor.retrieve_boundary_box(engine)
     print(f"{bbox}")
@@ -141,9 +130,7 @@ def test_retrieve_boundary_box():
 def test_import_osm_data():
     """Require import neighborhood."""
     database_url = "postgresql://postgres:postgres@localhost:5432/postgres"
-    engine = create_engine(
-        database_url.replace("postgresql://", "postgresql+psycopg://")
-    )
+    engine = dbcore.create_psycopg_engine(database_url)
 
     os.environ["DATABASE_URL"] = database_url
 
@@ -174,9 +161,7 @@ def test_docker_info():
 
 def test_all():
     database_url = "postgresql://postgres:postgres@localhost:5432/postgres"
-    engine = create_engine(
-        database_url.replace("postgresql://", "postgresql+psycopg://")
-    )
+    engine = dbcore.create_psycopg_engine(database_url)
 
     os.environ["DATABASE_URL"] = database_url
     os.environ["PGPASSWORD"] = "postgres"

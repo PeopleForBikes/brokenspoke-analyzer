@@ -6,7 +6,6 @@ from importlib import resources
 import typer
 from loguru import logger
 from rich.console import Console
-from sqlalchemy import create_engine
 
 from brokenspoke_analyzer.cli import (
     common,
@@ -23,6 +22,7 @@ from brokenspoke_analyzer.core import (
     runner,
     utils,
 )
+from brokenspoke_analyzer.core.database import dbcore
 
 app = typer.Typer()
 
@@ -131,9 +131,7 @@ def run_(
         raise ValueError("`output_dir` must be set")
 
     # Prepare the database connection.
-    engine = create_engine(
-        database_url.replace("postgresql://", "postgresql+psycopg://")
-    )
+    engine = dbcore.create_psycopg_engine(database_url)
 
     # Prepare.
     logger.info("Prepare")

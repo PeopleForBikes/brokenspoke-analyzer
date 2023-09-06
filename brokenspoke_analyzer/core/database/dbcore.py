@@ -1,7 +1,10 @@
 """Define functions used to manipulate database data."""
 import pathlib
 
-from sqlalchemy import text
+from sqlalchemy import (
+    create_engine,
+    text,
+)
 from sqlalchemy.engine import Engine
 
 from brokenspoke_analyzer.core import runner
@@ -134,3 +137,8 @@ def configure_docker_db(engine: Engine) -> None:
     if not pguser:
         raise ValueError("postgresql user must be specified in the databse engine URL")
     configure_db(engine, docker_cores, docker_memory_mb, pguser)
+
+
+def create_psycopg_engine(database_url: str) -> Engine:
+    """Create a SQLAlchemy engine with the psycopg3 driver."""
+    return create_engine(database_url.replace("postgresql://", "postgresql+psycopg://"))
