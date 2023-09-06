@@ -42,7 +42,7 @@ def compose(
     census_year: common.CensusYear = common.DEFAULT_CENSUS_YEAR,
     retries: typing.Optional[int] = common.Retries,
     max_trip_distance: typing.Optional[int] = 2680,
-) -> None:
+) -> pathlib.Path:
     """Manage Docker Compose when running the analysis."""
     try:
         subprocess.run(["docker", "compose", "up", "-d"], check=True)
@@ -53,7 +53,7 @@ def compose(
             timeout=60,
         )
         configure.docker(database_url)
-        run_(
+        export_dir = run_(
             database_url=database_url,
             country=country,
             city=city,
@@ -73,6 +73,7 @@ def compose(
         subprocess.run(
             ["docker", "volume", "rm", "-f", "brokenspoke-analyzer_postgres"]
         )
+    return export_dir
 
 
 @app.command()
@@ -84,7 +85,7 @@ def original_bna(
     docker_image: typing.Optional[str] = common.DockerImage,
     container_name: typing.Optional[str] = common.ContainerName,
     city_fips: common.FIPSCode = "0",
-) -> None:
+) -> pathlib.Path:
     """Use the original BNA Docker image to run the analysis."""
     # Make mypy happy.
     if not output_dir:
@@ -108,6 +109,67 @@ def original_bna(
             city_fips=city_fips,
         )
         console.log(f"Analysis for {city_shp} complete.")
+    return list(output_dir.glob("local-analysis-*"))[0]
+
+
+@app.command()
+def compare(
+    database_url: common.DatabaseURL,
+    country: common.Country,
+    city: common.City,
+    state: common.State = None,
+    output_dir: typing.Optional[pathlib.Path] = common.OutputDir,
+    fips_code: common.FIPSCode = "0",
+    buffer: common.Buffer = common.DEFAULT_BUFFER,
+    speed_limit: typing.Optional[int] = common.SpeedLimit,
+    block_size: typing.Optional[int] = common.BlockSize,
+    block_population: typing.Optional[int] = common.BlockPopulation,
+    census_year: common.CensusYear = common.DEFAULT_CENSUS_YEAR,
+    retries: typing.Optional[int] = common.Retries,
+    max_trip_distance: typing.Optional[int] = 2680,
+) -> None:
+    # Make mypy happy.
+    if not output_dir:
+        raise ValueError("`output_dir` must be set")
+    if not state:
+        raise ValueError("`state` must be set")
+
+    logger.info("Run with compose")
+    brokenspoke_export_dir = compose(
+        database_url=database_url,
+        country=country,
+        city=city,
+        state=state,
+        output_dir=output_dir,
+        fips_code=fips_code,
+        buffer=buffer,
+        speed_limit=speed_limit,
+        block_size=block_size,
+        block_population=block_population,
+        census_year=census_year,
+        retries=retries,
+        max_trip_distance=max_trip_distance,
+    )
+
+    logger.info("Run with original BNA")
+    _, slug = analysis.osmnx_query(country, city, state)
+    city_shp = output_dir / f"{slug}.shp"
+    pfb_osm_file = output_dir.with_suffix(".osm")
+    original_export_dir = original_bna(
+        state=state,
+        output_dir=output_dir / slug,
+        city_shp=city_shp,
+        pfb_osm_file=pfb_osm_file,
+        city_fips=fips_code,
+        docker_image=common.DEFAULT_AZAVEA_IMAGE,
+        container_name=common.DEFAULT_CONTAINER_NAME,
+    )
+
+    logger.info("Compare the results")
+    brokenspoke_scores = brokenspoke_export_dir / "neighborhood_overall_scores.csv"
+    original_scores = original_export_dir / "neighborhood_overall_scores.csv"
+    output_csv = output_dir / f"{slug}.csv"
+    utils.compare_bna_results(brokenspoke_scores, original_scores, output_csv)
 
 
 def run_(
@@ -124,7 +186,7 @@ def run_(
     census_year: common.CensusYear = common.DEFAULT_CENSUS_YEAR,
     retries: typing.Optional[int] = common.DEFAULT_RETRIES,
     max_trip_distance: typing.Optional[int] = common.DEFAULT_MAX_TRIP_DISTANCE,
-) -> None:
+) -> pathlib.Path:
     """Run an analysis."""
     # Make mypy happy.
     if not output_dir:
@@ -192,7 +254,7 @@ def run_(
 
     # Export.
     logger.info("Export")
-    export.local_calver(
+    export_dir = export.local_calver(
         database_url=database_url,
         country=country,
         city=city,
@@ -200,3 +262,4 @@ def run_(
         force=False,
         export_dir=input_dir / "results",
     )
+    return export_dir

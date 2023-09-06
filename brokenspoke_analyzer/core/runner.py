@@ -29,7 +29,7 @@ def run_analysis(
     city_fips: typing.Optional[str] = None,
 ) -> None:
     """Run a BNA analysis."""
-    dest = pathlib.Path("/data") / output_dir.name
+    dest = pathlib.Path("/") / output_dir.name
     if state_fips == NON_US_STATE_FIPS:
         pfb_country = "nonus"
         pfb_state = ""

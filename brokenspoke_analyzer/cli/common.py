@@ -5,6 +5,7 @@ import typer
 from typing_extensions import Annotated
 
 # Default constant.
+DEFAULT_AZAVEA_IMAGE = "azavea/pfb-network-connectivity:0.18.0"
 DEFAULT_BLOCK_POPULATION = 100
 DEFAULT_BLOCKSIZE = 500
 DEFAULT_BUFFER = 2680
