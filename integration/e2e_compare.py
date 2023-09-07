@@ -166,13 +166,11 @@ def test_compare(city: str, state: str, country: str, city_fips: str):
     load_dotenv()
 
     # Run the comparison.
-    database_url = os.environ["DATABASE_URL"]
     df = run_with.compare(
-        database_url=database_url,
         country=country,
         output_dir=pathlib.Path("data"),
         speed_limit=common.DEFAULT_CITY_SPEED_LIMIT,
-        block_size=common.DEFAULT_BLOCKSIZE,
+        block_size=common.DEFAULT_BLOCK_SIZE,
         block_population=common.DEFAULT_BLOCK_POPULATION,
         city=city,
         state=state,

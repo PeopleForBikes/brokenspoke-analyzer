@@ -1,7 +1,6 @@
 import logging
 import pathlib
 import sys
-import typing
 from importlib import resources
 
 import typer
@@ -95,10 +94,6 @@ def compute_cmd(
     state_default_speed, city_default_speed = ingestor.retrieve_default_speed_limits(
         engine
     )
-    tolerance = compute.Tolerance()
-    path_constraint = compute.PathConstraint()
-    block_road = compute.BlockRoad()
-    score = compute.Score()
     if country.upper() == "US":
         country = "usa"
     import_jobs = country.upper() == constant.COUNTRY_USA
@@ -116,10 +111,6 @@ def compute_cmd(
             buffer=buffer,
             state_default_speed=state_default_speed,
             city_default_speed=city_default_speed,
-            tolerance=tolerance,
-            path_constraint=path_constraint,
-            block_road=block_road,
-            score=score,
             import_jobs=import_jobs,
         )
         console.log(f"Analysis for {slug} complete.")
@@ -131,16 +122,15 @@ def run(
     country: common.Country,
     city: common.City,
     state: common.State = None,
-    output_dir: typing.Optional[pathlib.Path] = common.OutputDir,
-    fips_code: common.FIPSCode = "0",
+    output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
+    fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
-    speed_limit: typing.Optional[int] = common.SpeedLimit,
-    block_size: typing.Optional[int] = common.BlockSize,
-    block_population: typing.Optional[int] = common.BlockPopulation,
+    speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
+    block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
+    block_population: common.BlockPopulation = common.DEFAULT_BLOCK_POPULATION,
     census_year: common.CensusYear = common.DEFAULT_CENSUS_YEAR,
-    retries: typing.Optional[int] = common.Retries,
-    max_trip_distance: typing.Optional[int] = 2680,
-    # with_compose: Annotated[bool, typer.Option(help="Manage Docker compose")] = True,
+    retries: common.Retries = common.DEFAULT_RETRIES,
+    max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
 ) -> None:
     """Run an analysis."""
     run_with.run_(

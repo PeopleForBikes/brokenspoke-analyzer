@@ -2,7 +2,6 @@
 Define the various functions that will be use to ingest the data required to
 perform the analysis.
 """
-import os
 import pathlib
 import subprocess
 import typing
@@ -39,7 +38,9 @@ def import_and_transform_shapefile(
 ) -> None:
     """Imports a shapefile into PostGIS with shp2pgsql."""
     logger.info(f"Importing {shapefile} into {table} with SRID {input_srid}")
-    database_url = os.environ["DATABASE_URL"]
+    database_url = engine.engine.url.set(drivername="postgresql").render_as_string(
+        hide_password=False
+    )
 
     # Note(rgreinho): I was not able to validate that this is truly needed, but
     # since it was in the original script, I added it back here. It would
@@ -387,12 +388,15 @@ def import_osm_data(
     Remark: can only be run afer `import_neighborhood()`. It requires some table to
     exist to compute the boundary box.
     """
-    database_url = os.environ["DATABASE_URL"]
+    database_url = engine.engine.url.set(drivername="postgresql").render_as_string(
+        hide_password=False
+    )
 
     # Define the BBOX and clip the data.
     # Note(rgreinho): Normally these 2 steps are useless now since we clip the
     # data during the "prepare" phase. But we still need to validate this hypothesis.
     bbox = retrieve_boundary_box(engine)
+    logger.debug(f"{bbox=}")
     clipped_osm_file = runner.run_osm_convert(osm_file, bbox)
 
     # Ensure the file does not have backslashes.

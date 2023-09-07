@@ -1,6 +1,5 @@
 import asyncio
 import pathlib
-import typing
 
 import aiohttp
 import geopandas as gpd
@@ -23,20 +22,18 @@ from brokenspoke_analyzer.core import (
 app = typer.Typer()
 
 
-# pylint: disable=too-many-arguments
 @app.command()
 def all(
-    country: str,
-    city: str,
-    state: typing.Optional[str] = typer.Argument(
-        None, help="state, province or region"
-    ),
-    fips_code: common.FIPSCode = "0",
-    output_dir: typing.Optional[pathlib.Path] = common.OutputDir,
-    speed_limit: typing.Optional[int] = common.SpeedLimit,
-    block_size: typing.Optional[int] = common.BlockSize,
-    block_population: typing.Optional[int] = common.BlockPopulation,
-    retries: typing.Optional[int] = common.Retries,
+    country: common.Country,
+    city: common.City,
+    state: common.Region = None,
+    fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
+    output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
+    speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
+    block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
+    block_population: common.BlockPopulation = common.DEFAULT_BLOCK_POPULATION,
+    retries: common.Retries = common.DEFAULT_RETRIES,
+    census_year: common.CensusYear = common.DEFAULT_CENSUS_YEAR,
 ) -> None:
     """Prepare all the required files for an analysis."""
     # Make MyPy happy.
@@ -50,6 +47,8 @@ def all(
         raise ValueError("`block_population` must be set")
     if not retries:
         raise ValueError("`retries` must be set")
+    if not census_year:
+        raise ValueError("`census_year` must be set")
 
     # Ensure US/USA cities have the right parameters.
     if country.upper() == "US":
@@ -69,11 +68,11 @@ def all(
             block_size,
             block_population,
             retries,
+            census_year,
         )
     )
 
 
-# pylint: disable=too-many-locals,too-many-arguments
 async def prepare_(
     country: str,
     state: str | None,
@@ -83,7 +82,8 @@ async def prepare_(
     block_size: int,
     block_population: int,
     retries: int,
-) -> typing.Tuple[str, str, pathlib.Path, pathlib.Path, pathlib.Path]:
+    census_year: int,
+) -> None:
     """Prepare and kicks off the analysis."""
     # Compute the city slug.
     _, slug = analysis.osmnx_query(country, city, state)
@@ -122,29 +122,16 @@ async def prepare_(
     with console.status(f"[bold green]Reducing the OSM file for {city} with osmium..."):
         polygon_file = output_dir / f"{slug}.geojson"
         pfb_osm_file = pathlib.Path(f"{slug}.osm")
-        logger.debug(f"{output_dir=}")
-        logger.debug(f"{region_file_path=}")
-        logger.debug(f"{polygon_file=}")
-        logger.debug(f"{pfb_osm_file=}")
         analysis.prepare_city_file(
             output_dir, region_file_path, polygon_file, pfb_osm_file
         )
         console.log(f"OSM file for {city} ready.")
 
     # Retrieve the state info if needed.
-    try:
-        if state:
-            state_abbrev, state_fips = analysis.state_info(state)
-        else:
-            state_abbrev, state_fips = analysis.state_info(country)
-    except ValueError:
-        state_abbrev, state_fips = (
-            runner.NON_US_STATE_ABBREV,
-            runner.NON_US_STATE_FIPS,
-        )
+    state_abbrev, state_fips, _ = analysis.derive_state_info(state)
 
     # Perform some specific operations for non-US cities.
-    if str(state_fips) == runner.NON_US_STATE_FIPS:
+    if state_fips == runner.NON_US_STATE_FIPS:
         # Create synthetic population.
         with console.status("[bold green]Prepare synthetic population..."):
             CELL_SIZE = (block_size, block_size)
@@ -165,7 +152,7 @@ async def prepare_(
             console.log(f"Default speed limit adjusted to {speed_limit} km/h.")
     else:
         async with aiohttp.ClientSession() as session:
-            lodes_year = 2019
+            lodes_year = census_year
             with console.status(
                 f"[bold green]Fetching {lodes_year} US employment data..."
             ):
@@ -208,13 +195,3 @@ async def prepare_(
                 await retryer(
                     downloader.download_city_speed_limits, session, output_dir
                 )
-
-    # Return the parameters required to perform the analysis.
-    # pylint: disable=duplicate-code
-    return (
-        state_abbrev,
-        state_fips,
-        boundary_file,
-        pfb_osm_file,
-        output_dir,
-    )

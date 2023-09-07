@@ -1,5 +1,4 @@
 import pathlib
-import typing
 
 import typer
 from loguru import logger
@@ -10,15 +9,6 @@ from brokenspoke_analyzer.core import exporter
 
 Force = Annotated[
     bool, typer.Option(help="Do not fail if the destination folder already exists")
-]
-Region = Annotated[
-    typing.Optional[str],
-    typer.Argument(
-        help=(
-            "Represent the world region (e.g., state, province, community, etc...). "
-            "Falls back to the country name if not provided."
-        )
-    ),
 ]
 
 
@@ -46,7 +36,7 @@ def local_calver(
     database_url: common.DatabaseURL,
     country: common.Country,
     city: common.City,
-    region: Region = None,
+    region: common.Region = None,
     force: Force = False,
     export_dir: common.ExportDir = pathlib.Path("data/results"),
 ) -> pathlib.Path:
