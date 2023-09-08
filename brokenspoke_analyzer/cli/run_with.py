@@ -79,9 +79,9 @@ def compose(
 
 @app.command()
 def original_bna(
-    state: str | None,
     city_shp: pathlib.Path,
     pfb_osm_file: pathlib.Path,
+    state: typing.Optional[str] = None,
     output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
     docker_image: common.DockerImage = common.DEFAULT_DOCKER_IMAGE,
     container_name: common.ContainerName = common.DEFAULT_CONTAINER_NAME,

@@ -1,5 +1,6 @@
 import asyncio
 import pathlib
+import typing
 
 import aiohttp
 import geopandas as gpd
@@ -60,22 +61,21 @@ def all(
     logger.debug(f"{output_dir=}")
     asyncio.run(
         prepare_(
-            country,
-            state,
-            city,
-            output_dir,
-            speed_limit,
-            block_size,
-            block_population,
-            retries,
-            census_year,
+            country=country,
+            state=state,
+            city=city,
+            output_dir=output_dir,
+            speed_limit=speed_limit,
+            block_size=block_size,
+            block_population=block_population,
+            retries=retries,
+            census_year=census_year,
         )
     )
 
 
 async def prepare_(
     country: str,
-    state: str | None,
     city: str,
     output_dir: pathlib.Path,
     speed_limit: int,
@@ -83,6 +83,7 @@ async def prepare_(
     block_population: int,
     retries: int,
     census_year: int,
+    state: typing.Optional[str] = None,
 ) -> None:
     """Prepare and kicks off the analysis."""
     # Compute the city slug.
