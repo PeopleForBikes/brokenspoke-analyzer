@@ -1,5 +1,4 @@
 """Compare the overall scores between the original BNA and the modular BNA."""
-import os
 import pathlib
 
 import pytest

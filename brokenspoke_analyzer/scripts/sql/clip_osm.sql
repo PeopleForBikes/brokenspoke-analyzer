@@ -10,9 +10,9 @@ DELETE FROM neighborhood_ways AS ways
     USING neighborhood_boundary AS boundary
     WHERE NOT ST_DWithin(ways.geom, boundary.geom, :nb_boundary_buffer);
 
--- DELETE FROM neighborhood_ways_intersections AS intersections
---     USING neighborhood_boundary AS boundary
---     WHERE NOT ST_DWithin(intersections.geom, boundary.geom, :nb_boundary_buffer);
+DELETE FROM neighborhood_ways_intersections AS intersections
+    USING neighborhood_boundary AS boundary
+    WHERE NOT ST_DWithin(intersections.geom, boundary.geom, :nb_boundary_buffer);
 
 DELETE FROM neighborhood_osm_full_line AS lines
     USING neighborhood_boundary AS boundary

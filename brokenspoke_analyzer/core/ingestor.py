@@ -28,13 +28,18 @@ WATER_BLOCKS_TABLE = "water_blocks"
 RESIDENTIAL_SPEED_LIMIT_TABLE = "residential_speed_limit"
 script_dir = resources.files("brokenspoke_analyzer.scripts")
 
+# https://gis.stackexchange.com/questions/48949/epsg-3857-or-4326-for-web-mapping
+# The data in Open Street Map database is stored in a gcs with units decimal
+# degrees & datum of wgs84. (EPSG: 4326)
+ESPG_4326 = 4326
+
 
 def import_and_transform_shapefile(
     engine: Engine,
     shapefile: pathlib.Path,
     table: str,
     output_srid: int,
-    input_srid: typing.Optional[int] = 4326,
+    input_srid: typing.Optional[int] = ESPG_4326,
 ) -> None:
     """Imports a shapefile into PostGIS with shp2pgsql."""
     logger.info(f"Importing {shapefile} into {table} with SRID {input_srid}")
@@ -60,6 +65,13 @@ def import_and_transform_shapefile(
     logger.debug(f"{' '.join(shp2pgsql_cmd)}")
     shp2pgsql = subprocess.run(
         shp2pgsql_cmd, capture_output=True, encoding="utf-8", check=True
+    )
+    subprocess.run(
+        ["psql", database_url],
+        input=shp2pgsql.stdout,
+        capture_output=True,
+        check=True,
+        text=True,
     )
 
     # Drop the table and creates a new one with the data in the Shape file.
@@ -217,7 +229,9 @@ def load_jobs(
 
 def retrieve_boundary_box(engine: Engine) -> tuple[float, float, float, float]:
     """Retrieve the city boundary box."""
-    query = f"SELECT ST_Extent(ST_Transform(geom, 4326)) FROM {CENSUS_BLOCKS_TABLE};"
+    query = (
+        f"SELECT ST_Extent(ST_Transform(geom, {ESPG_4326})) FROM {CENSUS_BLOCKS_TABLE};"
+    )
     with engine.connect() as conn:
         result = conn.execute(text(query))
         row = result.first()
@@ -340,6 +354,7 @@ def retrieve_default_speed_limits(engine: Engine) -> tuple[int | None, int | Non
         if row:
             state_speed = int(row.state_speed) if row.state_speed else None
             city_speed = int(row.city_speed) if row.city_speed else None
+            logger.debug(f"{state_speed=} | {city_speed=}")
             return state_speed, city_speed
         raise ValueError(f"no value found in the {RESIDENTIAL_SPEED_LIMIT_TABLE} table")
 
@@ -365,7 +380,7 @@ def rename_neighborhood_tables(engine: Engine) -> None:
 
 def move_tables(engine: Engine) -> None:
     """Move some tables to the "received" schema."""
-    query = "ALTER TABLE generated.neighborhood_osm_full_line " "SET SCHEMA received;"
+    query = "ALTER TABLE generated.neighborhood_osm_full_line SET SCHEMA received;"
     query += "ALTER TABLE generated.neighborhood_osm_full_point SET SCHEMA received;"
     query += "ALTER TABLE generated.neighborhood_osm_full_polygon SET SCHEMA received;"
     query += "ALTER TABLE generated.neighborhood_osm_full_roads SET SCHEMA received;"
@@ -395,6 +410,7 @@ def import_osm_data(
     # Define the BBOX and clip the data.
     # Note(rgreinho): Normally these 2 steps are useless now since we clip the
     # data during the "prepare" phase. But we still need to validate this hypothesis.
+    logger.debug("Clipping the OSM data...")
     bbox = retrieve_boundary_box(engine)
     logger.debug(f"{bbox=}")
     clipped_osm_file = runner.run_osm_convert(osm_file, bbox)
@@ -444,6 +460,10 @@ def import_osm_data(
         city_speed_limits_csv,
         city_speed_limit_override,
     )
+
+    # Move the full osm tables to the received schema.
+    logger.debug("Moving tables to received schema...")
+    move_tables(engine)
 
 
 def import_all(
