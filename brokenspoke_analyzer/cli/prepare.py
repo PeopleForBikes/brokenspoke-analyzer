@@ -1,5 +1,7 @@
 import asyncio
+import logging
 import pathlib
+import sys
 import typing
 
 import aiohttp
@@ -9,6 +11,7 @@ from loguru import logger
 from rich.console import Console
 from tenacity import (
     Retrying,
+    before_log,
     stop_after_attempt,
 )
 
@@ -96,8 +99,16 @@ async def prepare_(
     # Prepare the Rich output.
     console = Console()
 
+    # Prepare logging for Retrying.
+    logging_logger = logging.getLogger(__name__)
+    logging.basicConfig(stream=sys.stderr, level=logging.WARNING)
+
     # Create retrier instance to use for all downloads
-    retryer = Retrying(stop=stop_after_attempt(retries), reraise=True)
+    retryer = Retrying(
+        stop=stop_after_attempt(retries),
+        reraise=True,
+        before=before_log(logging_logger, logging.WARNING),
+    )
 
     # Retrieve city boundaries.
     with console.status("[bold green]Querying OSM to retrieve the city boundaries..."):
