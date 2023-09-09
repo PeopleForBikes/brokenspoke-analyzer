@@ -1,5 +1,6 @@
 import gzip
 import pathlib
+import shutil
 import typing
 import zipfile
 from enum import Enum
@@ -62,9 +63,11 @@ def prepare_census_blocks(tabblk_file: pathlib.Path, output_dir: pathlib.Path) -
     unzip(tabblk_file.resolve(strict=True), output_dir, False)
 
     # Rename the tabulation block files to "population".
+    # But keep the original file.s
     tabblk2010_files = output_dir.glob(f"{tabblk_file.stem}.*")
     for file in tabblk2010_files:
         file.rename(output_dir / f"population{file.suffix}")
+    shutil.copyfile(output_dir / "population.zip", output_dir / f"{tabblk_file.name}")
 
 
 def normalize_unicode_name(value: str) -> str:

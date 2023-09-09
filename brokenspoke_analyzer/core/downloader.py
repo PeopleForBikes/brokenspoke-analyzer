@@ -107,7 +107,7 @@ async def download_lodes_data(
     await download_file(session, f"{lehd_url}/{lehd_filename}", gzipped_lehd_file)
 
     # Decompress it.
-    utils.gunzip(gzipped_lehd_file, decompressed_lefh_file)
+    utils.gunzip(gzipped_lehd_file, decompressed_lefh_file, False)
 
 
 async def download_census_waterblocks(
@@ -128,7 +128,7 @@ async def download_census_waterblocks(
     await download_file(session, waterblock_url, zipped_waterblock_file)
 
     # Unzip it.
-    utils.unzip(zipped_waterblock_file, output_dir)
+    utils.unzip(zipped_waterblock_file, output_dir, False)
 
 
 async def download_2010_census_blocks(
