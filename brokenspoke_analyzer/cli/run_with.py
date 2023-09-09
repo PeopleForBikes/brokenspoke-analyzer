@@ -205,6 +205,13 @@ def run_(
     if not block_population:
         raise ValueError("`block_population` must be set")
 
+    # Ensure US/USA cities have the right parameters.
+    if country.upper() == "US":
+        country = "usa"
+    if country.upper() == constant.COUNTRY_USA:
+        if not (state and fips_code != common.DEFAULT_CITY_FIPS_CODE):
+            raise ValueError("`state` and `fips_code` are required for US cities")
+
     # Prepare the database connection.
     engine = dbcore.create_psycopg_engine(database_url)
 

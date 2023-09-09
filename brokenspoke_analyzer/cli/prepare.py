@@ -58,7 +58,7 @@ def all(
     if country.upper() == "US":
         country = "usa"
     if country.upper() == constant.COUNTRY_USA:
-        if not state and fips_code == "0":
+        if not (state and fips_code != common.DEFAULT_CITY_FIPS_CODE):
             raise ValueError("`state` and `fips_code` are required for US cities")
 
     logger.debug(f"{output_dir=}")

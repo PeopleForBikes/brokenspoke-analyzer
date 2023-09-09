@@ -29,7 +29,7 @@ def run_analysis(
     city_fips: typing.Optional[str] = None,
 ) -> None:
     """Run a BNA analysis."""
-    dest = pathlib.Path("/") / output_dir.name
+    dest = pathlib.Path("/data")
     if state_fips == NON_US_STATE_FIPS:
         pfb_country = "nonus"
         pfb_state = ""
@@ -63,8 +63,6 @@ def run_analysis(
             "PFB_DEBUG=1",
             "-v",
             f'"{output_dir.resolve(strict=True)}":"{dest}"',
-            "-v",
-            f'"{output_dir.resolve(strict=True)}/population.zip":"/data/population.zip"',
             docker_image,
         ]
     )
@@ -160,6 +158,8 @@ def run_osm2pgsql(
         "osm2pgsql",
         "--database",
         database_url,
+        "--schema",
+        "generated",
         "--create",
         "--prefix",
         prefix,

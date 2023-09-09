@@ -118,8 +118,8 @@ def configure_db(engine: Engine, cores: int, memory_mb: int, pguser: str) -> Non
         f"CREATE SCHEMA IF NOT EXISTS received AUTHORIZATION {pguser};",
         f"CREATE SCHEMA IF NOT EXISTS scratch AUTHORIZATION {pguser};",
         (
-            f"ALTER USER {pguser} SET search_path TO "
-            "generated,received,scratch,'$user',public;"
+            f"ALTER ROLE {pguser} SET search_path TO "
+            'generated,received,scratch,"$user",public;'
         ),
     ]
     with engine.execution_options(isolation_level="AUTOCOMMIT").connect() as conn:
