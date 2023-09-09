@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import pathlib
-import sys
 import typing
 
 import aiohttp
@@ -99,15 +98,11 @@ async def prepare_(
     # Prepare the Rich output.
     console = Console()
 
-    # Prepare logging for Retrying.
-    logging_logger = logging.getLogger(__name__)
-    logging.basicConfig(stream=sys.stderr, level=logging.WARNING)
-
     # Create retrier instance to use for all downloads
     retryer = Retrying(
         stop=stop_after_attempt(retries),
         reraise=True,
-        before=before_log(logging_logger, logging.WARNING),
+        before=before_log(logger, logging.DEBUG),  # type: ignore
     )
 
     # Retrieve city boundaries.
