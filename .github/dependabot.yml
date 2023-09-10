@@ -1,13 +1,13 @@
 version: 2
 updates:
-  # Maintain Rust dependencies.
+  # Maintain Python dependencies.
   - package-ecosystem: pip
-    directory: '/'
+    directory: "/"
     schedule:
       interval: weekly
 
   # Maintain dependencies for GitHub Actions.
-  - package-ecosystem: 'github-actions'
-    directory: '/'
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
-      interval: 'weekly'
+      interval: "weekly"

@@ -1,0 +1,55 @@
+name: e2e
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  runner-job:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+
+    services:
+      postgres:
+        image: ghcr.io/rgreinho/docker-postgis-bna:13-3.1
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - uses: Gr1N/setup-poetry@v8
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+          cache: "poetry"
+      - name: install dependencies
+        run: |
+          sudo apt-get update
+          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends \
+            osm2pgrouting osm2pgsql osmctools osmium-tool postgresql-client postgis
+      - name: Setup the project
+        run: poetry install
+      - run: |
+          poetry run bna configure docker
+          # poetry run bna run usa "santa rosa" "new mexico" 3570670
+          poetry run bna prepare all usa "santa rosa" "new mexico" 3570670
+          poetry run bna import all usa "santa rosa" "new mexico" 3570670 --input-dir data/santa-rosa-new-mexico-usa
+          poetry run bna compute usa "santa rosa" "new mexico" --input-dir data/santa-rosa-new-mexico-usa
+          psql -c "\d" $DATABASE_URL
+          psql -c "SELECT COUNT(*) FROM received.neighborhood_ways;" $DATABASE_URL
+          psql -c "SELECT * FROM neighborhood_overall_scores;" $DATABASE_URL
