@@ -25,7 +25,7 @@ us = "^3.1.1"
 sqlparse = "^0.4.4"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.7.0"
+black = "^23.9.1"
 bpython = "^0.24"
 furo = "^2023.8.19"
 isort = "^5.11.3"
