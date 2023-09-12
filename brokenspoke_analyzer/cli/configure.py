@@ -1,6 +1,7 @@
 """Define the configure subcommand."""
 
 import typer
+from typing_extensions import Annotated
 
 from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core.database import dbcore
@@ -19,9 +20,9 @@ def docker(
 
 @app.command()
 def custom(
-    cores: int,
-    memory_mb: int,
-    pguser: str,
+    cores: Annotated[int, typer.Argument(help="number of cores")],
+    memory_mb: Annotated[int, typer.Argument(help="memory amount in MB")],
+    pguser: Annotated[str, typer.Argument(help="PostgreSQL user name to connect as")],
     database_url: common.DatabaseURL,
 ) -> None:
     """Configures a database with custom values."""

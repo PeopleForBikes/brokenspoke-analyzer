@@ -28,7 +28,7 @@ fmt-just:
 
 # Format markdown files.
 fmt-md:
-    npx --yes prettier --write --prose-wrap always **/*.md
+    npx --yes prettier --write --prose-wrap always "**/*.md"
 
 # Format python files.
 fmt-python:

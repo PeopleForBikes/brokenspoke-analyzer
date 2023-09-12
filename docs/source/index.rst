@@ -15,6 +15,7 @@
    :caption: GENERAL:
 
    usage
+   commands
    datasets
    workflow
    resources

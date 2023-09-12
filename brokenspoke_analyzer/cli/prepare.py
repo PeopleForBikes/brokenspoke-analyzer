@@ -38,7 +38,7 @@ def all(
     retries: common.Retries = common.DEFAULT_RETRIES,
     census_year: common.CensusYear = common.DEFAULT_CENSUS_YEAR,
 ) -> None:
-    """Prepare all the required files for an analysis."""
+    """Prepare all the files required for an analysis."""
     # Make MyPy happy.
     if not output_dir:
         raise ValueError("`output_dir` must be set")
