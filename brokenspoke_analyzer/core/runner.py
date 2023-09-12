@@ -153,13 +153,15 @@ def run_osm2pgsql(
     # Asserts are here to make MyPy happy.
     assert number_processes is not None
     assert prefix is not None
+
+    # Retrieve the number of cores.
     cores = multiprocessing.cpu_count() if number_processes == 0 else number_processes
+
+    # Prepare the command.
     osm2pgsql_cmd = [
         "osm2pgsql",
         "--database",
         database_url,
-        "--schema",
-        "generated",
         "--create",
         "--prefix",
         prefix,
@@ -171,6 +173,23 @@ def run_osm2pgsql(
         str(cores),
         str(osm_file.resolve(strict=True)),
     ]
+
+    # Get osm2pgsql version.
+    cap = subprocess.run(["osm2pgsql", "--version"], capture_output=True, check=True)
+    logger.debug(f"{cap=}")
+    version = cap.stderr.splitlines()[0].split()[-1]
+    logger.debug(f"{version=}")
+    major, minor, patch = list(map(int, version.split(b".")))
+    logger.debug(f"{major=}, {minor=}, {patch=}")
+
+    # Befware of the breaking change in 1.9.0 with the --schema flag.
+    # (https://github.com/openstreetmap/osm2pgsql/releases/tag/1.9.0)
+    # and manually set it if needed.
+    if major == 1 and minor >= 9:
+        osm2pgsql_cmd.insert(1, "generated")
+        osm2pgsql_cmd.insert(1, "--schema")
+
+    # Run it.
     run(osm2pgsql_cmd)
 
 

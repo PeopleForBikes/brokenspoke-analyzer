@@ -106,6 +106,7 @@ def original_bna(
                 runner.NON_US_STATE_FIPS,
             )
         )
+        logger.debug(f"{state_abbrev=} | {state_fips=}")
         runner.run_analysis(
             state_abbrev,
             state_fips,
