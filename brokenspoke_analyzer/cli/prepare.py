@@ -20,6 +20,7 @@ from brokenspoke_analyzer.core import (
     constant,
     downloader,
     runner,
+    utils,
 )
 
 app = typer.Typer()
@@ -123,6 +124,9 @@ async def prepare_(
             region_file_path = retryer(
                 analysis.retrieve_region_file, country, output_dir
             )
+        region_file_path_md5 = pathlib.Path(str(region_file_path) + ".md5")
+        if not utils.file_checksum_ok(region_file_path, region_file_path_md5):
+            raise ValueError("Invalid OSM region file")
         console.log("OSM Region file downloaded.")
 
     # Reduce the osm file with osmium.

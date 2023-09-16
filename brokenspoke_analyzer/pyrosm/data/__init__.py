@@ -123,8 +123,17 @@ available = {
 
 
 def retrieve(data, update, directory):
+    download(
+        url=data["url"] + ".md5",
+        filename=data["name"] + ".md5",
+        update=update,
+        target_dir=directory,
+    )
     return download(
-        url=data["url"], filename=data["name"], update=update, target_dir=directory
+        url=data["url"],
+        filename=data["name"],
+        update=update,
+        target_dir=directory,
     )
 
 
