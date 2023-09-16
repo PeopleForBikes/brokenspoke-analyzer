@@ -11,7 +11,7 @@ Not all the CLI flags will be described on this page. For more details, please
 refer to the help screens by using the `--help` flag associated with the command
 to review.
 
-All the commands follow a very similar pattern, therefore use almost all the
+All the commands follow a very similar pattern, therefore they use almost all the
 same parameters accross the board.
 
 ## Environment variables
@@ -297,7 +297,7 @@ environment.
 
 ### Original-BNA
 
-This sub-commands runs an anlalysis using the original BNA.
+This sub-command runs an anlalysis using the original BNA.
 
 ```bash
 Usage: bna run-with original-bna [OPTIONS] CITY_SHP PFB_OSM_FILE [CITY_FIPS]
