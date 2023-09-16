@@ -1,9 +1,9 @@
 # Usages
 
 This page describes common usages of the Brokenspoke-analyzer as well as some
-explainations related to its workflows and infrastructure.
+explanations related to its workflows and infrastructure.
 
-## How it works?
+## How does it work?
 
 An analysis is composed of a few steps:
 
@@ -28,7 +28,7 @@ A Docker [Compose file](https://) is provided with this project to simplify the
 setup.
 
 Using Compose is just a simpler way to run the PostGIS container with the right
-parameters (environment variables, network, volume, etc.)
+parameters (environment variables, network, volume, etc.).
 
 ## Using brokenspoke-analyzer in the docker container
 
@@ -50,7 +50,7 @@ Here are the requirements:
 - Plpython3
 - Enable the `uuid-ossp` and `plpython3u` extensions.
 - Create the `generated`, `received` and `scratch`, schemas and make sure the
-  user as the authorization to access them
+  user has the authorization to access them
 
 > Note: We should provide a command which only creates the schemas and
 > extensions required.
