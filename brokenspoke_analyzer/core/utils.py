@@ -1,4 +1,5 @@
 import gzip
+import hashlib
 import pathlib
 import shutil
 import typing
@@ -48,12 +49,35 @@ def gunzip(
     # Decompress it.
     gzip_file = gzip_file.resolve(strict=True)
     with gzip.open(gzip_file, "rb") as f:
-        content = f.read()
-        target.resolve().write_bytes(content)
+        try:
+            content = f.read()
+        except gzip.BadGzipFile as e:
+            delete_after = True
+            raise RuntimeError("Bad Gzip file. Try downloading the file again.") from e
+        except EOFError as e:
+            delete_after = True
+            raise RuntimeError(
+                "End of file error.  Try downloading the file again."
+            ) from e
+        else:
+            target.resolve().write_bytes(content)
+        finally:
+            if delete_after:
+                gzip_file.unlink(missing_ok=False)
 
-    # Delete the archive.
-    if delete_after:
-        gzip_file.unlink()
+
+def file_checksum_ok(osm_file: pathlib.Path, osm_file_md5: pathlib.Path) -> bool:
+    BUF_SIZE = 65536
+    HASH_SIZE = 32  # 128 bit MD5 hash
+    md5 = hashlib.md5()
+
+    with osm_file.open("rb") as f:
+        while data := f.read(BUF_SIZE):
+            md5.update(data)
+
+    checksum = osm_file_md5.read_text()[:HASH_SIZE]
+
+    return md5.hexdigest() == checksum
 
 
 def prepare_census_blocks(tabblk_file: pathlib.Path, output_dir: pathlib.Path) -> None:
