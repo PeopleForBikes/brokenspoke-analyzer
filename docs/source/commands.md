@@ -2,7 +2,7 @@
 
 ## General information
 
-Most of the commands require access to PostgreSQ:/PostGIS. For this reason we
+Most of the commands require access to PostgreSQL/PostGIS. For this reason we
 recommend setting the `DATABASE_URL` environment variable, even though it is
 possible to specify it on the CLI. This will keep the commands shorter and
 reduce the chance of error in the connection URL.
