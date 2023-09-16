@@ -11,8 +11,8 @@ Not all the CLI flags will be described on this page. For more details, please
 refer to the help screens by using the `--help` flag associated with the command
 to review.
 
-All the commands follow a very similar pattern, therefore they use almost all the
-same parameters accross the board.
+All the commands follow a very similar pattern, therefore they use almost all
+the same parameters accross the board.
 
 ## Environment variables
 
@@ -64,7 +64,8 @@ This command prepares all the input files required for an analysis.
 Usage: bna prepare all [OPTIONS] COUNTRY CITY [STATE] [FIPS_CODE]
 ```
 
-For US cities, the full name of the state as well as the city FIPS code are required:
+For US cities, the full name of the state as well as the city FIPS code are
+required:
 
 ```bash
 bna prepare all usa "santa rosa" "new mexico" 3570670

@@ -8,20 +8,35 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [2.0.0-alpha] - 2023-09-16
+
+### Added
+
+- Add Python scripts for code originally written in Bash.
+- Add integration test suite.
+- Update the documentation to include new subcommands and features.
+
+### Changed
+
+- Update and reorganize the CLI.
+
+[2.0.0-alpha]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.0.0-alpha
+
 ## [1.3.0] - 2023-08-20
 
-## Added
+### Added
 
 - Add an option to name the container running the analysis. [#215]
 - Add a dataset to represent California. [#223]
 - Add a CLI flag to specify the city FIPS code. [#240]
 - Add capability to retry and cleanup partial downloads. [#272]
 
-## Changed
+### Changed
 
 - Replaced GDAL dependency with pandas. [#259]
 
-## Fixed
+### Fixed
 
 - Bind the `population.zip` file to the internal `/data` directory. [#211]
 - Ensure the boundary shapefile encoding is UTF-8. [#212]
