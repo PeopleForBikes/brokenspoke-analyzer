@@ -23,7 +23,7 @@ same parameters accross the board.
 - **BNA_OSMNX_CACHE**: Set it to 0 to disable the OSMNX cache.
 
   This is useful when used in an ephemeral environment where there is no real
-  benefits of caching the downloads.
+  benefit of caching the downloads.
 
 ## Configure
 
@@ -64,7 +64,7 @@ This command prepares all the input files required for an analysis.
 Usage: bna prepare all [OPTIONS] COUNTRY CITY [STATE] [FIPS_CODE]
 ```
 
-For US cities, the full name of the state as well as the FIPS code are required:
+For US cities, the full name of the state as well as the city FIPS code are required:
 
 ```bash
 bna prepare all usa "santa rosa" "new mexico" 3570670
@@ -168,7 +168,7 @@ All the results will be stored in various table in the database.
 
 ## Export
 
-This command exports the tables from database.
+This command exports the tables from the database.
 
 Several exporters are available to export the results that where previously
 computed.
@@ -226,7 +226,7 @@ The directories will be created if they do not exist.
 ### local-calver
 
 This sub-command exports the results to a local directory created based on the
-PeopleForBike convention and [calver] versioning.
+PeopleForBikes convention and [calver] versioning.
 
 ```bash
 Usage: bna export local-calver [OPTIONS] COUNTRY CITY [REGION] [EXPORT_DIR]
@@ -240,7 +240,7 @@ manager for Python uses.
 bna export local-calver usa "santa rosa" "new mexico"
 ```
 
-The final directory structure follows the PeopleForBike convention
+The final directory structure follows the PeopleForBikes convention
 `<output_dir>/<country>/<region>/<city>/<calver>` and the structure will look
 like this:
 
@@ -285,7 +285,7 @@ Usage: bna run-with compare [OPTIONS] COUNTRY CITY [STATE] [FIPS_CODE]
 
 ### Compose
 
-This sub-commands manages the Docker Compose environment automatically.
+This sub-command manages the Docker Compose environment automatically.
 
 ```bash
 Usage: bna run-with compose [OPTIONS] COUNTRY CITY [STATE] [FIPS_CODE]
