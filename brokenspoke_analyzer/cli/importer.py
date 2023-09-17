@@ -20,7 +20,7 @@ def all(
     input_dir: common.InputDir,
     country: common.Country,
     city: common.City,
-    state: common.State = None,
+    region: common.Region = None,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
     census_year: common.CensusYear = common.DEFAULT_CENSUS_YEAR,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
@@ -30,12 +30,12 @@ def all(
         input_dir=input_dir,
         country=country,
         city=city,
-        state=state,
+        region=region,
         database_url=database_url,
         buffer=buffer,
     )
     # Derive state FIPS code from state name.
-    state_abbrev, _, import_jobs = analysis.derive_state_info(state)
+    state_abbrev, _, import_jobs = analysis.derive_state_info(region)
     logger.debug(f"{import_jobs=}")
     if import_jobs == "1":
         jobs(
@@ -48,7 +48,7 @@ def all(
         input_dir=input_dir,
         country=country,
         city=city,
-        state=state,
+        region=region,
         fips_code=fips_code,
         database_url=database_url,
     )
@@ -60,7 +60,7 @@ def neighborhood(
     input_dir: common.InputDir,
     country: common.Country,
     city: common.City,
-    state: common.State = None,
+    region: common.Region = None,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
 ) -> None:
     """Import neighborhood data."""
@@ -71,14 +71,14 @@ def neighborhood(
     # Ensure US/USA cities have the right parameters.
     if country.upper() == "US":
         country = "usa"
-    if country.upper() == constant.COUNTRY_USA and not state:
+    if country.upper() == constant.COUNTRY_USA and not region:
         raise ValueError("`state` is required for US cities")
 
     # Prepare the database connection.
     engine = dbcore.create_psycopg_engine(database_url)
 
     # Prepare the files to import.
-    _, slug = analysis.osmnx_query(country, city, state)
+    _, slug = analysis.osmnx_query(country, city, region)
     boundary_file = input_dir / f"{slug}.shp"
     population_file = input_dir / "population.shp"
     water_blocks_file = input_dir / "censuswaterblocks.csv"
@@ -129,7 +129,7 @@ def osm(
     input_dir: common.InputDir,
     country: common.Country,
     city: common.City,
-    state: common.State = None,
+    region: common.Region = None,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
 ) -> None:
     """Import OSM data."""
@@ -141,7 +141,7 @@ def osm(
     engine = dbcore.create_psycopg_engine(database_url)
 
     # Prepare the files to import.
-    _, slug = analysis.osmnx_query(country, city, state)
+    _, slug = analysis.osmnx_query(country, city, region)
     boundary_file = input_dir / f"{slug}.shp"
     osm_file = input_dir / f"{slug}.osm"
     state_speed_limits_csv = input_dir / "state_fips_speed.csv"
@@ -152,7 +152,7 @@ def osm(
     logger.debug(f"{output_srid=}")
 
     # Derive state FIPS code from state name.
-    _, state_fips, _ = analysis.derive_state_info(state)
+    _, state_fips, _ = analysis.derive_state_info(region)
 
     ingestor.import_osm_data(
         engine,
