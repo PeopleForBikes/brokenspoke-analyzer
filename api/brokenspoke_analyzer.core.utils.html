@@ -1,12 +1,12 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="brokenspoke_analyzer.core.runner module" href="brokenspoke_analyzer.core.runner.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.07.26 -->
-        <title>brokenspoke_analyzer.core.utils module - Brokenspoke Analyzer 1.3.0 documentation</title>
+    <!-- Generated with Sphinx 7.2.5 and Furo 2023.09.10 -->
+        <title>brokenspoke_analyzer.core.utils module - Brokenspoke Analyzer 2.0.0a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -164,7 +164,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Brokenspoke Analyzer 1.3.0 documentation</div></a>
+      <a href="../index.html"><div class="brand">Brokenspoke Analyzer 2.0.0a0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -187,7 +187,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">Brokenspoke Analyzer 1.3.0 documentation</span>
+  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.0.0a0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -197,7 +197,8 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">GENERAL:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../commands.html">Commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../workflow.html">Preparation Workflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
@@ -252,43 +253,64 @@
         </div>
         <article role="main">
           <section id="module-brokenspoke_analyzer.core.utils">
-<span id="brokenspoke-analyzer-core-utils-module"></span><h1>brokenspoke_analyzer.core.utils module<a class="headerlink" href="#module-brokenspoke_analyzer.core.utils" title="Permalink to this heading">#</a></h1>
+<span id="brokenspoke-analyzer-core-utils-module"></span><h1>brokenspoke_analyzer.core.utils module<a class="headerlink" href="#module-brokenspoke_analyzer.core.utils" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.PolygonFormat">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">PolygonFormat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.PolygonFormat" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">PolygonFormat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.PolygonFormat" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
 <p>Represent the available polygon formats from polygons.openstreetmap.fr.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.PolygonFormat.GEOJSON">
-<span class="sig-name descname"><span class="pre">GEOJSON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'get_geojson.py'</span></em><a class="headerlink" href="#brokenspoke_analyzer.core.utils.PolygonFormat.GEOJSON" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">GEOJSON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'get_geojson.py'</span></em><a class="headerlink" href="#brokenspoke_analyzer.core.utils.PolygonFormat.GEOJSON" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.PolygonFormat.POLY">
-<span class="sig-name descname"><span class="pre">POLY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'get_poly.py'</span></em><a class="headerlink" href="#brokenspoke_analyzer.core.utils.PolygonFormat.POLY" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">POLY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'get_poly.py'</span></em><a class="headerlink" href="#brokenspoke_analyzer.core.utils.PolygonFormat.POLY" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.PolygonFormat.WKT">
-<span class="sig-name descname"><span class="pre">WKT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'get_wkt.py'</span></em><a class="headerlink" href="#brokenspoke_analyzer.core.utils.PolygonFormat.WKT" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">WKT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'get_wkt.py'</span></em><a class="headerlink" href="#brokenspoke_analyzer.core.utils.PolygonFormat.WKT" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.compare_bna_results">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">compare_bna_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">brokenspoke_scores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">original_scores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_csv</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.compare_bna_results" title="Link to this definition">#</a></dt>
+<dd><p>Compare the Brokenaspoke and the original BNA results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.file_checksum_ok">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">file_checksum_ok</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">osm_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">osm_file_md5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.file_checksum_ok" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.get_srid">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">get_srid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shapefile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.get_srid" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">get_srid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shapefile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.get_srid" title="Link to this definition">#</a></dt>
 <dd><p>Get the SRID of a shapefile.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.gunzip">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">gunzip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gzip_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_after</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.gunzip" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">gunzip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gzip_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_after</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.gunzip" title="Link to this definition">#</a></dt>
 <dd><p>Gunzip a file into a specific target.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -299,7 +321,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.normalize_unicode_name">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">normalize_unicode_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.normalize_unicode_name" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">normalize_unicode_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.normalize_unicode_name" title="Link to this definition">#</a></dt>
 <dd><p>Normalize unicode names.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -321,7 +343,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.prepare_census_blocks">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">prepare_census_blocks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tabblk_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.prepare_census_blocks" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">prepare_census_blocks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tabblk_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.prepare_census_blocks" title="Link to this definition">#</a></dt>
 <dd><p>Prepare the census block files to match our naming convention.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -332,7 +354,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.prepare_city_inputs">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">prepare_city_inputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">country</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">city</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.prepare_city_inputs" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">prepare_city_inputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">country</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">city</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.prepare_city_inputs" title="Link to this definition">#</a></dt>
 <dd><p>Prepare the directories and files that will be used to perform the analysis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -347,7 +369,7 @@ boundary file and the OSM file.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.prepare_environment">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">prepare_environment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">city</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">country</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">city_fips</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_fips</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_abbrev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_import_jobs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.prepare_environment" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">prepare_environment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">city</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">country</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">city_fips</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_fips</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_abbrev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_import_jobs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.prepare_environment" title="Link to this definition">#</a></dt>
 <dd><p>Prepare the environment variables required by the modular BNA.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -381,7 +403,7 @@ boundary file and the OSM file.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.unzip">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">unzip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_after</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.unzip" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">unzip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_after</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.unzip" title="Link to this definition">#</a></dt>
 <dd><p>Unzip an archive into a specific directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -453,6 +475,8 @@ boundary file and the OSM file.</p>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.PolygonFormat.WKT"><code class="docutils literal notranslate"><span class="pre">PolygonFormat.WKT</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.compare_bna_results"><code class="docutils literal notranslate"><span class="pre">compare_bna_results()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.file_checksum_ok"><code class="docutils literal notranslate"><span class="pre">file_checksum_ok()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.get_srid"><code class="docutils literal notranslate"><span class="pre">get_srid()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.gunzip"><code class="docutils literal notranslate"><span class="pre">gunzip()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.normalize_unicode_name"><code class="docutils literal notranslate"><span class="pre">normalize_unicode_name()</span></code></a></li>
@@ -471,9 +495,9 @@ boundary file and the OSM file.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=3d533f9b"></script>
+</div><script src="../_static/documentation_options.js?v=30372d7b"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>

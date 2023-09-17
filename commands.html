@@ -1,0 +1,623 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Datasets" href="datasets.html" /><link rel="prev" title="Usages" href="usage.html" />
+
+    <!-- Generated with Sphinx 7.2.5 and Furo 2023.09.10 -->
+        <title>Commands - Brokenspoke Analyzer 2.0.0a0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  --color-foreground-primary: #8B8A8D;
+  --color-foreground-secondary: #009EDB;
+  --color-foreground-muted: #D71920;
+  --color-foreground-border: #878787;
+  --color-background-primary: #fcfaf6;
+  --color-background-secondary: #fcfaf6;
+  --color-background-hover: #effaffff;
+  --color-background-hover--transparent: #effaff00;
+  --color-background-border: #eeebee;
+  --color-background-item: #ccc;
+  --color-brand-primary: #009EDB;
+  --color-brand-content: #8B8A8D;
+  --font-stack: Montserrat, "Open Sans", Helvetica, Arial, sans-serif;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-foreground-primary: #8B8A8D;
+  --color-foreground-secondary: #009EDB;
+  --color-foreground-muted: #D71920;
+  --color-foreground-border: 878787;
+  --color-background-primary: #00263E;
+  --color-background-secondary: #00263E;
+  --color-background-hover: #1e2124ff;
+  --color-background-hover--transparent: #1e212400;
+  --color-background-border: #8B8A8D;
+  --color-background-item: #ccc;
+  --color-brand-primary: #009EDB;
+  --color-brand-content: #009EDB;
+  --font-stack: Montserrat, "Open Sans", Helvetica, Arial, sans-serif;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-foreground-primary: #8B8A8D;
+  --color-foreground-secondary: #009EDB;
+  --color-foreground-muted: #D71920;
+  --color-foreground-border: 878787;
+  --color-background-primary: #00263E;
+  --color-background-secondary: #00263E;
+  --color-background-hover: #1e2124ff;
+  --color-background-hover--transparent: #1e212400;
+  --color-background-border: #8B8A8D;
+  --color-background-item: #ccc;
+  --color-brand-primary: #009EDB;
+  --color-brand-content: #009EDB;
+  --font-stack: Montserrat, "Open Sans", Helvetica, Arial, sans-serif;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">Brokenspoke Analyzer 2.0.0a0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.0.0a0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">GENERAL:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usages</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Preparation Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">DEVELOPMENT:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="code-of-conduct.html">Community Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contributing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/brokenspoke_analyzer.html">brokenspoke_analyzer package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of brokenspoke_analyzer package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/brokenspoke_analyzer.core.html">brokenspoke_analyzer.core package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of brokenspoke_analyzer.core package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/brokenspoke_analyzer.core.analysis.html">brokenspoke_analyzer.core.analysis module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/brokenspoke_analyzer.core.downloader.html">brokenspoke_analyzer.core.downloader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/brokenspoke_analyzer.core.runner.html">brokenspoke_analyzer.core.runner module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/brokenspoke_analyzer.core.utils.html">brokenspoke_analyzer.core.utils module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="commands">
+<h1>Commands<a class="headerlink" href="#commands" title="Link to this heading">#</a></h1>
+<section id="general-information">
+<h2>General information<a class="headerlink" href="#general-information" title="Link to this heading">#</a></h2>
+<p>Most of the commands require access to PostgreSQL/PostGIS. For this reason we
+recommend setting the <code class="docutils literal notranslate"><span class="pre">DATABASE_URL</span></code> environment variable, even though it is
+possible to specify it on the CLI. This will keep the commands shorter and
+reduce the chance of error in the connection URL.</p>
+<p>Not all the CLI flags will be described on this page. For more details, please
+refer to the help screens by using the <code class="docutils literal notranslate"><span class="pre">--help</span></code> flag associated with the command
+to review.</p>
+<p>All the commands follow a very similar pattern, therefore they use almost all
+the same parameters accross the board.</p>
+</section>
+<section id="environment-variables">
+<h2>Environment variables<a class="headerlink" href="#environment-variables" title="Link to this heading">#</a></h2>
+<ul>
+<li><p><strong>DATABASE_URL</strong>: Define the connection URL to the database.</p>
+<p>For instance: <code class="docutils literal notranslate"><span class="pre">postgresql://postgres:postgres&#64;localhost:5432/postgres</span></code>.</p>
+</li>
+<li><p><strong>BNA_OSMNX_CACHE</strong>: Set it to 0 to disable the OSMNX cache.</p>
+<p>This is useful when used in an ephemeral environment where there is no real
+benefit of caching the downloads.</p>
+</li>
+</ul>
+</section>
+<section id="configure">
+<h2>Configure<a class="headerlink" href="#configure" title="Link to this heading">#</a></h2>
+<p>Configure is a helper command, in the sense that it is completely optional to
+the process, but may help to configure the PostgreSQL which will be used for the
+analysis.</p>
+<p>The most common use case is to configure a PostgreSQL instance which is running
+in a Docker container (via the Docker Compose file that we provide for
+instance). To do so, simply run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span>configure<span class="w"> </span>docker
+</pre></div>
+</div>
+<p>The command will autodetect the number of cores and the memory allocated to the
+Docker daemon, and will use this information to determine the optimal values to
+use to configure the PostgreSQL instance.</p>
+<p>If for some reason a more fine grained configuration is prefered, another
+command is provided where the user has to specify the information manually:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span>configure<span class="w"> </span>custom<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">4096</span><span class="w"> </span>pguser
+</pre></div>
+</div>
+<p>The parameters are:</p>
+<ul class="simple">
+<li><p>the number of cores to allocate</p></li>
+<li><p>the amount of memory to allocate, in MB</p></li>
+<li><p>the name of the PostgreSQL user to connect as</p></li>
+</ul>
+</section>
+<section id="prepare">
+<h2>Prepare<a class="headerlink" href="#prepare" title="Link to this heading">#</a></h2>
+<p>This command prepares all the input files required for an analysis.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Usage:<span class="w"> </span>bna<span class="w"> </span>prepare<span class="w"> </span>all<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COUNTRY<span class="w"> </span>CITY<span class="w"> </span><span class="o">[</span>STATE<span class="o">]</span><span class="w"> </span><span class="o">[</span>FIPS_CODE<span class="o">]</span>
+</pre></div>
+</div>
+<p>For US cities, the full name of the state as well as the city FIPS code are
+required:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span>prepare<span class="w"> </span>all<span class="w"> </span>usa<span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span><span class="w"> </span><span class="m">3570670</span>
+</pre></div>
+</div>
+<p>For non US cities, only the name and the country are required:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span>prepare<span class="w"> </span>all<span class="w"> </span>malta<span class="w"> </span>valletta
+</pre></div>
+</div>
+<p>However, specifying a region can speed up the process since it will reduce the
+size of the map to download. For instance this command will download the map of
+the province of Québec in Canada. If <code class="docutils literal notranslate"><span class="pre">québec</span></code> was omitted, it would download the
+map of the full country instead.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span>prepare<span class="w"> </span>all<span class="w"> </span>canada<span class="w"> </span><span class="s2">&quot;ancienne-lorette&quot;</span><span class="w"> </span>québec
+</pre></div>
+</div>
+<p>For non US cities, the FIPS code is always ignored.</p>
+<p>By default the files will be saved in their own sub-directory in the <code class="docutils literal notranslate"><span class="pre">./data</span></code>
+directory, relative to where the command was executed. This can be changed with
+the <code class="docutils literal notranslate"><span class="pre">--output-dir</span></code> option flag.</p>
+<p>For the 3 previous examples, the files will be located in:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>data
+├──<span class="w"> </span>ancienne-lorette-quebec-canada
+├──<span class="w"> </span>santa-rosa-new-mexico-usa
+└──<span class="w"> </span>valletta-malta
+</pre></div>
+</div>
+<p>All of this should already be enough to gather the information required to
+perform an analysis, but a few more knobs are available to override the default
+values:</p>
+<ul class="simple">
+<li><p><strong>–speed-limit</strong>: overrides the city speed limit.</p></li>
+<li><p><strong>–block-size</strong>: defines the size of a synthetic block (only used for non US
+cities)</p></li>
+<li><p><strong>–block-population</strong>: defines the population of a synthetic block (only used
+for non US cities)</p></li>
+<li><p><strong>–census-year</strong>: year to use to retrieve US census data (only used for US
+cities)</p></li>
+</ul>
+</section>
+<section id="import">
+<h2>Import<a class="headerlink" href="#import" title="Link to this heading">#</a></h2>
+<p>This command imports all files from the <code class="docutils literal notranslate"><span class="pre">prepare</span></code> command into the database.</p>
+<p>The sub-command which is the most commonly used is <code class="docutils literal notranslate"><span class="pre">all</span></code>, but in case of
+exploration, a particular type of import can be specified: <code class="docutils literal notranslate"><span class="pre">jobs</span></code>,
+<code class="docutils literal notranslate"><span class="pre">neighborhood</span></code> and <code class="docutils literal notranslate"><span class="pre">osm</span></code>.</p>
+<p>Since they all work the same way, only the <code class="docutils literal notranslate"><span class="pre">all</span></code> sub-command will be described
+below.</p>
+<section id="all">
+<h3>All<a class="headerlink" href="#all" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Usage:<span class="w"> </span>bna<span class="w"> </span>import<span class="w"> </span>all<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COUNTRY<span class="w"> </span>CITY<span class="w"> </span><span class="o">[</span>STATE<span class="o">]</span><span class="w"> </span><span class="o">[</span>FIPS_CODE<span class="o">]</span>
+</pre></div>
+</div>
+<p>Same conditions as before, <code class="docutils literal notranslate"><span class="pre">country</span></code> and <code class="docutils literal notranslate"><span class="pre">city</span></code> arguments are mandatory, while
+the <code class="docutils literal notranslate"><span class="pre">region</span></code> and the <code class="docutils literal notranslate"><span class="pre">FIPS</span></code> code are required only for US cities.</p>
+<!-- prettier-ignore -->
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>The same parameters as for the <code class="docutils literal notranslate"><span class="pre">prepare</span></code> command must be used to
+guarantee correct results.</p>
+</div>
+<p>In addition to these parameters, the directory where the input files were stored
+is also required and must be specified with the <code class="docutils literal notranslate"><span class="pre">--input-dir</span></code> option flag.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span>import<span class="w"> </span>all<span class="w"> </span>usa<span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span><span class="w"> </span><span class="m">3570670</span><span class="w"> </span>--input-dir<span class="w"> </span>data/santa-rosa-new-mexico-usa
+</pre></div>
+</div>
+</section>
+</section>
+<section id="compute">
+<h2>Compute<a class="headerlink" href="#compute" title="Link to this heading">#</a></h2>
+<p>This is the command which actually computes the numbers.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Usage:<span class="w"> </span>bna<span class="w"> </span>compute<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COUNTRY<span class="w"> </span>CITY<span class="w"> </span><span class="o">[</span>STATE<span class="o">]</span>
+</pre></div>
+</div>
+<!-- prettier-ignore -->
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>The same parameters as for the <code class="docutils literal notranslate"><span class="pre">prepare</span></code> command must be used to
+guarantee correct results.</p>
+</div>
+<p>In addition to these parameters, the directory where the files were stored is
+also required and must be specified with the <code class="docutils literal notranslate"><span class="pre">--input-dir</span></code> option flag.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span>compute<span class="w"> </span>usa<span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span><span class="w"> </span>--input-dir<span class="w"> </span>data/santa-rosa-new-mexico-usa
+</pre></div>
+</div>
+<p>All the results will be stored in various table in the database.</p>
+</section>
+<section id="export">
+<h2>Export<a class="headerlink" href="#export" title="Link to this heading">#</a></h2>
+<p>This command exports the tables from the database.</p>
+<p>Several exporters are available to export the results that where previously
+computed.</p>
+<p>The following files will be created from the PostgreSQL tables:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.
+├──<span class="w"> </span>neighborhood_census_blocks.cpg
+├──<span class="w"> </span>neighborhood_census_blocks.dbf
+├──<span class="w"> </span>neighborhood_census_blocks.geojson
+├──<span class="w"> </span>neighborhood_census_blocks.prj
+├──<span class="w"> </span>neighborhood_census_blocks.shp
+├──<span class="w"> </span>neighborhood_census_blocks.shx
+├──<span class="w"> </span>neighborhood_colleges.geojson
+├──<span class="w"> </span>neighborhood_community_centers.geojson
+├──<span class="w"> </span>neighborhood_connected_census_blocks.csv
+├──<span class="w"> </span>neighborhood_dentists.geojson
+├──<span class="w"> </span>neighborhood_doctors.geojson
+├──<span class="w"> </span>neighborhood_hospitals.geojson
+├──<span class="w"> </span>neighborhood_overall_scores.csv
+├──<span class="w"> </span>neighborhood_parks.geojson
+├──<span class="w"> </span>neighborhood_pharmacies.geojson
+├──<span class="w"> </span>neighborhood_retail.geojson
+├──<span class="w"> </span>neighborhood_schools.geojson
+├──<span class="w"> </span>neighborhood_score_inputs.csv
+├──<span class="w"> </span>neighborhood_social_services.geojson
+├──<span class="w"> </span>neighborhood_supermarkets.geojson
+├──<span class="w"> </span>neighborhood_transit.geojson
+├──<span class="w"> </span>neighborhood_universities.geojson
+├──<span class="w"> </span>neighborhood_ways.cpg
+├──<span class="w"> </span>neighborhood_ways.dbf
+├──<span class="w"> </span>neighborhood_ways.prj
+├──<span class="w"> </span>neighborhood_ways.shp
+├──<span class="w"> </span>neighborhood_ways.shx
+└──<span class="w"> </span>residential_speed_limit.csv
+</pre></div>
+</div>
+<section id="local">
+<h3>local<a class="headerlink" href="#local" title="Link to this heading">#</a></h3>
+<p>This sub-command exports the results to a local directory.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Usage:<span class="w"> </span>bna<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nb">local</span><span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>EXPORT_DIR
+</pre></div>
+</div>
+<p>Example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nb">local</span><span class="w"> </span>~/bna/santa-rosa-new-mexico-usa
+</pre></div>
+</div>
+<p>The directories will be created if they do not exist.</p>
+</section>
+<section id="local-calver">
+<h3>local-calver<a class="headerlink" href="#local-calver" title="Link to this heading">#</a></h3>
+<p>This sub-command exports the results to a local directory created based on the
+PeopleForBikes convention and <a class="reference external" href="https://calver.org">calver</a> versioning.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Usage:<span class="w"> </span>bna<span class="w"> </span><span class="nb">export</span><span class="w"> </span>local-calver<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COUNTRY<span class="w"> </span>CITY<span class="w"> </span><span class="o">[</span>REGION<span class="o">]</span><span class="w"> </span><span class="o">[</span>EXPORT_DIR<span class="o">]</span>
+</pre></div>
+</div>
+<p>The calver <a class="reference external" href="https://calver.org/#scheme">scheme</a> used here is <code class="docutils literal notranslate"><span class="pre">YY.MINOR[.MICRO]</span></code>,
+similar to what <a class="reference external" href="https://pip.pypa.io/en/stable/news/">pip</a>, the official package
+manager for Python uses.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span><span class="nb">export</span><span class="w"> </span>local-calver<span class="w"> </span>usa<span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span>
+</pre></div>
+</div>
+<p>The final directory structure follows the PeopleForBikes convention
+<code class="docutils literal notranslate"><span class="pre">&lt;output_dir&gt;/&lt;country&gt;/&lt;region&gt;/&lt;city&gt;/&lt;calver&gt;</span></code> and the structure will look
+like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>results
+└──<span class="w"> </span>usa
+<span class="w">    </span>└──<span class="w"> </span>new<span class="w"> </span>mexico
+<span class="w">        </span>└──<span class="w"> </span>santa<span class="w"> </span>rosa
+<span class="w">            </span>└──<span class="w"> </span><span class="m">23</span>.9
+<span class="w">              </span>└──<span class="w"> </span>...
+</pre></div>
+</div>
+</section>
+</section>
+<section id="run">
+<h2>Run<a class="headerlink" href="#run" title="Link to this heading">#</a></h2>
+<p>This command runs the full analysis in one command.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Usage:<span class="w"> </span>bna<span class="w"> </span>run<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COUNTRY<span class="w"> </span>CITY<span class="w"> </span><span class="o">[</span>STATE<span class="o">]</span><span class="w"> </span><span class="o">[</span>FIPS_CODE<span class="o">]</span>
+</pre></div>
+</div>
+<p>Basically this command is a combination of the <code class="docutils literal notranslate"><span class="pre">prepare</span></code>, <code class="docutils literal notranslate"><span class="pre">import</span></code>, <code class="docutils literal notranslate"><span class="pre">compute</span></code>
+and <code class="docutils literal notranslate"><span class="pre">export</span></code> sub-commands.</p>
+<p>It still requires a configured, up and running database in order to complete.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span>run<span class="w"> </span>usa<span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span><span class="w"> </span><span class="m">3570670</span>
+</pre></div>
+</div>
+</section>
+<section id="run-with">
+<h2>Run-with<a class="headerlink" href="#run-with" title="Link to this heading">#</a></h2>
+<p>This command provides alternative ways to run the analysis.</p>
+<section id="compare">
+<h3>Compare<a class="headerlink" href="#compare" title="Link to this heading">#</a></h3>
+<p>This sub-command runs the analysis with both the brokenspoke-analyzer and the
+original BNA, then compares the results.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Usage:<span class="w"> </span>bna<span class="w"> </span>run-with<span class="w"> </span>compare<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COUNTRY<span class="w"> </span>CITY<span class="w"> </span><span class="o">[</span>STATE<span class="o">]</span><span class="w"> </span><span class="o">[</span>FIPS_CODE<span class="o">]</span>
+</pre></div>
+</div>
+</section>
+<section id="compose">
+<h3>Compose<a class="headerlink" href="#compose" title="Link to this heading">#</a></h3>
+<p>This sub-command manages the Docker Compose environment automatically.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Usage:<span class="w"> </span>bna<span class="w"> </span>run-with<span class="w"> </span>compose<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COUNTRY<span class="w"> </span>CITY<span class="w"> </span><span class="o">[</span>STATE<span class="o">]</span><span class="w"> </span><span class="o">[</span>FIPS_CODE<span class="o">]</span>
+</pre></div>
+</div>
+<p>It combines the <code class="docutils literal notranslate"><span class="pre">configure</span></code>, <code class="docutils literal notranslate"><span class="pre">prepare</span></code>, <code class="docutils literal notranslate"><span class="pre">import</span></code>, <code class="docutils literal notranslate"><span class="pre">compute</span></code>, <code class="docutils literal notranslate"><span class="pre">export</span></code>
+sub-commands and wraps them into the setup and tear-down of the Docker Compose
+environment.</p>
+</section>
+<section id="original-bna">
+<h3>Original-BNA<a class="headerlink" href="#original-bna" title="Link to this heading">#</a></h3>
+<p>This sub-command runs an anlalysis using the original BNA.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Usage:<span class="w"> </span>bna<span class="w"> </span>run-with<span class="w"> </span>original-bna<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>CITY_SHP<span class="w"> </span>PFB_OSM_FILE<span class="w"> </span><span class="o">[</span>CITY_FIPS<span class="o">]</span>
+</pre></div>
+</div>
+<p>It runs the Docker container of the original BNA with the appropriate parameters
+for the city to analyze.</p>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="datasets.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Datasets</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="usage.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Usages</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022, PeopleForBikes
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/PeopleForBikes/brokenspoke-analyzer" aria-label="GitHub">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+            </a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Commands</a><ul>
+<li><a class="reference internal" href="#general-information">General information</a></li>
+<li><a class="reference internal" href="#environment-variables">Environment variables</a></li>
+<li><a class="reference internal" href="#configure">Configure</a></li>
+<li><a class="reference internal" href="#prepare">Prepare</a></li>
+<li><a class="reference internal" href="#import">Import</a><ul>
+<li><a class="reference internal" href="#all">All</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#compute">Compute</a></li>
+<li><a class="reference internal" href="#export">Export</a><ul>
+<li><a class="reference internal" href="#local">local</a></li>
+<li><a class="reference internal" href="#local-calver">local-calver</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#run">Run</a></li>
+<li><a class="reference internal" href="#run-with">Run-with</a><ul>
+<li><a class="reference internal" href="#compare">Compare</a></li>
+<li><a class="reference internal" href="#compose">Compose</a></li>
+<li><a class="reference internal" href="#original-bna">Original-BNA</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=30372d7b"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    </body>
+</html>

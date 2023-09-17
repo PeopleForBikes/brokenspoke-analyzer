@@ -10,42 +10,23 @@ Analysis” locally.
 
 ## Requirements
 
-- **docker**: [get started](https://www.docker.com/get-started/)
+- **docker**: [official page](https://www.docker.com/get-started/)
+- **docker compose plugin V2**:
+  [official page](https://docs.docker.com/compose/install/linux/)
 - **osmium**: [official page](https://osmcode.org/osmium-tool/)
+- **osm2pgrouting**:
+  [official page](https://pgrouting.org/docs/tools/osm2pgrouting.html#)
+- **osm2pgsql**: [official page](https://osm2pgsql.org/doc/install.html)
+- **osmconvert**: [OSM wiki](https://wiki.openstreetmap.org/wiki/Osmconvert)
+- **osmium-tool**: [official page](https://osmcode.org/osmium-tool/)
+- **psql**:
+  [official page](https://www.postgresql.org/docs/current/app-psql.html)
+- **postgis**:
+  [official page](https://postgis.net/documentation/getting_started/#installing-postgis)
 
-### pfb-network-connectivity Docker image
+## Quickstart
 
-Azavea provides the code to build the Docker image that is used to run an
-analysis. There is no Image directly available at the time, thus it will be
-necessary to build it manually, or pull it from an unofficial source.
-
-#### Pull the image from an unofficial repository
-
-There is no official `azavea/pfb-network-connectivity` docker repository (yet
-🤞), but it is possible to pull the image from an unofficial one, and rename it
-to the expected name. Please note that this image was built for the
-`linux/amd64` platform.
-
-```bash
-docker pull rgreinho/pfb-network-connectivity:0.18.0
-docker tag rgreinho/pfb-network-connectivity:0.18.0 azavea/pfb-network-connectivity:0.18.0
-```
-
-#### Build the Azavea docker image
-
-Build the docker image from the latest tag.
-
-```bash
-git clone git@github.com:azavea/pfb-network-connectivity.git
-cd pfb-network-connectivity
-git checkout tags/0.18.0 -b 0.18.0
-cd src/
-docker buildx build -t azavea/pfb-network-connectivity:0.18.0 -f analysis/Dockerfile .
-```
-
-## Install
-
-We recommend creating a virtual environment:
+We recommend creating a virtual environment, but this is completely optional:
 
 ```bash
 cd /tmp
@@ -55,45 +36,24 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-Then, installing the tool from GitHub directly:
+Install the application using `pip`:
 
 ```bash
-pip install git+https://github.com/PeopleForBikes/brokenspoke-analyzer@1.3.0
+pip install git+https://github.com/PeopleForBikes/brokenspoke-analyzer@2.0.0-alpha
 ```
 
-This will add a new command named `bna`.
-
-### From source
-
-If you are interested in using the source code from this repository directly,
-you can execute the following instructions instead (note that
-[poetry](https://python-poetry.org/) will be required):
+The simplest way to run an analysis is to use docker compose.
 
 ```bash
-git clone git@github.com:PeopleForBikes/brokenspoke-analyzer.git
-cd brokenspoke-analyzer
-git switch -c 1.3.0
-poetry install
+bna run-with compose usa "santa rosa" "new mexico" 3570670
 ```
 
-For more information about using the source code, please refer to the
-[contributing](CONTRIBUTING.md) page.
+This command takes care of starting and stopping the PostgreSQL/PostGIS server,
+running all the analysis commands and exporting the results.
 
-## Quickstart
+The data required to perform the analysis will be saved in
+`data/santa-rosa-new-mexico-usa`, and the results exported in
+`data/santa-rosa-new-mexico-usa/results/usa/new mexico/santa rosa/`
 
-To run an analysis, the tools needs 2 parameters:
-
-- The name of the country or dataset where the city is located.
-- The name of the city.
-
-Then simply run the tool, and all the steps will be performed automatically:
-
-```bash
-$ bna run arizona flagstaff
-[17:00:55] Boundary files ready.
-Downloaded Protobuf data 'arizona-latest.osm.pbf' (204.86 MB) to:
-'data/arizona-latest.osm.pbf'
-[17:07:21] OSM Region file downloaded.
-           OSM file for flagstaff ready.
-           Analysis for flagstaff complete.
-```
+For more details about the different ways to run an analysis and how to adjust
+the options, please refer to full documentation.

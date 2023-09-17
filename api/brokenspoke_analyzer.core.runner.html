@@ -1,12 +1,12 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="brokenspoke_analyzer.core.utils module" href="brokenspoke_analyzer.core.utils.html" /><link rel="prev" title="brokenspoke_analyzer.core.downloader module" href="brokenspoke_analyzer.core.downloader.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.07.26 -->
-        <title>brokenspoke_analyzer.core.runner module - Brokenspoke Analyzer 1.3.0 documentation</title>
+    <!-- Generated with Sphinx 7.2.5 and Furo 2023.09.10 -->
+        <title>brokenspoke_analyzer.core.runner module - Brokenspoke Analyzer 2.0.0a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -164,7 +164,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Brokenspoke Analyzer 1.3.0 documentation</div></a>
+      <a href="../index.html"><div class="brand">Brokenspoke Analyzer 2.0.0a0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -187,7 +187,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">Brokenspoke Analyzer 1.3.0 documentation</span>
+  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.0.0a0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -197,7 +197,8 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">GENERAL:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../commands.html">Commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../workflow.html">Preparation Workflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a></li>
@@ -252,13 +253,12 @@
         </div>
         <article role="main">
           <section id="module-brokenspoke_analyzer.core.runner">
-<span id="brokenspoke-analyzer-core-runner-module"></span><h1>brokenspoke_analyzer.core.runner module<a class="headerlink" href="#module-brokenspoke_analyzer.core.runner" title="Permalink to this heading">#</a></h1>
+<span id="brokenspoke-analyzer-core-runner-module"></span><h1>brokenspoke_analyzer.core.runner module<a class="headerlink" href="#module-brokenspoke_analyzer.core.runner" title="Link to this heading">#</a></h1>
 <p>Define helper function to run external commands.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="brokenspoke_analyzer.core.runner.run">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.runner.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.runner.run" title="Permalink to this definition">#</a></dt>
-<dd><p>Run an external command.</p>
-<dl class="field-list simple">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.runner.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.runner.run" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
@@ -267,7 +267,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="brokenspoke_analyzer.core.runner.run_analysis">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.runner.</span></span><span class="sig-name descname"><span class="pre">run_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_abbrev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_fips</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">city_shp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pfb_osm_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docker_image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">city_fips</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.runner.run_analysis" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.runner.</span></span><span class="sig-name descname"><span class="pre">run_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_abbrev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_fips</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">city_shp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pfb_osm_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docker_image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">city_fips</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.runner.run_analysis" title="Link to this definition">#</a></dt>
 <dd><p>Run a BNA analysis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -277,9 +277,20 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="brokenspoke_analyzer.core.runner.run_osmium">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.runner.</span></span><span class="sig-name descname"><span class="pre">run_osmium</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polygon_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduced_file_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.runner.run_osmium" title="Permalink to this definition">#</a></dt>
-<dd><p>Reduce the OSM file to the boundaries.</p>
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.runner.run_docker_info">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.runner.</span></span><span class="sig-name descname"><span class="pre">run_docker_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.runner.run_docker_info" title="Link to this definition">#</a></dt>
+<dd><p>Return a dict containing Docker system information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.runner.run_ogr2ogr_geojson_export">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.runner.</span></span><span class="sig-name descname"><span class="pre">run_ogr2ogr_geojson_export</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.runner.run_ogr2ogr_geojson_export" title="Link to this definition">#</a></dt>
+<dd><p>Dump a table into a GeoJSON file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -288,9 +299,9 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="brokenspoke_analyzer.core.runner.run_osmosis">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.runner.</span></span><span class="sig-name descname"><span class="pre">run_osmosis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polygon_file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduced_file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.runner.run_osmosis" title="Permalink to this definition">#</a></dt>
-<dd><p>Reduce the OSM file to the boundaries.</p>
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.runner.run_osm2pgrouting">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.runner.</span></span><span class="sig-name descname"><span class="pre">run_osm2pgrouting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">configuration_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">osm_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.runner.run_osm2pgrouting" title="Link to this definition">#</a></dt>
+<dd><p>Import OSM data into pgRouting.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -299,9 +310,53 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="brokenspoke_analyzer.core.runner.run_with_status">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.runner.</span></span><span class="sig-name descname"><span class="pre">run_with_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Running...'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">completion_msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Complete.'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.runner.run_with_status" title="Permalink to this definition">#</a></dt>
-<dd><p>Run an external command with a spinner and its status.</p>
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.runner.run_osm2pgsql">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.runner.</span></span><span class="sig-name descname"><span class="pre">run_osm2pgsql</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_srid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">osm_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_processes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'neighborhood_osm_full'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.runner.run_osm2pgsql" title="Link to this definition">#</a></dt>
+<dd><p>Import OSM data into PostGIS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.runner.run_osm_convert">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.runner.</span></span><span class="sig-name descname"><span class="pre">run_osm_convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">osm_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bbox</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.runner.run_osm_convert" title="Link to this definition">#</a></dt>
+<dd><p>Convert OSM data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.runner.run_osmium_extract">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.runner.</span></span><span class="sig-name descname"><span class="pre">run_osmium_extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polygon_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduced_file_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.runner.run_osmium_extract" title="Link to this definition">#</a></dt>
+<dd><p>Reduce the OSM file to the boundaries with OSMium.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.runner.run_pgsql2shp">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.runner.</span></span><span class="sig-name descname"><span class="pre">run_pgsql2shp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.runner.run_pgsql2shp" title="Link to this definition">#</a></dt>
+<dd><p>Dump a PostGIS table into a shapefile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.runner.run_psql_command_string">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.runner.</span></span><span class="sig-name descname"><span class="pre">run_psql_command_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.runner.run_psql_command_string" title="Link to this definition">#</a></dt>
+<dd><p>Execute a one command string, command, and then exit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -311,7 +366,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="brokenspoke_analyzer.core.runner.sanitize_values">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.runner.</span></span><span class="sig-name descname"><span class="pre">sanitize_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.runner.sanitize_values" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.runner.</span></span><span class="sig-name descname"><span class="pre">sanitize_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.runner.sanitize_values" title="Link to this definition">#</a></dt>
 <dd><p>Removes spaces and other invalid characters from the value.</p>
 <p>Examples:</p>
 <dl class="field-list simple">
@@ -396,9 +451,14 @@
 <li><a class="reference internal" href="#">brokenspoke_analyzer.core.runner module</a><ul>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.runner.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.runner.run_analysis"><code class="docutils literal notranslate"><span class="pre">run_analysis()</span></code></a></li>
-<li><a class="reference internal" href="#brokenspoke_analyzer.core.runner.run_osmium"><code class="docutils literal notranslate"><span class="pre">run_osmium()</span></code></a></li>
-<li><a class="reference internal" href="#brokenspoke_analyzer.core.runner.run_osmosis"><code class="docutils literal notranslate"><span class="pre">run_osmosis()</span></code></a></li>
-<li><a class="reference internal" href="#brokenspoke_analyzer.core.runner.run_with_status"><code class="docutils literal notranslate"><span class="pre">run_with_status()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.runner.run_docker_info"><code class="docutils literal notranslate"><span class="pre">run_docker_info()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.runner.run_ogr2ogr_geojson_export"><code class="docutils literal notranslate"><span class="pre">run_ogr2ogr_geojson_export()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.runner.run_osm2pgrouting"><code class="docutils literal notranslate"><span class="pre">run_osm2pgrouting()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.runner.run_osm2pgsql"><code class="docutils literal notranslate"><span class="pre">run_osm2pgsql()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.runner.run_osm_convert"><code class="docutils literal notranslate"><span class="pre">run_osm_convert()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.runner.run_osmium_extract"><code class="docutils literal notranslate"><span class="pre">run_osmium_extract()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.runner.run_pgsql2shp"><code class="docutils literal notranslate"><span class="pre">run_pgsql2shp()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.runner.run_psql_command_string"><code class="docutils literal notranslate"><span class="pre">run_psql_command_string()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.runner.sanitize_values"><code class="docutils literal notranslate"><span class="pre">sanitize_values()</span></code></a></li>
 </ul>
 </li>
@@ -411,9 +471,9 @@
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=3d533f9b"></script>
+</div><script src="../_static/documentation_options.js?v=30372d7b"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>

@@ -1,12 +1,12 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" data-content_root="./">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Resources" href="resources.html" /><link rel="prev" title="Datasets" href="datasets.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.07.26 -->
-        <title>Preparation Workflow - Brokenspoke Analyzer 1.3.0 documentation</title>
+    <!-- Generated with Sphinx 7.2.5 and Furo 2023.09.10 -->
+        <title>Preparation Workflow - Brokenspoke Analyzer 2.0.0a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -164,7 +164,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">Brokenspoke Analyzer 1.3.0 documentation</div></a>
+      <a href="index.html"><div class="brand">Brokenspoke Analyzer 2.0.0a0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -187,7 +187,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">Brokenspoke Analyzer 1.3.0 documentation</span>
+  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.0.0a0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -197,7 +197,8 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">GENERAL:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commands.html">Commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Preparation Workflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a></li>
@@ -252,28 +253,28 @@
         </div>
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="preparation-workflow">
-<h1>Preparation Workflow<a class="headerlink" href="#preparation-workflow" title="Permalink to this heading">#</a></h1>
+<h1>Preparation Workflow<a class="headerlink" href="#preparation-workflow" title="Link to this heading">#</a></h1>
 <p>This page describes the steps to execute to manually prepare the files required
 to run an analysis.</p>
 <p>Normally the <code class="docutils literal notranslate"><span class="pre">bna</span> <span class="pre">prepare</span></code> command (or <code class="docutils literal notranslate"><span class="pre">bna</span> <span class="pre">run</span></code>) would execute all the actions
 automatically, but there can be some edge cases where the tool is not able to
 complete them all, therefore requiring the user to finalize them by hand.</p>
 <section id="steps">
-<h2>Steps<a class="headerlink" href="#steps" title="Permalink to this heading">#</a></h2>
+<h2>Steps<a class="headerlink" href="#steps" title="Link to this heading">#</a></h2>
 <p>This example will depict the process for the city of Valencia, Spain.</p>
 <section id="retrieve-the-city-boundaries">
-<h3>Retrieve the city boundaries<a class="headerlink" href="#retrieve-the-city-boundaries" title="Permalink to this heading">#</a></h3>
+<h3>Retrieve the city boundaries<a class="headerlink" href="#retrieve-the-city-boundaries" title="Link to this heading">#</a></h3>
 <p>The first step consists in retrieving the city boundaries.</p>
 <p>For this we’re using the <a class="reference external" href="https://osmnx.readthedocs.io/en/stable/">OSMNX</a> library.</p>
 <figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="_images/valencia-spain-boundaries.png"><img alt="Valencia, Spain boundaries" src="_images/valencia-spain-boundaries.png" style="width: 300px;" /></a>
 <figcaption>
-<p><span class="caption-text">Administrative boundaries of the city of Valencia, Spain.</span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
+<p><span class="caption-text">Administrative boundaries of the city of Valencia, Spain.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
 <section id="download-the-osm-region-file">
-<h3>Download the OSM region file<a class="headerlink" href="#download-the-osm-region-file" title="Permalink to this heading">#</a></h3>
+<h3>Download the OSM region file<a class="headerlink" href="#download-the-osm-region-file" title="Link to this heading">#</a></h3>
 <p>Then we need to download the OSM planet file for the region where the city is
 located.</p>
 <p>We can retrieve these files on the <a class="reference external" href="https://download.geofabrik.de">Geofabrik.de</a> site. They are orgranised by
@@ -283,12 +284,12 @@ continents, regions, countries, and even some times cities themselves.</p>
 <figure class="align-center" id="id2">
 <a class="reference internal image-reference" href="_images/comunidad-valenciana-spain-geofabrik.png"><img alt="Comunidad Valenciana, Spain on Geofabrik.de" src="_images/comunidad-valenciana-spain-geofabrik.png" style="width: 300px;" /></a>
 <figcaption>
-<p><span class="caption-text">Comunidad Valenciana, Spain on <a class="reference external" href="https://download.geofabrik.de/europe/spain/valencia.html">Geofabrik.de</a>.</span><a class="headerlink" href="#id2" title="Permalink to this image">#</a></p>
+<p><span class="caption-text">Comunidad Valenciana, Spain on <a class="reference external" href="https://download.geofabrik.de/europe/spain/valencia.html">Geofabrik.de</a>.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
 <section id="reduce-the-osm-file-to-the-city-limits">
-<h3>Reduce the OSM file to the city limits<a class="headerlink" href="#reduce-the-osm-file-to-the-city-limits" title="Permalink to this heading">#</a></h3>
+<h3>Reduce the OSM file to the city limits<a class="headerlink" href="#reduce-the-osm-file-to-the-city-limits" title="Link to this heading">#</a></h3>
 <p>Once we have both pieces, we can use them to extract the information from the
 planet file, which are contained within the city limits.</p>
 <p>This is done using a tool like <a class="reference external" href="https://osmcode.org/osmium-tool/">osmium</a>. We will use it to generate a file named
@@ -299,7 +300,7 @@ planet file, which are contained within the city limits.</p>
 </div>
 </section>
 <section id="retrieve-us-state-information">
-<h3>Retrieve US state information<a class="headerlink" href="#retrieve-us-state-information" title="Permalink to this heading">#</a></h3>
+<h3>Retrieve US state information<a class="headerlink" href="#retrieve-us-state-information" title="Link to this heading">#</a></h3>
 <p>If the city is located in the US, we need to retrieve the FIPS State Numeric
 Code andthe Official USPS Code (i.e. abbreviation).</p>
 <p>For example, the state of Texas is abbreviated “TX” and has a FIPS code of 48.</p>
@@ -308,22 +309,22 @@ Code andthe Official USPS Code (i.e. abbreviation).</p>
 <p>For non-US cities, an abbreviation of “ZZ” is used, and a FIPS code of 91.</p>
 </section>
 <section id="extra-steps-for-non-us-cities">
-<h3>Extra steps for non-US cities<a class="headerlink" href="#extra-steps-for-non-us-cities" title="Permalink to this heading">#</a></h3>
+<h3>Extra steps for non-US cities<a class="headerlink" href="#extra-steps-for-non-us-cities" title="Link to this heading">#</a></h3>
 <p>For non-US cities we need to simulate the information from the US census.</p>
 <section id="create-synthetic-population">
-<h4>Create synthetic population<a class="headerlink" href="#create-synthetic-population" title="Permalink to this heading">#</a></h4>
+<h4>Create synthetic population<a class="headerlink" href="#create-synthetic-population" title="Link to this heading">#</a></h4>
 <p>We need to create a grid which just overlaps the city boundaries. Each cell of
 the grid will contain the same amount of population.</p>
 <p>In our case, each cell is a square of 1000m x 1000m, and contains 100 people.</p>
 <figure class="align-center" id="id3">
 <a class="reference internal image-reference" href="_images/valencia-spain-synthetic-population.png"><img alt="Synthetic popupaltion for Valencia, Spain" src="_images/valencia-spain-synthetic-population.png" style="width: 300px;" /></a>
 <figcaption>
-<p><span class="caption-text">Synthetic popupaltion for Valencia, Spain</span><a class="headerlink" href="#id3" title="Permalink to this image">#</a></p>
+<p><span class="caption-text">Synthetic popupaltion for Valencia, Spain</span><a class="headerlink" href="#id3" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
 <section id="simulate-census-blocks">
-<h4>Simulate census blocks<a class="headerlink" href="#simulate-census-blocks" title="Permalink to this heading">#</a></h4>
+<h4>Simulate census blocks<a class="headerlink" href="#simulate-census-blocks" title="Link to this heading">#</a></h4>
 <p>This grid then needs to be exported to a shapefile, zipped without a top level
 folder. This will simulate the census dataset representing
 <a class="reference external" href="https://www.census.gov/geographies/mapping-files/2010/geo/tiger-line-file.html">Census Blocks with Population and Housing Counts</a>.</p>
@@ -331,7 +332,7 @@ folder. This will simulate the census dataset representing
 directory.</p>
 </section>
 <section id="adjust-default-speed-limit">
-<h4>Adjust default speed limit<a class="headerlink" href="#adjust-default-speed-limit" title="Permalink to this heading">#</a></h4>
+<h4>Adjust default speed limit<a class="headerlink" href="#adjust-default-speed-limit" title="Link to this heading">#</a></h4>
 <p>Default speed limits are different in each country, and infering them from Open
 Street Map is not always possible.</p>
 <p>In this case, a CSV file overriding the default values must be created with the
@@ -345,7 +346,7 @@ directory.</p>
 </section>
 </section>
 <section id="final-results">
-<h3>Final results<a class="headerlink" href="#final-results" title="Permalink to this heading">#</a></h3>
+<h3>Final results<a class="headerlink" href="#final-results" title="Link to this heading">#</a></h3>
 <p>At the end of the process, the <code class="docutils literal notranslate"><span class="pre">./data</span></code> folder should contain the following
 files:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./data
@@ -482,9 +483,9 @@ the <code class="docutils literal notranslate"><span class="pre">data</span></co
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=3d533f9b"></script>
+</div><script src="_static/documentation_options.js?v=30372d7b"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
