@@ -18,7 +18,7 @@ osmnx = "^1.6.0"
 python-dotenv = "^1.0.0"
 python-slugify = "^8.0.1"
 rich = "^13.4.2"
-sqlalchemy = { extras = ["asyncio", "postgresql_psycopg"], version = "^2.0.19" }
+sqlalchemy = { extras = ["asyncio", "postgresql_psycopg"], version = "^2.0.21" }
 tenacity = "^8.2.3"
 typer = "^0.9.0"
 us = "^3.1.1"
