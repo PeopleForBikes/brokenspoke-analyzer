@@ -168,7 +168,7 @@ def test_compare(city: str, state: str, country: str, city_fips: str):
     df = run_with.compare(
         country=country,
         output_dir=pathlib.Path("data"),
-        speed_limit=common.DEFAULT_CITY_SPEED_LIMIT,
+        city_speed_limit=common.DEFAULT_CITY_SPEED_LIMIT,
         block_size=common.DEFAULT_BLOCK_SIZE,
         block_population=common.DEFAULT_BLOCK_POPULATION,
         city=city,
