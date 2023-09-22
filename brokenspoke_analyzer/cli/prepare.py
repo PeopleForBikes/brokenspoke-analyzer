@@ -37,7 +37,7 @@ def all(
     block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
     block_population: common.BlockPopulation = common.DEFAULT_BLOCK_POPULATION,
     retries: common.Retries = common.DEFAULT_RETRIES,
-    census_year: common.CensusYear = common.DEFAULT_CENSUS_YEAR,
+    lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
 ) -> None:
     """Prepare all the files required for an analysis."""
     # Make MyPy happy.
@@ -51,8 +51,8 @@ def all(
         raise ValueError("`block_population` must be set")
     if not retries:
         raise ValueError("`retries` must be set")
-    if not census_year:
-        raise ValueError("`census_year` must be set")
+    if not lodes_year:
+        raise ValueError("`lodes_year` must be set")
 
     # Ensure US/USA cities have the right parameters.
     if country.upper() == "US":
@@ -72,7 +72,7 @@ def all(
             block_size=block_size,
             block_population=block_population,
             retries=retries,
-            census_year=census_year,
+            lodes_year=lodes_year,
         )
     )
 
@@ -85,7 +85,7 @@ async def prepare_(
     block_size: int,
     block_population: int,
     retries: int,
-    census_year: int,
+    lodes_year: int,
     region: typing.Optional[str] = None,
 ) -> None:
     """Prepare and kicks off the analysis."""
@@ -169,7 +169,7 @@ async def prepare_(
             )
     else:
         async with aiohttp.ClientSession() as session:
-            lodes_year = census_year
+            lodes_year = lodes_year
             with console.status(
                 f"[bold green]Fetching {lodes_year} US employment data..."
             ):

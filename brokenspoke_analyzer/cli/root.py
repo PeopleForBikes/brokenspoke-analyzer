@@ -128,7 +128,7 @@ def run(
     city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
     block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
     block_population: common.BlockPopulation = common.DEFAULT_BLOCK_POPULATION,
-    census_year: common.CensusYear = common.DEFAULT_CENSUS_YEAR,
+    lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
     retries: common.Retries = common.DEFAULT_RETRIES,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
 ) -> None:
@@ -144,7 +144,7 @@ def run(
         city_speed_limit=city_speed_limit,
         block_size=block_size,
         block_population=block_population,
-        census_year=census_year,
+        lodes_year=lodes_year,
         retries=retries,
         max_trip_distance=max_trip_distance,
     )
