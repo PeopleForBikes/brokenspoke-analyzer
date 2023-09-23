@@ -32,7 +32,7 @@ app = typer.Typer()
 def compose(
     country: common.Country,
     city: common.City,
-    state: common.State = None,
+    region: common.Region = None,
     output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
     export_dir: common.ExportDirOpt = common.DEFAULT_EXPORT_DIR,
@@ -59,7 +59,7 @@ def compose(
             database_url=database_url,
             country=country,
             city=city,
-            state=state,
+            region=region,
             output_dir=output_dir,
             fips_code=fips_code,
             buffer=buffer,
@@ -82,7 +82,7 @@ def compose(
 def original_bna(
     city_shp: pathlib.Path,
     pfb_osm_file: pathlib.Path,
-    state: typing.Optional[str] = None,
+    region: common.Region = None,
     output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
     docker_image: common.DockerImage = common.DEFAULT_DOCKER_IMAGE,
     container_name: common.ContainerName = common.DEFAULT_CONTAINER_NAME,
@@ -100,8 +100,8 @@ def original_bna(
     console = Console()
     with console.status("[bold green]Running the full analysis (may take a while)..."):
         state_abbrev, state_fips = (
-            analysis.state_info(state)
-            if state
+            analysis.state_info(region)
+            if region
             else (
                 runner.NON_US_STATE_ABBREV,
                 runner.NON_US_STATE_FIPS,
@@ -130,7 +130,7 @@ def original_bna(
 def compare(
     country: common.Country,
     city: common.City,
-    state: common.State = None,
+    region: common.Region = None,
     output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
@@ -149,7 +149,7 @@ def compare(
     brokenspoke_export_dir = compose(
         country=country,
         city=city,
-        state=state,
+        region=region,
         output_dir=output_dir,
         fips_code=fips_code,
         buffer=buffer,
@@ -162,11 +162,11 @@ def compare(
     )
 
     logger.info("Run with original BNA")
-    _, slug = analysis.osmnx_query(country, city, state)
+    _, slug = analysis.osmnx_query(country, city, region)
     city_shp = output_dir / f"{slug}.shp"
     pfb_osm_file = city_shp.with_suffix(".osm")
     original_export_dir = original_bna(
-        state=state,
+        region=region,
         output_dir=output_dir / slug,
         city_shp=city_shp,
         pfb_osm_file=pfb_osm_file,
@@ -187,7 +187,7 @@ def run_(
     database_url: str,
     country: str,
     city: str,
-    state: typing.Optional[str] = None,
+    region: typing.Optional[str] = None,
     output_dir: typing.Optional[pathlib.Path] = common.DEFAULT_OUTPUT_DIR,
     export_dir: typing.Optional[pathlib.Path] = common.DEFAULT_EXPORT_DIR,
     fips_code: typing.Optional[str] = common.DEFAULT_CITY_FIPS_CODE,
@@ -214,7 +214,7 @@ def run_(
     if country.upper() == "US":
         country = "usa"
     if country.upper() == constant.COUNTRY_USA:
-        if not (state and fips_code != common.DEFAULT_CITY_FIPS_CODE):
+        if not (region and fips_code != common.DEFAULT_CITY_FIPS_CODE):
             raise ValueError("`state` and `fips_code` are required for US cities")
 
     # Prepare the database connection.
@@ -226,7 +226,7 @@ def run_(
     prepare.all(
         country=country,
         city=city,
-        state=state,
+        region=region,
         fips_code=fips_code,
         output_dir=output_dir,
         speed_limit=speed_limit,
@@ -237,14 +237,14 @@ def run_(
 
     # Import.
     logger.info("Import")
-    _, slug = analysis.osmnx_query(country, city, state)
+    _, slug = analysis.osmnx_query(country, city, region)
     input_dir = output_dir / slug
     importer.all(
         database_url=database_url,
         input_dir=input_dir,
         country=country,
         city=city,
-        state=state,
+        region=region,
         census_year=census_year,
         buffer=buffer,
         fips_code=fips_code,
@@ -283,7 +283,7 @@ def run_(
         database_url=database_url,
         country=country,
         city=city,
-        region=state,
+        region=region,
         force=False,
         export_dir=export_dir,
     )
