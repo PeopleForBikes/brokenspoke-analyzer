@@ -14,6 +14,7 @@ DEFAULT_CITY_SPEED_LIMIT = 30
 DEFAULT_CONTAINER_NAME = "brokenspoke-analyzer"
 DEFAULT_DOCKER_IMAGE = "azavea/pfb-network-connectivity:0.19.0"
 DEFAULT_OUTPUT_DIR = pathlib.Path("./data")
+DEFAULT_EXPORT_DIR = pathlib.Path("./results")
 DEFAULT_RETRIES = 2
 DEFAULT_MAX_TRIP_DISTANCE = 2680
 
@@ -40,16 +41,15 @@ DatabaseURL = Annotated[str, typer.Option(help="database URL", envvar="DATABASE_
 DockerImage = Annotated[
     typing.Optional[str], typer.Option(help="override the BNA Docker image")
 ]
-ExportDir = Annotated[
-    pathlib.Path,
-    typer.Argument(
-        file_okay=False,
-        dir_okay=True,
-        writable=True,
-        readable=True,
-        help="local directory where to export the results",
-    ),
-]
+export_dir_kwargs = dict(
+    file_okay=False,
+    dir_okay=True,
+    writable=True,
+    readable=True,
+    help="directory where to export the results",
+)
+ExportDirArg = Annotated[pathlib.Path, typer.Argument(**export_dir_kwargs)]
+ExportDirOpt = Annotated[pathlib.Path, typer.Option(**export_dir_kwargs)]
 FIPSCode = Annotated[typing.Optional[str], typer.Argument(help="US city FIPS code")]
 InputDir = Annotated[
     pathlib.Path,
@@ -70,6 +70,7 @@ OutputDir = Annotated[
         writable=True,
         readable=True,
         resolve_path=True,
+        help="directory where to store the files required for the analysis",
     ),
 ]
 Region = Annotated[
