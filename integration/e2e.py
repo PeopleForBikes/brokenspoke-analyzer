@@ -86,7 +86,7 @@ def test_import_all():
     city_fips = "3570670"
     buffer = 2680
     output_srid = 32613
-    census_year = 2019
+    lodes_year = 2019
     # state_fips = "35"
     input_dir = pathlib.Path("data")
     boundary_file = input_dir / "santa-rosa-new-mexico-usa.shp"
@@ -117,7 +117,7 @@ def test_import_all():
         city_speed_limits_csv,
         city_fips,
         state,
-        census_year,
+        lodes_year,
     )
 
 
@@ -179,7 +179,7 @@ def test_all():
     city_fips = "3570670"
     buffer = 2680
     output_srid = 32613
-    census_year = 2019
+    lodes_year = 2019
     # state_fips = "35"
     input_dir = pathlib.Path("data")
     boundary_file = input_dir / "santa-rosa-new-mexico-usa.shp"
@@ -219,7 +219,7 @@ def test_all():
         city_speed_limits_csv,
         city_fips,
         state,
-        census_year,
+        lodes_year,
     )
 
     compute.all(

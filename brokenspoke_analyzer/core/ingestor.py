@@ -246,7 +246,7 @@ def retrieve_boundary_box(engine: Engine) -> tuple[float, float, float, float]:
 
 
 def import_jobs(
-    engine: Engine, state: str, census_year: int, input_dir: pathlib.Path
+    engine: Engine, state: str, lodes_year: int, input_dir: pathlib.Path
 ) -> None:
     """
     Import all jobs from US census data.
@@ -255,7 +255,7 @@ def import_jobs(
     """
     state = state.lower()
     for part in LODESPart:
-        csvfile = input_dir / f"{state}_od_{part.value}_JT00_{census_year}.csv"
+        csvfile = input_dir / f"{state}_od_{part.value}_JT00_{lodes_year}.csv"
         csvfile = csvfile.resolve(strict=True)
         logger.debug(f"Importing job file: {csvfile}")
         if not csvfile.exists():
@@ -480,7 +480,7 @@ def import_all(
     city_speed_limits_csv: pathlib.Path,
     city_fips: str,
     state: typing.Optional[str] = None,
-    census_year: typing.Optional[int] = None,
+    lodes_year: typing.Optional[int] = None,
     city_speed_limit_override: typing.Optional[str] = None,
 ) -> None:
     """Import all the data."""
@@ -496,9 +496,9 @@ def import_all(
     state_abbrev, state_fips, run_import_jobs = analysis.derive_state_info(state)
     logger.debug(f"{run_import_jobs=}")
     if run_import_jobs == "1":
-        if not census_year:
-            raise ValueError("'census_year' is required when importing job data")
-        import_jobs(engine, state_abbrev, census_year, input_dir)
+        if not lodes_year:
+            raise ValueError("'lodes_year' is required when importing job data")
+        import_jobs(engine, state_abbrev, lodes_year, input_dir)
     import_osm_data(
         engine,
         osm_file,

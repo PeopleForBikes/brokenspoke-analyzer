@@ -8,7 +8,7 @@ from typing_extensions import Annotated
 DEFAULT_BLOCK_POPULATION = 100
 DEFAULT_BLOCK_SIZE = 500
 DEFAULT_BUFFER = 2680
-DEFAULT_CENSUS_YEAR = 2019
+DEFAULT_LODES_YEAR = 2019
 DEFAULT_CITY_FIPS_CODE = "0"  # "0" means an non-US city.
 DEFAULT_CITY_SPEED_LIMIT = 30
 DEFAULT_CONTAINER_NAME = "brokenspoke-analyzer"
@@ -28,8 +28,8 @@ BlockSize = Annotated[
     typer.Option(help="size of a synthetic block for non-US cities (in meters)"),
 ]
 Buffer = Annotated[typing.Optional[int], typer.Option(help="define the buffer area")]
-CensusYear = Annotated[
-    typing.Optional[int], typer.Option(help="year to use to retrieve US census data")
+LODESYear = Annotated[
+    typing.Optional[int], typer.Option(help="year to use to retrieve US job data")
 ]
 City = Annotated[str, typer.Argument()]
 ContainerName = Annotated[

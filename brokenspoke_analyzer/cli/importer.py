@@ -22,7 +22,7 @@ def all(
     city: common.City,
     region: common.Region = None,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
-    census_year: common.CensusYear = common.DEFAULT_CENSUS_YEAR,
+    lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
 ) -> None:
     """Import all files into database."""
@@ -41,7 +41,7 @@ def all(
         jobs(
             input_dir=input_dir,
             state_abbreviation=state_abbrev,
-            census_year=census_year,
+            lodes_year=lodes_year,
             database_url=database_url,
         )
     osm(
@@ -104,12 +104,12 @@ def jobs(
     database_url: common.DatabaseURL,
     input_dir: common.InputDir,
     state_abbreviation: Annotated[str, typer.Argument(help="two-letter US state name")],
-    census_year: common.CensusYear = common.DEFAULT_CENSUS_YEAR,
+    lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
 ) -> None:
     """Import US census job data."""
     # Make mypy happy.
-    if not census_year:
-        raise ValueError("`census_year` must be set")
+    if not lodes_year:
+        raise ValueError("`lodes_year` must be set")
 
     # validate the US state.
     state_abbreviation = state_abbreviation.lower()
@@ -120,7 +120,7 @@ def jobs(
     engine = dbcore.create_psycopg_engine(database_url)
 
     # Import the jobs.
-    ingestor.import_jobs(engine, state_abbreviation, census_year, input_dir)
+    ingestor.import_jobs(engine, state_abbreviation, lodes_year, input_dir)
 
 
 @app.command()
