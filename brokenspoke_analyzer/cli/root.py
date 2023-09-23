@@ -72,7 +72,7 @@ def compute_cmd(
     input_dir: common.InputDir,
     country: common.Country,
     city: common.City,
-    state: common.State = None,
+    region: common.Region = None,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
 ) -> None:
     """Run an analysis."""
@@ -84,7 +84,7 @@ def compute_cmd(
     engine = dbcore.create_psycopg_engine(database_url)
 
     # Prepare directories.
-    _, slug = analysis.osmnx_query(country, city, state)
+    _, slug = analysis.osmnx_query(country, city, region)
     traversable = resources.files("brokenspoke_analyzer.scripts.sql")
     res = pathlib.Path(traversable._paths[0])  # type: ignore
     sql_script_dir = res.resolve(strict=True)
@@ -121,7 +121,7 @@ def run(
     database_url: common.DatabaseURL,
     country: common.Country,
     city: common.City,
-    state: common.State = None,
+    region: common.Region = None,
     output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
@@ -137,7 +137,7 @@ def run(
         database_url=database_url,
         country=country,
         city=city,
-        state=state,
+        region=region,
         output_dir=output_dir,
         fips_code=fips_code,
         buffer=buffer,

@@ -172,7 +172,7 @@ def test_compare(city: str, state: str, country: str, city_fips: str):
         block_size=common.DEFAULT_BLOCK_SIZE,
         block_population=common.DEFAULT_BLOCK_POPULATION,
         city=city,
-        state=state,
+        region=state,
         fips_code=city_fips,
         census_year=common.DEFAULT_CENSUS_YEAR,
         retries=common.DEFAULT_RETRIES,
