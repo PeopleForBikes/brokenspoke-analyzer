@@ -33,7 +33,7 @@ def all(
     region: common.Region = None,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
     output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
-    speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
+    city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
     block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
     block_population: common.BlockPopulation = common.DEFAULT_BLOCK_POPULATION,
     retries: common.Retries = common.DEFAULT_RETRIES,
@@ -43,8 +43,8 @@ def all(
     # Make MyPy happy.
     if not output_dir:
         raise ValueError("`output_dir` must be set")
-    if not speed_limit:
-        raise ValueError("`speed_limit` must be set")
+    if not city_speed_limit:
+        raise ValueError("`city_speed_limit` must be set")
     if not block_size:
         raise ValueError("`block_size` must be set")
     if not block_population:
@@ -68,7 +68,7 @@ def all(
             region=region,
             city=city,
             output_dir=output_dir,
-            speed_limit=speed_limit,
+            city_speed_limit=city_speed_limit,
             block_size=block_size,
             block_population=block_population,
             retries=retries,
@@ -81,7 +81,7 @@ async def prepare_(
     country: str,
     city: str,
     output_dir: pathlib.Path,
-    speed_limit: int,
+    city_speed_limit: int,
     block_size: int,
     block_population: int,
     retries: int,
@@ -160,9 +160,13 @@ async def prepare_(
             console.log("Census blocks ready.")
 
         # Change the speed limit.
-        with console.status("[bold green]Adjust default speed limit..."):
-            analysis.change_speed_limit(output_dir, city, state_abbrev, speed_limit)
-            console.log(f"Default speed limit adjusted to {speed_limit} km/h.")
+        with console.status("[bold green]Adjust default city speed limit..."):
+            analysis.change_speed_limit(
+                output_dir, city, state_abbrev, city_speed_limit
+            )
+            console.log(
+                f"Default city speed limit adjusted to {city_speed_limit} km/h."
+            )
     else:
         async with aiohttp.ClientSession() as session:
             lodes_year = census_year
