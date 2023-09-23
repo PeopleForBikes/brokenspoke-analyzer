@@ -30,7 +30,7 @@ app = typer.Typer()
 def all(
     country: common.Country,
     city: common.City,
-    state: common.Region = None,
+    region: common.Region = None,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
     output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
     speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
@@ -58,14 +58,14 @@ def all(
     if country.upper() == "US":
         country = "usa"
     if country.upper() == constant.COUNTRY_USA:
-        if not (state and fips_code != common.DEFAULT_CITY_FIPS_CODE):
+        if not (region and fips_code != common.DEFAULT_CITY_FIPS_CODE):
             raise ValueError("`state` and `fips_code` are required for US cities")
 
     logger.debug(f"{output_dir=}")
     asyncio.run(
         prepare_(
             country=country,
-            state=state,
+            region=region,
             city=city,
             output_dir=output_dir,
             speed_limit=speed_limit,
@@ -86,11 +86,11 @@ async def prepare_(
     block_population: int,
     retries: int,
     census_year: int,
-    state: typing.Optional[str] = None,
+    region: typing.Optional[str] = None,
 ) -> None:
     """Prepare and kicks off the analysis."""
     # Compute the city slug.
-    _, slug = analysis.osmnx_query(country, city, state)
+    _, slug = analysis.osmnx_query(country, city, region)
 
     # Prepare the output directory.
     output_dir /= slug
@@ -109,7 +109,7 @@ async def prepare_(
     # Retrieve city boundaries.
     with console.status("[bold green]Querying OSM to retrieve the city boundaries..."):
         slug = retryer(
-            analysis.retrieve_city_boundaries, output_dir, country, city, state
+            analysis.retrieve_city_boundaries, output_dir, country, city, region
         )
         boundary_file = output_dir / f"{slug}.shp"
         console.log("Boundary files ready.")
@@ -117,9 +117,11 @@ async def prepare_(
     # Download the OSM region file.
     with console.status("[bold green]Downloading the OSM region file..."):
         try:
-            if not state:
+            if not region:
                 raise ValueError
-            region_file_path = retryer(analysis.retrieve_region_file, state, output_dir)
+            region_file_path = retryer(
+                analysis.retrieve_region_file, region, output_dir
+            )
         except ValueError:
             region_file_path = retryer(
                 analysis.retrieve_region_file, country, output_dir
@@ -139,7 +141,7 @@ async def prepare_(
         console.log(f"OSM file for {city} ready.")
 
     # Retrieve the state info if needed.
-    state_abbrev, state_fips, _ = analysis.derive_state_info(state)
+    state_abbrev, state_fips, _ = analysis.derive_state_info(region)
 
     # Perform some specific operations for non-US cities.
     if state_fips == runner.NON_US_STATE_FIPS:
