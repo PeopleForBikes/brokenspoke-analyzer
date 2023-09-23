@@ -24,7 +24,7 @@ def s3() -> None:
 @app.command()
 def local(
     database_url: common.DatabaseURL,
-    export_dir: common.ExportDir,
+    export_dir: common.ExportDirArg,
     force: Force = False,
 ) -> None:
     """Export results into a custom directory."""
@@ -38,7 +38,7 @@ def local_calver(
     city: common.City,
     region: common.Region = None,
     force: Force = False,
-    export_dir: common.ExportDir = pathlib.Path("data/results"),
+    export_dir: common.ExportDirArg = common.DEFAULT_EXPORT_DIR,
 ) -> pathlib.Path:
     """Export results into a directory following the calver convention."""
     dir_ = exporter.create_calver_directories(

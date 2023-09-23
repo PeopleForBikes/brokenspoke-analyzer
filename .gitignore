@@ -11,6 +11,7 @@ __pycache__/
 .nox/
 .Python
 .python-version
+results/
 .tox/
 .venv/
 .vscode/

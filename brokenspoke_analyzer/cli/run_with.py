@@ -35,6 +35,7 @@ def compose(
     region: common.Region = None,
     output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
+    export_dir: common.ExportDirOpt = common.DEFAULT_EXPORT_DIR,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
     city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
     block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
@@ -188,6 +189,7 @@ def run_(
     city: str,
     region: typing.Optional[str] = None,
     output_dir: typing.Optional[pathlib.Path] = common.DEFAULT_OUTPUT_DIR,
+    export_dir: typing.Optional[pathlib.Path] = common.DEFAULT_EXPORT_DIR,
     fips_code: typing.Optional[str] = common.DEFAULT_CITY_FIPS_CODE,
     buffer: typing.Optional[int] = common.DEFAULT_BUFFER,
     city_speed_limit: typing.Optional[int] = common.DEFAULT_CITY_SPEED_LIMIT,
@@ -205,6 +207,8 @@ def run_(
         raise ValueError("`block_size` must be set")
     if not block_population:
         raise ValueError("`block_population` must be set")
+    if not export_dir:
+        raise ValueError("`export_dir` must be set")
 
     # Ensure US/USA cities have the right parameters.
     if country.upper() == "US":
@@ -281,6 +285,6 @@ def run_(
         city=city,
         region=region,
         force=False,
-        export_dir=input_dir / "results",
+        export_dir=export_dir,
     )
     return export_dir
