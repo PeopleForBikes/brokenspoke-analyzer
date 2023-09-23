@@ -284,7 +284,6 @@ def run_(
         country=country,
         city=city,
         region=region,
-        force=False,
         export_dir=export_dir,
     )
     return export_dir

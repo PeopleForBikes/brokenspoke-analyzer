@@ -25,10 +25,9 @@ def s3() -> None:
 def local(
     database_url: common.DatabaseURL,
     export_dir: common.ExportDirArg,
-    force: Force = False,
 ) -> None:
     """Export results into a custom directory."""
-    _local(database_url=database_url, export_dir=export_dir, force=force)
+    _local(database_url=database_url, export_dir=export_dir)
 
 
 @app.command()
@@ -37,21 +36,20 @@ def local_calver(
     country: common.Country,
     city: common.City,
     region: common.Region = None,
-    force: Force = False,
     export_dir: common.ExportDirArg = common.DEFAULT_EXPORT_DIR,
 ) -> pathlib.Path:
-    """Export results into a directory following the calver convention."""
+    """Export results into a directory following the PFB calver convention."""
     dir_ = exporter.create_calver_directories(
         country, city, region, base_dir=export_dir
     )
     logger.debug(f"{dir_=}")
-    _local(database_url=database_url, export_dir=dir_, force=force)
+    _local(database_url=database_url, export_dir=dir_)
     return dir_
 
 
-def _local(database_url: str, export_dir: pathlib.Path, force: bool) -> None:
+def _local(database_url: str, export_dir: pathlib.Path) -> None:
     # Prepare the output directory.
-    export_dir.mkdir(parents=True, exist_ok=force)
+    export_dir.mkdir(parents=True, exist_ok=True)
 
     # Export the catalogued tables to their associated format.
     exporter.auto_export(
