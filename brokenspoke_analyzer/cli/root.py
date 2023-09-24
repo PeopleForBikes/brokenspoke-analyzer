@@ -1,11 +1,16 @@
 import logging
 import pathlib
 import sys
-from importlib import resources
+from importlib import (
+    metadata,
+    resources,
+)
+from typing import Optional
 
 import typer
 from loguru import logger
 from rich.console import Console
+from typing_extensions import Annotated
 
 from brokenspoke_analyzer.cli import (
     common,
@@ -25,8 +30,7 @@ from brokenspoke_analyzer.core import (
 from brokenspoke_analyzer.core.database import dbcore
 
 
-def callback(verbose: int = typer.Option(0, "--verbose", "-v", count=True)) -> None:
-    """Define callback to configure global flags."""
+def _verbose_callback(value: int) -> None:
     # Configure the logger.
 
     # Remove any predefined logger.
@@ -41,7 +45,7 @@ def callback(verbose: int = typer.Option(0, "--verbose", "-v", count=True)) -> N
     log_format = (
         "<level>{time:YYYY-MM-DDTHH:mm:ssZZ} {level:.3} {name}:{line} {message}</level>"
     )
-    log_level = max(initial_log_level - verbose * 10, 0)
+    log_level = max(initial_log_level - value * 10, 0)
 
     # Set the log colors.
     logger.level("ERROR", color="<red><bold>")
@@ -55,8 +59,44 @@ def callback(verbose: int = typer.Option(0, "--verbose", "-v", count=True)) -> N
     logger.add(sys.stdout, format=log_format, level=log_level, colorize=True)
 
 
+def _version_callback(value: bool) -> None:
+    # Get the package's version
+
+    package_version = metadata.version("brokenspoke-analyzer")
+    if value:
+        typer.echo(f"brokenspoke-analyzer version: {package_version}")
+        raise typer.Exit()
+
+
 # Create the CLI app.
 app = typer.Typer()
+
+
+@app.callback()
+def callback(
+    version: Annotated[
+        Optional[bool],
+        typer.Option(
+            "--version",
+            help="Show the application's version and exit.",
+            callback=_version_callback,
+        ),
+    ] = None,
+    verbose: Annotated[
+        Optional[int],
+        typer.Option(
+            "--verbose",
+            "-v",
+            help="Set logger's verbosity.",
+            count=True,
+            callback=_verbose_callback,
+        ),
+    ] = 0,
+) -> None:
+    """Define callback to configure global flags."""
+    return
+
+
 app.add_typer(
     configure.app, name="configure", help="Configure a database for an analysis."
 )
