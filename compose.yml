@@ -4,7 +4,7 @@ services:
     image: bna:mechanics
     shm_size: 1g
     build:
-      dockerfile: ./compose//Dockerfile
+      dockerfile: ghcr.io/rgreinho/docker-postgis-bna:13-3.1
     environment:
         POSTGRES_PASSWORD: postgres
         POSTGRES_USER: postgres
@@ -15,17 +15,6 @@ services:
       - 5432:5432
     volumes:
         - postgres:/var/lib/postgresql/data
-
-  pgadmin:
-    image: dpage/pgadmin4:7.6
-    environment:
-        PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
-        PGADMIN_DEFAULT_PASSWORD: admin
-        PGADMIN_LISTEN_PORT: 80
-    ports:
-      - 8484:80
-    volumes:
-        - ./compose/compose-config/servers.json:/pgadmin4/servers.json
 
 volumes:
   postgres:
