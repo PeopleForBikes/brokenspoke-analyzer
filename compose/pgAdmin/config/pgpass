@@ -1,0 +1,2 @@
+#hostname:port:database:username:password
+postgres:5432:*:postgres:postgres

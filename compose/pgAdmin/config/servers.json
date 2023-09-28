@@ -1,11 +1,12 @@
 {
   "Servers": {
     "1": {
-      "Name": "bna",
-      "Group": "bna",
+      "Name": "BNA",
+      "Group": "PeopleForBikes",
       "Username": "postgres",
       "Host": "postgres",
       "Port": 5432,
+      "PassFile": "/pgpass",
       "SSLMode": "prefer",
       "MaintenanceDB": "postgres"
     }

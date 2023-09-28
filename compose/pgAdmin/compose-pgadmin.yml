@@ -1,0 +1,16 @@
+version: "3"
+include:
+  - ../../compose.yml
+
+services:
+  pgadmin:
+    image: dpage/pgadmin4:7.6
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - 8484:80
+    volumes:
+      - ./config/servers.json:/pgadmin4/servers.json
+      - ./config/pgpass:/pgadmin4/pgpass
