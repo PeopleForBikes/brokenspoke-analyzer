@@ -4,6 +4,7 @@ import pathlib
 import random
 import string
 import typing
+import warnings
 import zipfile
 
 import geopandas as gpd
@@ -21,6 +22,8 @@ from brokenspoke_analyzer.core import (
     utils,
 )
 from brokenspoke_analyzer.pyrosm import data
+
+warnings.filterwarnings("ignore")
 
 
 def osmnx_query(country: str, city: str, state: str | None) -> typing.Tuple[str, str]:
