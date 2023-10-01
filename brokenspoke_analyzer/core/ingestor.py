@@ -12,10 +12,12 @@ from loguru import logger
 from sqlalchemy import text
 from sqlalchemy.engine import Engine
 
+from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core import (
     analysis,
     constant,
     runner,
+    utils,
 )
 from brokenspoke_analyzer.core.database import dbcore
 
@@ -495,7 +497,7 @@ def import_all(
     )
     state_abbrev, state_fips, run_import_jobs = analysis.derive_state_info(state)
     logger.debug(f"{run_import_jobs=}")
-    if run_import_jobs == "1":
+    if run_import_jobs:
         if not lodes_year:
             raise ValueError("'lodes_year' is required when importing job data")
         import_jobs(engine, state_abbrev, lodes_year, input_dir)
@@ -509,3 +511,138 @@ def import_all(
         city_speed_limits_csv,
         city_speed_limit_override,
     )
+
+
+def neighborhood_wrapper(
+    database_url: str,
+    input_dir: pathlib.Path,
+    country: str,
+    city: str,
+    region: str,
+    buffer: int,
+) -> None:
+    """
+    Wrap the `import_neighborhood` function to allow calling it with only parameters
+    that cannot be computed.
+    """
+    # Handles us/usa as the same country.
+    if country.upper() == "US":
+        country = "usa"
+
+    # Ensure US/USA cities have the right parameters.
+    if country.upper() == constant.COUNTRY_USA and not region:
+        raise ValueError("`state` is required for US cities")
+
+    # Prepare the database connection.
+    engine = dbcore.create_psycopg_engine(database_url)
+
+    # Prepare the files to import.
+    _, slug = analysis.osmnx_query(country, city, region)
+    boundary_file = input_dir / f"{slug}.shp"
+    population_file = input_dir / "population.shp"
+    water_blocks_file = input_dir / "censuswaterblocks.csv"
+
+    # compute the output SRID from the boundary file.
+    output_srid = utils.get_srid(boundary_file.resolve(strict=True))
+    logger.debug(f"{output_srid=}")
+
+    # Import the neighborhood data.
+    import_neighborhood(
+        engine,
+        country=country,
+        boundary_file=boundary_file.resolve(),
+        population_file=population_file.resolve(strict=True),
+        water_blocks_file=water_blocks_file.resolve(),
+        output_srid=output_srid,
+        buffer=buffer,
+    )
+
+
+def jobs_wrapper(
+    database_url: str, input_dir: pathlib.Path, state_abbreviation: str, lodes_year: int
+) -> None:
+    """
+    Wrap the `import_jobs` function to allow calling it with only parameters that cannot
+    be computed.
+    """
+    # validate the US state.
+    state_abbreviation = state_abbreviation.lower()
+    if len(state_abbreviation) != 2:
+        raise ValueError("a state abbreviation must be 2 letter long")
+
+    # Prepare the database connection.
+    engine = dbcore.create_psycopg_engine(database_url)
+
+    # Import the jobs.
+    import_jobs(engine, state_abbreviation, lodes_year, input_dir)
+
+
+def osm_wrapper(
+    database_url: str,
+    input_dir: pathlib.Path,
+    country: str,
+    city: str,
+    region: str,
+    fips_code: str,
+) -> None:
+    """
+    Wrap the `import_osm_data` function to allow calling it with only parameters that
+    cannot be computed.
+    """
+    # Prepare the database connection.
+    engine = dbcore.create_psycopg_engine(database_url)
+
+    # Handles us/usa as the same country.
+    if country.upper() == "US":
+        country = "usa"
+
+    # Prepare the files to import.
+    _, slug = analysis.osmnx_query(country, city, region)
+    boundary_file = input_dir / f"{slug}.shp"
+    osm_file = input_dir / f"{slug}.osm"
+    state_speed_limits_csv = input_dir / "state_fips_speed.csv"
+    city_speed_limits_csv = input_dir / "city_fips_speed.csv"
+
+    # Compute the output SRID from the boundary file.
+    output_srid = utils.get_srid(boundary_file.resolve(strict=True))
+    logger.debug(f"{output_srid=}")
+
+    # Derive state FIPS code from state name.
+    _, state_fips, _ = analysis.derive_state_info(region)
+
+    # Import the OSM data.
+    import_osm_data(
+        engine,
+        osm_file,
+        output_srid,
+        state_fips,
+        fips_code,
+        state_speed_limits_csv,
+        city_speed_limits_csv,
+    )
+
+
+def all_wrapper(
+    database_url: str,
+    input_dir: pathlib.Path,
+    country: str,
+    city: str,
+    region: str,
+    fips_code: str = common.DEFAULT_CITY_FIPS_CODE,
+    lodes_year: int = common.DEFAULT_LODES_YEAR,
+    buffer: int = common.DEFAULT_BUFFER,
+) -> None:
+    """
+    Wrap the all the `import_*` functions to allow calling them with only parameters
+    that cannot be computed.
+    """
+    # Import neighborhood data.
+    neighborhood_wrapper(database_url, input_dir, country, city, region, buffer)
+
+    # Import job data.
+    state_abbreviation, _, import_jobs = analysis.derive_state_info(region)
+    if import_jobs:
+        jobs_wrapper(database_url, input_dir, state_abbreviation, lodes_year)
+
+    # Import OSM data.
+    osm_wrapper(database_url, input_dir, country, city, region, fips_code)
