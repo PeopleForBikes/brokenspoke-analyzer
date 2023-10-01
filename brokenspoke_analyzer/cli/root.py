@@ -1,6 +1,5 @@
 import logging
 import pathlib
-import sys
 from importlib import (
     metadata,
     resources,
@@ -10,6 +9,7 @@ from typing import Optional
 import typer
 from loguru import logger
 from rich.console import Console
+from rich.logging import RichHandler
 from typing_extensions import Annotated
 
 from brokenspoke_analyzer.cli import (
@@ -42,21 +42,20 @@ def _verbose_callback(value: int) -> None:
     #   -vv     : DEBUG
     #   -vvv    : TRACE
     initial_log_level = logging.WARNING
-    log_format = (
-        "<level>{time:YYYY-MM-DDTHH:mm:ssZZ} {level:.3} {name}:{line} {message}</level>"
-    )
     log_level = max(initial_log_level - value * 10, 0)
 
-    # Set the log colors.
-    logger.level("ERROR", color="<red><bold>")
-    logger.level("WARNING", color="<yellow>")
-    logger.level("SUCCESS", color="<green>")
-    logger.level("INFO", color="<cyan>")
-    logger.level("DEBUG", color="<blue>")
-    logger.level("TRACE", color="<magenta>")
-
     # Add the logger.
-    logger.add(sys.stdout, format=log_format, level=log_level, colorize=True)
+    logger.add(
+        RichHandler(
+            markup=True,
+            rich_tracebacks=True,
+            tracebacks_show_locals=True,
+            log_time_format="[%X]",
+        ),
+        format="{message}",
+        level=log_level,
+        colorize=True,
+    )
 
 
 def _version_callback(value: bool) -> None:
