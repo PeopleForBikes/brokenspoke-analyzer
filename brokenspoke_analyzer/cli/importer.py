@@ -1,15 +1,8 @@
 import typer
-from loguru import logger
 from typing_extensions import Annotated
 
 from brokenspoke_analyzer.cli import common
-from brokenspoke_analyzer.core import (
-    analysis,
-    constant,
-    ingestor,
-    utils,
-)
-from brokenspoke_analyzer.core.database import dbcore
+from brokenspoke_analyzer.core import ingestor
 
 app = typer.Typer()
 
@@ -26,31 +19,25 @@ def all(
     buffer: common.Buffer = common.DEFAULT_BUFFER,
 ) -> None:
     """Import all files into database."""
-    neighborhood(
-        input_dir=input_dir,
-        country=country,
-        city=city,
-        region=region,
+    # Make MyPy happy.
+    if not region:
+        raise ValueError("`region` must be set")
+    if not fips_code:
+        raise ValueError("`fips_code` must be set")
+    if not lodes_year:
+        raise ValueError("`lodes_year` must be set")
+    if not buffer:
+        raise ValueError("`buffer` must be set")
+
+    ingestor.all_wrapper(
         database_url=database_url,
-        buffer=buffer,
-    )
-    # Derive state FIPS code from state name.
-    state_abbrev, _, import_jobs = analysis.derive_state_info(region)
-    logger.debug(f"{import_jobs=}")
-    if import_jobs == "1":
-        jobs(
-            input_dir=input_dir,
-            state_abbreviation=state_abbrev,
-            lodes_year=lodes_year,
-            database_url=database_url,
-        )
-    osm(
         input_dir=input_dir,
         country=country,
         city=city,
         region=region,
         fips_code=fips_code,
-        database_url=database_url,
+        lodes_year=lodes_year,
+        buffer=buffer,
     )
 
 
@@ -65,36 +52,17 @@ def neighborhood(
 ) -> None:
     """Import neighborhood data."""
     # Make MyPy happy.
+    if not region:
+        raise ValueError("`region` must be set")
     if not buffer:
-        raise ValueError("a buffer value is required")
+        raise ValueError("`buffer` must be set")
 
-    # Ensure US/USA cities have the right parameters.
-    if country.upper() == "US":
-        country = "usa"
-    if country.upper() == constant.COUNTRY_USA and not region:
-        raise ValueError("`state` is required for US cities")
-
-    # Prepare the database connection.
-    engine = dbcore.create_psycopg_engine(database_url)
-
-    # Prepare the files to import.
-    _, slug = analysis.osmnx_query(country, city, region)
-    boundary_file = input_dir / f"{slug}.shp"
-    population_file = input_dir / "population.shp"
-    water_blocks_file = input_dir / "censuswaterblocks.csv"
-
-    # compute the output SRID from the boundary file.
-    output_srid = utils.get_srid(boundary_file.resolve(strict=True))
-    logger.debug(f"{output_srid=}")
-
-    # Import the neighborhood data.
-    ingestor.import_neighborhood(
-        engine,
-        country=country.upper(),
-        boundary_file=boundary_file,
-        population_file=population_file.resolve(strict=True),
-        water_blocks_file=water_blocks_file.resolve(),
-        output_srid=output_srid,
+    ingestor.neighborhood_wrapper(
+        database_url=database_url,
+        input_dir=input_dir,
+        country=country,
+        city=city,
+        region=region,
         buffer=buffer,
     )
 
@@ -111,16 +79,12 @@ def jobs(
     if not lodes_year:
         raise ValueError("`lodes_year` must be set")
 
-    # validate the US state.
-    state_abbreviation = state_abbreviation.lower()
-    if len(state_abbreviation) != 2:
-        raise ValueError("a state abbreviation must be 2 letter long")
-
-    # Prepare the database connection.
-    engine = dbcore.create_psycopg_engine(database_url)
-
-    # Import the jobs.
-    ingestor.import_jobs(engine, state_abbreviation, lodes_year, input_dir)
+    ingestor.jobs_wrapper(
+        database_url=database_url,
+        input_dir=input_dir,
+        state_abbreviation=state_abbreviation,
+        lodes_year=lodes_year,
+    )
 
 
 @app.command()
@@ -134,32 +98,16 @@ def osm(
 ) -> None:
     """Import OSM data."""
     # Make mypy happy.
+    if not region:
+        raise ValueError("`region` must be set")
     if not fips_code:
         raise ValueError("`fips_code` must be set")
 
-    # Prepare the database connection.
-    engine = dbcore.create_psycopg_engine(database_url)
-
-    # Prepare the files to import.
-    _, slug = analysis.osmnx_query(country, city, region)
-    boundary_file = input_dir / f"{slug}.shp"
-    osm_file = input_dir / f"{slug}.osm"
-    state_speed_limits_csv = input_dir / "state_fips_speed.csv"
-    city_speed_limits_csv = input_dir / "city_fips_speed.csv"
-
-    # Compute the output SRID from the boundary file.
-    output_srid = utils.get_srid(boundary_file.resolve(strict=True))
-    logger.debug(f"{output_srid=}")
-
-    # Derive state FIPS code from state name.
-    _, state_fips, _ = analysis.derive_state_info(region)
-
-    ingestor.import_osm_data(
-        engine,
-        osm_file,
-        output_srid,
-        state_fips,
-        fips_code,
-        state_speed_limits_csv,
-        city_speed_limits_csv,
+    ingestor.osm_wrapper(
+        database_url=database_url,
+        input_dir=input_dir,
+        country=country,
+        city=city,
+        region=region,
+        fips_code=fips_code,
     )

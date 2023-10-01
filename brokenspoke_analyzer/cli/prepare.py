@@ -54,12 +54,17 @@ def all(
     if not lodes_year:
         raise ValueError("`lodes_year` must be set")
 
-    # Ensure US/USA cities have the right parameters.
+    # Handles us/usa as the same country.
     if country.upper() == "US":
         country = "usa"
+
+    # Ensure US/USA cities have the right parameters.
     if country.upper() == constant.COUNTRY_USA:
         if not (region and fips_code != common.DEFAULT_CITY_FIPS_CODE):
             raise ValueError("`state` and `fips_code` are required for US cities")
+    else:
+        # Ensure FIPS code has the default value for non-US cities.
+        fips_code = common.DEFAULT_CITY_FIPS_CODE
 
     logger.debug(f"{output_dir=}")
     asyncio.run(
@@ -99,7 +104,7 @@ async def prepare_(
     # Prepare the Rich output.
     console = Console()
 
-    # Create retrier instance to use for all downloads
+    # Create retrier instance to use for all downloads.
     retryer = Retrying(
         stop=stop_after_attempt(retries),
         reraise=True,
