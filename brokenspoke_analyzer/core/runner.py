@@ -7,7 +7,8 @@ import typing
 import urllib
 
 from loguru import logger
-from slugify import slugify
+
+from brokenspoke_analyzer.core import utils
 
 NON_US_STATE_FIPS = "0"
 NON_US_STATE_ABBREV = "ZZ"
@@ -15,7 +16,14 @@ NON_US_STATE_ABBREV = "ZZ"
 
 def run(cmd: typing.Sequence[str]) -> None:
     logger.debug(f"cmd={' '.join(cmd)}")
-    subprocess.run(cmd, check=True)
+    p = subprocess.run(
+        cmd,
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    for line in p.stdout.splitlines():
+        logger.trace(line.decode("utf-8").strip())
 
 
 def run_analysis(
@@ -52,7 +60,7 @@ def run_analysis(
             "-e",
             f"PFB_COUNTRY={pfb_country}",
             "-e",
-            f"PFB_STATE={sanitize_values(pfb_state)}",
+            f"PFB_STATE={utils.normalize_unicode_name(pfb_state)}",
             "-e",
             f"PFB_STATE_FIPS={state_fips}",
             "-e",
@@ -87,21 +95,6 @@ def run_osmium_extract(
         str(reduced_file_path.resolve()),
     ]
     run(osmium_cmd)
-
-
-def sanitize_values(value: str) -> str:
-    """
-    Removes spaces and other invalid characters from the value.
-
-    Examples:
-
-    >>> sanitize_values("a directory with spaces")
-    'a_directory_with_spaces'
-
-    >>> sanitize_values("")
-    ''
-    """
-    return slugify(value, save_order=True, separator="_")
 
 
 def run_osm2pgrouting(
