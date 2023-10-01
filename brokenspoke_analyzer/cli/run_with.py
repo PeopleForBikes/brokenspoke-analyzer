@@ -216,6 +216,9 @@ def run_(
     if country.upper() == constant.COUNTRY_USA:
         if not (region and fips_code != common.DEFAULT_CITY_FIPS_CODE):
             raise ValueError("`state` and `fips_code` are required for US cities")
+    else:
+        # Ensure FIPS code has the default value for non-US cities.
+        fips_code = common.DEFAULT_CITY_FIPS_CODE
 
     # Prepare the database connection.
     engine = dbcore.create_psycopg_engine(database_url)

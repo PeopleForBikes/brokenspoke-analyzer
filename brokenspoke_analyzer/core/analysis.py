@@ -90,7 +90,7 @@ def state_info(state: str) -> tuple[str, str]:
     return (abbrev, fips)
 
 
-def derive_state_info(state: str | None) -> typing.Tuple[str, str, str]:
+def derive_state_info(state: str | None) -> typing.Tuple[str, str, bool]:
     """
     Derive state information.
 
@@ -98,16 +98,16 @@ def derive_state_info(state: str | None) -> typing.Tuple[str, str, str]:
     information can be retrieved from the census.
 
     Examples:
-        >>> assert ("TX", "48", "1") == derive_state_info("texas")
-        >>> assert ("ZZ", "0", "0") == derive_state_info("spain")
+        >>> assert ("TX", "48", True) == derive_state_info("texas")
+        >>> assert ("ZZ", "0", False) == derive_state_info("spain")
     """
     try:
         if not state:
             raise ValueError("no 'state' was provided")
-        run_import_jobs = "1"
+        run_import_jobs = True
         state_abbrev, state_fips = state_info(state)
     except ValueError:
-        run_import_jobs = "0"
+        run_import_jobs = False
         state_abbrev, state_fips = (
             runner.NON_US_STATE_ABBREV,
             runner.NON_US_STATE_FIPS,

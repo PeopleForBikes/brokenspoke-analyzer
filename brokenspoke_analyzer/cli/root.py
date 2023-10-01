@@ -59,8 +59,7 @@ def _verbose_callback(value: int) -> None:
 
 
 def _version_callback(value: bool) -> None:
-    # Get the package's version
-
+    """Get the package's version."""
     package_version = metadata.version("brokenspoke-analyzer")
     if value:
         typer.echo(f"brokenspoke-analyzer version: {package_version}")
