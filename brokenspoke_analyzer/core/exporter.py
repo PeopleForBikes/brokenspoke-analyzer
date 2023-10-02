@@ -1,7 +1,11 @@
 import pathlib
+import tempfile
 import typing
 from datetime import date
+from enum import Enum
 
+import boto3
+from loguru import logger
 from sqlalchemy.engine import Engine
 
 from brokenspoke_analyzer.core import runner
@@ -36,6 +40,13 @@ TABLE_CATALOG = {
         "residential_speed_limit",
     ],
 }
+
+BNA_RESULT_BUCKET = "remy-is-testing"
+
+
+class Exporter(str, Enum):
+    local = "local"
+    s3 = "s3"
 
 
 def export_to_csv(
@@ -106,6 +117,27 @@ def create_calver_directories(
     >>> assert directory == pathlib.Path(f"usa/tx/austin/{calver}")
 
     """
+    p = calver_base(country, city, region, date_override, base_dir)
+
+    # List all the directories with the same calver stem.
+    dirs = list(p.glob(f"{p.name}*"))
+
+    # If there is none, it means it is the first one.
+    if not dirs:
+        return p
+
+    revision = calver_revision(dirs)
+    return pathlib.Path(f"{p}.{revision}")
+
+
+def calver_base(
+    country: str,
+    city: str,
+    region: typing.Optional[str] = None,
+    date_override: typing.Optional[str] = None,
+    base_dir: pathlib.Path = pathlib.Path(),
+) -> pathlib.Path:
+    """Build the base part of the calver path."""
     # Start with the base path.
     p = base_dir
 
@@ -127,23 +159,89 @@ def create_calver_directories(
 
     # Otherwise use the appropriate calver.
     today = date.today()
-    calver = f"{today.strftime('%y')}.{today.month}"
+    p /= f"{today.strftime('%y')}.{today.month}"
 
-    # List all the directories with the same calver stem.
-    dirs = list(p.glob(f"{calver}*"))
+    return p
 
-    # If there is none, it means it is the first one.
-    if not dirs:
-        return p / calver
 
-    # If there are existing directories, keep only the ones with a micro part,
-    # extract the micro parts and convert them to integers.
+def calver_revision(dirs: typing.Sequence[pathlib.Path]) -> int:
+    """
+    Build the revision part of the calver path.
+
+    Examples:
+
+    >>> dirs=[pathlib.Path('usa/new mexico/santa rosa/23.10')]
+    >>> assert calver_revision(dirs) == 1
+    >>> dirs.append(pathlib.Path('usa/new mexico/santa rosa/23.10.1'))
+    >>> assert calver_revision(dirs) == 2
+    """
+    # Collect the directories with the suffixes.
     with_micro = [int(d.suffixes[-1][-1:]) for d in dirs if len(d.suffixes) == 2]
 
     # If there is no directory with a micro part, create the first one.
     if not with_micro:
-        return p / f"{calver}.1"
+        return 1
 
     # Otherwise get the highest micro and increment it.
     micro = max(with_micro) + 1
-    return p / f"{calver}.{micro}"
+    return micro
+
+
+def create_calver_s3_directories(
+    bucket_name: str,
+    country: str,
+    city: str,
+    region: typing.Optional[str] = None,
+) -> pathlib.Path:
+    """Create the calver directory in the S3 bucket."""
+    # Initialize the S3 client.
+    s3 = boto3.resource("s3")
+    bucket = s3.Bucket(bucket_name)
+
+    # Create the calver directory.
+    s3_dir = calver_base(country, city, region)
+
+    # Check for any existing match.
+    matches = [
+        pathlib.Path(obj.key)
+        for obj in bucket.objects.filter(Prefix=str(s3_dir))
+        if str(s3_dir) in obj.key and obj.key.endswith("/")
+    ]
+
+    # In case there is already a calver folder, we must increment the revision.
+    if matches:
+        rev = calver_revision(matches)
+        s3_dir = pathlib.Path(f"{s3_dir}.{rev}/")
+
+    # Create the folder in the bucket.
+    bucket.put_object(Body="", Key=f"{s3_dir}/")
+
+    return s3_dir
+
+
+def s3(
+    database_url: str,
+    bucket_name: str,
+    folder: typing.Optional[pathlib.Path] = pathlib.Path(),
+) -> None:
+    """Export PostgreSQL/PostGIS tables to an S3 Bucket."""
+    # Make mypy happy.
+    if not folder:
+        raise ValueError("`dest` must be set")
+
+    # Initialize the S3 client.
+    s3 = boto3.client("s3")
+
+    # Create a temporary directory to export the files.
+    with tempfile.TemporaryDirectory() as tmpdir_name:
+        tmpdir = pathlib.Path(tmpdir_name)
+        auto_export(tmpdir, TABLE_CATALOG, database_url)
+
+        # Upload each file one after the other.
+        for file in tmpdir.iterdir():
+            if not file.is_file():
+                continue
+
+            object_name = folder / file.name
+            logger.debug(f"Uploading file to s3://{bucket_name}/{object_name}")
+            s3.upload_file(file, bucket_name, str(object_name))

@@ -5,9 +5,9 @@ import typing
 
 import aiohttp
 import geopandas as gpd
+import rich
 import typer
 from loguru import logger
-from rich.console import Console
 from tenacity import (
     Retrying,
     before_log,
@@ -102,7 +102,7 @@ async def prepare_(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Prepare the Rich output.
-    console = Console()
+    console = rich.get_console()
 
     # Create retrier instance to use for all downloads.
     retryer = Retrying(

@@ -13,24 +13,36 @@ export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
 
 ```bash
 docker compose up -d
-bna configure docker
-bna prepare all usa "santa rosa" "new mexico" 3570670
-bna import all usa "santa rosa" "new mexico" 3570670 --input-dir data/santa-rosa-new-mexico-usa
-bna compute usa "santa rosa" "new mexico" --input-dir data/santa-rosa-new-mexico-usa
-bna export local-calver usa "santa rosa" "new mexico"
+bna -vv configure docker
+bna -vv prepare all usa "santa rosa" "new mexico" 3570670
+bna -vv import all usa "santa rosa" "new mexico" 3570670 --input-dir data/santa-rosa-new-mexico-usa
+bna -vv compute usa "santa rosa" "new mexico" --input-dir data/santa-rosa-new-mexico-usa
+bna -vv export local-calver usa "santa rosa" "new mexico"
 docker compose rm -sfv && docker volume rm brokenspoke-analyzer_postgres
+```
+
+Or with the `run-with` command:
+
+```bash
+bna -vv run-with compose usa "santa rosa" "new mexico" 3570670
 ```
 
 ## L'Ancienne-Lorette, Québec
 
 ```bash
 docker compose up -d
-bna configure docker
-bna prepare all canada "ancienne-lorette" québec
-bna import all canada "ancienne-lorette" québec --input-dir data/ancienne-lorette-quebec-canada
-bna compute canada "ancienne-lorette" québec --input-dir data/ancienne-lorette-quebec-canada
-bna export local-calver canada "ancienne-lorette" québec
+bna -vv configure docker
+bna -vv prepare all canada "ancienne-lorette" québec
+bna -vv import all canada "ancienne-lorette" québec --input-dir data/ancienne-lorette-quebec-canada
+bna -vv compute canada "ancienne-lorette" québec --input-dir data/ancienne-lorette-quebec-canada
+bna -vv export local-calver canada "ancienne-lorette" québec
 docker compose rm -sfv && docker volume rm brokenspoke-analyzer_postgres
+```
+
+Or with the `run-with` command:
+
+```bash
+bna -vv run-with compose canada "ancienne-lorette" québec
 ```
 
 ## With Docker
@@ -45,12 +57,19 @@ export DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
 ```bash
 # `configure docker`` does not work from from the container cause it needs to
 # connect to the host.
-# docker run --rm --network brokenspoke-analyzer_default -e DATABASE_URL peopleforbikes/bna:latest configure docker
+# docker run --rm --network brokenspoke-analyzer_default -e DATABASE_URL hcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0-beta-1 configure docker
 # Use `docker info to get the `CPUs` and `Total Memory`.
-docker run --rm --network brokenspoke-analyzer_default -e DATABASE_URL peopleforbikes/bna:latest configure custom 4 1943 postgres
-docker run --rm -u $(id -u):$(id -g) -v ./data/container:/usr/src/app/data peopleforbikes/bna:latest prepare all usa "santa rosa" "new mexico" 3570670 --output-dir /usr/src/app/data
-docker run --rm --network brokenspoke-analyzer_default -v ./data/container:/usr/src/app/data -e DATABASE_URL peopleforbikes/bna:latest import all usa "santa rosa" "new mexico" 3570670 --input-dir /usr/src/app/data/santa-rosa-new-mexico-usa
-docker run --rm --network brokenspoke-analyzer_default -e DATABASE_URL peopleforbikes/bna:latest compute usa "santa rosa" "new mexico" --input-dir /usr/src/app/data/santa-rosa-new-mexico-usa
+docker run --rm --network brokenspoke-analyzer_default -e DATABASE_URL ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0-beta-1 configure custom 4 1943 postgres
+docker run --rm -u $(id -u):$(id -g) -v ./data/container:/usr/src/app/data hcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0-beta-1 prepare all usa "santa rosa" "new mexico" 3570670 --output-dir /usr/src/app/data
+docker run --rm --network brokenspoke-analyzer_default -v ./data/container:/usr/src/app/data -e DATABASE_URL hcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0-beta-1 import all usa "santa rosa" "new mexico" 3570670 --input-dir /usr/src/app/data/santa-rosa-new-mexico-usa
+docker run --rm --network brokenspoke-analyzer_default -e DATABASE_URL hcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0-beta-1 compute usa "santa rosa" "new mexico" --input-dir /usr/src/app/data/santa-rosa-new-mexico-usa
+```
+
+Or with the `run` command:
+
+```bash
+docker run --rm --network brokenspoke-analyzer_default -e DATABASE_URL ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0-beta-1 -vv run usa "santa rosa" "new mexico" 3570670
+docker run --rm --network brokenspoke-analyzer_default -u $(id -u):$(id -g) -v ./results:/usr/src/app/results -e DATABASE_URL ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0-beta-1  -vv export local-calver usa "santa rosa" "new mexico"
 ```
 
 ## Might be useful later
