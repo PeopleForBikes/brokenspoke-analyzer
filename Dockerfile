@@ -1,5 +1,4 @@
 FROM python:3.11.5-slim-bookworm AS builder
-LABEL author="PeopleForBikes"
 
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -21,10 +20,14 @@ RUN poetry self update \
   && poetry build -f wheel
 
 FROM python:3.11.5-slim-bookworm
-LABEL author="PeopleForBikes"
+LABEL author="PeopleForBikes" \
+  maintainer="BNA Mechanics - https://peopleforbikes.github.io" \
+  org.opencontainers.image.description="Run a BNA analysis locally." \
+  org.opencontainers.image.source="https://github.com/PeopleForBikes/brokenspoke-analyzer"
 
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+  gdal-bin \
   osm2pgrouting \
   osm2pgsql \
   osmctools \

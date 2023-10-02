@@ -112,7 +112,6 @@ def configure_db(engine: Engine, cores: int, memory_mb: int, pguser: str) -> Non
         f"ALTER SYSTEM SET max_parallel_maintenance_workers TO '{cores // 2}';",
         'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";',
         'CREATE EXTENSION IF NOT EXISTS "hstore";',
-        'CREATE EXTENSION IF NOT EXISTS "plpython3u";',
         'CREATE EXTENSION IF NOT EXISTS "pgrouting";',
         f"CREATE SCHEMA IF NOT EXISTS generated AUTHORIZATION {pguser};",
         f"CREATE SCHEMA IF NOT EXISTS received AUTHORIZATION {pguser};",
