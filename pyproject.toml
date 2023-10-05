@@ -11,6 +11,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.10"
 aiohttp = "^3.8.5"
+boto3 = "^1.28.59"
 geopandas = "^0.14.0"
 loguru = "^0.7.2"
 osmnx = "^1.6.0"
@@ -21,7 +22,6 @@ sqlalchemy = { extras = ["asyncio", "postgresql_psycopg"], version = "^2.0.21" }
 tenacity = "^8.2.3"
 typer = "^0.9.0"
 us = "^3.1.1"
-sqlparse = "^0.4.4"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.9.1"
@@ -104,7 +104,7 @@ module = ["brokenspoke_analyzer.pyrosm.*"]
 ignore_errors = "true"
 
 [[tool.mypy.overrides]]
-module = ["geopandas", "osmnx", "shapely", "us"]
+module = ["boto3", "geopandas", "osmnx", "shapely", "us"]
 ignore_missing_imports = "true"
 
 [tool.sqlfluff.core]

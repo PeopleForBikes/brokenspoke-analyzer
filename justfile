@@ -58,13 +58,13 @@ docs-clean:
 
 # Build the Docker image for local usage.
 docker-build:
-    docker buildx build -t peopleforbikes/bna .
+    docker buildx build -t ghcr.io/peopleforbikes/brokenspoke-analyzer .
 
 docker-prepare-all *args:
     echo "$@"
     docker run --rm \
       -u $(id -u):$(id -g) \
-      -v ./data/container:/usr/src/app/data peopleforbikes/bna:latest \
+      -v ./data/container:/usr/src/app/data peopleforbikes/brokenspoke-analyzer:latest \
       prepare \
       all \
       --output-dir /usr/src/app/data \

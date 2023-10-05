@@ -19,6 +19,7 @@ from brokenspoke_analyzer.core import (
     analysis,
     compute,
     constant,
+    exporter,
     ingestor,
     runner,
     utils,
@@ -43,6 +44,7 @@ def compose(
     lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
     retries: common.Retries = common.DEFAULT_RETRIES,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
+    with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
 ) -> pathlib.Path:
     """Manage Docker Compose when running the analysis."""
     database_url = "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -69,6 +71,7 @@ def compose(
             lodes_year=lodes_year,
             retries=retries,
             max_trip_distance=max_trip_distance,
+            with_export=with_export,
         )
     finally:
         subprocess.run(["docker", "compose", "rm", "-sfv"], check=True)
@@ -198,6 +201,7 @@ def run_(
     lodes_year: typing.Optional[int] = common.DEFAULT_LODES_YEAR,
     retries: typing.Optional[int] = common.DEFAULT_RETRIES,
     max_trip_distance: typing.Optional[int] = common.DEFAULT_MAX_TRIP_DISTANCE,
+    with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
 ) -> pathlib.Path:
     """Run an analysis."""
     # Make mypy happy.
@@ -282,11 +286,20 @@ def run_(
 
     # Export.
     logger.info("Export")
-    export_dir = export.local_calver(
-        database_url=database_url,
-        country=country,
-        city=city,
-        region=region,
-        export_dir=export_dir,
-    )
+    if with_export == exporter.Exporter.local:
+        export_dir = export.local(
+            database_url=database_url,
+            country=country,
+            city=city,
+            region=region,
+            export_dir=export_dir,
+        )
+    elif with_export == exporter.Exporter.s3:
+        export_dir = export.s3(
+            database_url=database_url,
+            bucket_name=exporter.BNA_RESULT_BUCKET,
+            country=country,
+            city=city,
+            region=region,
+        )
     return export_dir
