@@ -1,5 +1,6 @@
 """Define functions used to manipulate database data."""
 import pathlib
+import typing
 
 from sqlalchemy import (
     create_engine,
@@ -93,6 +94,41 @@ def configure_db(engine: Engine, cores: int, memory_mb: int, pguser: str) -> Non
     # raised:
     #   sqlalchemy.exc.InternalError: (psycopg.errors.ActiveSqlTransaction)
     #   ALTER SYSTEM cannot run inside a transaction block
+    configure_system(engine, cores, memory_mb)
+    configure_extensions(engine)
+    configure_schemas(engine, pguser)
+
+
+def configure_docker_db(engine: Engine) -> None:
+    """Configure a database running in a Docker."""
+    docker_info = runner.run_docker_info()
+    docker_cores = docker_info["NCPU"]
+    docker_memory_mb = docker_info["MemTotal"] // (1024**2)
+    database_url = engine.engine.url
+    pguser = database_url.username
+    if not pguser:
+        raise ValueError("postgresql user must be specified in the databsse engine URL")
+    configure_db(engine, docker_cores, docker_memory_mb, pguser)
+
+
+def create_psycopg_engine(database_url: str) -> Engine:
+    """Create a SQLAlchemy engine with the psycopg3 driver."""
+    return create_engine(database_url.replace("postgresql://", "postgresql+psycopg://"))
+
+
+def execute_with_autocommit(engine: Engine, statements: typing.Sequence[str]) -> None:
+    """Execute a series of statements with autocommit."""
+    with engine.execution_options(isolation_level="AUTOCOMMIT").connect() as conn:
+        for statement in statements:
+            conn.execute(text(statement))
+
+
+def configure_system(engine: Engine, cores: int, memory_mb: int) -> None:
+    """
+    Configure the system parameters.
+
+    This requires elevated permissions.
+    """
     statements = [
         f"ALTER SYSTEM SET shared_buffers TO '{memory_mb // 4}MB';",
         f"ALTER SYSTEM SET effective_cache_size TO '{3 * memory_mb // 4}MB';",
@@ -110,9 +146,24 @@ def configure_db(engine: Engine, cores: int, memory_mb: int, pguser: str) -> Non
         f"ALTER SYSTEM SET max_parallel_workers TO '{cores}';",
         f"ALTER SYSTEM SET max_parallel_workers_per_gather TO '{cores // 2}';",
         f"ALTER SYSTEM SET max_parallel_maintenance_workers TO '{cores // 2}';",
+    ]
+    execute_with_autocommit(engine, statements)
+
+
+def configure_extensions(engine: Engine) -> None:
+    """Configure the extensions required."""
+    statements = [
+        'CREATE EXTENSION IF NOT EXISTS "postgis";',
         'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";',
         'CREATE EXTENSION IF NOT EXISTS "hstore";',
         'CREATE EXTENSION IF NOT EXISTS "pgrouting";',
+    ]
+    execute_with_autocommit(engine, statements)
+
+
+def configure_schemas(engine: Engine, pguser: str) -> None:
+    """Configure the schemas"""
+    statements = [
         f"CREATE SCHEMA IF NOT EXISTS generated AUTHORIZATION {pguser};",
         f"CREATE SCHEMA IF NOT EXISTS received AUTHORIZATION {pguser};",
         f"CREATE SCHEMA IF NOT EXISTS scratch AUTHORIZATION {pguser};",
@@ -121,23 +172,4 @@ def configure_db(engine: Engine, cores: int, memory_mb: int, pguser: str) -> Non
             'generated,received,scratch,"$user",public;'
         ),
     ]
-    with engine.execution_options(isolation_level="AUTOCOMMIT").connect() as conn:
-        for statement in statements:
-            conn.execute(text(statement))
-
-
-def configure_docker_db(engine: Engine) -> None:
-    """Configure a database running in a Docker."""
-    docker_info = runner.run_docker_info()
-    docker_cores = docker_info["NCPU"]
-    docker_memory_mb = docker_info["MemTotal"] // (1024**2)
-    database_url = engine.engine.url
-    pguser = database_url.username
-    if not pguser:
-        raise ValueError("postgresql user must be specified in the databse engine URL")
-    configure_db(engine, docker_cores, docker_memory_mb, pguser)
-
-
-def create_psycopg_engine(database_url: str) -> Engine:
-    """Create a SQLAlchemy engine with the psycopg3 driver."""
-    return create_engine(database_url.replace("postgresql://", "postgresql+psycopg://"))
+    execute_with_autocommit(engine, statements)
