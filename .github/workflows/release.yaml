@@ -14,3 +14,21 @@ jobs:
     uses: PeopleForBikes/.github/.github/workflows/release-python.yml@main
   docker:
     uses: PeopleForBikes/.github/.github/workflows/docker-build-publish-ghcr.yml@main
+
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Gr1N/setup-poetry@v8
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+          cache: "poetry"
+      - name: Setup the project
+        run: poetry install
+      - name: Build sdist and wheel
+        run: poetry build
+      - name: Publish the release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*.*
