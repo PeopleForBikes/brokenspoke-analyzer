@@ -3829,13 +3829,13 @@ sqlcipher = ["sqlcipher3-binary"]
 
 [[package]]
 name = "sqlfluff"
-version = "2.3.2"
+version = "2.3.3"
 description = "The SQL Linter for Humans"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "sqlfluff-2.3.2-py3-none-any.whl", hash = "sha256:85c8b683e283ff632fe28529ddb60585ea2d1d3c614fc7a1db171632b99dcce3"},
-    {file = "sqlfluff-2.3.2.tar.gz", hash = "sha256:3403ce7e9133766d7336b7e26638657ec6cc9e5610e35186b7f02cc427dd49b7"},
+    {file = "sqlfluff-2.3.3-py3-none-any.whl", hash = "sha256:a1f235f07279429e24570e76c86799616ff3e9a73134d83c31cd290f225610be"},
+    {file = "sqlfluff-2.3.3.tar.gz", hash = "sha256:185e1122056bee3e2098346f0123dd80ac822727cabb418e82fa56ee978db0db"},
 ]
 
 [package.dependencies]
@@ -4411,4 +4411,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "f8064af7762bf7ca497b180623959b00eb03c71189a4af7e05e78d306af42c42"
+content-hash = "af77cb9b6fa7d99f7bb1c1895856b8992bb66fde3a62f0980ea4c2e5b4a4bf37"
