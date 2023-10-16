@@ -39,7 +39,7 @@ source .venv/bin/activate
 Install the application using `pip`:
 
 ```bash
-pip install git+https://github.com/PeopleForBikes/brokenspoke-analyzer@2.0.0-alpha
+pip install git+https://github.com/PeopleForBikes/brokenspoke-analyzer@2.0.0-rc
 ```
 
 The simplest way to run an analysis is to use docker compose.
