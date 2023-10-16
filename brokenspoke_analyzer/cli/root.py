@@ -1,10 +1,10 @@
 import logging
 import pathlib
+import typing
 from importlib import (
     metadata,
     resources,
 )
-from typing import Optional
 
 import typer
 from loguru import logger
@@ -24,6 +24,7 @@ from brokenspoke_analyzer.core import (
     analysis,
     compute,
     constant,
+    exporter,
     ingestor,
     utils,
 )
@@ -73,7 +74,7 @@ app = typer.Typer()
 @app.callback()
 def callback(
     version: Annotated[
-        Optional[bool],
+        typing.Optional[bool],
         typer.Option(
             "--version",
             help="Show the application's version and exit.",
@@ -81,7 +82,7 @@ def callback(
         ),
     ] = None,
     verbose: Annotated[
-        Optional[int],
+        typing.Optional[int],
         typer.Option(
             "--verbose",
             "-v",
@@ -169,6 +170,7 @@ def run(
     lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
     retries: common.Retries = common.DEFAULT_RETRIES,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
+    with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
 ) -> None:
     """Run an analysis."""
     run_with.run_(
@@ -185,4 +187,5 @@ def run(
         lodes_year=lodes_year,
         retries=retries,
         max_trip_distance=max_trip_distance,
+        with_export=with_export,
     )

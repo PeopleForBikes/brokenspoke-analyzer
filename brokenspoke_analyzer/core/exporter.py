@@ -45,6 +45,7 @@ BNA_RESULT_BUCKET = "remy-is-testing"
 
 
 class Exporter(str, Enum):
+    none = "none"
     local = "local"
     s3 = "s3"
 
