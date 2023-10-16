@@ -45,7 +45,7 @@ def compose(
     retries: common.Retries = common.DEFAULT_RETRIES,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
     with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
-) -> pathlib.Path:
+) -> typing.Optional[pathlib.Path]:
     """Manage Docker Compose when running the analysis."""
     database_url = "postgresql://postgres:postgres@localhost:5432/postgres"
     try:
@@ -57,7 +57,7 @@ def compose(
             timeout=60,
         )
         configure.docker(database_url)
-        export_dir = run_(
+        export_dir_: typing.Optional[pathlib.Path] = run_(
             database_url=database_url,
             country=country,
             city=city,
@@ -78,7 +78,7 @@ def compose(
         subprocess.run(
             ["docker", "volume", "rm", "-f", "brokenspoke-analyzer_postgres"]
         )
-    return export_dir
+    return export_dir_
 
 
 @app.command()
@@ -162,7 +162,10 @@ def compare(
         lodes_year=lodes_year,
         retries=retries,
         max_trip_distance=max_trip_distance,
+        with_export=exporter.Exporter.local,
     )
+    if brokenspoke_export_dir is None:
+        raise ValueError("the export must be specified")
 
     logger.info("Run with original BNA")
     _, slug = analysis.osmnx_query(country, city, region)
@@ -202,7 +205,7 @@ def run_(
     retries: typing.Optional[int] = common.DEFAULT_RETRIES,
     max_trip_distance: typing.Optional[int] = common.DEFAULT_MAX_TRIP_DISTANCE,
     with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
-) -> pathlib.Path:
+) -> typing.Optional[pathlib.Path]:
     """Run an analysis."""
     # Make mypy happy.
     if not output_dir:
@@ -286,7 +289,9 @@ def run_(
 
     # Export.
     logger.info("Export")
-    if with_export == exporter.Exporter.local:
+    if with_export == exporter.Exporter.none:
+        return None
+    elif with_export == exporter.Exporter.local:
         export_dir = export.local(
             database_url=database_url,
             country=country,
