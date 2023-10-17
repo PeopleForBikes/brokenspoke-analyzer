@@ -10,11 +10,9 @@ RUN apt-get update \
   python3-poetry \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 WORKDIR /usr/src/app
 COPY . .
 RUN poetry self update \
-  && poetry export -f requirements.txt --only main --output requirements.txt \
   && mkdir -p deps \
   && pip wheel -r requirements.txt -w deps \
   && poetry build -f wheel
