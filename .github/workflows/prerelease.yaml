@@ -1,0 +1,24 @@
+name: prerelease
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+-*"
+
+permissions:
+  # This is required for requesting the JWT.
+  id-token: write
+  # This is required for actions/checkout.
+  contents: read
+  # this is required to publish the packages..
+  packages: write
+
+jobs:
+  docker:
+    uses: PeopleForBikes/.github/.github/workflows/docker-build-publish-ghcr.yml@main
+    with:
+      push-to-ghcr: false
+      push-to-ecr: true
+      aws-region: us-west-2
+    secrets:
+      github-role: ${{ secrets.FEDERATED_GITHUB_ROLE_ARN_STAGING }}

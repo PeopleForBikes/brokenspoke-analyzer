@@ -10,12 +10,18 @@ permissions:
   packages: write
 
 jobs:
-  ci:
+  release:
     uses: PeopleForBikes/.github/.github/workflows/release-python.yml@main
   docker:
     uses: PeopleForBikes/.github/.github/workflows/docker-build-publish-ghcr.yml@main
+    with:
+      push-to-ghcr: false
+      push-to-ecr: true
+      aws-region: us-west-2
+    secrets:
+      github-role: ${{ secrets.FEDERATED_GITHUB_ROLE_ARN_STAGING }}
 
-  release:
+  release-dist:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
