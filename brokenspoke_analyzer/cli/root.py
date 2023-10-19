@@ -171,6 +171,9 @@ def run(
     retries: common.Retries = common.DEFAULT_RETRIES,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
     with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
+    s3_bucket: Annotated[
+        typing.Optional[str], typer.Option(help="S3 bucket name where to export")
+    ] = None,
 ) -> None:
     """Run an analysis."""
     run_with.run_(
@@ -188,4 +191,5 @@ def run(
         retries=retries,
         max_trip_distance=max_trip_distance,
         with_export=with_export,
+        s3_bucket=s3_bucket,
     )

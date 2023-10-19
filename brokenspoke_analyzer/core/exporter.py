@@ -41,8 +41,6 @@ TABLE_CATALOG = {
     ],
 }
 
-BNA_RESULT_BUCKET = "remy-is-testing"
-
 
 class Exporter(str, Enum):
     none = "none"

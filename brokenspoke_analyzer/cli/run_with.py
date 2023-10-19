@@ -45,6 +45,7 @@ def compose(
     retries: common.Retries = common.DEFAULT_RETRIES,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
     with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
+    s3_bucket: typing.Optional[str] = None,
 ) -> typing.Optional[pathlib.Path]:
     """Manage Docker Compose when running the analysis."""
     database_url = "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -72,6 +73,7 @@ def compose(
             retries=retries,
             max_trip_distance=max_trip_distance,
             with_export=with_export,
+            s3_bucket=s3_bucket,
         )
     finally:
         subprocess.run(["docker", "compose", "rm", "-sfv"], check=True)
@@ -205,6 +207,7 @@ def run_(
     retries: typing.Optional[int] = common.DEFAULT_RETRIES,
     max_trip_distance: typing.Optional[int] = common.DEFAULT_MAX_TRIP_DISTANCE,
     with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
+    s3_bucket: typing.Optional[str] = None,
 ) -> typing.Optional[pathlib.Path]:
     """Run an analysis."""
     # Make mypy happy.
@@ -216,6 +219,10 @@ def run_(
         raise ValueError("`block_population` must be set")
     if not export_dir:
         raise ValueError("`export_dir` must be set")
+
+    # Sanity checks.
+    if with_export == exporter.Exporter.s3 and not s3_bucket:
+        raise ValueError("the bucket name must be specified when exporting to S3")
 
     # Ensure US/USA cities have the right parameters.
     if country.upper() == "US":
@@ -302,7 +309,7 @@ def run_(
     elif with_export == exporter.Exporter.s3:
         export_dir = export.s3(
             database_url=database_url,
-            bucket_name=exporter.BNA_RESULT_BUCKET,
+            bucket_name=s3_bucket,  # type: ignore
             country=country,
             city=city,
             region=region,
