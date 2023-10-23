@@ -20,7 +20,7 @@ loguru==0.7.2
 markdown-it-py==3.0.0
 mdurl==0.1.2
 multidict==6.0.4
-networkx==3.1
+networkx==3.2
 numpy==1.26.0
 osmnx==1.6.0
 packaging==23.2
