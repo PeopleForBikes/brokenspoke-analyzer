@@ -9,7 +9,7 @@ charset-normalizer==3.3.0
 click==8.1.7
 click-plugins==1.1.1
 cligj==0.7.2
-Fiona==1.9.4.post1
+Fiona==1.9.5
 frozenlist==1.4.0
 geopandas==0.14.0
 greenlet==3.0.0
