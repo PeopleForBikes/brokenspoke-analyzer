@@ -39,7 +39,7 @@ ENV BNA_OSMNX_CACHE 0
 WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/deps ./pkg/deps
 COPY --from=builder /usr/src/app/dist ./pkg/dist
-RUN pip install pkg/deps/Fiona-1.9.4.post1-*.whl \
+RUN pip install pkg/deps/fiona-1.9.5-*.whl \
   && pip install pkg/deps/* \
   && pip install pkg/dist/brokenspoke_analyzer-*-py3-none-any.whl \
   && rm -fr /usr/src/app/pkg \
