@@ -15,7 +15,7 @@ lint-md:
 # Lint python files.
 lint-python:
     poetry run isort --check .
-    poetry run black --check {{ src_dir }}
+    poetry run ruff format --check {{ src_dir }}
     poetry run ruff check {{ src_dir }}
     poetry run mypy {{ src_dir }}
 
@@ -33,7 +33,7 @@ fmt-md:
 # Format python files.
 fmt-python:
     poetry run isort .
-    poetry run black {{ src_dir }}
+    poetry run ruff format {{ src_dir }}
     poetry run ruff check --fix {{ src_dir }}
 
 # Run the unit tests.
