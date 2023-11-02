@@ -24,7 +24,6 @@ typer = "^0.9.0"
 us = "^3.1.1"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.10.1"
 bpython = "^0.24"
 furo = "^2023.9.10"
 isort = "^5.11.3"
