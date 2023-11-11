@@ -1,7 +1,7 @@
 Resources
 =========
 
-This page lists various resources that provided useful resources while working
+This page lists various resources that provided useful information while working
 on this project.
 
 - `Open Street Map planet extracts <https://download.geofabrik.de/>`_

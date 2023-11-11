@@ -1,0 +1,701 @@
+..  regions:
+
+Regions
+=======
+
+The brokenspoke-analyzer aims at simplifying the process to run analysis
+locally. In an effort to do so, it will automatically retrieve OSM files of the
+region where a city to analyze is located.
+
+A region can be a full continent, like ``europe``, or a country like ``spain``,
+but in order to speed up the operations, it is advised to target precisely the
+city's area when possible.
+
+For instance, in the US, the region should be a state, in Canada it should be a
+province, in France it should be a region, in Spain it should be a community.
+In some cases, the region can even be the city itself like ``paris`` or ``madrid``.
+
+The datasets are coming from either `Geofabrik`  or `BBBike` , using the
+`PyrOSM`  library.
+
+There are currently almost 700 regions available:
+
+- Aachen
+- Aarhus
+- Adelaide
+- Afghanistan
+- Alabama
+- Alaska
+- Albania
+- Alberta
+- Albuquerque
+- Alexandria
+- Algeria
+- Alsace
+- Amsterdam
+- Andalucía
+- Andorra
+- Angola
+- Antarctica
+- Antwerpen
+- Aquitaine
+- Aragón
+- Argentina
+- Arizona
+- Arkansas
+- Armenia
+- Arnhem
+- Arnsberg Regbez
+- Asturias
+- Auckland
+- Augsburg
+- Austin
+- Australia
+- Austria
+- Auvergne
+- Azerbaijan
+- Azores
+- Baden Wuerttemberg
+- Baghdad
+- Bahamas
+- Baku
+- Balaton
+- Bamberg
+- Bangkok
+- Bangladesh
+- Barcelona
+- Basel
+- Basse Normandie
+- Bayern
+- Bedfordshire
+- Beijing
+- Beirut
+- Belarus
+- Belgium
+- Belize
+- Benin
+- Berkeley
+- Berkshire
+- Berlin
+- Bern
+- Bhutan
+- Bielefeld
+- Birmingham
+- Bochum
+- Bogota
+- Bolivia
+- Bombay
+- Bonn
+- Bordeaux
+- Bosnia Herzegovina
+- Botswana
+- Boulder
+- Bourgogne
+- Brandenburg
+- Brandenburghavel
+- Braunschweig
+- Brazil
+- Bremen
+- Bremerhaven
+- Bretagne
+- Brisbane
+- Bristol
+- British Columbia
+- Brno
+- Bruegge
+- Bruessel
+- Buckinghamshire
+- Budapest
+- Buenosaires
+- Bulgaria
+- Burkina Faso
+- Burundi
+- Cairo
+- Calgary
+- California
+- Cambodia
+- Cambridge
+- Cambridgema
+- Cambridgeshire
+- Cameroon
+- Canada
+- Canary Islands
+- Canberra
+- Cantabria
+- Cape Verde
+- Capetown
+- Castilla Y León
+- Castilla-La Mancha
+- Cataluña
+- Central African Republic
+- Central Fed District
+- Centre
+- Centro
+- Centro Oeste
+- Ceuta
+- Chad
+- Champagne Ardenne
+- Chemnitz
+- Cheshire
+- Chicago
+- Chile
+- China
+- Chubu
+- Chugoku
+- Clermontferrand
+- Colmar
+- Colombia
+- Colorado
+- Comores
+- Congo Brazzaville
+- Congo Democratic Republic
+- Connecticut
+- Cook Islands
+- Copenhagen
+- Cork
+- Cornwall
+- Corse
+- Corsica
+- Corvallis
+- Costa-Rica
+- Cottbus
+- Cracow
+- Craterlake
+- Crimean Fed District
+- Croatia
+- Cuba
+- Cumbria
+- Curitiba
+- Cusco
+- Cyprus
+- Czech Republic
+- Dallas
+- Darmstadt
+- Davis
+- Delaware
+- Denhaag
+- Denmark
+- Denver
+- Derbyshire
+- Dessau
+- Detmold Regbez
+- Devon
+- District Of Columbia
+- Djibouti
+- Dolnoslaskie
+- Dorset
+- Dortmund
+- Drenthe
+- Dresden
+- Dublin
+- Duesseldorf
+- Duesseldorf Regbez
+- Duisburg
+- Durham
+- East Sussex
+- East Yorkshire With Hull
+- East-Timor
+- Ecuador
+- Edinburgh
+- Egypt
+- Eindhoven
+- El-Salvador
+- Emden
+- England
+- Equatorial Guinea
+- Erfurt
+- Eritrea
+- Erlangen
+- Essex
+- Estonia
+- Ethiopia
+- Eugene
+- Extremadura
+- Far Eastern Fed District
+- Faroe Islands
+- Fiji
+- Finland
+- Flensburg
+- Flevoland
+- Florida
+- Fortcollins
+- France
+- Franche Comte
+- Frankfurt
+- Frankfurtoder
+- Freiburg
+- Freiburg Regbez
+- Friesland
+- Gabon
+- Galicia
+- Gcc States
+- Gdansk
+- Gelderland
+- Genf
+- Gent
+- Georgia
+- Georgia
+- Gera
+- Germany
+- Ghana
+- Glasgow
+- Gliwice
+- Gloucestershire
+- Goerlitz
+- Goeteborg
+- Goettingen
+- Graz
+- Great Britain
+- Greater London
+- Greater Manchester
+- Greece
+- Greenland
+- Groningen
+- Guadeloupe
+- Guatemala
+- Guinea
+- Guinea Bissau
+- Guyane
+- Haiti And Domrep
+- Halifax
+- Halle
+- Hamburg
+- Hamm
+- Hampshire
+- Hannover
+- Haute Normandie
+- Hawaii
+- Heilbronn
+- Helsinki
+- Hertfordshire
+- Hertogenbosch
+- Hessen
+- Hokkaido
+- Honduras
+- Hungary
+- Huntsville
+- Iceland
+- Idaho
+- Ile De France
+- Ile-De-Clipperton
+- Illinois
+- India
+- Indiana
+- Indonesia
+- Innsbruck
+- Iowa
+- Iran
+- Iraq
+- Ireland And Northern Ireland
+- Islas Baleares
+- Isle Of Man
+- Isle Of Wight
+- Isole
+- Israel And Palestine
+- Istanbul
+- Italy
+- Ivory Coast
+- Jamaica
+- Japan
+- Jena
+- Jerusalem
+- Johannesburg
+- Jordan
+- Kaiserslautern
+- Kaliningrad
+- Kansai
+- Kansas
+- Kanto
+- Karlsruhe
+- Karlsruhe Regbez
+- Kassel
+- Katowice
+- Kaunas
+- Kazakhstan
+- Kent
+- Kentucky
+- Kenya
+- Kiel
+- Kiew
+- Kiribati
+- Koblenz
+- Koeln
+- Koeln Regbez
+- Konstanz
+- Kosovo
+- Kujawsko Pomorskie
+- Kyrgyzstan
+- Kyushu
+- La Rioja
+- Lakegarda
+- Lancashire
+- Languedoc Roussillon
+- Laos
+- Lapaz
+- Laplata
+- Latvia
+- Lausanne
+- Lebanon
+- Leeds
+- Leicestershire
+- Leipzig
+- Lesotho
+- Liberia
+- Libya
+- Liechtenstein
+- Lima
+- Limburg
+- Limousin
+- Lincolnshire
+- Linz
+- Lisbon
+- Lithuania
+- Liverpool
+- Ljubljana
+- Lodz
+- Lodzkie
+- London
+- Lorraine
+- Louisiana
+- Lubelskie
+- Lubuskie
+- Luebeck
+- Luxembourg
+- Luxemburg
+- Lyon
+- Maastricht
+- Macedonia
+- Madagascar
+- Madison
+- Madrid
+- Magdeburg
+- Maine
+- Mainz
+- Malawi
+- Malaysia Singapore Brunei
+- Maldives
+- Mali
+- Malmoe
+- Malopolskie
+- Malta
+- Manchester
+- Manitoba
+- Mannheim
+- Marseille
+- Marshall Islands
+- Martinique
+- Maryland
+- Massachusetts
+- Mauritania
+- Mauritius
+- Mayotte
+- Mazowieckie
+- Mecklenburg Vorpommern
+- Melbourne
+- Melilla
+- Memphis
+- Merseyside
+- Mexico
+- Mexicocity
+- Miami
+- Michigan
+- Micronesia
+- Midi Pyrenees
+- Minnesota
+- Mississippi
+- Missouri
+- Mittelfranken
+- Moenchengladbach
+- Moldova
+- Monaco
+- Mongolia
+- Montana
+- Montenegro
+- Montevideo
+- Montpellier
+- Montreal
+- Morocco
+- Moscow
+- Mozambique
+- Muenchen
+- Muenster
+- Muenster Regbez
+- Murcia
+- Myanmar
+- Namibia
+- Nauru
+- Navarra
+- Nebraska
+- Nepal
+- Netherlands
+- Nevada
+- New Brunswick
+- New Caledonia
+- New Hampshire
+- New Jersey
+- New Mexico
+- New York
+- New Zealand
+- Newdelhi
+- New Foundland And Labrador
+- New Orleans
+- Newyorkcity
+- Nicaragua
+- Niederbayern
+- Niedersachsen
+- Niger
+- Nigeria
+- Niue
+- Noord Brabant
+- Noord Holland
+- Nord Est
+- Nord Ovest
+- Nord Pas De Calais
+- Nordeste
+- Nordrhein Westfalen
+- Norfolk
+- Norte
+- North Carolina
+- North Caucasus Fed District
+- North Dakota
+- North Korea
+- North Yorkshire
+- Northamptonshire
+- Northern California
+- Northumberland
+- Northwest Territories
+- Northwestern Fed District
+- Norway
+- Nottinghamshire
+- Nova Scotia
+- Nuernberg
+- Nunavut
+- Oberbayern
+- Oberfranken
+- Oberpfalz
+- Ohio
+- Oklahoma
+- Oldenburg
+- Ontario
+- Opolskie
+- Oranienburg
+- Oregon
+- Orlando
+- Oslo
+- Osnabrueck
+- Ostrava
+- Ottawa
+- Overijssel
+- Oxfordshire
+- Paderborn
+- País Vasco
+- Pakistan
+- Palau
+- Palma
+- Paloalto
+- Panama
+- Papua New Guinea
+- Paraguay
+- Paris
+- Pays De La Loire
+- Pennsylvania
+- Perth
+- Peru
+- Philadelphia
+- Philippines
+- Phnompenh
+- Picardie
+- Pitcairn-Islands
+- Podkarpackie
+- Podlaskie
+- Poitou Charentes
+- Poland
+- Polynesie-Francaise
+- Pomorskie
+- Portland
+- Portlandme
+- Porto
+- Portoalegre
+- Portugal
+- Potsdam
+- Poznan
+- Prag
+- Prince Edward Island
+- Provence Alpes Cote D Azur
+- Providence
+- Puerto Rico
+- Quebec
+- Regensburg
+- Reunion
+- Rheinland Pfalz
+- Rhode Island
+- Rhone Alpes
+- Riga
+- Riodejaneiro
+- Romania
+- Rostock
+- Rotterdam
+- Ruegen
+- Russia
+- Rutland
+- Rwanda
+- Saarbruecken
+- Saarland
+- Sachsen
+- Sachsen Anhalt
+- Sacramento
+- Saigon
+- Saint Helena Ascension And Tristan Da Cunha
+- Salzburg
+- Samoa
+- Sanfrancisco
+- Sanjose
+- Sanktpetersburg
+- Santabarbara
+- Santacruz
+- Santiago
+- Sao Tome And Principe
+- Sarajewo
+- Saskatchewan
+- Schleswig Holstein
+- Schwaben
+- Schwerin
+- Scotland
+- Seattle
+- Senegal And Gambia
+- Seoul
+- Serbia
+- Seychelles
+- Sheffield
+- Shikoku
+- Shropshire
+- Siberian Fed District
+- Sierra Leone
+- Singapore
+- Slaskie
+- Slovakia
+- Slovenia
+- Sofia
+- Solomon Islands
+- Somalia
+- Somerset
+- South Africa
+- South Africa And Lesotho
+- South Carolina
+- South Dakota
+- South Fed District
+- South Korea
+- South Sudan
+- South Yorkshire
+- Southern California
+- Spain
+- Sri Lanka
+- Staffordshire
+- Stockholm
+- Stockton
+- Strassburg
+- Stuttgart
+- Stuttgart Regbez
+- Sucre
+- Sud
+- Sudan
+- Sudeste
+- Suffolk
+- Sul
+- Suriname
+- Surrey
+- Swaziland
+- Sweden
+- Swietokrzyskie
+- Switzerland
+- Sydney
+- Syria
+- Szczecin
+- Taiwan
+- Tajikistan
+- Tallinn
+- Tanzania
+- Tehran
+- Tennessee
+- Texas
+- Thailand
+- Thueringen
+- Tilburg
+- Togo
+- Tohoku
+- Tokelau
+- Tokyo
+- Tonga
+- Toronto
+- Toulouse
+- Trondheim
+- Tucson
+- Tuebingen Regbez
+- Tunisia
+- Turin
+- Turkey
+- Turkmenistan
+- Tuvalu
+- Tyne And Wear
+- Uganda
+- Ukraine
+- Ulanbator
+- Ulm
+- Unterfranken
+- Ural Fed District
+- Uruguay
+- Us Midwest
+- Us Northeast
+- Us Pacific
+- Us South
+- Us West
+- Usa
+- Usedom
+- Utah
+- Utrecht
+- Utrecht
+- Uzbekistan
+- Valencia
+- Vancouver
+- Vanuatu
+- Venezuela
+- Vermont
+- Victoria
+- Vietnam
+- Virginia
+- Volga Fed District
+- Wales
+- Wallis-Et-Futuna
+- Warenmueritz
+- Warminsko Mazurskie
+- Warsaw
+- Warwickshire
+- Washington
+- Washingtondc
+- Waterloo
+- West Midlands
+- West Sussex
+- West Virginia
+- West Yorkshire
+- Wielkopolskie
+- Wien
+- Wiltshire
+- Wisconsin
+- Worcestershire
+- Wroclaw
+- Wuerzburg
+- Wuppertal
+- Wyoming
+- Yemen
+- Yukon
+- Zachodniopomorskie
+- Zagreb
+- Zambia
+- Zeeland
+- Zimbabwe
+- Zuerich
+- Zuid Holland
+
+..  Geofabrik: https://download.geofabrik.de/
+..  BBBike: https://download.bbbike.org/osm/bbbike/
+..  PyrOSM: https://pyrosm.readthedocs.io/en/latest/basics.html#protobuf-file-what-is-it-and-how-to-get-one

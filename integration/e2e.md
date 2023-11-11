@@ -75,3 +75,62 @@ docker run --rm --network brokenspoke-analyzer_default -u $(id -u):$(id -g) -v .
 ## Might be useful later
 
 - <https://stackoverflow.com/questions/55977611/how-to-connect-docker-compose-to-container-network-and-localhost-network>
+
+## JSON
+
+```json
+[
+  {
+    "country": "usa",
+    "city": "provincetown",
+    "region": "massachusetts",
+    "fips_code": "555535"
+  },
+  {
+    "country": "usa",
+    "city": "santa rosa",
+    "region": "new mexico",
+    "fips_code": "3570670"
+  },
+  {
+    "country": "usa",
+    "city": "crested butte",
+    "region": "colorado",
+    "fips_code": "818310"
+  },
+  { "country": "canada", "city": "ancienne-lorette", "region": "québec" },
+  {
+    "country": "usa",
+    "city": "st. louis park",
+    "region": "minnesota",
+    "fips_code": "2757220"
+  },
+  {
+    "country": "usa",
+    "city": "arcata",
+    "region": "california",
+    "fips_code": "602476"
+  },
+  {
+    "country": "usa",
+    "city": "rehoboth beach",
+    "region": "delaware",
+    "fips_code": "1060290"
+  },
+  { "country": "australia", "city": "orange", "region": "new south wales" },
+  {
+    "country": "usa",
+    "city": "cañon city",
+    "region": "colorado",
+    "fips_code": "0811810"
+  },
+  { "country": "spain", "city": "valencia", "region": "valencia" },
+  { "country": "france", "city": "chambéry", "region": "savoie" },
+  {
+    "country": "usa",
+    "city": "flagstaff",
+    "region": "arizona",
+    "fips_code": "0423620"
+  }
+]
+```
