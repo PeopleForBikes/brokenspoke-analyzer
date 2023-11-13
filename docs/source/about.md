@@ -1,0 +1,93 @@
+# About
+
+The Brokenspoke-Analyzer is an open source tool that streamlines running People
+for Bikes' “Bicycle Network Analysis” locally and on cloud resources. For the
+user, it simplifies the process of preparing datasets, setting up PostGIS
+databases, running analyses, and exporting results through a command line
+interface (CLI).
+
+## How does it work?
+
+An analysis is composed of a few steps:
+
+1. Collect the data required for the analysis
+2. Import the data into a database
+3. Run the computation on the data
+4. Export the results to usable formats, like Shapefile, GeoJSON or CSV
+
+The brokenspoke-analyzer acts as a sort of orchestrator. The heavy lifting is
+done by PostgreSQL/PostGIS. Step 3 is where most of the magic happens. The
+computation part is done by running hundreds of SQL queries against PostGIS.
+
+The CLI allows the user to run all steps, or just some of them depending on the
+user's needs.
+
+The architecture of the “Bicycle Network Analysis” is shown below. However, not
+all components are necessarily active all the time. Some components are only
+created for certain steps.
+
+```{figure} _static/brokenspoke-analyzer-architecture.svg
+:alt: Brokenspoke-analyzer Architecture
+:width: 800px
+:align: center
+
+Brokenspoke-analyzer Architecture, commands shown in **bold**.
+```
+
+In the **prepare** step shown in the diagram, the data required for the analysis
+includes:
+
+- City Boundary Shapefile: The bicycle network analysis is limited to the area
+  described in this Shapefile.
+- City Boundary GeoJSON: A copy of the City Boundary Shapefile in GeoJSON
+  format.
+- OSM region file: OSM region file obtained from
+  [Geofabrik](https://download.geofabrik.de/) or
+  [BBike](https://download.bbbike.org/osm/bbbike). This typically corresponds to
+  the first-level administrative division of a country (state in the USA,
+  autonomous community in Spain, province in Canada, etc.).
+- OSM city file: A clipping of the OSM region corresponding to the area within
+  the city boundary. This file is generated using
+  [Osmium Tool](https://osmcode.org/osmium-tool/) and the bicycle network
+  analysis runs on this geographic area.
+- Census data: Population and employment data required for the analysis.
+- Speed limit data: Region and city roadway speed limit data required for the
+  analysis.
+
+More information on the **prepare** step and the data required is available in
+{doc}`workflow`.
+
+## Where to find the FIPS codes?
+
+## Using the Docker Compose environment
+
+A Docker [Compose file](https://) is provided with this project to simplify the
+setup.
+
+Using Compose is just a simpler way to run the PostGIS container with the right
+parameters (environment variables, network, volume, etc.).
+
+## Using brokenspoke-analyzer in the docker container
+
+Installing all the required GIS tool can be a complicated task, especially on
+Windows platforms.
+
+For this reason, we provide a Docker container that be used instead of the
+native tools.
+
+## Using an existing database instance
+
+If you would prefer to use an existing database, there is no problem with that.
+
+Here are the requirements:
+
+- PostgreSQL 13+
+- PostGIS 3.1+
+- Pgrouting
+- Plpython3
+- Enable the `uuid-ossp` and `plpython3u` extensions.
+- Create the `generated`, `received` and `scratch`, schemas and make sure the
+  user has the authorization to access them
+
+> Note: We should provide a command which only creates the schemas and
+> extensions required.

@@ -12,14 +12,48 @@ and this project adheres to
 
 ### Added
 
-- Add Python scripts for code originally written in Bash.
-- Add integration test suite.
-- Update the documentation to include new subcommands and features.
+- Add Python scripts for importing data into database and configuring database.
+  [#265]
+- Add download retrying capability. [#272]
+- Enable MyPy to ensure coherence between the various parameters passed from the
+  command line to the core modules. [#282]
+- Add Python scripts for computing the analysis. [#291]
+- Add Python scripts for exporting the results of the analysis using the calver
+  naming scheme. [#294]
+- Add the capability to package the application as a Docker container. [#301]
+- Add the `run` sub-command. [#305]
+- Add the `run-with` sub-command. [#310]
+- Add the `run-with compare` sub-command. [#315]
+- Add end-to-end testing for comparing the results between the brokenspokespoke
+  analyzer and the original BNA. [#316]
+- Add a new CI workflow to run end-to-end tests. [#321]
+- Add a feature to validate downloaded PBF OpenStreetMap files using md5
+  checksums and gzip files using the `gzip` package. [#329]
 
 ### Changed
 
-- Update and reorganize the CLI.
+- Update and reorganize the CLI. [#274]
+- Update the documentation. [#330]
 
+### Fixed
+
+- Various SQL-related fixes. [#320]
+
+[#265]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/265
+[#272]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/272
+[#274]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/274
+[#282]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/282
+[#291]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/291
+[#294]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/294
+[#301]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/301
+[#305]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/305
+[#310]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/310
+[#315]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/315
+[#316]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/316
+[#320]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/320
+[#321]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/321
+[#329]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/329
+[#330]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/330
 [2.0.0-alpha]:
   https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.0.0-alpha
 
