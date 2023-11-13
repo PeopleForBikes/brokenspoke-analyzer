@@ -14,7 +14,6 @@ and this project adheres to
 
 - Add Python scripts for importing data into database and configuring database.
   [#265]
-- Add download retrying capability. [#272]
 - Enable MyPy to ensure coherence between the various parameters passed from the
   command line to the core modules. [#282]
 - Add Python scripts for computing the analysis. [#291]
@@ -40,7 +39,6 @@ and this project adheres to
 - Various SQL-related fixes. [#320]
 
 [#265]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/265
-[#272]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/272
 [#274]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/274
 [#282]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/282
 [#291]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/291
