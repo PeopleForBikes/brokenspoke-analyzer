@@ -21,7 +21,7 @@ markdown-it-py==3.0.0
 mdurl==0.1.2
 multidict==6.0.4
 networkx==3.2.1
-numpy==1.26.1
+numpy==1.26.2
 osmnx==1.7.0
 packaging==23.2
 pandas==2.1.2
