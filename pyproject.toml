@@ -11,7 +11,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.10"
 aiohttp = "^3.8.6"
-boto3 = "^1.28.79"
+boto3 = "^1.28.85"
 geopandas = "^0.14.0"
 loguru = "^0.7.2"
 osmnx = "^1.6.0"
