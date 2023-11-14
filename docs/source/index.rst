@@ -14,7 +14,7 @@
    :maxdepth: 1
    :caption: GENERAL:
 
-   usage
+   about
    commands
    datasets
    workflow
