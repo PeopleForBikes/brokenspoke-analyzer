@@ -15,6 +15,7 @@ NON_US_STATE_ABBREV = "ZZ"
 
 
 def run(cmd: typing.Sequence[str]) -> None:
+    """Run a command and log the stdout/stderr at the trace level."""
     logger.debug(f"cmd={' '.join(cmd)}")
     p = subprocess.run(
         cmd,

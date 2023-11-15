@@ -1,3 +1,4 @@
+"""Define utility functions."""
 import gzip
 import hashlib
 import pathlib
@@ -67,6 +68,7 @@ def gunzip(
 
 
 def file_checksum_ok(osm_file: pathlib.Path, osm_file_md5: pathlib.Path) -> bool:
+    """Validate a file checksum."""
     BUF_SIZE = 65536
     HASH_SIZE = 32  # 128 bit MD5 hash
     md5 = hashlib.md5()
@@ -199,7 +201,6 @@ def compare_bna_results(
     output_csv: pathlib.Path,
 ) -> pd.DataFrame:
     """Compare the Brokenaspoke and the original BNA results."""
-
     brokenspoke_df = pd.read_csv(
         brokenspoke_scores, usecols=["score_id", "score_normalized"]
     )

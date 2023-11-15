@@ -1,3 +1,4 @@
+"""Defines the values shared amongst the CLI modules."""
 import pathlib
 import typing
 

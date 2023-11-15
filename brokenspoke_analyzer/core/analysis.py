@@ -64,9 +64,8 @@ def state_info(state: str) -> tuple[str, str]:
     The District of Columbia is also recognized as a state.
 
     Examples:
-
-    >>> assert ("TX", "48") = state_info("texas")
-    >>> assert ("DC", "11") = state_info("district of columbia")
+        >>> assert ("TX", "48") = state_info("texas")
+        >>> assert ("DC", "11") = state_info("district of columbia")
     """
     # Ensure DC is considered a US state.
     # https://github.com/unitedstates/python-us/issues/67
@@ -95,7 +94,7 @@ def derive_state_info(state: str | None) -> typing.Tuple[str, str, bool]:
     Derive state information.
 
     Returns the state abbreviation, the state fips, and whether the job
-    information can be retrieved from the census.
+    information can be retrieved from the US census.
 
     Examples:
         >>> assert ("TX", "48", True) == derive_state_info("texas")

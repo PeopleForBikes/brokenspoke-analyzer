@@ -1,3 +1,4 @@
+"""Define the export sub-command."""
 import pathlib
 
 import rich
