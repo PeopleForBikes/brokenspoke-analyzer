@@ -208,7 +208,7 @@ The following files will be created from the PostgreSQL tables:
 └── residential_speed_limit.csv
 ```
 
-### local
+### local-custom
 
 This sub-command exports the results to a local directory.
 
@@ -224,7 +224,7 @@ bna export local ~/bna/santa-rosa-new-mexico-usa
 
 The directories will be created if they do not exist.
 
-### local-calver
+### local
 
 This sub-command exports the results to a local directory created based on the
 PeopleForBikes convention and [calver] versioning.
@@ -247,6 +247,26 @@ like this:
 
 ```bash
 results
+└── usa
+    └── new mexico
+        └── santa rosa
+            └── 23.9
+              └── ...
+```
+
+### S3
+
+This sub-command exports the result into an AWS S3 bucket, respecting the calver
+representation.
+
+```bash
+Usage: bna export s3 [OPTIONS] BUCKET_NAME COUNTRY CITY [REGION]
+```
+
+Therefore the output is similar to the `local` export:
+
+```bash
+my_s3_bucket
 └── usa
     └── new mexico
         └── santa rosa

@@ -188,7 +188,7 @@ def import_neighborhood(
     # Ensure there are inhabitants within the boundaries.
     logger.info("Retrieving the population...")
     population = retrieve_population(engine)
-    logger.info(f"{population=}")
+    logger.debug(f"{population=}")
     if population == 0:
         raise ValueError("the population cannot be equal to zero")
 

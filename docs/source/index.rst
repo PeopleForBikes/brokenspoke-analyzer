@@ -16,7 +16,7 @@
 
    about
    commands
-   datasets
+   regions
    workflow
    resources
    CHANGELOG
