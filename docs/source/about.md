@@ -60,7 +60,7 @@ More information on the **prepare** step and the data required is available in
 ## Where to find the FIPS codes
 
 FIPS codes (Federal Information Processing Series) in the BNA are 7-digit codes
-which are a combitnation of a State FIPS code (2-digit) and a Place FIPS code
+which are a combination of a State FIPS code (2-digit) and a Place FIPS code
 (5-digit).
 
 For example Austin, TX FIPS code is `4805000`, where `48` is for the state of
