@@ -1,7 +1,4 @@
-"""
-Define the various functions that will be use to ingest the data required to
-perform the analysis.
-"""
+"""Define functions that will be use to ingest the data."""
 import pathlib
 import subprocess
 import typing
@@ -43,7 +40,7 @@ def import_and_transform_shapefile(
     output_srid: int,
     input_srid: typing.Optional[int] = ESPG_4326,
 ) -> None:
-    """Imports a shapefile into PostGIS with shp2pgsql."""
+    """Import a shapefile into PostGIS with shp2pgsql."""
     logger.info(f"Importing {shapefile} into {table} with SRID {input_srid}")
     database_url = engine.engine.url.set(drivername="postgresql").render_as_string(
         hide_password=False
@@ -522,6 +519,8 @@ def neighborhood_wrapper(
     buffer: int,
 ) -> None:
     """
+    Wrap the `import_neighborhood` .
+
     Wrap the `import_neighborhood` function to allow calling it with only parameters
     that cannot be computed.
     """
@@ -562,6 +561,8 @@ def jobs_wrapper(
     database_url: str, input_dir: pathlib.Path, state_abbreviation: str, lodes_year: int
 ) -> None:
     """
+    Wrap the `import_jobs` function.
+
     Wrap the `import_jobs` function to allow calling it with only parameters that cannot
     be computed.
     """
@@ -586,6 +587,8 @@ def osm_wrapper(
     fips_code: str,
 ) -> None:
     """
+    Wrap the `import_osm_data` function.
+
     Wrap the `import_osm_data` function to allow calling it with only parameters that
     cannot be computed.
     """
@@ -633,6 +636,8 @@ def all_wrapper(
     buffer: int = common.DEFAULT_BUFFER,
 ) -> None:
     """
+    Wrap the all the `import_*` functions.
+
     Wrap the all the `import_*` functions to allow calling them with only parameters
     that cannot be computed.
     """

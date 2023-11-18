@@ -90,24 +90,20 @@ def configure_db(engine: Engine, cores: int, memory_mb: int, pguser: str) -> Non
 
     This function is idempotent.
     """
-    # The statements must be executed one by one. If batched, the following exception is
-    # raised:
-    #   sqlalchemy.exc.InternalError: (psycopg.errors.ActiveSqlTransaction)
-    #   ALTER SYSTEM cannot run inside a transaction block
     configure_system(engine, cores, memory_mb)
     configure_extensions(engine)
     configure_schemas(engine, pguser)
 
 
 def configure_docker_db(engine: Engine) -> None:
-    """Configure a database running in a Docker."""
-    docker_info = runner.run_docker_info()
-    docker_cores = docker_info["NCPU"]
-    docker_memory_mb = docker_info["MemTotal"] // (1024**2)
+    """Configure a database running in Docker."""
     database_url = engine.engine.url
     pguser = database_url.username
     if not pguser:
         raise ValueError("postgresql user must be specified in the databsse engine URL")
+    docker_info = runner.run_docker_info()
+    docker_cores = docker_info["NCPU"]
+    docker_memory_mb = docker_info["MemTotal"] // (1024**2)
     configure_db(engine, docker_cores, docker_memory_mb, pguser)
 
 
@@ -151,7 +147,7 @@ def configure_system(engine: Engine, cores: int, memory_mb: int) -> None:
 
 
 def configure_extensions(engine: Engine) -> None:
-    """Configure the extensions required."""
+    """Configure the required extensions."""
     statements = [
         'CREATE EXTENSION IF NOT EXISTS "postgis";',
         'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";',
@@ -162,7 +158,7 @@ def configure_extensions(engine: Engine) -> None:
 
 
 def configure_schemas(engine: Engine, pguser: str) -> None:
-    """Configure the schemas"""
+    """Configure the schemas."""
     statements = [
         f"CREATE SCHEMA IF NOT EXISTS generated AUTHORIZATION {pguser};",
         f"CREATE SCHEMA IF NOT EXISTS received AUTHORIZATION {pguser};",

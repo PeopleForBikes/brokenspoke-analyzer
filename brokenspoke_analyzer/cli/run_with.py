@@ -1,3 +1,4 @@
+"""Define the run-with sub-command."""
 import pathlib
 import subprocess
 import typing
@@ -146,6 +147,7 @@ def compare(
     retries: common.Retries = common.DEFAULT_RETRIES,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
 ) -> pd.DataFrame:
+    """Run the analysis using the original BNA and teh brokenspoke-analyzer."""
     # Make mypy happy.
     if not output_dir:
         raise ValueError("`output_dir` must be set")

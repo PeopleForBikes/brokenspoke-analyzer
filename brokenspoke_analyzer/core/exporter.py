@@ -1,3 +1,4 @@
+"""Define functions to export the data to various destinations."""
 import pathlib
 import tempfile
 import typing
@@ -43,6 +44,8 @@ TABLE_CATALOG = {
 
 
 class Exporter(str, Enum):
+    """Define the available exporters."""
+
     none = "none"
     local = "local"
     s3 = "s3"
@@ -60,7 +63,7 @@ def export_to_csv(
 def export_to_geojson(
     export_dir: pathlib.Path, tables: typing.Sequence[str], database_url: str
 ) -> None:
-    """Export a list of PostGIS tables to GeoJSON files"""
+    """Export a list of PostGIS tables to GeoJSON files."""
     for table in tables:
         geojson_file = export_dir / f"{table}.geojson"
         runner.run_ogr2ogr_geojson_export(database_url, geojson_file, table)
@@ -80,7 +83,12 @@ def auto_export(
     tables: typing.Mapping[str, typing.Sequence[str]],
     database_url: str,
 ) -> None:
-    """Export PostgreSQL/PostGIS tables to their repective files."""
+    """
+    Export PostgreSQL/PostGIS tables to their repective files.
+
+    Regular tables are exported into CSV files. GIS tables are exported either
+    to geojson or sometimes shapefiles (or both).
+    """
     # Prepare the database connection.
     engine = dbcore.create_psycopg_engine(database_url)
 
@@ -105,15 +113,14 @@ def create_calver_directories(
     See https://calver.org/#scheme for more details.
 
     Examples:
-
     * usa/tx/austin/23.8
     * usa/tx/austin/23.12.2
     * spain/valencia/valencia/23.8
 
-    >>> today = date.today()
-    >>> calver = f"{today.strftime('%y')}.{today.month}"
-    >>> directory = create_calver_directories("usa", "austin", "tx")
-    >>> assert directory == pathlib.Path(f"usa/tx/austin/{calver}")
+        >>> today = date.today()
+        >>> calver = f"{today.strftime('%y')}.{today.month}"
+        >>> directory = create_calver_directories("usa", "austin", "tx")
+        >>> assert directory == pathlib.Path(f"usa/tx/austin/{calver}")
 
     """
     p = calver_base(country, city, region, date_override, base_dir)
@@ -168,11 +175,10 @@ def calver_revision(dirs: typing.Sequence[pathlib.Path]) -> int:
     Build the revision part of the calver path.
 
     Examples:
-
-    >>> dirs=[pathlib.Path('usa/new mexico/santa rosa/23.10')]
-    >>> assert calver_revision(dirs) == 1
-    >>> dirs.append(pathlib.Path('usa/new mexico/santa rosa/23.10.1'))
-    >>> assert calver_revision(dirs) == 2
+        >>> dirs=[pathlib.Path('usa/new mexico/santa rosa/23.10')]
+        >>> assert calver_revision(dirs) == 1
+        >>> dirs.append(pathlib.Path('usa/new mexico/santa rosa/23.10.1'))
+        >>> assert calver_revision(dirs) == 2
     """
     # Collect the directories with the suffixes.
     with_micro = [int(d.suffixes[-1][-1:]) for d in dirs if len(d.suffixes) == 2]

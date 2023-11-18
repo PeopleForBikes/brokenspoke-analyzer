@@ -95,6 +95,16 @@ markers = [
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.ruff]
+extend-exclude = ["brokenspoke_analyzer/pyrosm"]
+
+
+[tool.ruff.lint]
+select = ["D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
+
 [tool.mypy]
 strict = "true"
 

@@ -1,3 +1,4 @@
+"""Define the top-level commands."""
 import logging
 import pathlib
 import typing
@@ -33,7 +34,6 @@ from brokenspoke_analyzer.core.database import dbcore
 
 def _verbose_callback(value: int) -> None:
     """Configure the logger."""
-
     # Remove any predefined logger.
     logger.remove()
 

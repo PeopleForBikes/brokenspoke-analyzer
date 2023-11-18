@@ -1,3 +1,4 @@
+"""Define the import sub-command."""
 import typer
 from typing_extensions import Annotated
 

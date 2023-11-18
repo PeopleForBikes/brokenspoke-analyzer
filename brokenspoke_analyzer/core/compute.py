@@ -1,7 +1,10 @@
 """
+Define functions to run SQL scripts.
+
 Define functions to run the various SQL scripts performing the operations to
 compute the BNA scores.
 """
+
 import dataclasses
 import pathlib
 import typing
@@ -20,6 +23,7 @@ def execute_sqlfile_with_substitutions(
     sqlfile: pathlib.Path,
     bind_params: typing.Optional[typing.Mapping[str, typing.Any]] = None,
 ) -> None:
+    """Execute SQL statements with substitutions."""
     logger.debug(f"Execute {sqlfile}")
     logger.debug(f"{bind_params=}")
     statements = sqlfile.read_text()
@@ -38,7 +42,7 @@ def features(
     output_srid: int,
     boundary_buffer: int,
 ) -> None:
-    """Compute the BNA features"""
+    """Compute the BNA features."""
     sql_script_dir = sql_script_dir.resolve(strict=True)
     sql_feature_script_dir = sql_script_dir / "features"
 
@@ -94,7 +98,7 @@ def stress(
     state_default_speed: int | None,
     city_default_speed: int | None,
 ) -> None:
-    """Compute stress levels"""
+    """Compute stress levels."""
     sql_script_dir = sql_script_dir.resolve(strict=True)
     sql_stress_script_dir = sql_script_dir / "stress"
 
@@ -221,6 +225,8 @@ class Tolerance:
 
 @dataclasses.dataclass
 class PathConstraint:
+    """Define the Path Constraints."""
+
     # Minimum path length to be considered for recreation access.
     min_length: int = 4800
     # Minimum corner-to-corner span of path bounding box to be considered for
@@ -230,6 +236,8 @@ class PathConstraint:
 
 @dataclasses.dataclass
 class BlockRoad:
+    """Define the Block Road items."""
+
     # Buffer distance to find roads associated with a block.
     buffer: int = 15
     # Minimum length road must overlap with block buffer to be associated .
@@ -238,6 +246,8 @@ class BlockRoad:
 
 @dataclasses.dataclass
 class Score:
+    """Define the Score parts."""
+
     total: int = 100
     people: int = 15
     opportunity: int = 20
@@ -249,6 +259,8 @@ class Score:
 
 @dataclasses.dataclass
 class Access:
+    """Define the Access parts."""
+
     name: str
     first: float = 0.0
     second: float = 0.0

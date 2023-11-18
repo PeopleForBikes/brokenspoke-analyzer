@@ -171,7 +171,6 @@ def get_data(dataset, update=False, directory=None):
         Path to a directory where the PBF data will be downloaded.
         (does not apply for test data sets bundled with the package).
     """
-
     if not isinstance(dataset, str):
         raise ValueError(f"'dataset' should be text. Got {dataset}.")
     dataset = dataset.lower().strip()
