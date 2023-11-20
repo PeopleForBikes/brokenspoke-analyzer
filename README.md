@@ -26,20 +26,19 @@ Analysis” locally.
 
 ## Quickstart
 
-We recommend creating a virtual environment, but this is completely optional:
+We recommend using [Poetry](https://python-poetry.org/) for installing the tool
+and working in a virtual environment. Once you have Poetry set up:
 
 ```bash
-cd /tmp
-mkdir brokenspoke-analyzer
+git clone git@github.com:PeopleForBikes/brokenspoke-analyzer.git
 cd brokenspoke-analyzer
-python3 -m venv .venv
-source .venv/bin/activate
+poetry install
 ```
 
-Install the application using `pip`:
+Activate the virtual environment in the cloned folder by using:
 
 ```bash
-pip install git+https://github.com/PeopleForBikes/brokenspoke-analyzer@2.0.0-rc
+source .venv/bin/activate
 ```
 
 The simplest way to run an analysis is to use docker compose.
@@ -49,11 +48,11 @@ bna run-with compose usa "santa rosa" "new mexico" 3570670
 ```
 
 This command takes care of starting and stopping the PostgreSQL/PostGIS server,
-running all the analysis commands and exporting the results.
+running all the analysis commands, and exporting the results.
 
 The data required to perform the analysis will be saved in
 `data/santa-rosa-new-mexico-usa`, and the results exported in
-`data/santa-rosa-new-mexico-usa/results/usa/new mexico/santa rosa/`
+`results/usa/new mexico/santa rosa/23.11`.
 
 For more details about the different ways to run an analysis and how to adjust
-the options, please refer to full documentation.
+the options, please refer to the full documentation.
