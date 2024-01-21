@@ -121,12 +121,11 @@ def create_calver_directories(
         >>> calver = f"{today.strftime('%y')}.{today.month}"
         >>> directory = create_calver_directories("usa", "austin", "tx")
         >>> assert directory == pathlib.Path(f"usa/tx/austin/{calver}")
-
     """
     p = calver_base(country, city, region, date_override, base_dir)
 
     # List all the directories with the same calver stem.
-    dirs = list(p.glob(f"{p.name}*"))
+    dirs = list(p.parent.glob(f"{p.name}*"))
 
     # If there is none, it means it is the first one.
     if not dirs:
