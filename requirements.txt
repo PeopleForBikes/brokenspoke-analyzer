@@ -12,7 +12,7 @@ cligj==0.7.2
 fiona==1.9.5
 frozenlist==1.4.1
 geopandas==0.14.0
-greenlet==3.0.1
+greenlet==3.0.3
 idna==3.6
 jellyfish==1.0.1
 jmespath==1.0.1
