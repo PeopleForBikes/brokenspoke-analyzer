@@ -2799,13 +2799,13 @@ files = [
 
 [[package]]
 name = "python-slugify"
-version = "8.0.1"
+version = "8.0.2"
 description = "A Python slugify application that also handles Unicode"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "python-slugify-8.0.1.tar.gz", hash = "sha256:ce0d46ddb668b3be82f4ed5e503dbc33dd815d83e2eb6824211310d3fb172a27"},
-    {file = "python_slugify-8.0.1-py2.py3-none-any.whl", hash = "sha256:70ca6ea68fe63ecc8fa4fcf00ae651fc8a5d02d93dcd12ae6d4fc7ca46c4d395"},
+    {file = "python-slugify-8.0.2.tar.gz", hash = "sha256:a1a02b127a95c124fd84f8f88be730e557fd823774bf19b1cd5e8704e2ae0e5e"},
+    {file = "python_slugify-8.0.2-py2.py3-none-any.whl", hash = "sha256:428ea9b00c977b8f6c097724398f190b2c18e2a6011094d1001285875ccacdbf"},
 ]
 
 [package.dependencies]
@@ -4391,4 +4391,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "82e3745f98833857eb19fde41ae4904a8e1e7eb1927412ad3a3cd75a9cdbce49"
+content-hash = "abf0f9fd4f4585443a5f17eec808c867249a8a4558d3c33f02ffbeb4edf1b07f"
