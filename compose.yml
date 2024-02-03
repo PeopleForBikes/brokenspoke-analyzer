@@ -1,7 +1,7 @@
 version: "3"
 services:
   postgres:
-    image: ghcr.io/rgreinho/docker-postgis-bna:13-3.1-1
+    image: ghcr.io/peopleforbikes/docker-postgis-bna:13-3.1-1
     shm_size: 1g
     environment:
         POSTGRES_PASSWORD: postgres
@@ -9,6 +9,12 @@ services:
         POSTGRESQL_USERNAME: bna
         POSTGRESQL_PASSWORD: bna
         POSTGRESQL_DATABASE: bna
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 60s
+      retries: 6
+      start_period: 10s
     ports:
       - 5432:5432
     volumes:
