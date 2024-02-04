@@ -1,4 +1,5 @@
 """Define the run-with sub-command."""
+
 import pathlib
 import subprocess
 import typing
@@ -51,13 +52,7 @@ def compose(
     """Manage Docker Compose when running the analysis."""
     database_url = "postgresql://postgres:postgres@localhost:5432/postgres"
     try:
-        subprocess.run(["docker", "compose", "up", "-d"], check=True)
-        subprocess.run(
-            f"until pg_isready -d {database_url}; do sleep 5; done",
-            shell=True,
-            check=True,
-            timeout=60,
-        )
+        subprocess.run(["docker", "compose", "up", "-d", "--wait"], check=True)
         configure.docker(database_url)
         export_dir_: typing.Optional[pathlib.Path] = run_(
             database_url=database_url,
