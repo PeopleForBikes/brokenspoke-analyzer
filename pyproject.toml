@@ -25,7 +25,7 @@ us = "^3.1.1"
 
 [tool.poetry.group.dev.dependencies]
 bpython = "^0.24"
-furo = "^2023.9.10"
+furo = "^2024.1.29"
 isort = "^5.11.3"
 jupyterlab = "^4.0.8"
 mypy = "^1.7.0"
