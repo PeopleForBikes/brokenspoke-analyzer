@@ -33,7 +33,7 @@ python-dotenv==1.0.1
 python-slugify==8.0.1
 pytz==2024.1
 requests==2.31.0
-rich==13.6.0
+rich==13.7.0
 s3transfer==0.10.0
 shapely==2.0.2
 six==1.16.0
