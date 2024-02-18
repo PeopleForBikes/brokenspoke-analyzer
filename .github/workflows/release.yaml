@@ -15,7 +15,7 @@ jobs:
   docker:
     uses: PeopleForBikes/.github/.github/workflows/docker-build-publish-ghcr.yml@main
     with:
-      push-to-ghcr: false
+      push-to-ghcr: true
       push-to-ecr: true
       aws-region: us-west-2
     secrets:
@@ -24,9 +24,9 @@ jobs:
   release-dist:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: Gr1N/setup-poetry@v8
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
+      - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
         with:
           python-version: "3.12"
           cache: "poetry"
