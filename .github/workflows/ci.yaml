@@ -7,40 +7,12 @@ on:
       - synchronize
       - reopened
 
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: extractions/setup-just@v1
-      - uses: ts-graphviz/setup-graphviz@v2
-      - uses: Gr1N/setup-poetry@v8
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.12"
-          cache: "poetry"
-      - name: Setup the project
-        run: poetry install
-      - name: Lint markdown files
-        run: just lint-md
-      - name: Lint Python files
-        run: just lint-python
-      - name: Lint the docs
-        run: just docs
+permissions:
+  # This is required for requesting the JWT.
+  id-token: write
+  # This is required for actions/checkout.
+  contents: read
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: extractions/setup-just@v1
-      - uses: Gr1N/setup-poetry@v8
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.12"
-          cache: "poetry"
-      - name: Setup host
-        run: poetry install
-      - name: Setup the project
-        run: poetry install
-      - name: Run the unit tests
-        run: just test
+jobs:
+  ci:
+    uses: PeopleForBikes/.github/.github/workflows/ci-python.yml@main
