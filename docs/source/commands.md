@@ -256,7 +256,7 @@ results
 
 ### S3
 
-This sub-command exports the result into an AWS S3 bucket, respecting the calver
+This sub-command exports the result to an AWS S3 bucket, respecting the calver
 representation.
 
 ```bash
@@ -272,6 +272,22 @@ my_s3_bucket
         └── santa rosa
             └── 23.9
               └── ...
+```
+
+### S3 Custom
+
+This sub-command exports the results to a custom AWS S3 bucket.
+
+```bash
+Usage: bna export s3-custom [OPTIONS] BUCKET_NAME S3_DIR
+```
+
+And the output could look like that:
+
+```bash
+my_s3_bucket
+└── usa-new mexico-santa rosa-23.9
+  └── ...
 ```
 
 ## Run

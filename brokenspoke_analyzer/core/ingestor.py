@@ -1,4 +1,5 @@
 """Define functions that will be use to ingest the data."""
+
 import pathlib
 import subprocess
 import typing

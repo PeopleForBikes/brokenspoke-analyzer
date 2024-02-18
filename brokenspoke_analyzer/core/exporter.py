@@ -1,4 +1,5 @@
 """Define functions to export the data to various destinations."""
+
 import pathlib
 import tempfile
 import typing
@@ -216,6 +217,18 @@ def create_calver_s3_directories(
     if matches:
         rev = calver_revision(matches)
         s3_dir = pathlib.Path(f"{s3_dir}.{rev}/")
+
+    # Create the folder in the bucket.
+    bucket.put_object(Body="", Key=f"{s3_dir}/")
+
+    return s3_dir
+
+
+def s3_directories(bucket_name: str, s3_dir: pathlib.Path) -> pathlib.Path:
+    """Create a custom directory in the S3 bucket."""
+    # Initialize the S3 client.
+    s3 = boto3.resource("s3")
+    bucket = s3.Bucket(bucket_name)
 
     # Create the folder in the bucket.
     bucket.put_object(Body="", Key=f"{s3_dir}/")

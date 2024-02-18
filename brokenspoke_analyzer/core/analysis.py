@@ -1,4 +1,5 @@
 """Define functions used to perform an analysis."""
+
 import os
 import pathlib
 import random

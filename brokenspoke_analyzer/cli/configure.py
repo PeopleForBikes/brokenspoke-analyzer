@@ -1,4 +1,5 @@
 """Define the configure subcommand."""
+
 import rich
 import typer
 from typing_extensions import Annotated

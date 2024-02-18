@@ -1,4 +1,5 @@
 """Define the export sub-command."""
+
 import pathlib
 
 import rich
@@ -26,7 +27,7 @@ def s3(
     city: common.City,
     region: common.Region = None,
 ) -> pathlib.Path:
-    """Export results to S3."""
+    """Export results to a S3 bucket following the PFB calver convention."""
     with console.status("[bold green]Uploading results to AWS S3..."):
         folder = exporter.create_calver_s3_directories(
             bucket_name, country, city, region
@@ -36,11 +37,24 @@ def s3(
 
 
 @app.command()
+def s3_custom(
+    database_url: common.DatabaseURL,
+    bucket_name: str,
+    s3_dir: pathlib.Path,
+) -> pathlib.Path:
+    """Export results to a custom S3 bucket."""
+    with console.status("[bold green]Uploading results to AWS S3..."):
+        folder = exporter.s3_directories(bucket_name, s3_dir)
+        exporter.s3(database_url, bucket_name, folder)
+        return folder
+
+
+@app.command()
 def local_custom(
     database_url: common.DatabaseURL,
     export_dir: common.ExportDirArg,
 ) -> None:
-    """Export results into a custom directory."""
+    """Export results to a custom directory."""
     _local(database_url=database_url, export_dir=export_dir)
 
 
@@ -52,7 +66,7 @@ def local(
     region: common.Region = None,
     export_dir: common.ExportDirArg = common.DEFAULT_EXPORT_DIR,
 ) -> pathlib.Path:
-    """Export results into a directory following the PFB calver convention."""
+    """Export results to a directory following the PFB calver convention."""
     dir_ = exporter.create_calver_directories(
         country, city, region, base_dir=export_dir
     )
