@@ -2,11 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to
-[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog], and this project adheres to [Semantic
+Versioning].
 
 ## [Unreleased]
+
+## [2.0.0] - 2024-02-19
+
+We are incredibly proud to announce the release of version 2.0.0 of the
+brokenspoke-analyzer, a significant milestone marking a comprehensive overhaul
+of the original Bicycle Network Analyzer.
+
+In the process of rewriting the original tool, and incorporating it into the
+brokenspoke-analyzer, a myriad of changes and improvements were implemented to
+enhance its functionality and performance.
+
+However, given the extensive nature of these modifications, providing a detailed
+changelog for every feature proved impractical and overwhelming.
+
+Instead, the decision was made to focus on the overarching shift from Bash to
+Python in the changelog, emphasizing the fundamental improvements and the
+migration to a more robust programming language.
+
+Moving forward, a commitment has been made to maintain a comprehensive and
+up-to-date changelog, ensuring that all future enhancements and features will be
+meticulously documented to provide transparency and facilitate user
+understanding.
+
+[2.0.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.0.0
 
 ## [2.0.0-alpha] - 2023-09-16
 
@@ -52,8 +75,7 @@ and this project adheres to
 [#321]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/321
 [#329]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/329
 [#330]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/330
-[2.0.0-alpha]:
-  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.0.0-alpha
+[2.0.0-alpha]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.0.0-alpha
 
 ## [1.3.0] - 2023-08-20
 
@@ -90,8 +112,7 @@ and this project adheres to
 [#240]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/240
 [#259]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/259
 [#272]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/272
-[1.3.0]:
-  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.3.0
+[1.3.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.3.0
 
 ## [1.2.1] - 2023-06-18
 
@@ -102,8 +123,7 @@ and this project adheres to
 
 [#205]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/205
 [#206]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/206
-[1.2.1]:
-  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.2.1
+[1.2.1]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.2.1
 
 ## [1.2.0] - 2023-06-14
 
@@ -123,8 +143,7 @@ and this project adheres to
 [#152]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/152
 [#190]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/190
 [#191]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/191
-[1.2.0]:
-  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.2.0
+[1.2.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.2.0
 
 ## [1.1.0] - 2022-10-08
 
@@ -137,15 +156,13 @@ and this project adheres to
 - Updated the analyzer image to 0.16.1. [#52]
 
 [#52]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/52
-[1.1.0]:
-  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.1.0
+[1.1.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.1.0
 
 ## [1.0.0] - 2022-08-14
 
 First stable version.
 
-[1.0.0]:
-  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0
+[1.0.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0
 
 ## [1.0.0-rc.1] - 2022-08-07
 
@@ -155,5 +172,6 @@ the world (although the analyzer will fail for some of them).
 The tool is still a bit rough on the edges, that is why this is a release
 candidate, but the quirks will be ironned out for 1.0.0.
 
-[1.0.0-rc.1]:
-  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0-rc.1
+[1.0.0-rc.1]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0-rc.1
+[Keep a Changelog]: https://keepachangelog.com/en/1.0.0/
+[Semantic Versioning]: https://semver.org/spec/v2.0.0.html
