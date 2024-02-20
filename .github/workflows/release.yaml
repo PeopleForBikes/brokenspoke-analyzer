@@ -6,7 +6,11 @@ on:
       - "[0-9]+.[0-9]+.[0-9]+"
 
 permissions:
-  contents: write
+  # This is required for requesting the JWT.
+  id-token: write
+  # This is required for actions/checkout.
+  contents: read
+  # this is required to publish the packages..
   packages: write
 
 jobs:
