@@ -1,4 +1,4 @@
-FROM python:3.11.5-slim-bookworm AS builder
+FROM python:3.12.2-slim-bookworm AS builder
 
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -13,11 +13,12 @@ RUN apt-get update \
 WORKDIR /usr/src/app
 COPY . .
 RUN poetry self update \
+  && poetry export -f requirements.txt --output requirements.txt \
   && mkdir -p deps \
   && pip wheel -r requirements.txt -w deps \
   && poetry build -f wheel
 
-FROM python:3.11.5-slim-bookworm
+FROM python:3.12.2-slim-bookworm
 LABEL author="PeopleForBikes" \
   maintainer="BNA Mechanics - https://peopleforbikes.github.io" \
   org.opencontainers.image.description="Run a BNA analysis locally." \
