@@ -14,9 +14,9 @@
    :maxdepth: 1
    :caption: GENERAL:
 
-   usage
+   about
    commands
-   datasets
+   regions
    workflow
    resources
    CHANGELOG

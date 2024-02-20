@@ -1,0 +1,1018 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Preparation Workflow" href="workflow.html" /><link rel="prev" title="Commands" href="commands.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+        <title>Regions - Brokenspoke Analyzer 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  --color-foreground-primary: #8B8A8D;
+  --color-foreground-secondary: #009EDB;
+  --color-foreground-muted: #D71920;
+  --color-foreground-border: #878787;
+  --color-background-primary: #fcfaf6;
+  --color-background-secondary: #fcfaf6;
+  --color-background-hover: #effaffff;
+  --color-background-hover--transparent: #effaff00;
+  --color-background-border: #eeebee;
+  --color-background-item: #ccc;
+  --color-brand-primary: #009EDB;
+  --color-brand-content: #8B8A8D;
+  --font-stack: Montserrat, "Open Sans", Helvetica, Arial, sans-serif;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-foreground-primary: #8B8A8D;
+  --color-foreground-secondary: #009EDB;
+  --color-foreground-muted: #D71920;
+  --color-foreground-border: 878787;
+  --color-background-primary: #00263E;
+  --color-background-secondary: #00263E;
+  --color-background-hover: #1e2124ff;
+  --color-background-hover--transparent: #1e212400;
+  --color-background-border: #8B8A8D;
+  --color-background-item: #ccc;
+  --color-brand-primary: #009EDB;
+  --color-brand-content: #009EDB;
+  --font-stack: Montserrat, "Open Sans", Helvetica, Arial, sans-serif;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-foreground-primary: #8B8A8D;
+  --color-foreground-secondary: #009EDB;
+  --color-foreground-muted: #D71920;
+  --color-foreground-border: 878787;
+  --color-background-primary: #00263E;
+  --color-background-secondary: #00263E;
+  --color-background-hover: #1e2124ff;
+  --color-background-hover--transparent: #1e212400;
+  --color-background-border: #8B8A8D;
+  --color-background-item: #ccc;
+  --color-brand-primary: #009EDB;
+  --color-brand-content: #009EDB;
+  --font-stack: Montserrat, "Open Sans", Helvetica, Arial, sans-serif;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">Brokenspoke Analyzer 2.0.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.0.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">GENERAL:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commands.html">Commands</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Regions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Preparation Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">DEVELOPMENT:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="code-of-conduct.html">Community Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CONTRIBUTING.html">Contributing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/brokenspoke_analyzer.html">brokenspoke_analyzer package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of brokenspoke_analyzer package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/brokenspoke_analyzer.core.html">brokenspoke_analyzer.core package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of brokenspoke_analyzer.core package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/brokenspoke_analyzer.core.analysis.html">brokenspoke_analyzer.core.analysis module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/brokenspoke_analyzer.core.compute.html">brokenspoke_analyzer.core.compute module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/brokenspoke_analyzer.core.downloader.html">brokenspoke_analyzer.core.downloader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/brokenspoke_analyzer.core.exporter.html">brokenspoke_analyzer.core.exporter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/brokenspoke_analyzer.core.ingestor.html">brokenspoke_analyzer.core.ingestor module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/brokenspoke_analyzer.core.runner.html">brokenspoke_analyzer.core.runner module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/brokenspoke_analyzer.core.utils.html">brokenspoke_analyzer.core.utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/brokenspoke_analyzer.core.database.html">brokenspoke_analyzer.core.database package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of brokenspoke_analyzer.core.database package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/brokenspoke_analyzer.core.database.dbcore.html">brokenspoke_analyzer.core.database.dbcore package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="regions">
+<h1>Regions<a class="headerlink" href="#regions" title="Link to this heading">#</a></h1>
+<p>The brokenspoke-analyzer aims at simplifying the process to run analysis
+locally. In an effort to do so, it will automatically retrieve OSM files of the
+region where a city to analyze is located.</p>
+<p>A region can be a full continent, like <code class="docutils literal notranslate"><span class="pre">europe</span></code>, or a country like <code class="docutils literal notranslate"><span class="pre">spain</span></code>,
+but in order to speed up the operations, it is advised to target precisely the
+city’s area when possible.</p>
+<p>For instance, in the US, the region should be a state, in Canada it should be a
+province, in France it should be a region, in Spain it should be a community.
+In some cases, the region can even be the city itself like <code class="docutils literal notranslate"><span class="pre">paris</span></code> or <code class="docutils literal notranslate"><span class="pre">madrid</span></code>.</p>
+<p>The datasets are coming from either <cite>Geofabrik</cite>  or <cite>BBBike</cite> , using the
+<cite>PyrOSM</cite>  library.</p>
+<p>There are currently almost 700 regions available:</p>
+<ul class="simple">
+<li><p>Aachen</p></li>
+<li><p>Aarhus</p></li>
+<li><p>Adelaide</p></li>
+<li><p>Afghanistan</p></li>
+<li><p>Alabama</p></li>
+<li><p>Alaska</p></li>
+<li><p>Albania</p></li>
+<li><p>Alberta</p></li>
+<li><p>Albuquerque</p></li>
+<li><p>Alexandria</p></li>
+<li><p>Algeria</p></li>
+<li><p>Alsace</p></li>
+<li><p>Amsterdam</p></li>
+<li><p>Andalucía</p></li>
+<li><p>Andorra</p></li>
+<li><p>Angola</p></li>
+<li><p>Antarctica</p></li>
+<li><p>Antwerpen</p></li>
+<li><p>Aquitaine</p></li>
+<li><p>Aragón</p></li>
+<li><p>Argentina</p></li>
+<li><p>Arizona</p></li>
+<li><p>Arkansas</p></li>
+<li><p>Armenia</p></li>
+<li><p>Arnhem</p></li>
+<li><p>Arnsberg Regbez</p></li>
+<li><p>Asturias</p></li>
+<li><p>Auckland</p></li>
+<li><p>Augsburg</p></li>
+<li><p>Austin</p></li>
+<li><p>Australia</p></li>
+<li><p>Austria</p></li>
+<li><p>Auvergne</p></li>
+<li><p>Azerbaijan</p></li>
+<li><p>Azores</p></li>
+<li><p>Baden Wuerttemberg</p></li>
+<li><p>Baghdad</p></li>
+<li><p>Bahamas</p></li>
+<li><p>Baku</p></li>
+<li><p>Balaton</p></li>
+<li><p>Bamberg</p></li>
+<li><p>Bangkok</p></li>
+<li><p>Bangladesh</p></li>
+<li><p>Barcelona</p></li>
+<li><p>Basel</p></li>
+<li><p>Basse Normandie</p></li>
+<li><p>Bayern</p></li>
+<li><p>Bedfordshire</p></li>
+<li><p>Beijing</p></li>
+<li><p>Beirut</p></li>
+<li><p>Belarus</p></li>
+<li><p>Belgium</p></li>
+<li><p>Belize</p></li>
+<li><p>Benin</p></li>
+<li><p>Berkeley</p></li>
+<li><p>Berkshire</p></li>
+<li><p>Berlin</p></li>
+<li><p>Bern</p></li>
+<li><p>Bhutan</p></li>
+<li><p>Bielefeld</p></li>
+<li><p>Birmingham</p></li>
+<li><p>Bochum</p></li>
+<li><p>Bogota</p></li>
+<li><p>Bolivia</p></li>
+<li><p>Bombay</p></li>
+<li><p>Bonn</p></li>
+<li><p>Bordeaux</p></li>
+<li><p>Bosnia Herzegovina</p></li>
+<li><p>Botswana</p></li>
+<li><p>Boulder</p></li>
+<li><p>Bourgogne</p></li>
+<li><p>Brandenburg</p></li>
+<li><p>Brandenburghavel</p></li>
+<li><p>Braunschweig</p></li>
+<li><p>Brazil</p></li>
+<li><p>Bremen</p></li>
+<li><p>Bremerhaven</p></li>
+<li><p>Bretagne</p></li>
+<li><p>Brisbane</p></li>
+<li><p>Bristol</p></li>
+<li><p>British Columbia</p></li>
+<li><p>Brno</p></li>
+<li><p>Bruegge</p></li>
+<li><p>Bruessel</p></li>
+<li><p>Buckinghamshire</p></li>
+<li><p>Budapest</p></li>
+<li><p>Buenosaires</p></li>
+<li><p>Bulgaria</p></li>
+<li><p>Burkina Faso</p></li>
+<li><p>Burundi</p></li>
+<li><p>Cairo</p></li>
+<li><p>Calgary</p></li>
+<li><p>California</p></li>
+<li><p>Cambodia</p></li>
+<li><p>Cambridge</p></li>
+<li><p>Cambridgema</p></li>
+<li><p>Cambridgeshire</p></li>
+<li><p>Cameroon</p></li>
+<li><p>Canada</p></li>
+<li><p>Canary Islands</p></li>
+<li><p>Canberra</p></li>
+<li><p>Cantabria</p></li>
+<li><p>Cape Verde</p></li>
+<li><p>Capetown</p></li>
+<li><p>Castilla Y León</p></li>
+<li><p>Castilla-La Mancha</p></li>
+<li><p>Cataluña</p></li>
+<li><p>Central African Republic</p></li>
+<li><p>Central Fed District</p></li>
+<li><p>Centre</p></li>
+<li><p>Centro</p></li>
+<li><p>Centro Oeste</p></li>
+<li><p>Ceuta</p></li>
+<li><p>Chad</p></li>
+<li><p>Champagne Ardenne</p></li>
+<li><p>Chemnitz</p></li>
+<li><p>Cheshire</p></li>
+<li><p>Chicago</p></li>
+<li><p>Chile</p></li>
+<li><p>China</p></li>
+<li><p>Chubu</p></li>
+<li><p>Chugoku</p></li>
+<li><p>Clermontferrand</p></li>
+<li><p>Colmar</p></li>
+<li><p>Colombia</p></li>
+<li><p>Colorado</p></li>
+<li><p>Comores</p></li>
+<li><p>Congo Brazzaville</p></li>
+<li><p>Congo Democratic Republic</p></li>
+<li><p>Connecticut</p></li>
+<li><p>Cook Islands</p></li>
+<li><p>Copenhagen</p></li>
+<li><p>Cork</p></li>
+<li><p>Cornwall</p></li>
+<li><p>Corse</p></li>
+<li><p>Corsica</p></li>
+<li><p>Corvallis</p></li>
+<li><p>Costa-Rica</p></li>
+<li><p>Cottbus</p></li>
+<li><p>Cracow</p></li>
+<li><p>Craterlake</p></li>
+<li><p>Crimean Fed District</p></li>
+<li><p>Croatia</p></li>
+<li><p>Cuba</p></li>
+<li><p>Cumbria</p></li>
+<li><p>Curitiba</p></li>
+<li><p>Cusco</p></li>
+<li><p>Cyprus</p></li>
+<li><p>Czech Republic</p></li>
+<li><p>Dallas</p></li>
+<li><p>Darmstadt</p></li>
+<li><p>Davis</p></li>
+<li><p>Delaware</p></li>
+<li><p>Denhaag</p></li>
+<li><p>Denmark</p></li>
+<li><p>Denver</p></li>
+<li><p>Derbyshire</p></li>
+<li><p>Dessau</p></li>
+<li><p>Detmold Regbez</p></li>
+<li><p>Devon</p></li>
+<li><p>District Of Columbia</p></li>
+<li><p>Djibouti</p></li>
+<li><p>Dolnoslaskie</p></li>
+<li><p>Dorset</p></li>
+<li><p>Dortmund</p></li>
+<li><p>Drenthe</p></li>
+<li><p>Dresden</p></li>
+<li><p>Dublin</p></li>
+<li><p>Duesseldorf</p></li>
+<li><p>Duesseldorf Regbez</p></li>
+<li><p>Duisburg</p></li>
+<li><p>Durham</p></li>
+<li><p>East Sussex</p></li>
+<li><p>East Yorkshire With Hull</p></li>
+<li><p>East-Timor</p></li>
+<li><p>Ecuador</p></li>
+<li><p>Edinburgh</p></li>
+<li><p>Egypt</p></li>
+<li><p>Eindhoven</p></li>
+<li><p>El-Salvador</p></li>
+<li><p>Emden</p></li>
+<li><p>England</p></li>
+<li><p>Equatorial Guinea</p></li>
+<li><p>Erfurt</p></li>
+<li><p>Eritrea</p></li>
+<li><p>Erlangen</p></li>
+<li><p>Essex</p></li>
+<li><p>Estonia</p></li>
+<li><p>Ethiopia</p></li>
+<li><p>Eugene</p></li>
+<li><p>Extremadura</p></li>
+<li><p>Far Eastern Fed District</p></li>
+<li><p>Faroe Islands</p></li>
+<li><p>Fiji</p></li>
+<li><p>Finland</p></li>
+<li><p>Flensburg</p></li>
+<li><p>Flevoland</p></li>
+<li><p>Florida</p></li>
+<li><p>Fortcollins</p></li>
+<li><p>France</p></li>
+<li><p>Franche Comte</p></li>
+<li><p>Frankfurt</p></li>
+<li><p>Frankfurtoder</p></li>
+<li><p>Freiburg</p></li>
+<li><p>Freiburg Regbez</p></li>
+<li><p>Friesland</p></li>
+<li><p>Gabon</p></li>
+<li><p>Galicia</p></li>
+<li><p>Gcc States</p></li>
+<li><p>Gdansk</p></li>
+<li><p>Gelderland</p></li>
+<li><p>Genf</p></li>
+<li><p>Gent</p></li>
+<li><p>Georgia</p></li>
+<li><p>Georgia</p></li>
+<li><p>Gera</p></li>
+<li><p>Germany</p></li>
+<li><p>Ghana</p></li>
+<li><p>Glasgow</p></li>
+<li><p>Gliwice</p></li>
+<li><p>Gloucestershire</p></li>
+<li><p>Goerlitz</p></li>
+<li><p>Goeteborg</p></li>
+<li><p>Goettingen</p></li>
+<li><p>Graz</p></li>
+<li><p>Great Britain</p></li>
+<li><p>Greater London</p></li>
+<li><p>Greater Manchester</p></li>
+<li><p>Greece</p></li>
+<li><p>Greenland</p></li>
+<li><p>Groningen</p></li>
+<li><p>Guadeloupe</p></li>
+<li><p>Guatemala</p></li>
+<li><p>Guinea</p></li>
+<li><p>Guinea Bissau</p></li>
+<li><p>Guyane</p></li>
+<li><p>Haiti And Domrep</p></li>
+<li><p>Halifax</p></li>
+<li><p>Halle</p></li>
+<li><p>Hamburg</p></li>
+<li><p>Hamm</p></li>
+<li><p>Hampshire</p></li>
+<li><p>Hannover</p></li>
+<li><p>Haute Normandie</p></li>
+<li><p>Hawaii</p></li>
+<li><p>Heilbronn</p></li>
+<li><p>Helsinki</p></li>
+<li><p>Hertfordshire</p></li>
+<li><p>Hertogenbosch</p></li>
+<li><p>Hessen</p></li>
+<li><p>Hokkaido</p></li>
+<li><p>Honduras</p></li>
+<li><p>Hungary</p></li>
+<li><p>Huntsville</p></li>
+<li><p>Iceland</p></li>
+<li><p>Idaho</p></li>
+<li><p>Ile De France</p></li>
+<li><p>Ile-De-Clipperton</p></li>
+<li><p>Illinois</p></li>
+<li><p>India</p></li>
+<li><p>Indiana</p></li>
+<li><p>Indonesia</p></li>
+<li><p>Innsbruck</p></li>
+<li><p>Iowa</p></li>
+<li><p>Iran</p></li>
+<li><p>Iraq</p></li>
+<li><p>Ireland And Northern Ireland</p></li>
+<li><p>Islas Baleares</p></li>
+<li><p>Isle Of Man</p></li>
+<li><p>Isle Of Wight</p></li>
+<li><p>Isole</p></li>
+<li><p>Israel And Palestine</p></li>
+<li><p>Istanbul</p></li>
+<li><p>Italy</p></li>
+<li><p>Ivory Coast</p></li>
+<li><p>Jamaica</p></li>
+<li><p>Japan</p></li>
+<li><p>Jena</p></li>
+<li><p>Jerusalem</p></li>
+<li><p>Johannesburg</p></li>
+<li><p>Jordan</p></li>
+<li><p>Kaiserslautern</p></li>
+<li><p>Kaliningrad</p></li>
+<li><p>Kansai</p></li>
+<li><p>Kansas</p></li>
+<li><p>Kanto</p></li>
+<li><p>Karlsruhe</p></li>
+<li><p>Karlsruhe Regbez</p></li>
+<li><p>Kassel</p></li>
+<li><p>Katowice</p></li>
+<li><p>Kaunas</p></li>
+<li><p>Kazakhstan</p></li>
+<li><p>Kent</p></li>
+<li><p>Kentucky</p></li>
+<li><p>Kenya</p></li>
+<li><p>Kiel</p></li>
+<li><p>Kiew</p></li>
+<li><p>Kiribati</p></li>
+<li><p>Koblenz</p></li>
+<li><p>Koeln</p></li>
+<li><p>Koeln Regbez</p></li>
+<li><p>Konstanz</p></li>
+<li><p>Kosovo</p></li>
+<li><p>Kujawsko Pomorskie</p></li>
+<li><p>Kyrgyzstan</p></li>
+<li><p>Kyushu</p></li>
+<li><p>La Rioja</p></li>
+<li><p>Lakegarda</p></li>
+<li><p>Lancashire</p></li>
+<li><p>Languedoc Roussillon</p></li>
+<li><p>Laos</p></li>
+<li><p>Lapaz</p></li>
+<li><p>Laplata</p></li>
+<li><p>Latvia</p></li>
+<li><p>Lausanne</p></li>
+<li><p>Lebanon</p></li>
+<li><p>Leeds</p></li>
+<li><p>Leicestershire</p></li>
+<li><p>Leipzig</p></li>
+<li><p>Lesotho</p></li>
+<li><p>Liberia</p></li>
+<li><p>Libya</p></li>
+<li><p>Liechtenstein</p></li>
+<li><p>Lima</p></li>
+<li><p>Limburg</p></li>
+<li><p>Limousin</p></li>
+<li><p>Lincolnshire</p></li>
+<li><p>Linz</p></li>
+<li><p>Lisbon</p></li>
+<li><p>Lithuania</p></li>
+<li><p>Liverpool</p></li>
+<li><p>Ljubljana</p></li>
+<li><p>Lodz</p></li>
+<li><p>Lodzkie</p></li>
+<li><p>London</p></li>
+<li><p>Lorraine</p></li>
+<li><p>Louisiana</p></li>
+<li><p>Lubelskie</p></li>
+<li><p>Lubuskie</p></li>
+<li><p>Luebeck</p></li>
+<li><p>Luxembourg</p></li>
+<li><p>Luxemburg</p></li>
+<li><p>Lyon</p></li>
+<li><p>Maastricht</p></li>
+<li><p>Macedonia</p></li>
+<li><p>Madagascar</p></li>
+<li><p>Madison</p></li>
+<li><p>Madrid</p></li>
+<li><p>Magdeburg</p></li>
+<li><p>Maine</p></li>
+<li><p>Mainz</p></li>
+<li><p>Malawi</p></li>
+<li><p>Malaysia Singapore Brunei</p></li>
+<li><p>Maldives</p></li>
+<li><p>Mali</p></li>
+<li><p>Malmoe</p></li>
+<li><p>Malopolskie</p></li>
+<li><p>Malta</p></li>
+<li><p>Manchester</p></li>
+<li><p>Manitoba</p></li>
+<li><p>Mannheim</p></li>
+<li><p>Marseille</p></li>
+<li><p>Marshall Islands</p></li>
+<li><p>Martinique</p></li>
+<li><p>Maryland</p></li>
+<li><p>Massachusetts</p></li>
+<li><p>Mauritania</p></li>
+<li><p>Mauritius</p></li>
+<li><p>Mayotte</p></li>
+<li><p>Mazowieckie</p></li>
+<li><p>Mecklenburg Vorpommern</p></li>
+<li><p>Melbourne</p></li>
+<li><p>Melilla</p></li>
+<li><p>Memphis</p></li>
+<li><p>Merseyside</p></li>
+<li><p>Mexico</p></li>
+<li><p>Mexicocity</p></li>
+<li><p>Miami</p></li>
+<li><p>Michigan</p></li>
+<li><p>Micronesia</p></li>
+<li><p>Midi Pyrenees</p></li>
+<li><p>Minnesota</p></li>
+<li><p>Mississippi</p></li>
+<li><p>Missouri</p></li>
+<li><p>Mittelfranken</p></li>
+<li><p>Moenchengladbach</p></li>
+<li><p>Moldova</p></li>
+<li><p>Monaco</p></li>
+<li><p>Mongolia</p></li>
+<li><p>Montana</p></li>
+<li><p>Montenegro</p></li>
+<li><p>Montevideo</p></li>
+<li><p>Montpellier</p></li>
+<li><p>Montreal</p></li>
+<li><p>Morocco</p></li>
+<li><p>Moscow</p></li>
+<li><p>Mozambique</p></li>
+<li><p>Muenchen</p></li>
+<li><p>Muenster</p></li>
+<li><p>Muenster Regbez</p></li>
+<li><p>Murcia</p></li>
+<li><p>Myanmar</p></li>
+<li><p>Namibia</p></li>
+<li><p>Nauru</p></li>
+<li><p>Navarra</p></li>
+<li><p>Nebraska</p></li>
+<li><p>Nepal</p></li>
+<li><p>Netherlands</p></li>
+<li><p>Nevada</p></li>
+<li><p>New Brunswick</p></li>
+<li><p>New Caledonia</p></li>
+<li><p>New Hampshire</p></li>
+<li><p>New Jersey</p></li>
+<li><p>New Mexico</p></li>
+<li><p>New York</p></li>
+<li><p>New Zealand</p></li>
+<li><p>Newdelhi</p></li>
+<li><p>New Foundland And Labrador</p></li>
+<li><p>New Orleans</p></li>
+<li><p>Newyorkcity</p></li>
+<li><p>Nicaragua</p></li>
+<li><p>Niederbayern</p></li>
+<li><p>Niedersachsen</p></li>
+<li><p>Niger</p></li>
+<li><p>Nigeria</p></li>
+<li><p>Niue</p></li>
+<li><p>Noord Brabant</p></li>
+<li><p>Noord Holland</p></li>
+<li><p>Nord Est</p></li>
+<li><p>Nord Ovest</p></li>
+<li><p>Nord Pas De Calais</p></li>
+<li><p>Nordeste</p></li>
+<li><p>Nordrhein Westfalen</p></li>
+<li><p>Norfolk</p></li>
+<li><p>Norte</p></li>
+<li><p>North Carolina</p></li>
+<li><p>North Caucasus Fed District</p></li>
+<li><p>North Dakota</p></li>
+<li><p>North Korea</p></li>
+<li><p>North Yorkshire</p></li>
+<li><p>Northamptonshire</p></li>
+<li><p>Northern California</p></li>
+<li><p>Northumberland</p></li>
+<li><p>Northwest Territories</p></li>
+<li><p>Northwestern Fed District</p></li>
+<li><p>Norway</p></li>
+<li><p>Nottinghamshire</p></li>
+<li><p>Nova Scotia</p></li>
+<li><p>Nuernberg</p></li>
+<li><p>Nunavut</p></li>
+<li><p>Oberbayern</p></li>
+<li><p>Oberfranken</p></li>
+<li><p>Oberpfalz</p></li>
+<li><p>Ohio</p></li>
+<li><p>Oklahoma</p></li>
+<li><p>Oldenburg</p></li>
+<li><p>Ontario</p></li>
+<li><p>Opolskie</p></li>
+<li><p>Oranienburg</p></li>
+<li><p>Oregon</p></li>
+<li><p>Orlando</p></li>
+<li><p>Oslo</p></li>
+<li><p>Osnabrueck</p></li>
+<li><p>Ostrava</p></li>
+<li><p>Ottawa</p></li>
+<li><p>Overijssel</p></li>
+<li><p>Oxfordshire</p></li>
+<li><p>Paderborn</p></li>
+<li><p>País Vasco</p></li>
+<li><p>Pakistan</p></li>
+<li><p>Palau</p></li>
+<li><p>Palma</p></li>
+<li><p>Paloalto</p></li>
+<li><p>Panama</p></li>
+<li><p>Papua New Guinea</p></li>
+<li><p>Paraguay</p></li>
+<li><p>Paris</p></li>
+<li><p>Pays De La Loire</p></li>
+<li><p>Pennsylvania</p></li>
+<li><p>Perth</p></li>
+<li><p>Peru</p></li>
+<li><p>Philadelphia</p></li>
+<li><p>Philippines</p></li>
+<li><p>Phnompenh</p></li>
+<li><p>Picardie</p></li>
+<li><p>Pitcairn-Islands</p></li>
+<li><p>Podkarpackie</p></li>
+<li><p>Podlaskie</p></li>
+<li><p>Poitou Charentes</p></li>
+<li><p>Poland</p></li>
+<li><p>Polynesie-Francaise</p></li>
+<li><p>Pomorskie</p></li>
+<li><p>Portland</p></li>
+<li><p>Portlandme</p></li>
+<li><p>Porto</p></li>
+<li><p>Portoalegre</p></li>
+<li><p>Portugal</p></li>
+<li><p>Potsdam</p></li>
+<li><p>Poznan</p></li>
+<li><p>Prag</p></li>
+<li><p>Prince Edward Island</p></li>
+<li><p>Provence Alpes Cote D Azur</p></li>
+<li><p>Providence</p></li>
+<li><p>Puerto Rico</p></li>
+<li><p>Quebec</p></li>
+<li><p>Regensburg</p></li>
+<li><p>Reunion</p></li>
+<li><p>Rheinland Pfalz</p></li>
+<li><p>Rhode Island</p></li>
+<li><p>Rhone Alpes</p></li>
+<li><p>Riga</p></li>
+<li><p>Riodejaneiro</p></li>
+<li><p>Romania</p></li>
+<li><p>Rostock</p></li>
+<li><p>Rotterdam</p></li>
+<li><p>Ruegen</p></li>
+<li><p>Russia</p></li>
+<li><p>Rutland</p></li>
+<li><p>Rwanda</p></li>
+<li><p>Saarbruecken</p></li>
+<li><p>Saarland</p></li>
+<li><p>Sachsen</p></li>
+<li><p>Sachsen Anhalt</p></li>
+<li><p>Sacramento</p></li>
+<li><p>Saigon</p></li>
+<li><p>Saint Helena Ascension And Tristan Da Cunha</p></li>
+<li><p>Salzburg</p></li>
+<li><p>Samoa</p></li>
+<li><p>Sanfrancisco</p></li>
+<li><p>Sanjose</p></li>
+<li><p>Sanktpetersburg</p></li>
+<li><p>Santabarbara</p></li>
+<li><p>Santacruz</p></li>
+<li><p>Santiago</p></li>
+<li><p>Sao Tome And Principe</p></li>
+<li><p>Sarajewo</p></li>
+<li><p>Saskatchewan</p></li>
+<li><p>Schleswig Holstein</p></li>
+<li><p>Schwaben</p></li>
+<li><p>Schwerin</p></li>
+<li><p>Scotland</p></li>
+<li><p>Seattle</p></li>
+<li><p>Senegal And Gambia</p></li>
+<li><p>Seoul</p></li>
+<li><p>Serbia</p></li>
+<li><p>Seychelles</p></li>
+<li><p>Sheffield</p></li>
+<li><p>Shikoku</p></li>
+<li><p>Shropshire</p></li>
+<li><p>Siberian Fed District</p></li>
+<li><p>Sierra Leone</p></li>
+<li><p>Singapore</p></li>
+<li><p>Slaskie</p></li>
+<li><p>Slovakia</p></li>
+<li><p>Slovenia</p></li>
+<li><p>Sofia</p></li>
+<li><p>Solomon Islands</p></li>
+<li><p>Somalia</p></li>
+<li><p>Somerset</p></li>
+<li><p>South Africa</p></li>
+<li><p>South Africa And Lesotho</p></li>
+<li><p>South Carolina</p></li>
+<li><p>South Dakota</p></li>
+<li><p>South Fed District</p></li>
+<li><p>South Korea</p></li>
+<li><p>South Sudan</p></li>
+<li><p>South Yorkshire</p></li>
+<li><p>Southern California</p></li>
+<li><p>Spain</p></li>
+<li><p>Sri Lanka</p></li>
+<li><p>Staffordshire</p></li>
+<li><p>Stockholm</p></li>
+<li><p>Stockton</p></li>
+<li><p>Strassburg</p></li>
+<li><p>Stuttgart</p></li>
+<li><p>Stuttgart Regbez</p></li>
+<li><p>Sucre</p></li>
+<li><p>Sud</p></li>
+<li><p>Sudan</p></li>
+<li><p>Sudeste</p></li>
+<li><p>Suffolk</p></li>
+<li><p>Sul</p></li>
+<li><p>Suriname</p></li>
+<li><p>Surrey</p></li>
+<li><p>Swaziland</p></li>
+<li><p>Sweden</p></li>
+<li><p>Swietokrzyskie</p></li>
+<li><p>Switzerland</p></li>
+<li><p>Sydney</p></li>
+<li><p>Syria</p></li>
+<li><p>Szczecin</p></li>
+<li><p>Taiwan</p></li>
+<li><p>Tajikistan</p></li>
+<li><p>Tallinn</p></li>
+<li><p>Tanzania</p></li>
+<li><p>Tehran</p></li>
+<li><p>Tennessee</p></li>
+<li><p>Texas</p></li>
+<li><p>Thailand</p></li>
+<li><p>Thueringen</p></li>
+<li><p>Tilburg</p></li>
+<li><p>Togo</p></li>
+<li><p>Tohoku</p></li>
+<li><p>Tokelau</p></li>
+<li><p>Tokyo</p></li>
+<li><p>Tonga</p></li>
+<li><p>Toronto</p></li>
+<li><p>Toulouse</p></li>
+<li><p>Trondheim</p></li>
+<li><p>Tucson</p></li>
+<li><p>Tuebingen Regbez</p></li>
+<li><p>Tunisia</p></li>
+<li><p>Turin</p></li>
+<li><p>Turkey</p></li>
+<li><p>Turkmenistan</p></li>
+<li><p>Tuvalu</p></li>
+<li><p>Tyne And Wear</p></li>
+<li><p>Uganda</p></li>
+<li><p>Ukraine</p></li>
+<li><p>Ulanbator</p></li>
+<li><p>Ulm</p></li>
+<li><p>Unterfranken</p></li>
+<li><p>Ural Fed District</p></li>
+<li><p>Uruguay</p></li>
+<li><p>Us Midwest</p></li>
+<li><p>Us Northeast</p></li>
+<li><p>Us Pacific</p></li>
+<li><p>Us South</p></li>
+<li><p>Us West</p></li>
+<li><p>Usa</p></li>
+<li><p>Usedom</p></li>
+<li><p>Utah</p></li>
+<li><p>Utrecht</p></li>
+<li><p>Utrecht</p></li>
+<li><p>Uzbekistan</p></li>
+<li><p>Valencia</p></li>
+<li><p>Vancouver</p></li>
+<li><p>Vanuatu</p></li>
+<li><p>Venezuela</p></li>
+<li><p>Vermont</p></li>
+<li><p>Victoria</p></li>
+<li><p>Vietnam</p></li>
+<li><p>Virginia</p></li>
+<li><p>Volga Fed District</p></li>
+<li><p>Wales</p></li>
+<li><p>Wallis-Et-Futuna</p></li>
+<li><p>Warenmueritz</p></li>
+<li><p>Warminsko Mazurskie</p></li>
+<li><p>Warsaw</p></li>
+<li><p>Warwickshire</p></li>
+<li><p>Washington</p></li>
+<li><p>Washingtondc</p></li>
+<li><p>Waterloo</p></li>
+<li><p>West Midlands</p></li>
+<li><p>West Sussex</p></li>
+<li><p>West Virginia</p></li>
+<li><p>West Yorkshire</p></li>
+<li><p>Wielkopolskie</p></li>
+<li><p>Wien</p></li>
+<li><p>Wiltshire</p></li>
+<li><p>Wisconsin</p></li>
+<li><p>Worcestershire</p></li>
+<li><p>Wroclaw</p></li>
+<li><p>Wuerzburg</p></li>
+<li><p>Wuppertal</p></li>
+<li><p>Wyoming</p></li>
+<li><p>Yemen</p></li>
+<li><p>Yukon</p></li>
+<li><p>Zachodniopomorskie</p></li>
+<li><p>Zagreb</p></li>
+<li><p>Zambia</p></li>
+<li><p>Zeeland</p></li>
+<li><p>Zimbabwe</p></li>
+<li><p>Zuerich</p></li>
+<li><p>Zuid Holland</p></li>
+</ul>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="workflow.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Preparation Workflow</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="commands.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Commands</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022, PeopleForBikes
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/PeopleForBikes/brokenspoke-analyzer" aria-label="GitHub">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+            </a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=51b770b3"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    </body>
+</html>

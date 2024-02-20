@@ -13,3 +13,4 @@ Subpackages
    :maxdepth: 4
 
    brokenspoke_analyzer.core
+   brokenspoke_analyzer.core.database

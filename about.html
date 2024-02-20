@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Changelog" href="CHANGELOG.html" /><link rel="prev" title="Preparation Workflow" href="workflow.html" />
+<link rel="author" title="About these documents" href="#" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Commands" href="commands.html" /><link rel="prev" title="Brokenspoke-analyzer" href="index.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>Resources - Brokenspoke Analyzer 2.0.0 documentation</title>
+        <title>About - Brokenspoke Analyzer 2.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -175,7 +175,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -197,11 +197,11 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">GENERAL:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">About</a></li>
 <li class="toctree-l1"><a class="reference internal" href="commands.html">Commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="regions.html">Regions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Preparation Workflow</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">DEVELOPMENT:</span></p>
@@ -253,28 +253,149 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="resources">
-<h1>Resources<a class="headerlink" href="#resources" title="Link to this heading">#</a></h1>
-<p>This page lists various resources that provided useful information while working
-on this project.</p>
+          <section class="tex2jax_ignore mathjax_ignore" id="about">
+<h1>About<a class="headerlink" href="#about" title="Link to this heading">#</a></h1>
+<p>The Brokenspoke-Analyzer is an open source tool that streamlines running People
+for Bikes’ “Bicycle Network Analysis” locally and on cloud resources. For the
+user, it simplifies the process of preparing datasets, setting up PostGIS
+databases, running analyses, and exporting results through a command line
+interface (CLI).</p>
+<section id="how-does-it-work">
+<h2>How does it work?<a class="headerlink" href="#how-does-it-work" title="Link to this heading">#</a></h2>
+<p>An analysis is composed of a few steps:</p>
+<ol class="arabic simple">
+<li><p>Collect the data required for the analysis</p></li>
+<li><p>Import the data into a database</p></li>
+<li><p>Run the computation on the data</p></li>
+<li><p>Export the results to usable formats, like Shapefile, GeoJSON or CSV</p></li>
+</ol>
+<p>The brokenspoke-analyzer acts as a sort of orchestrator. The heavy lifting is
+done by PostgreSQL/PostGIS. Step 3 is where most of the magic happens. The
+computation part is done by running hundreds of SQL queries against PostGIS.</p>
+<p>The CLI allows the user to run all steps, or just some of them depending on the
+user’s needs.</p>
+<p>The architecture of the “Bicycle Network Analysis” is shown below. However, not
+all components are necessarily active all the time. Some components are only
+created for certain steps.</p>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="_images/brokenspoke-analyzer-architecture.svg"><img alt="Brokenspoke-analyzer Architecture" src="_images/brokenspoke-analyzer-architecture.svg" width="800px" /></a>
+<figcaption>
+<p><span class="caption-text">Brokenspoke-analyzer Architecture, commands shown in <strong>bold</strong>.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>In the <strong>prepare</strong> step shown in the diagram, the data required for the analysis
+includes:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://download.geofabrik.de/">Open Street Map planet extracts</a></p></li>
-<li><p><a class="reference external" href="https://www.guillaumedueymes.com/post/shapefiles_in_python/">Shapefiles in Python</a></p></li>
-<li><p><a class="reference external" href="https://pygis.io/docs/a_intro.html">PyGIS - Open Source Spatial Programming &amp; Remote Sensing</a></p></li>
-<li><p><a class="reference external" href="https://2019.stateofthemap.us/program/fri/a-turbo-introduction-to-overpass.html">A turbo introduction to Overpass</a></p></li>
-<li><p><a class="reference external" href="https://pyrosm.readthedocs.io/en/latest/index.html">PyrOSM: OpenStreeMap PBF Data Parser for Python</a></p></li>
-<li><p><a class="reference external" href="https://www.youtube.com/watch?v=fRTHshCj-L0">Finding City Boundaries in OSM | Python + OpenStreet Maps + Overpass</a></p></li>
-<li><p><a class="reference external" href="https://autogis-site.readthedocs.io/en/stable/index.html">Automating GIS-processes</a></p></li>
-<li><p><a class="reference external" href="https://atmamani.github.io/cheatsheets/open-geo/geopandas-4/">GeoPandas - PySal, OSM data IO</a></p></li>
-<li><p><a class="reference external" href="https://geoffboeing.com/2016/11/osmnx-python-street-networks/">OSMnx: Python for Street Networks</a></p></li>
-<li><p><a class="reference external" href="https://james-brennan.github.io/posts/fast_gridding_geopandas/">Fast and easy gridding of point data with geopandas</a></p></li>
+<li><p>City Boundary Shapefile: The bicycle network analysis is limited to the area
+described in this Shapefile.</p></li>
+<li><p>City Boundary GeoJSON: A copy of the City Boundary Shapefile in GeoJSON
+format.</p></li>
+<li><p>OSM region file: OSM region file obtained from
+<a class="reference external" href="https://download.geofabrik.de/">Geofabrik</a> or
+<a class="reference external" href="https://download.bbbike.org/osm/bbbike">BBike</a>. This typically corresponds to
+the first-level administrative division of a country (state in the USA,
+autonomous community in Spain, province in Canada, etc.).</p></li>
+<li><p>OSM city file: A clipping of the OSM region corresponding to the area within
+the city boundary. This file is generated using
+<a class="reference external" href="https://osmcode.org/osmium-tool/">Osmium Tool</a> and the bicycle network
+analysis runs on this geographic area.</p></li>
+<li><p>Census data: Population and employment data required for the analysis.</p></li>
+<li><p>Speed limit data: Region and city roadway speed limit data required for the
+analysis.</p></li>
 </ul>
+<p>More information on the <strong>prepare</strong> step and the data required is available in
+<a class="reference internal" href="workflow.html"><span class="doc">Preparation Workflow</span></a>.</p>
+</section>
+<section id="where-to-find-the-fips-codes">
+<h2>Where to find the FIPS codes<a class="headerlink" href="#where-to-find-the-fips-codes" title="Link to this heading">#</a></h2>
+<p>FIPS codes (Federal Information Processing Series) in the BNA are 7-digit codes
+which are a combination of a State FIPS code (2-digit) and a Place FIPS code
+(5-digit).</p>
+<p>For example Austin, TX FIPS code is <code class="docutils literal notranslate"><span class="pre">4805000</span></code>, where <code class="docutils literal notranslate"><span class="pre">48</span></code> is for the state of
+Texas and <code class="docutils literal notranslate"><span class="pre">05000</span></code> for Austin city.</p>
+<p>The State and Place FIPS codes can be found on the US census website:
+<a class="reference external" href="https://www.census.gov/library/reference/code-lists/ansi.html#place">https://www.census.gov/library/reference/code-lists/ansi.html#place</a></p>
+<p>The full 7-digit number can also be found in the census place files in the
+<code class="docutils literal notranslate"><span class="pre">GEOID</span></code> column.</p>
+<section id="remark">
+<h3>Remark<a class="headerlink" href="#remark" title="Link to this heading">#</a></h3>
+<p>A portion of cities are defined by the census as county sub units instead of
+places. These tend to be in eastern states. Unfortunately, those FIPS codes (or
+rather the GEOID column) are 10 digits instead of 7: state (2-digit) + county
+(3-digit) + county sub (5-digit).</p>
+<p>In order to get them to match the Place codes for the BNA, which only allows 7
+digits, the county value is removed.</p>
+<p>So for Darien, CT, for example, the GEOID is 0919018850, but its entry in the
+BNA will be <code class="docutils literal notranslate"><span class="pre">0918850</span></code>.</p>
+</section>
+</section>
+<section id="using-the-docker-compose-environment">
+<h2>Using the Docker Compose environment<a class="headerlink" href="#using-the-docker-compose-environment" title="Link to this heading">#</a></h2>
+<p>Using Docker Compose is just a simpler way to run the PostGIS container with the
+right parameters (environment variables, network, volume, etc.) and the required
+extensions.</p>
+<p>A
+<a class="reference external" href="https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/compose.yml">Docker Compose file</a>
+is provided with this project to simplify the setup.</p>
+<p>To start it, retrieve the manifest file and compose up:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>-p<span class="w"> </span>/tmp/bna
+<span class="nb">cd</span><span class="w"> </span>/tmp/bna
+curl<span class="w"> </span>-sLO<span class="w"> </span>https://raw.githubusercontent.com/PeopleForBikes/brokenspoke-analyzer/main/compose.yml
+docker<span class="w"> </span>compose<span class="w"> </span>up
+</pre></div>
+</div>
+</section>
+<section id="using-brokenspoke-analyzer-in-the-docker-container">
+<h2>Using brokenspoke-analyzer in the docker container<a class="headerlink" href="#using-brokenspoke-analyzer-in-the-docker-container" title="Link to this heading">#</a></h2>
+<p>Installing all the required GIS tool can be a complicated task, especially on
+Windows platforms.</p>
+<p>For this reason, we provide a Docker container that be used instead of the
+native tools.</p>
+<p>Here is an example depicting how to use it:</p>
+<p>Start by exporting the <code class="docutils literal notranslate"><span class="pre">DATABASE_URL</span></code> environment variable:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql://postgres:postgres@postgres:5432/postgres
+</pre></div>
+</div>
+<p>Then run each command using the container:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># The `configure docker` command does not work from the container because it</span>
+<span class="c1"># needs to connect to the host to get the info.</span>
+<span class="c1"># Use `docker info` to get the `CPUs` and `Total Memory` values and configure the</span>
+<span class="c1"># database using the `configure custom` command accordingly.</span>
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--network<span class="w"> </span>brokenspoke-analyzer_default<span class="w"> </span>-e<span class="w"> </span>DATABASE_URL<span class="w"> </span>ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0<span class="w"> </span>configure<span class="w"> </span>custom<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">1943</span><span class="w"> </span>postgres
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-u<span class="w"> </span><span class="k">$(</span>id<span class="w"> </span>-u<span class="k">)</span>:<span class="k">$(</span>id<span class="w"> </span>-g<span class="k">)</span><span class="w"> </span>-v<span class="w"> </span>./data/container:/usr/src/app/data<span class="w"> </span>ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0<span class="w"> </span>prepare<span class="w"> </span>all<span class="w"> </span>usa<span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span><span class="w"> </span><span class="m">3570670</span><span class="w"> </span>--output-dir<span class="w"> </span>/usr/src/app/data
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--network<span class="w"> </span>brokenspoke-analyzer_default<span class="w"> </span>-v<span class="w"> </span>./data/container:/usr/src/app/data<span class="w"> </span>-e<span class="w"> </span>DATABASE_URL<span class="w"> </span>ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0<span class="w"> </span>import<span class="w"> </span>all<span class="w"> </span>usa<span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span><span class="w"> </span><span class="m">3570670</span><span class="w"> </span>--input-dir<span class="w"> </span>/usr/src/app/data/santa-rosa-new-mexico-usa
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--network<span class="w"> </span>brokenspoke-analyzer_default<span class="w"> </span>-e<span class="w"> </span>DATABASE_URL<span class="w"> </span>ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0<span class="w"> </span>compute<span class="w"> </span>usa<span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span><span class="w"> </span>--input-dir<span class="w"> </span>/usr/src/app/data/santa-rosa-new-mexico-usa
+</pre></div>
+</div>
+<p>Or with the <code class="docutils literal notranslate"><span class="pre">run</span></code> command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--network<span class="w"> </span>brokenspoke-analyzer_default<span class="w"> </span>-e<span class="w"> </span>DATABASE_URL<span class="w"> </span>ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0<span class="w"> </span>-vv<span class="w"> </span>run<span class="w"> </span>usa<span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span><span class="w"> </span><span class="m">3570670</span>
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--network<span class="w"> </span>brokenspoke-analyzer_default<span class="w"> </span>-u<span class="w"> </span><span class="k">$(</span>id<span class="w"> </span>-u<span class="k">)</span>:<span class="k">$(</span>id<span class="w"> </span>-g<span class="k">)</span><span class="w"> </span>-v<span class="w"> </span>./results:/usr/src/app/results<span class="w"> </span>-e<span class="w"> </span>DATABASE_URL<span class="w"> </span>ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0<span class="w">  </span>-vv<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nb">local</span><span class="w"> </span>usa<span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="using-an-existing-database-instance">
+<h2>Using an existing database instance<a class="headerlink" href="#using-an-existing-database-instance" title="Link to this heading">#</a></h2>
+<p>If you would prefer to use an existing database, there is no problem with that.</p>
+<p>Here are the requirements:</p>
+<ul class="simple">
+<li><p>PostgreSQL 13+</p></li>
+<li><p>PostGIS 3.1+</p></li>
+<li><p>Pgrouting</p></li>
+<li><p>Plpython3</p></li>
+<li><p>Enable the <code class="docutils literal notranslate"><span class="pre">uuid-ossp</span></code> and <code class="docutils literal notranslate"><span class="pre">plpython3u</span></code> extensions.</p></li>
+<li><p>Create the <code class="docutils literal notranslate"><span class="pre">generated</span></code>, <code class="docutils literal notranslate"><span class="pre">received</span></code> and <code class="docutils literal notranslate"><span class="pre">scratch</span></code>, schemas and make sure the
+user has the authorization to access them</p></li>
+</ul>
+<p>The brokenspoke-analyzer also provides the <code class="docutils literal notranslate"><span class="pre">configure</span></code> command to assist you
+with the configuration. Refer to the <a class="reference internal" href="commands.html#configure"><span class="std std-ref">configure</span></a>
+section in the command page to get more help.</p>
+</section>
 </section>
 
         </article>
@@ -282,23 +403,23 @@ on this project.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="CHANGELOG.html">
+          <a class="next-page" href="commands.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Changelog</div>
+                <div class="title">Commands</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="workflow.html">
+          <a class="prev-page" href="index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Preparation Workflow</div>
+                <div class="title">Home</div>
                 
               </div>
             </a>
@@ -327,8 +448,34 @@ on this project.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">About</a><ul>
+<li><a class="reference internal" href="#how-does-it-work">How does it work?</a></li>
+<li><a class="reference internal" href="#where-to-find-the-fips-codes">Where to find the FIPS codes</a><ul>
+<li><a class="reference internal" href="#remark">Remark</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-the-docker-compose-environment">Using the Docker Compose environment</a></li>
+<li><a class="reference internal" href="#using-brokenspoke-analyzer-in-the-docker-container">Using brokenspoke-analyzer in the docker container</a></li>
+<li><a class="reference internal" href="#using-an-existing-database-instance">Using an existing database instance</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

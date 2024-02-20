@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="author" title="About these documents" href="../about.html" /><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="brokenspoke_analyzer.core.compute module" href="brokenspoke_analyzer.core.compute.html" /><link rel="prev" title="brokenspoke_analyzer.core package" href="brokenspoke_analyzer.core.html" />
+<link rel="author" title="About these documents" href="../about.html" /><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="brokenspoke_analyzer.core.database package" href="brokenspoke_analyzer.core.database.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
-        <title>brokenspoke_analyzer.core.analysis module - Brokenspoke Analyzer 2.0.0 documentation</title>
+        <title>brokenspoke_analyzer.core.database.dbcore package - Brokenspoke Analyzer 2.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -209,8 +209,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../code-of-conduct.html">Community Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING.html">Contributing</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="brokenspoke_analyzer.html">brokenspoke_analyzer package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of brokenspoke_analyzer package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current has-children"><a class="reference internal" href="brokenspoke_analyzer.core.html">brokenspoke_analyzer.core package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of brokenspoke_analyzer.core package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">brokenspoke_analyzer.core.analysis module</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="brokenspoke_analyzer.core.html">brokenspoke_analyzer.core package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of brokenspoke_analyzer.core package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="brokenspoke_analyzer.core.analysis.html">brokenspoke_analyzer.core.analysis module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="brokenspoke_analyzer.core.compute.html">brokenspoke_analyzer.core.compute module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="brokenspoke_analyzer.core.downloader.html">brokenspoke_analyzer.core.downloader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="brokenspoke_analyzer.core.exporter.html">brokenspoke_analyzer.core.exporter module</a></li>
@@ -219,8 +219,8 @@
 <li class="toctree-l3"><a class="reference internal" href="brokenspoke_analyzer.core.utils.html">brokenspoke_analyzer.core.utils module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="brokenspoke_analyzer.core.database.html">brokenspoke_analyzer.core.database package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of brokenspoke_analyzer.core.database package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="brokenspoke_analyzer.core.database.dbcore.html">brokenspoke_analyzer.core.database.dbcore package</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="brokenspoke_analyzer.core.database.html">brokenspoke_analyzer.core.database package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of brokenspoke_analyzer.core.database package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">brokenspoke_analyzer.core.database.dbcore package</a></li>
 </ul>
 </li>
 </ul>
@@ -259,13 +259,15 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-brokenspoke_analyzer.core.analysis">
-<span id="brokenspoke-analyzer-core-analysis-module"></span><h1>brokenspoke_analyzer.core.analysis module<a class="headerlink" href="#module-brokenspoke_analyzer.core.analysis" title="Link to this heading">#</a></h1>
-<p>Define functions used to perform an analysis.</p>
+          <section id="module-brokenspoke_analyzer.core.database.dbcore">
+<span id="brokenspoke-analyzer-core-database-dbcore-package"></span><h1>brokenspoke_analyzer.core.database.dbcore package<a class="headerlink" href="#module-brokenspoke_analyzer.core.database.dbcore" title="Link to this heading">#</a></h1>
+<p>Define functions used to manipulate database data.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="brokenspoke_analyzer.core.analysis.change_speed_limit">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.analysis.</span></span><span class="sig-name descname"><span class="pre">change_speed_limit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">city</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_abbrev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.analysis.change_speed_limit" title="Link to this definition">#</a></dt>
-<dd><p>Change the speed limit.</p>
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.database.dbcore.configure_db">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.database.dbcore.</span></span><span class="sig-name descname"><span class="pre">configure_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memory_mb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pguser</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.database.dbcore.configure_db" title="Link to this definition">#</a></dt>
+<dd><p>Configure the database.</p>
+<p>Configures the database with the appropriate settings, extensions and schemas.</p>
+<p>This function is idempotent.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
@@ -274,64 +276,9 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="brokenspoke_analyzer.core.analysis.create_synthetic_population">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.analysis.</span></span><span class="sig-name descname"><span class="pre">create_synthetic_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">area</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.analysis.create_synthetic_population" title="Link to this definition">#</a></dt>
-<dd><p>Create a grid representing the synthetic population.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>area</strong> (<em>GeoDataFrame</em>) – area to grid</p></li>
-<li><p><strong>length</strong> (<em>int</em>) – length of a cell of the grid in meters</p></li>
-<li><p><strong>width</strong> (<em>int</em>) – width of a cell of the grid in meters</p></li>
-<li><p><strong>population</strong> (<em>int</em>) – population to inject in each cell</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a GeoDataFrame representing the synthetic population.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>GeoDataFrame</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="brokenspoke_analyzer.core.analysis.derive_state_info">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.analysis.</span></span><span class="sig-name descname"><span class="pre">derive_state_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.analysis.derive_state_info" title="Link to this definition">#</a></dt>
-<dd><p>Derive state information.</p>
-<p>Returns the state abbreviation, the state fips, and whether the job
-information can be retrieved from the US census.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]</span></p>
-</dd>
-</dl>
-<dl>
-<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="p">(</span><span class="s2">&quot;TX&quot;</span><span class="p">,</span> <span class="s2">&quot;48&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="o">==</span> <span class="n">derive_state_info</span><span class="p">(</span><span class="s2">&quot;texas&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="p">(</span><span class="s2">&quot;ZZ&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="o">==</span> <span class="n">derive_state_info</span><span class="p">(</span><span class="s2">&quot;spain&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="brokenspoke_analyzer.core.analysis.osmnx_query">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.analysis.</span></span><span class="sig-name descname"><span class="pre">osmnx_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">country</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">city</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.analysis.osmnx_query" title="Link to this definition">#</a></dt>
-<dd><p>Prepare the osmnx.</p>
-<p>Returns: the OSMNX query and its slugified version.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="brokenspoke_analyzer.core.analysis.prepare_city_file">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.analysis.</span></span><span class="sig-name descname"><span class="pre">prepare_city_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pfb_osm_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.analysis.prepare_city_file" title="Link to this definition">#</a></dt>
-<dd><p>Prepare the city OSM file.</p>
-<p>Use osmium to extract the content limited by the polygon file from the region file.</p>
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.database.dbcore.configure_docker_db">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.database.dbcore.</span></span><span class="sig-name descname"><span class="pre">configure_docker_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.database.dbcore.configure_docker_db" title="Link to this definition">#</a></dt>
+<dd><p>Configure a database running in Docker.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
@@ -340,34 +287,9 @@ information can be retrieved from the US census.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="brokenspoke_analyzer.core.analysis.retrieve_city_boundaries">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.analysis.</span></span><span class="sig-name descname"><span class="pre">retrieve_city_boundaries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">country</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">city</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.analysis.retrieve_city_boundaries" title="Link to this definition">#</a></dt>
-<dd><p>Retrieve the city boundaries and save them as Shapefile and GeoJSON.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the slugified query used to retrieve the city boundaries.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="brokenspoke_analyzer.core.analysis.retrieve_region_file">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.analysis.</span></span><span class="sig-name descname"><span class="pre">retrieve_region_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.analysis.retrieve_region_file" title="Link to this definition">#</a></dt>
-<dd><p>Retrieve the region file from Geofabrik or BBike.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="brokenspoke_analyzer.core.analysis.simulate_census_blocks">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.analysis.</span></span><span class="sig-name descname"><span class="pre">simulate_census_blocks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synthetic_population</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.analysis.simulate_census_blocks" title="Link to this definition">#</a></dt>
-<dd><p>Simulate census blocks.</p>
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.database.dbcore.configure_extensions">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.database.dbcore.</span></span><span class="sig-name descname"><span class="pre">configure_extensions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.database.dbcore.configure_extensions" title="Link to this definition">#</a></dt>
+<dd><p>Configure the required extensions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
@@ -376,20 +298,106 @@ information can be retrieved from the US census.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="brokenspoke_analyzer.core.analysis.state_info">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.analysis.</span></span><span class="sig-name descname"><span class="pre">state_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.analysis.state_info" title="Link to this definition">#</a></dt>
-<dd><p>Given a state, returns the corresponding abbreviation and FIPS code.</p>
-<p>The District of Columbia is also recognized as a state.</p>
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.database.dbcore.configure_schemas">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.database.dbcore.</span></span><span class="sig-name descname"><span class="pre">configure_schemas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pguser</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.database.dbcore.configure_schemas" title="Link to this definition">#</a></dt>
+<dd><p>Configure the schemas.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 </dl>
-<dl>
-<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="p">(</span><span class="s2">&quot;TX&quot;</span><span class="p">,</span> <span class="s2">&quot;48&quot;</span><span class="p">)</span> <span class="o">=</span> <span class="n">state_info</span><span class="p">(</span><span class="s2">&quot;texas&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="p">(</span><span class="s2">&quot;DC&quot;</span><span class="p">,</span> <span class="s2">&quot;11&quot;</span><span class="p">)</span> <span class="o">=</span> <span class="n">state_info</span><span class="p">(</span><span class="s2">&quot;district of columbia&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.database.dbcore.configure_system">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.database.dbcore.</span></span><span class="sig-name descname"><span class="pre">configure_system</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memory_mb</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.database.dbcore.configure_system" title="Link to this definition">#</a></dt>
+<dd><p>Configure the system parameters.</p>
+<p>This requires elevated permissions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.database.dbcore.create_psycopg_engine">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.database.dbcore.</span></span><span class="sig-name descname"><span class="pre">create_psycopg_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_url</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.database.dbcore.create_psycopg_engine" title="Link to this definition">#</a></dt>
+<dd><p>Create a SQLAlchemy engine with the psycopg3 driver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.database.dbcore.execute_query">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.database.dbcore.</span></span><span class="sig-name descname"><span class="pre">execute_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.database.dbcore.execute_query" title="Link to this definition">#</a></dt>
+<dd><p>Execute a query and commit it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.database.dbcore.execute_sql_file">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.database.dbcore.</span></span><span class="sig-name descname"><span class="pre">execute_sql_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sqlfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.database.dbcore.execute_sql_file" title="Link to this definition">#</a></dt>
+<dd><p>Execute a SQL file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.database.dbcore.execute_with_autocommit">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.database.dbcore.</span></span><span class="sig-name descname"><span class="pre">execute_with_autocommit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statements</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.database.dbcore.execute_with_autocommit" title="Link to this definition">#</a></dt>
+<dd><p>Execute a series of statements with autocommit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.database.dbcore.export_to_csv">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.database.dbcore.</span></span><span class="sig-name descname"><span class="pre">export_to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csvfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.database.dbcore.export_to_csv" title="Link to this definition">#</a></dt>
+<dd><p>Dump the table content into a CSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.database.dbcore.import_csv_file_with_header">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.database.dbcore.</span></span><span class="sig-name descname"><span class="pre">import_csv_file_with_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csvfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.database.dbcore.import_csv_file_with_header" title="Link to this definition">#</a></dt>
+<dd><p>Import a CSV file into a table.</p>
+<p>refs:
+- <a class="reference external" href="https://www.psycopg.org/psycopg3/docs/basic/copy.html#copy">https://www.psycopg.org/psycopg3/docs/basic/copy.html#copy</a>
+- <a class="reference external" href="https://www.psycopg.org/articles/2020/11/15/psycopg3-copy/">https://www.psycopg.org/articles/2020/11/15/psycopg3-copy/</a></p>
+<p>For some unknown and annoying reason, importing CSV data with a cursor does
+not work. Therefore we used <cite>psql</cite> as fallback.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.database.dbcore.load_csv_file">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.database.dbcore.</span></span><span class="sig-name descname"><span class="pre">load_csv_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sqlfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csvfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.database.dbcore.load_csv_file" title="Link to this definition">#</a></dt>
+<dd><p>Create a table and load the data from the CSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -401,23 +409,15 @@ information can be retrieved from the US census.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="brokenspoke_analyzer.core.compute.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">brokenspoke_analyzer.core.compute module</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="brokenspoke_analyzer.core.html">
+          
+          <a class="prev-page" href="brokenspoke_analyzer.core.database.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">brokenspoke_analyzer.core package</div>
+                <div class="title">brokenspoke_analyzer.core.database package</div>
                 
               </div>
             </a>
@@ -458,16 +458,19 @@ information can be retrieved from the US census.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">brokenspoke_analyzer.core.analysis module</a><ul>
-<li><a class="reference internal" href="#brokenspoke_analyzer.core.analysis.change_speed_limit"><code class="docutils literal notranslate"><span class="pre">change_speed_limit()</span></code></a></li>
-<li><a class="reference internal" href="#brokenspoke_analyzer.core.analysis.create_synthetic_population"><code class="docutils literal notranslate"><span class="pre">create_synthetic_population()</span></code></a></li>
-<li><a class="reference internal" href="#brokenspoke_analyzer.core.analysis.derive_state_info"><code class="docutils literal notranslate"><span class="pre">derive_state_info()</span></code></a></li>
-<li><a class="reference internal" href="#brokenspoke_analyzer.core.analysis.osmnx_query"><code class="docutils literal notranslate"><span class="pre">osmnx_query()</span></code></a></li>
-<li><a class="reference internal" href="#brokenspoke_analyzer.core.analysis.prepare_city_file"><code class="docutils literal notranslate"><span class="pre">prepare_city_file()</span></code></a></li>
-<li><a class="reference internal" href="#brokenspoke_analyzer.core.analysis.retrieve_city_boundaries"><code class="docutils literal notranslate"><span class="pre">retrieve_city_boundaries()</span></code></a></li>
-<li><a class="reference internal" href="#brokenspoke_analyzer.core.analysis.retrieve_region_file"><code class="docutils literal notranslate"><span class="pre">retrieve_region_file()</span></code></a></li>
-<li><a class="reference internal" href="#brokenspoke_analyzer.core.analysis.simulate_census_blocks"><code class="docutils literal notranslate"><span class="pre">simulate_census_blocks()</span></code></a></li>
-<li><a class="reference internal" href="#brokenspoke_analyzer.core.analysis.state_info"><code class="docutils literal notranslate"><span class="pre">state_info()</span></code></a></li>
+<li><a class="reference internal" href="#">brokenspoke_analyzer.core.database.dbcore package</a><ul>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.database.dbcore.configure_db"><code class="docutils literal notranslate"><span class="pre">configure_db()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.database.dbcore.configure_docker_db"><code class="docutils literal notranslate"><span class="pre">configure_docker_db()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.database.dbcore.configure_extensions"><code class="docutils literal notranslate"><span class="pre">configure_extensions()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.database.dbcore.configure_schemas"><code class="docutils literal notranslate"><span class="pre">configure_schemas()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.database.dbcore.configure_system"><code class="docutils literal notranslate"><span class="pre">configure_system()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.database.dbcore.create_psycopg_engine"><code class="docutils literal notranslate"><span class="pre">create_psycopg_engine()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.database.dbcore.execute_query"><code class="docutils literal notranslate"><span class="pre">execute_query()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.database.dbcore.execute_sql_file"><code class="docutils literal notranslate"><span class="pre">execute_sql_file()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.database.dbcore.execute_with_autocommit"><code class="docutils literal notranslate"><span class="pre">execute_with_autocommit()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.database.dbcore.export_to_csv"><code class="docutils literal notranslate"><span class="pre">export_to_csv()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.database.dbcore.import_csv_file_with_header"><code class="docutils literal notranslate"><span class="pre">import_csv_file_with_header()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.database.dbcore.load_csv_file"><code class="docutils literal notranslate"><span class="pre">load_csv_file()</span></code></a></li>
 </ul>
 </li>
 </ul>
