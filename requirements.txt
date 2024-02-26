@@ -35,7 +35,7 @@ pytz==2024.1
 requests==2.31.0
 rich==13.7.0
 s3transfer==0.10.0
-shapely==2.0.2
+shapely==2.0.3
 six==1.16.0
 SQLAlchemy==2.0.22
 tenacity==8.2.3
