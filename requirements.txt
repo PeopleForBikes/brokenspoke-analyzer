@@ -11,7 +11,7 @@ click-plugins==1.1.1
 cligj==0.7.2
 fiona==1.9.5
 frozenlist==1.4.1
-geopandas==0.14.0
+geopandas==0.14.3
 greenlet==3.0.3
 idna==3.6
 jellyfish==1.0.1
