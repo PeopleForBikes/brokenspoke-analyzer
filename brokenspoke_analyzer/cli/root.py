@@ -1,4 +1,5 @@
 """Define the top-level commands."""
+
 import logging
 import pathlib
 import typing

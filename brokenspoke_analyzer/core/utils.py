@@ -1,4 +1,5 @@
 """Define utility functions."""
+
 import gzip
 import hashlib
 import pathlib

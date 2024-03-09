@@ -1,4 +1,5 @@
 """Define functions used to download files."""
+
 import pathlib
 import typing
 

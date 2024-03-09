@@ -1,4 +1,5 @@
 """Define functions used to manipulate database data."""
+
 import pathlib
 import typing
 
