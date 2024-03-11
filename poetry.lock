@@ -4037,13 +4037,13 @@ files = [
 
 [[package]]
 name = "types-decorator"
-version = "5.1.8.20240106"
+version = "5.1.8.20240310"
 description = "Typing stubs for decorator"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "types-decorator-5.1.8.20240106.tar.gz", hash = "sha256:32ff92b33615060d23b9d3760124bdb3506c4aa8d9eb50963cf1a3c20b9ecbbf"},
-    {file = "types_decorator-5.1.8.20240106-py3-none-any.whl", hash = "sha256:14d21e6a0755dbb8f301f2f532b3eab5148f433c69dad2d98bf5bd2b3a2ef4e7"},
+    {file = "types-decorator-5.1.8.20240310.tar.gz", hash = "sha256:52e316b03783886a8a2abdc228f7071680ba65894545cd2085ebe3cf88684a0e"},
+    {file = "types_decorator-5.1.8.20240310-py3-none-any.whl", hash = "sha256:3af75dc38f5baf65b9b53ea6661ce2056c5ca7d70d620d0b1f620285c1242757"},
 ]
 
 [[package]]
@@ -4403,4 +4403,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "21e6ef22e67ab7410c9e7ba9cbbd1d7d540f5ed6b0e652333b7f1052613b048e"
+content-hash = "4b98df05fb216c3b0f8a86d54755bfeb8e96f84b32f23bc873449b8a97651de4"
