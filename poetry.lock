@@ -4099,13 +4099,13 @@ files = [
 
 [[package]]
 name = "types-python-slugify"
-version = "8.0.2.20240127"
+version = "8.0.2.20240310"
 description = "Typing stubs for python-slugify"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "types-python-slugify-8.0.2.20240127.tar.gz", hash = "sha256:3ac009c48bb2591390ae7124c4c4db92dcc7a38e79ac5ee696bd6c70777c0a69"},
-    {file = "types_python_slugify-8.0.2.20240127-py3-none-any.whl", hash = "sha256:93ba6486a79e361a8855d33f1beddbbc11f2e39ff8f8a06821fa45faf4877a27"},
+    {file = "types-python-slugify-8.0.2.20240310.tar.gz", hash = "sha256:5157b508c7fed587520c70d77f62aea0fafdc6620893c2ec8972f13a1faf5560"},
+    {file = "types_python_slugify-8.0.2.20240310-py3-none-any.whl", hash = "sha256:0efec18b802c69ebd22dcee55c91afaeaa80e1e40ddd66ccabf69fd42ce87b74"},
 ]
 
 [[package]]
@@ -4403,4 +4403,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "4b98df05fb216c3b0f8a86d54755bfeb8e96f84b32f23bc873449b8a97651de4"
+content-hash = "db57ac652b4badda62308612be9600ab0d5e6808c248c829d443a06237431bc5"
