@@ -7,7 +7,14 @@ Versioning].
 
 ## [Unreleased]
 
-## [2.1.0] - 2024-03-09
+## [2.1.1] - 2024-03-16
+
+This is a release to fix the release workflows.
+
+[2.1.1]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.1.1
+
+## [2.1.0] - 2024-03-16
 
 ### Added
 
