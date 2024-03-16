@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "brokenspoke-analyzer"
-version = "2.1.0"
+version = "2.1.1"
 description = "Run a BNA analysis locally."
 authors = [
   "Rémy Greinhofer <remy.greinhofer@gmail.com>",
