@@ -7,6 +7,22 @@ Versioning].
 
 ## [Unreleased]
 
+## [2.1.0] - 2024-03-09
+
+### Added
+
+- Added a new CLI sub-command to export results to a custom S3 bucket. [#518]
+
+### Changed
+
+- Updated dentists, doctors, hospitals, pharmacies, retail, and schools to
+  incorporate alternate or new OSM tags. [#542]
+
+[#518]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/518
+[#542]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/542
+[2.1.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.1.0
+
 ## [2.0.0] - 2024-02-19
 
 We are incredibly proud to announce the release of version 2.0.0 of the
