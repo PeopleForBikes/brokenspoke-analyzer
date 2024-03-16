@@ -41,6 +41,6 @@ jobs:
       - name: Build sdist and wheel
         run: poetry build
       - name: Publish the release
-        uses: softprops/action-gh-release@373f7f263a76c20808c831209c920827a82a2847 # v3.9.3
+        uses: softprops/action-gh-release@9d7c94cfd0a1f3ed45544c887983e9fa900f0564 # v2.0.4
         with:
           files: dist/*.*
