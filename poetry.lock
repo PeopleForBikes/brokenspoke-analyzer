@@ -1709,13 +1709,13 @@ test = ["jupyter-server (>=2.0.0)", "pytest (>=7.0)", "pytest-jupyter[server] (>
 
 [[package]]
 name = "jupyterlab"
-version = "4.1.4"
+version = "4.1.5"
 description = "JupyterLab computational environment"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "jupyterlab-4.1.4-py3-none-any.whl", hash = "sha256:f92c3f2b12b88efcf767205f49be9b2f86b85544f9c4f342bb5e9904a16cf931"},
-    {file = "jupyterlab-4.1.4.tar.gz", hash = "sha256:e03c82c124ad8a0892e498b9dde79c50868b2c267819aca3f55ce47c57ebeb1d"},
+    {file = "jupyterlab-4.1.5-py3-none-any.whl", hash = "sha256:3bc843382a25e1ab7bc31d9e39295a9f0463626692b7995597709c0ab236ab2c"},
+    {file = "jupyterlab-4.1.5.tar.gz", hash = "sha256:c9ad75290cb10bfaff3624bf3fbb852319b4cce4c456613f8ebbaa98d03524db"},
 ]
 
 [package.dependencies]
@@ -4403,4 +4403,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "cb9b4affe5878d7f838defbb51965fa970fe7ed1f38438e98ef0c7c0e997ca24"
+content-hash = "5b53003998d17fe0b7e2901a243eb9da755c705949dcc2b9da0b0a512af8da1f"
