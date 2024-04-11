@@ -114,12 +114,12 @@ def create_calver_directories(
     See https://calver.org/#scheme for more details.
 
     Examples:
-    * usa/tx/austin/23.8
+    * usa/tx/austin/23.08
     * usa/tx/austin/23.12.2
-    * spain/valencia/valencia/23.8
+    * spain/valencia/valencia/23.08
 
         >>> today = date.today()
-        >>> calver = f"{today.strftime('%y')}.{today.month}"
+        >>> calver = f"{today.strftime('%y.%m')}"
         >>> directory = create_calver_directories("usa", "austin", "tx")
         >>> assert directory == pathlib.Path(f"usa/tx/austin/{calver}")
     """
@@ -165,7 +165,7 @@ def calver_base(
 
     # Otherwise use the appropriate calver.
     today = date.today()
-    p /= f"{today.strftime('%y')}.{today.month}"
+    p /= f"{today.strftime('%y.%m')}"
 
     return p
 
@@ -175,9 +175,9 @@ def calver_revision(dirs: typing.Sequence[pathlib.Path]) -> int:
     Build the revision part of the calver path.
 
     Examples:
-        >>> dirs=[pathlib.Path('usa/new mexico/santa rosa/23.10')]
+        >>> dirs=[pathlib.Path('usa/new mexico/santa rosa/23.08')]
         >>> assert calver_revision(dirs) == 1
-        >>> dirs.append(pathlib.Path('usa/new mexico/santa rosa/23.10.1'))
+        >>> dirs.append(pathlib.Path('usa/new mexico/santa rosa/23.08.1'))
         >>> assert calver_revision(dirs) == 2
     """
     # Collect the directories with the suffixes.
