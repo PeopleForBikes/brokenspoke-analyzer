@@ -205,6 +205,7 @@ def run_(
     max_trip_distance: typing.Optional[int] = common.DEFAULT_MAX_TRIP_DISTANCE,
     with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
     s3_bucket: typing.Optional[str] = None,
+    s3_dir: typing.Optional[pathlib.Path] = None,
 ) -> typing.Optional[pathlib.Path]:
     """Run an analysis."""
     # Make mypy happy.
@@ -310,5 +311,11 @@ def run_(
             country=country,
             city=city,
             region=region,
+        )
+    elif with_export == exporter.Exporter.s3_custom:
+        export_dir = export.s3_custom(
+            database_url=database_url,
+            bucket_name=s3_bucket,  # type: ignore
+            s3_dir=s3_dir,
         )
     return export_dir
