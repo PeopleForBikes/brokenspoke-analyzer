@@ -1,6 +1,7 @@
 """Define the export sub-command."""
 
 import pathlib
+import typing
 
 import rich
 import typer
@@ -40,7 +41,7 @@ def s3(
 def s3_custom(
     database_url: common.DatabaseURL,
     bucket_name: str,
-    s3_dir: pathlib.Path,
+    s3_dir: typing.Optional[pathlib.Path] = pathlib.Path(),
 ) -> pathlib.Path:
     """Export results to a custom S3 bucket."""
     with console.status("[bold green]Uploading results to AWS S3..."):

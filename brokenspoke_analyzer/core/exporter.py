@@ -50,6 +50,7 @@ class Exporter(str, Enum):
     none = "none"
     local = "local"
     s3 = "s3"
+    s3_custom = "s3_custom"
 
 
 def export_to_csv(
@@ -224,8 +225,14 @@ def create_calver_s3_directories(
     return s3_dir
 
 
-def s3_directories(bucket_name: str, s3_dir: pathlib.Path) -> pathlib.Path:
+def s3_directories(
+    bucket_name: str, s3_dir: typing.Optional[pathlib.Path] = pathlib.Path()
+) -> pathlib.Path:
     """Create a custom directory in the S3 bucket."""
+    # Make mypy happy.
+    if not s3_dir:
+        raise ValueError("`s3_dir` must be set")
+
     # Initialize the S3 client.
     s3 = boto3.resource("s3")
     bucket = s3.Bucket(bucket_name)
