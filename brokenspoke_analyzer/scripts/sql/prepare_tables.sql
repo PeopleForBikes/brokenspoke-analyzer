@@ -45,12 +45,18 @@ ALTER TABLE neighborhood_ways_intersections RENAME COLUMN id TO int_id;
 ALTER TABLE neighborhood_ways_intersections RENAME COLUMN the_geom TO geom;
 
 -- reproject
-ALTER TABLE neighborhood_ways ALTER COLUMN geom TYPE geometry(linestring,:nb_output_srid)
-USING ST_Transform(geom,:nb_output_srid);
-ALTER TABLE neighborhood_cycwys_ways ALTER COLUMN the_geom TYPE geometry(linestring,:nb_output_srid)
-USING ST_Transform(the_geom,:nb_output_srid);
-ALTER TABLE neighborhood_ways_intersections ALTER COLUMN geom TYPE geometry(point,:nb_output_srid)
-USING ST_Transform(geom,:nb_output_srid);
+ALTER TABLE neighborhood_ways ALTER COLUMN geom TYPE GEOMETRY (
+    LINESTRING, :nb_output_srid
+)
+USING ST_Transform(geom, :nb_output_srid);
+ALTER TABLE neighborhood_cycwys_ways ALTER COLUMN the_geom TYPE GEOMETRY (
+    LINESTRING, :nb_output_srid
+)
+USING ST_Transform(the_geom, :nb_output_srid);
+ALTER TABLE neighborhood_ways_intersections ALTER COLUMN geom TYPE GEOMETRY (
+    POINT, :nb_output_srid
+)
+USING ST_Transform(geom, :nb_output_srid);
 
 -- add columns
 ALTER TABLE neighborhood_ways ADD COLUMN functional_class TEXT;
@@ -78,10 +84,14 @@ ALTER TABLE neighborhood_ways ADD COLUMN xwalk INT;
 
 -- indexes
 CREATE INDEX idx_neighborhood_ways_osm ON neighborhood_ways (osm_id);
-CREATE INDEX idx_neighborhood_ways_ints_osm ON neighborhood_ways_intersections (osm_id);
+CREATE INDEX idx_neighborhood_ways_ints_osm ON neighborhood_ways_intersections (
+    osm_id
+);
 CREATE INDEX idx_neighborhood_fullways ON neighborhood_osm_full_line (osm_id);
-CREATE INDEX idx_neighborhood_fullpoints ON neighborhood_osm_full_point (osm_id);
-ANALYZE neighborhood_ways (osm_id,geom);
+CREATE INDEX idx_neighborhood_fullpoints ON neighborhood_osm_full_point (
+    osm_id
+);
+ANALYZE neighborhood_ways (osm_id, geom);
 ANALYZE neighborhood_cycwys_ways (the_geom);
 ANALYZE neighborhood_ways_intersections (osm_id);
 ANALYZE neighborhood_osm_full_line (osm_id);
@@ -91,24 +101,35 @@ ANALYZE neighborhood_osm_full_point (osm_id);
 INSERT INTO neighborhood_ways (
     name, intersection_from, intersection_to, osm_id, geom
 )
-SELECT  name,
-        (SELECT     i.int_id
-        FROM        neighborhood_ways_intersections i
-        WHERE       i.geom <#> neighborhood_cycwys_ways.the_geom < 20
-        ORDER BY    ST_Distance(ST_StartPoint(neighborhood_cycwys_ways.the_geom),i.geom) ASC
-        LIMIT       1),
-        (SELECT     i.int_id
-        FROM        neighborhood_ways_intersections i
-        WHERE       i.geom <#> neighborhood_cycwys_ways.the_geom < 20
-        ORDER BY    ST_Distance(ST_EndPoint(neighborhood_cycwys_ways.the_geom),i.geom) ASC
-        LIMIT       1),
-        osm_id,
-        the_geom
-FROM    neighborhood_cycwys_ways
-WHERE   NOT EXISTS (
-            SELECT  1
-            FROM    neighborhood_ways w2
-            WHERE   w2.osm_id = neighborhood_cycwys_ways.osm_id
+SELECT
+    name,
+    (
+        SELECT i.int_id
+        FROM neighborhood_ways_intersections AS i
+        WHERE i.geom <#> neighborhood_cycwys_ways.the_geom < 20 -- noqa: PRS
+        ORDER BY
+            ST_Distance(
+                ST_StartPoint(neighborhood_cycwys_ways.the_geom), i.geom
+            ) ASC
+        LIMIT 1
+    ),
+    (
+        SELECT i.int_id
+        FROM neighborhood_ways_intersections AS i
+        WHERE i.geom <#> neighborhood_cycwys_ways.the_geom < 20 -- noqa: PRS
+        ORDER BY
+            ST_Distance(
+                ST_EndPoint(neighborhood_cycwys_ways.the_geom), i.geom
+            ) ASC
+        LIMIT 1
+    ),
+    osm_id,
+    the_geom
+FROM neighborhood_cycwys_ways
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM neighborhood_ways AS w2
+    WHERE w2.osm_id = neighborhood_cycwys_ways.osm_id
 );
 
 -- setup intersection table
@@ -118,6 +139,10 @@ ALTER TABLE neighborhood_ways_intersections ADD COLUMN stops BOOLEAN;
 ALTER TABLE neighborhood_ways_intersections ADD COLUMN rrfb BOOLEAN;
 ALTER TABLE neighborhood_ways_intersections ADD COLUMN island BOOLEAN;
 
-CREATE INDEX idx_neighborhood_ints_stop ON neighborhood_ways_intersections (signalized,stops);
+CREATE INDEX idx_neighborhood_ints_stop ON neighborhood_ways_intersections (
+    signalized, stops
+);
 CREATE INDEX idx_neighborhood_rrfb ON neighborhood_ways_intersections (rrfb);
-CREATE INDEX idx_neighborhood_island ON neighborhood_ways_intersections (island);
+CREATE INDEX idx_neighborhood_island ON neighborhood_ways_intersections (
+    island
+);
