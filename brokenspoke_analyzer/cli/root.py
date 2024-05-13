@@ -175,6 +175,7 @@ def run(
     s3_bucket: Annotated[
         typing.Optional[str], typer.Option(help="S3 bucket name where to export")
     ] = None,
+    s3_dir: typing.Optional[pathlib.Path] = None,
 ) -> None:
     """Run an analysis."""
     run_with.run_(
@@ -193,4 +194,5 @@ def run(
         max_trip_distance=max_trip_distance,
         with_export=with_export,
         s3_bucket=s3_bucket,
+        s3_dir=s3_dir,
     )
