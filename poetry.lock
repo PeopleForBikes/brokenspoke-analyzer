@@ -2297,13 +2297,13 @@ files = [
 
 [[package]]
 name = "osmnx"
-version = "1.9.2"
+version = "1.9.3"
 description = "Download, model, analyze, and visualize street networks and other geospatial features from OpenStreetMap"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "osmnx-1.9.2-py3-none-any.whl", hash = "sha256:9ea17500b45aa8e4740490d649c7f7747fa4f2e3f9747294837fa2c80aabd05f"},
-    {file = "osmnx-1.9.2.tar.gz", hash = "sha256:59d21756ebdb4a4d211fb1373a3dca170832eec5f25ef94f5500bd79d32c169a"},
+    {file = "osmnx-1.9.3-py3-none-any.whl", hash = "sha256:ac67bea77b521941af648ef641ae1d006101948d1112475c256ea23ef31b426a"},
+    {file = "osmnx-1.9.3.tar.gz", hash = "sha256:22548d86d68d36edff3cf9ab76c45745cda86a4ea0b28442e107d6b42992a426"},
 ]
 
 [package.dependencies]
@@ -4603,4 +4603,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "992a119d5259a5ae4958a6ec0d211df48e496f2eb06fc5dda317616ce289f4e4"
+content-hash = "fe00e6d0fd6888a7fa3c839d7d46dc9c2a69ba9670684676c481eb4c9d08ada1"
