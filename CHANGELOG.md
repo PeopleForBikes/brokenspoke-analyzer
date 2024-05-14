@@ -7,6 +7,16 @@ Versioning].
 
 ## [Unreleased]
 
+## [2.1.2] - 2024-05-14
+
+### Fixed
+
+- Add missing parameter to the `run` command. [#603]
+
+[#603]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/603
+[2.1.2]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.1.2
+
 ## [2.1.1] - 2024-03-16
 
 This is a release to fix the release workflows.
