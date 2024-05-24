@@ -27,13 +27,14 @@ def s3(
     country: common.Country,
     city: common.City,
     region: common.Region = None,
+    with_bundle: typing.Optional[bool] = False,
 ) -> pathlib.Path:
     """Export results to a S3 bucket following the PFB calver convention."""
     with console.status("[bold green]Uploading results to AWS S3..."):
         folder = exporter.create_calver_s3_directories(
             bucket_name, country, city, region
         )
-        exporter.s3(database_url, bucket_name, folder)
+        exporter.s3(database_url, bucket_name, folder, with_bundle)
         return folder
 
 
@@ -42,11 +43,12 @@ def s3_custom(
     database_url: common.DatabaseURL,
     bucket_name: str,
     s3_dir: typing.Optional[pathlib.Path] = pathlib.Path(),
+    with_bundle: typing.Optional[bool] = False,
 ) -> pathlib.Path:
     """Export results to a custom S3 bucket."""
     with console.status("[bold green]Uploading results to AWS S3..."):
         folder = exporter.s3_directories(bucket_name, s3_dir)
-        exporter.s3(database_url, bucket_name, folder)
+        exporter.s3(database_url, bucket_name, folder, with_bundle)
         return folder
 
 
@@ -54,9 +56,10 @@ def s3_custom(
 def local_custom(
     database_url: common.DatabaseURL,
     export_dir: common.ExportDirArg,
+    with_bundle: typing.Optional[bool] = False,
 ) -> None:
     """Export results to a custom directory."""
-    _local(database_url=database_url, export_dir=export_dir)
+    _local(database_url=database_url, export_dir=export_dir, with_bundle=with_bundle)
 
 
 @app.command()
@@ -66,22 +69,23 @@ def local(
     city: common.City,
     region: common.Region = None,
     export_dir: common.ExportDirArg = common.DEFAULT_EXPORT_DIR,
+    with_bundle: typing.Optional[bool] = False,
 ) -> pathlib.Path:
     """Export results to a directory following the PFB calver convention."""
     dir_ = exporter.create_calver_directories(
         country, city, region, base_dir=export_dir
     )
     logger.debug(f"{dir_=}")
-    _local(database_url=database_url, export_dir=dir_)
+    _local(database_url=database_url, export_dir=dir_, with_bundle=with_bundle)
     return dir_
 
 
-def _local(database_url: str, export_dir: pathlib.Path) -> None:
+def _local(
+    database_url: str,
+    export_dir: pathlib.Path,
+    with_bundle: typing.Optional[bool] = False,
+) -> None:
     console.log(f"[bold green]Saving results to {export_dir}...")
-    # Prepare the output directory.
-    export_dir.mkdir(parents=True, exist_ok=True)
-
-    # Export the catalogued tables to their associated format.
-    exporter.auto_export(
-        export_dir.resolve(strict=True), exporter.TABLE_CATALOG, database_url
+    exporter.local_files(
+        database_url=database_url, export_dir=export_dir, with_bundle=with_bundle
     )

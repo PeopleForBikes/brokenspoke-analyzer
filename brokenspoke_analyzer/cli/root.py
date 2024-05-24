@@ -176,6 +176,7 @@ def run(
         typing.Optional[str], typer.Option(help="S3 bucket name where to export")
     ] = None,
     s3_dir: typing.Optional[pathlib.Path] = None,
+    with_bundle: typing.Optional[bool] = False,
 ) -> None:
     """Run an analysis."""
     run_with.run_(
@@ -195,4 +196,5 @@ def run(
         with_export=with_export,
         s3_bucket=s3_bucket,
         s3_dir=s3_dir,
+        with_bundle=with_bundle,
     )

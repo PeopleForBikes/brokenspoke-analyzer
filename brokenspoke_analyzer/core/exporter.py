@@ -1,6 +1,7 @@
 """Define functions to export the data to various destinations."""
 
 import pathlib
+import shutil
 import tempfile
 import typing
 from datetime import date
@@ -247,6 +248,7 @@ def s3(
     database_url: str,
     bucket_name: str,
     folder: typing.Optional[pathlib.Path] = pathlib.Path(),
+    with_bundle: typing.Optional[bool] = False,
 ) -> None:
     """Export PostgreSQL/PostGIS tables to an S3 Bucket."""
     # Make mypy happy.
@@ -259,7 +261,11 @@ def s3(
     # Create a temporary directory to export the files.
     with tempfile.TemporaryDirectory() as tmpdir_name:
         tmpdir = pathlib.Path(tmpdir_name)
-        auto_export(tmpdir, TABLE_CATALOG, database_url)
+        local_files(
+            database_url=database_url,
+            export_dir=tmpdir,
+            with_bundle=with_bundle,
+        )
 
         # Upload each file one after the other.
         for file in tmpdir.iterdir():
@@ -269,3 +275,29 @@ def s3(
             object_name = folder / file.name
             logger.debug(f"Uploading file to s3://{bucket_name}/{object_name}")
             s3.upload_file(file, bucket_name, str(object_name))
+
+
+def bundle(src_dir: pathlib.Path) -> pathlib.Path:
+    """Bundle the content of `src_dir` into a zip file and save it into `src_dir`."""
+    bundle_file = pathlib.Path("bundle.zip")
+    dest = src_dir / bundle_file
+    shutil.make_archive(bundle_file.stem, bundle_file.suffix[1:], src_dir)
+    shutil.move(bundle_file, dest)
+    return dest
+
+
+def local_files(
+    database_url: str,
+    export_dir: pathlib.Path,
+    with_bundle: typing.Optional[bool] = False,
+) -> None:
+    """Export result files into a local directory."""
+    # Prepare the output directory.
+    export_dir.mkdir(parents=True, exist_ok=True)
+
+    # Export the catalogued tables to their associated format.
+    auto_export(export_dir.resolve(strict=True), TABLE_CATALOG, database_url)
+
+    # Bundle the result files into a zip file if needed.
+    if with_bundle:
+        bundle(export_dir)

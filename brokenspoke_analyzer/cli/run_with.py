@@ -48,6 +48,7 @@ def compose(
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
     with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
     s3_bucket: typing.Optional[str] = None,
+    with_bundle: typing.Optional[bool] = False,
 ) -> typing.Optional[pathlib.Path]:
     """Manage Docker Compose when running the analysis."""
     database_url = "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -70,6 +71,7 @@ def compose(
             max_trip_distance=max_trip_distance,
             with_export=with_export,
             s3_bucket=s3_bucket,
+            with_bundle=with_bundle,
         )
     finally:
         subprocess.run(["docker", "compose", "rm", "-sfv"], check=True)
@@ -141,6 +143,7 @@ def compare(
     lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
     retries: common.Retries = common.DEFAULT_RETRIES,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
+    with_bundle: typing.Optional[bool] = False,
 ) -> pd.DataFrame:
     """Run the analysis using the original BNA and teh brokenspoke-analyzer."""
     # Make mypy happy.
@@ -162,6 +165,7 @@ def compare(
         retries=retries,
         max_trip_distance=max_trip_distance,
         with_export=exporter.Exporter.local,
+        with_bundle=with_bundle,
     )
     if brokenspoke_export_dir is None:
         raise ValueError("the export must be specified")
@@ -206,6 +210,7 @@ def run_(
     with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
     s3_bucket: typing.Optional[str] = None,
     s3_dir: typing.Optional[pathlib.Path] = None,
+    with_bundle: typing.Optional[bool] = False,
 ) -> typing.Optional[pathlib.Path]:
     """Run an analysis."""
     # Make mypy happy.
@@ -303,6 +308,7 @@ def run_(
             city=city,
             region=region,
             export_dir=export_dir,
+            with_bundle=with_bundle,
         )
     elif with_export == exporter.Exporter.s3:
         export_dir = export.s3(
