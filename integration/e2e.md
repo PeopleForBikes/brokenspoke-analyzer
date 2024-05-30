@@ -78,59 +78,123 @@ docker run --rm --network brokenspoke-analyzer_default -u $(id -u):$(id -g) -v .
 
 ## JSON
 
+### XS
+
 ```json
 [
   {
-    "country": "usa",
+    "country": "united states",
     "city": "provincetown",
     "region": "massachusetts",
     "fips_code": "555535"
   },
   {
-    "country": "usa",
+    "country": "united states",
     "city": "santa rosa",
     "region": "new mexico",
     "fips_code": "3570670"
   },
   {
-    "country": "usa",
+    "country": "united states",
     "city": "crested butte",
     "region": "colorado",
     "fips_code": "818310"
   },
-  { "country": "canada", "city": "ancienne-lorette", "region": "québec" },
   {
-    "country": "usa",
+    "country": "canada",
+    "city": "ancienne-lorette",
+    "region": "québec"
+  },
+  {
+    "country": "united states",
+    "city": "rehoboth beach",
+    "region": "delaware",
+    "fips_code": "1060290"
+  },
+  {
+    "country": "australia",
+    "city": "orange",
+    "region": "new south wales"
+  }
+]
+```
+
+### S
+
+```json
+[
+  {
+    "country": "united states",
+    "city": "cañon city",
+    "region": "colorado",
+    "fips_code": "0811810"
+  },
+  {
+    "country": "united states",
+    "city": "jackson",
+    "region": "wyoming",
+    "fips_code": "5640120"
+  },
+  {
+    "country": "united states",
+    "city": "alvarado",
+    "region": "texas",
+    "fips_code": "4802260"
+  }
+]
+```
+
+### M
+
+```json
+[
+  {
+    "country": "united states",
     "city": "st. louis park",
     "region": "minnesota",
     "fips_code": "2757220"
   },
   {
-    "country": "usa",
+    "country": "united states",
     "city": "arcata",
     "region": "california",
     "fips_code": "602476"
   },
   {
-    "country": "usa",
-    "city": "rehoboth beach",
-    "region": "delaware",
-    "fips_code": "1060290"
+    "country": "france",
+    "city": "chambéry",
+    "region": "savoie"
   },
-  { "country": "australia", "city": "orange", "region": "new south wales" },
   {
-    "country": "usa",
-    "city": "cañon city",
-    "region": "colorado",
-    "fips_code": "0811810"
-  },
-  { "country": "spain", "city": "valencia", "region": "valencia" },
-  { "country": "france", "city": "chambéry", "region": "savoie" },
-  {
-    "country": "usa",
+    "country": "united states",
     "city": "flagstaff",
     "region": "arizona",
     "fips_code": "0423620"
+  }
+]
+```
+
+### L
+
+```json
+[
+  {
+    "country": "spain",
+    "city": "valencia",
+    "region": "valencia"
+  }
+]
+```
+
+### XXL
+
+```json
+[
+  {
+    "country": "united states",
+    "city": "washington",
+    "region": "district of columbia",
+    "fips_code": "1150000"
   }
 ]
 ```
