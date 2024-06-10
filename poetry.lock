@@ -3595,13 +3595,13 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "sphinx-autodoc-typehints"
-version = "2.1.0"
+version = "2.1.1"
 description = "Type hints (PEP 484) support for the Sphinx autodoc extension"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "sphinx_autodoc_typehints-2.1.0-py3-none-any.whl", hash = "sha256:46f1a710b3ed35904f63a77c5e68334c5ee1c2e22828b75fdcd147f1c52c199b"},
-    {file = "sphinx_autodoc_typehints-2.1.0.tar.gz", hash = "sha256:51bf8dc77c4fba747e32f0735002a91500747d0553cae616863848e8f5e49fe8"},
+    {file = "sphinx_autodoc_typehints-2.1.1-py3-none-any.whl", hash = "sha256:22427d74786274add2b6d4afccb8b3c8c1843f48a704550f15a35fd948f8a4de"},
+    {file = "sphinx_autodoc_typehints-2.1.1.tar.gz", hash = "sha256:0072b65f5ab2818c229d6d6c2cc993770af55d36bb7bfb16001e2fce4d14880c"},
 ]
 
 [package.dependencies]
@@ -4603,4 +4603,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "529fbe856a8bd92160d8e3833b930b77643cbbbffef99b62def53304295d2068"
+content-hash = "3216a9da83af9c17465bb998938b0a572ff0d1d590156736d17fb0960fb6fe2d"
