@@ -48,7 +48,7 @@ types-jsonschema = "^4.22.0.20240501"
 types-pygments = "^2.18.0.20240506"
 types-python-slugify = "^8.0.2.20240310"
 types-six = "^1.16.21.20240513"
-xdoctest = "^1.1.4"
+xdoctest = "^1.1.5"
 pandas-stubs = "^2.2.2.240603"
 
 [tool.poetry.scripts]
