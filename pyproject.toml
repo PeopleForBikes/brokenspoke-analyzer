@@ -123,7 +123,7 @@ ignore_missing_imports = true
 [tool.sqlfluff.core]
 dialect = "postgres"
 exclude_rules = "RF01"
-large_file_skip_byte_limit = 50000
+large_file_skip_byte_limit = 0
 processes = 0
 templater = "placeholder"
 
@@ -158,3 +158,6 @@ transit = 99
 
 [tool.sqlfluff.rules.capitalisation.functions]
 ignore_words_regex = "ST_."
+
+[tool.sqlfluff.rules.layout.long_lines]
+ignore_comment_lines = true
