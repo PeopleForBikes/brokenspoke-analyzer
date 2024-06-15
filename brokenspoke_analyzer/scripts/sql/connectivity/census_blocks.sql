@@ -10,7 +10,7 @@
 --                -v block_road_min_length=30 -f census_blocks.sql
 ----------------------------------------
 
-ALTER TABLE neighborhood_census_blocks DROP COLUMN IF EXISTS road_ids;
+ALTER TABLE neighborhood_census_blocks DROP COLUMN IF EXISTS road_ids; -- noqa: disable=LT05
 ALTER TABLE neighborhood_census_blocks DROP COLUMN IF EXISTS pop_low_stress;
 ALTER TABLE neighborhood_census_blocks DROP COLUMN IF EXISTS pop_high_stress;
 ALTER TABLE neighborhood_census_blocks DROP COLUMN IF EXISTS pop_score;
@@ -61,7 +61,7 @@ ALTER TABLE neighborhood_census_blocks DROP COLUMN IF EXISTS transit_high_stress
 ALTER TABLE neighborhood_census_blocks DROP COLUMN IF EXISTS transit_score;
 ALTER TABLE neighborhood_census_blocks DROP COLUMN IF EXISTS overall_score;
 
-ALTER TABLE neighborhood_census_blocks ADD COLUMN road_ids INTEGER[];
+ALTER TABLE neighborhood_census_blocks ADD COLUMN road_ids INTEGER [];
 ALTER TABLE neighborhood_census_blocks ADD COLUMN pop_low_stress INT;
 ALTER TABLE neighborhood_census_blocks ADD COLUMN pop_high_stress INT;
 ALTER TABLE neighborhood_census_blocks ADD COLUMN pop_score FLOAT;
@@ -110,39 +110,56 @@ ALTER TABLE neighborhood_census_blocks ADD COLUMN community_centers_score FLOAT;
 ALTER TABLE neighborhood_census_blocks ADD COLUMN transit_low_stress INT;
 ALTER TABLE neighborhood_census_blocks ADD COLUMN transit_high_stress INT;
 ALTER TABLE neighborhood_census_blocks ADD COLUMN transit_score FLOAT;
-ALTER TABLE neighborhood_census_blocks ADD COLUMN overall_score FLOAT;
+ALTER TABLE neighborhood_census_blocks ADD COLUMN overall_score FLOAT; -- noqa: enable=all
 
 -- indexes
-CREATE INDEX IF NOT EXISTS idx_neighborhood_blocks10 ON neighborhood_census_blocks (blockid10);
-CREATE INDEX IF NOT EXISTS idx_neighborhood_geom ON neighborhood_census_blocks USING GIST (geom);
+CREATE INDEX IF NOT EXISTS idx_neighborhood_blocks10
+ON neighborhood_census_blocks (
+    blockid10
+);
+CREATE INDEX IF NOT EXISTS idx_neighborhood_geom
+ON neighborhood_census_blocks USING gist (
+    geom
+);
 ANALYZE neighborhood_census_blocks;
 
 ------------------------------
 -- add road_ids
 ------------------------------
 ALTER TABLE neighborhood_census_blocks DROP COLUMN IF EXISTS tmp_geom_buffer;
-ALTER TABLE neighborhood_census_blocks ADD COLUMN tmp_geom_buffer geometry(multipolygon, :nb_output_srid);
+ALTER TABLE neighborhood_census_blocks ADD COLUMN tmp_geom_buffer GEOMETRY (
+    MULTIPOLYGON, :nb_output_srid
+);
 
-UPDATE  neighborhood_census_blocks
-SET     tmp_geom_buffer = ST_Multi(ST_Buffer(geom,:block_road_buffer));
-CREATE INDEX tsidx_neighborhood_cblockbuffgeoms ON neighborhood_census_blocks USING GIST (tmp_geom_buffer);
+UPDATE neighborhood_census_blocks
+SET tmp_geom_buffer = ST_Multi(ST_Buffer(geom, :block_road_buffer));
+CREATE INDEX tsidx_neighborhood_cblockbuffgeoms
+ON neighborhood_census_blocks USING gist (
+    tmp_geom_buffer
+);
 ANALYZE neighborhood_census_blocks (tmp_geom_buffer);
 
-UPDATE  neighborhood_census_blocks
-SET     road_ids = array((
-            SELECT  ways.road_id
-            FROM    neighborhood_ways ways
-            WHERE   ST_Intersects(neighborhood_census_blocks.tmp_geom_buffer,ways.geom)
-            AND     (
-                        ST_Contains(neighborhood_census_blocks.tmp_geom_buffer,ways.geom)
-                    OR  ST_Length(
-                            ST_Intersection(neighborhood_census_blocks.tmp_geom_buffer,ways.geom)
-                        ) > :block_road_min_length
-                    )
-        ));
+UPDATE neighborhood_census_blocks
+SET road_ids = array((
+    SELECT ways.road_id
+    FROM neighborhood_ways AS ways
+    WHERE
+        ST_Intersects(neighborhood_census_blocks.tmp_geom_buffer, ways.geom)
+        AND (
+            ST_Contains(neighborhood_census_blocks.tmp_geom_buffer, ways.geom)
+            OR ST_Length(
+                ST_Intersection(
+                    neighborhood_census_blocks.tmp_geom_buffer, ways.geom
+                )
+            ) > :block_road_min_length
+        )
+));
 
 ALTER TABLE neighborhood_census_blocks DROP COLUMN IF EXISTS tmp_geom_buffer;
 
 -- index
-CREATE INDEX aidx_neighborhood_census_blocks_road_ids ON neighborhood_census_blocks USING GIN (road_ids);
+CREATE INDEX aidx_neighborhood_census_blocks_road_ids
+ON neighborhood_census_blocks USING gin (
+    road_ids
+);
 ANALYZE neighborhood_census_blocks (road_ids);
