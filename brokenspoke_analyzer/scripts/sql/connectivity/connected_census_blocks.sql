@@ -34,7 +34,7 @@ SELECT
     TRUE, -- noqa: AL03
     (
         SELECT MIN(hs.total_cost)
-        FROM neighborhood_reachable_roads_low_stress AS hs
+        FROM neighborhood_reachable_roads_high_stress AS hs
         WHERE
             hs.base_road = ANY(source.road_ids)
             AND hs.target_road = ANY(target.road_ids)
