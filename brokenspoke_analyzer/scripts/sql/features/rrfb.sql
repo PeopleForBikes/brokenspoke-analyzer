@@ -6,13 +6,19 @@
 ----------------------------------------
 UPDATE neighborhood_ways_intersections SET rrfb = FALSE;
 
-UPDATE  neighborhood_ways_intersections
-SET     rrfb = TRUE
-WHERE   legs > 2
-AND     EXISTS (
-            SELECT  1
-            FROM    neighborhood_osm_full_point osm
-            WHERE   osm.highway = 'crossing'
-            AND     osm.flashing_lights IN ('yes','button','always','sensor')
-            AND     ST_DWithin(neighborhood_ways_intersections.geom, osm.way, :sigctl_search_dist)
-        );
+UPDATE neighborhood_ways_intersections
+SET rrfb = TRUE
+WHERE
+    legs > 2
+    AND EXISTS (
+        SELECT 1
+        FROM neighborhood_osm_full_point AS osm
+        WHERE
+            osm.highway = 'crossing'
+            AND osm.flashing_lights IN ('yes', 'button', 'always', 'sensor')
+            AND ST_DWithin(
+                neighborhood_ways_intersections.geom,
+                osm.way,
+                :sigctl_search_dist
+            )
+    );
