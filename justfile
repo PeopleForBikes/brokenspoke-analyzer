@@ -6,7 +6,7 @@ src_dir := "brokenspoke_analyzer"
 ci: lint docs test
 
 # Meta task running all the linters at once.
-lint: lint-md lint-python
+lint: lint-md lint-python lint-sql
 
 # Lint markown files.
 lint-md:
@@ -18,6 +18,10 @@ lint-python:
     poetry run ruff format --check {{ src_dir }}
     poetry run ruff check {{ src_dir }}
     poetry run mypy {{ src_dir }}
+
+# Lint SQL files.
+lint-sql:
+    poetry run sqlfluff lint brokenspoke_analyzer/scripts/sql/
 
 # Meta tasks running all formatters at once.
 fmt: fmt-md fmt-python fmt-just
