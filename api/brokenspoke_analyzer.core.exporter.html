@@ -6,7 +6,7 @@
 <link rel="author" title="About these documents" href="../about.html" /><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="brokenspoke_analyzer.core.ingestor module" href="brokenspoke_analyzer.core.ingestor.html" /><link rel="prev" title="brokenspoke_analyzer.core.downloader module" href="brokenspoke_analyzer.core.downloader.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>brokenspoke_analyzer.core.exporter module - Brokenspoke Analyzer 2.1.2 documentation</title>
+        <title>brokenspoke_analyzer.core.exporter module - Brokenspoke Analyzer 2.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -220,7 +220,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Brokenspoke Analyzer 2.1.2 documentation</div></a>
+      <a href="../index.html"><div class="brand">Brokenspoke Analyzer 2.2.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -244,7 +244,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.1.2 documentation</span>
+  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.2.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -366,6 +366,17 @@ to geojson or sometimes shapefiles (or both).</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.exporter.bundle">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.exporter.</span></span><span class="sig-name descname"><span class="pre">bundle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.exporter.bundle" title="Link to this definition">¶</a></dt>
+<dd><p>Bundle the content of <cite>src_dir</cite> into a zip file and save it into <cite>src_dir</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="brokenspoke_analyzer.core.exporter.calver_base">
 <span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.exporter.</span></span><span class="sig-name descname"><span class="pre">calver_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">country</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">city</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_override</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">PosixPath('.')</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.exporter.calver_base" title="Link to this definition">¶</a></dt>
 <dd><p>Build the base part of the calver path.</p>
@@ -461,8 +472,19 @@ See <a class="reference external" href="https://calver.org/#scheme">https://calv
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.exporter.local_files">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.exporter.</span></span><span class="sig-name descname"><span class="pre">local_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_bundle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.exporter.local_files" title="Link to this definition">¶</a></dt>
+<dd><p>Export result files into a local directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="brokenspoke_analyzer.core.exporter.s3">
-<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.exporter.</span></span><span class="sig-name descname"><span class="pre">s3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">PosixPath('.')</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.exporter.s3" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.exporter.</span></span><span class="sig-name descname"><span class="pre">s3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">database_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">PosixPath('.')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_bundle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.exporter.s3" title="Link to this definition">¶</a></dt>
 <dd><p>Export PostgreSQL/PostGIS tables to an S3 Bucket.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -555,6 +577,7 @@ See <a class="reference external" href="https://calver.org/#scheme">https://calv
 </ul>
 </li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.exporter.auto_export"><code class="docutils literal notranslate"><span class="pre">auto_export()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.exporter.bundle"><code class="docutils literal notranslate"><span class="pre">bundle()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.exporter.calver_base"><code class="docutils literal notranslate"><span class="pre">calver_base()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.exporter.calver_revision"><code class="docutils literal notranslate"><span class="pre">calver_revision()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.exporter.create_calver_directories"><code class="docutils literal notranslate"><span class="pre">create_calver_directories()</span></code></a></li>
@@ -562,6 +585,7 @@ See <a class="reference external" href="https://calver.org/#scheme">https://calv
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.exporter.export_to_csv"><code class="docutils literal notranslate"><span class="pre">export_to_csv()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.exporter.export_to_geojson"><code class="docutils literal notranslate"><span class="pre">export_to_geojson()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.exporter.export_to_shp"><code class="docutils literal notranslate"><span class="pre">export_to_shp()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.exporter.local_files"><code class="docutils literal notranslate"><span class="pre">local_files()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.exporter.s3"><code class="docutils literal notranslate"><span class="pre">s3()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.exporter.s3_directories"><code class="docutils literal notranslate"><span class="pre">s3_directories()</span></code></a></li>
 </ul>
@@ -575,7 +599,7 @@ See <a class="reference external" href="https://calver.org/#scheme">https://calv
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=b3e23499"></script>
+</div><script src="../_static/documentation_options.js?v=b21de401"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=4e2eecee"></script>
