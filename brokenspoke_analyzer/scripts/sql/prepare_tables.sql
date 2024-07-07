@@ -84,6 +84,12 @@ ALTER TABLE neighborhood_ways ADD COLUMN xwalk INT;
 
 -- indexes
 CREATE INDEX idx_neighborhood_ways_osm ON neighborhood_ways (osm_id);
+CREATE INDEX idx_neighborhood_ways_intersection_to ON neighborhood_ways (
+    intersection_to
+);
+CREATE INDEX idx_neighborhood_ways_intersection_from ON neighborhood_ways (
+    intersection_from
+);
 CREATE INDEX idx_neighborhood_ways_ints_osm ON neighborhood_ways_intersections (
     osm_id
 );
