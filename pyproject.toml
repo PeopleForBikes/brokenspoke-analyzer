@@ -49,7 +49,7 @@ types-pygments = "^2.18.0.20240506"
 types-python-slugify = "^8.0.2.20240310"
 types-six = "^1.16.21.20240513"
 xdoctest = "^1.1.5"
-pandas-stubs = "^2.2.2.240603"
+pandas-stubs = "^2.2.2.240807"
 
 [tool.poetry.scripts]
 bna = 'brokenspoke_analyzer.cli.root:app'
