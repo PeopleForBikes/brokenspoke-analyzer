@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [2.3.0] - 2024-09-17
+
+### Fixed
+
+- Fixed table name in census block calculations. [#648]
+
+### Changed
+
+- Added indexes for intersection_to and intersection_from on neighborhood_ways.
+  [#654]
+- Reduced size of connected roads tables and indexes. [#660]
+
+### New contributor(s)
+
+A warm welcome and big thank you to our new contributor(s) for this release:
+
+- [@mitchellhenke](https://github.com/mitchellhenke)
+
+Thank you for joining our community and making a difference!
+
+[#648]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/648
+[#654]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/654
+[#660]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/660
+[2.3.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.3.0
+
 ## [2.2.1] - 2024-07-06
 
 ### Fixed
