@@ -1,3 +1,5 @@
+name: brokenspoke-analyzer
+
 services:
   postgres:
     image: ghcr.io/peopleforbikes/docker-postgis-bna:17-3.4-1
@@ -18,7 +20,36 @@ services:
       - 5432:5432
     volumes:
       - postgres:/var/lib/postgresql/data
+    networks:
+      - brokenspoke-analyzer_default
+
+  analyzer-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: brokenspoke-analyzer:analyzer-app
+    volumes:
+      - ./:/usr/src/app
+    networks:
+      - brokenspoke-analyzer_default
+
+  analyzer-dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    image: brokenspoke-analyzer:analyzer-dev
+    entrypoint: sleep infinity
+    volumes:
+      - ./:/usr/src/app
+    networks:
+      - brokenspoke-analyzer_default
 
 volumes:
   postgres:
     external: false
+
+networks:
+  brokenspoke-analyzer_default:
+    driver: bridge
