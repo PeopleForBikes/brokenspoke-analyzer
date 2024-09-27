@@ -1,0 +1,28 @@
+{
+  "name": "pfb/brokenspoke-analyzer",
+  "dockerComposeFile": ["../compose.yml"],
+  "service": "bna-dev",
+  "runServices": ["bna-dev", "postgres"],
+  "workspaceFolder": "/usr/src/app",
+  "postAttachCommand": ["/bin/bash", ".devcontainer/postAttach.sh"],
+  "customizations": {
+    "vscode": {
+      // Set *default* container specific settings.json values on container create.
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "/bin/bash"
+          }
+        }
+      },
+      // Add the IDs of extensions you want installed when the container is created.
+      "extensions": [
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode",
+        "mhutchie.git-graph",
+        "ms-python.python"
+      ]
+    }
+  }
+}

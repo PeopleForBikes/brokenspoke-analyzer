@@ -6,7 +6,12 @@ The Brokenspoke-analyzer project follows the
 [BNA Mechanics Contributing Guidelines](https://peopleforbikes.github.io/contributing/).
 Refer to them for general principles.
 
-Specific instructions will be described in other sections on this page.
+In the sections below we provide instructions for how to set up a
+[developer environment locally](Developer_environment) or using a
+[development container](Development_container). Specific instructions will be
+described in other sections on this page.
+
+(Developer_environment)=
 
 ## Developer environment
 
@@ -57,6 +62,8 @@ Then open the <http://127.0.0.1:1111> URL to view the site.
 
 The content will automatically be refreshed when a file is saved on disk.
 
+(Administration_tasks)=
+
 ## Administration tasks
 
 Administration tasks are being provided as convenience in a `justfile`.
@@ -101,3 +108,43 @@ uv run bna run usa "santa rosa" "new mexico" 3570670
 ```
 
 [brokenspoke-analyzer]: https://github.com/PeopleForBikes/brokenspoke-analyzer
+
+(Development_container)=
+
+## Development Container
+
+This method provides a replicable developer and debugging environment based on a
+VSCode development container.
+
+In the development container's terminal, export the database URL:
+
+```bash
+export DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
+```
+
+Build and open the application in a development container in VS Code by running
+the command `Dev Containers: Rebuild and Reopen in Container` via the command
+palette (⇧⌘P in Mac or `Ctrl+Shift+P` in Windows). The database will be started
+in the background and once the development container opens, a terminal will be
+available to run the analyzer.
+
+In the development container's terminal, configure the database:
+
+```bash
+bna -vv configure custom 4 4096 postgres
+```
+
+Run the analysis:
+
+```bash
+bna -vv run "united states" "santa rosa" "new mexico" 3570670
+```
+
+After the analysis runs, by default, the results will be exported locally.
+
+All the [administration tasks](Administration_tasks) can also be ran inside the
+development container.
+
+Close the container and return to your local environment by running the command
+`Dev Containers: Reopen Folder Locally` via the command palette (⇧⌘P in Mac or
+`Ctrl+Shift+P` in Windows). The database will be stopped.
