@@ -20,6 +20,15 @@ services:
     volumes:
         - postgres:/var/lib/postgresql/data
 
+  dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    image: brokenspoke-analyzer:dev
+    entrypoint: sleep infinity
+    volumes:
+      - .:/home/pfb/app
+
 volumes:
   postgres:
     external: false
