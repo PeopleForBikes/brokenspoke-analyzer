@@ -16,7 +16,7 @@ jobs:
 
     services:
       postgres:
-        image: ghcr.io/rgreinho/docker-postgis-bna:13-3.1
+        image: ghcr.io/peopleforbikes/docker-postgis-bna:17-3.4-1
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
@@ -50,6 +50,15 @@ jobs:
           poetry run bna prepare all usa "santa rosa" "new mexico" 3570670
           poetry run bna import all usa "santa rosa" "new mexico" 3570670 --input-dir data/santa-rosa-new-mexico-usa
           poetry run bna compute usa "santa rosa" "new mexico" --input-dir data/santa-rosa-new-mexico-usa
+
+          set -x
+          echo "List tables for debugging purpose."
           psql -c "\d" $DATABASE_URL
-          psql -c "SELECT COUNT(*) FROM received.neighborhood_ways;" $DATABASE_URL
-          psql -c "SELECT * FROM neighborhood_overall_scores;" $DATABASE_URL
+
+          echo "Ensure neighborhood_overall_scores table contains 23 records."
+          ACTUAL=$(psql -t -c "SELECT COUNT(*) FROM neighborhood_overall_scores;" $DATABASE_URL)
+          test $ACTUAL -eq 23
+
+          # echo "Ensure received.neighborhood_ways table is not empty."
+          # ACTUAL=$(psql -t -c "SELECT COUNT(*) FROM received.neighborhood_ways;" $DATABASE_URL)
+          # test $ACTUAL -gt 0
