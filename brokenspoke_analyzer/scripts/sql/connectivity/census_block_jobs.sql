@@ -12,16 +12,16 @@
 ----------------------------------------
 
 -- process imported tables
-ALTER TABLE "state_od_aux_jt00" ALTER COLUMN w_geocode TYPE VARCHAR(15);
-UPDATE "state_od_aux_jt00" SET w_geocode = rpad(w_geocode, 15, '0'); --just in case we lost any trailing zeros
-ALTER TABLE "state_od_main_jt00" ALTER COLUMN w_geocode TYPE VARCHAR(15);
-UPDATE "state_od_main_jt00" SET w_geocode = rpad(w_geocode, 15, '0'); --just in case we lost any trailing zeros
+ALTER TABLE state_od_aux_jt00 ALTER COLUMN w_geocode TYPE VARCHAR(15);
+UPDATE state_od_aux_jt00 SET w_geocode = rpad(w_geocode, 15, '0'); --just in case we lost any trailing zeros
+ALTER TABLE state_od_main_jt00 ALTER COLUMN w_geocode TYPE VARCHAR(15);
+UPDATE state_od_main_jt00 SET w_geocode = rpad(w_geocode, 15, '0'); --just in case we lost any trailing zeros
 
 -- indexes
-CREATE INDEX IF NOT EXISTS tidx_auxjtw ON "state_od_aux_jt00" (w_geocode);
-CREATE INDEX IF NOT EXISTS tidx_mainjtw ON "state_od_main_jt00" (w_geocode);
-ANALYZE "state_od_aux_jt00" (w_geocode);
-ANALYZE "state_od_main_jt00" (w_geocode);
+CREATE INDEX IF NOT EXISTS tidx_auxjtw ON state_od_aux_jt00 (w_geocode);
+CREATE INDEX IF NOT EXISTS tidx_mainjtw ON state_od_main_jt00 (w_geocode);
+ANALYZE state_od_aux_jt00 (w_geocode);
+ANALYZE state_od_main_jt00 (w_geocode);
 
 -- create combined table
 DROP TABLE IF EXISTS generated.neighborhood_census_block_jobs;
@@ -39,8 +39,8 @@ FROM neighborhood_census_blocks AS blocks;
 -- add main data
 UPDATE generated.neighborhood_census_block_jobs
 SET jobs = coalesce((
-    SELECT sum(j."s000")
-    FROM "state_od_main_jt00" AS j
+    SELECT sum(j.s000)
+    FROM state_od_main_jt00 AS j
     WHERE j.w_geocode = neighborhood_census_block_jobs.blockid10
 ), 0);
 
@@ -49,8 +49,8 @@ UPDATE generated.neighborhood_census_block_jobs
 SET
     jobs = jobs
     + coalesce((
-        SELECT sum(j."s000")
-        FROM "state_od_aux_jt00" AS j
+        SELECT sum(j.s000)
+        FROM state_od_aux_jt00 AS j
         WHERE j.w_geocode = neighborhood_census_block_jobs.blockid10
     ), 0);
 

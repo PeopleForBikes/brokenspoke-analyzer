@@ -89,7 +89,7 @@ SET
                     THEN 'lane'
                 WHEN osm."cycleway:right" = 'lane'
                     THEN 'lane'
-                WHEN osm."cycleway" = 'track'
+                WHEN osm.cycleway = 'track'
                     THEN 'track'
                 WHEN osm."cycleway:right" = 'track'
                     THEN 'track'
@@ -120,7 +120,7 @@ SET
                     THEN 'lane'
                 WHEN osm."cycleway:right" = 'opposite_lane'
                     THEN 'lane'
-                WHEN osm."cycleway" = 'opposite_track'
+                WHEN osm.cycleway = 'opposite_track'
                     THEN 'track'
                 WHEN
                     (
@@ -169,7 +169,7 @@ SET
                     THEN 'lane'
                 WHEN osm."cycleway:right" = 'lane'
                     THEN 'lane'
-                WHEN osm."cycleway" = 'track'
+                WHEN osm.cycleway = 'track'
                     THEN 'track'
                 WHEN osm."cycleway:right" = 'track'
                     THEN 'track'
@@ -255,7 +255,7 @@ SET
                     THEN 'lane'
                 WHEN osm."cycleway:left" = 'lane'
                     THEN 'lane'
-                WHEN osm."cycleway" = 'track'
+                WHEN osm.cycleway = 'track'
                     THEN 'track'
                 WHEN osm."cycleway:left" = 'track'
                     THEN 'track'
@@ -286,7 +286,7 @@ SET
                     THEN 'lane'
                 WHEN osm."cycleway:right" = 'opposite_lane'
                     THEN 'lane'
-                WHEN osm."cycleway" = 'opposite_track'
+                WHEN osm.cycleway = 'opposite_track'
                     THEN 'track'
                 WHEN
                     (
@@ -335,7 +335,7 @@ SET
                     THEN 'lane'
                 WHEN osm."cycleway:left" = 'lane'
                     THEN 'lane'
-                WHEN osm."cycleway" = 'track'
+                WHEN osm.cycleway = 'track'
                     THEN 'track'
                 WHEN osm."cycleway:left" = 'track'
                     THEN 'track'
