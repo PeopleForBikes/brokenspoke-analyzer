@@ -461,10 +461,6 @@ def import_osm_data(
         city_speed_limit_override,
     )
 
-    # Move the full osm tables to the received schema.
-    logger.debug("Moving tables to received schema...")
-    move_tables(engine)
-
 
 def import_all(
     engine: Engine,
