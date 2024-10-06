@@ -26,8 +26,86 @@ Analysis” locally.
 
 ## Quickstart
 
-We recommend using [Poetry](https://python-poetry.org/) for installing the tool
-and working in a virtual environment. Once you have Poetry set up:
+There are 2 main ways to use the brokenspoke-analyzer:
+
+- All in Docker
+- Native Python with the database running in a Docker container
+
+The different methods are being described in the sections bellow, with their
+advantages and inconvenients.
+
+For more details about the different ways to run an analysis and how to adjust
+the options, please refer to the full documentation.
+
+### All in Docker
+
+The benefit of running eveything using the provided Docker images, is that there
+is no need to install any of the required dependencies, except Docker itself of
+course. This guaranties that the user will have the right versions of the
+multiple tools that are combined to run an analysis. This is the simplest way,
+and the recommended way for people who just want to run the analyzer.
+
+Start the database from Docker Compose, in the background:
+
+```bash
+docker compose up -d
+```
+
+Export the database URL:
+
+```bash
+export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
+```
+
+Run the analysis:
+
+```bash
+docker run \
+  --rm \
+  --network brokenspoke-analyzer_default \
+  -e DATABASE_URL \
+  ghcr.io/peopleforbikes/brokenspoke-analyzer:2.4.0 \
+  -vv run "united states" "santa rosa" "new mexico" 3570670
+```
+
+Export the results:
+
+```bash
+docker run \
+  --rm \
+  --network brokenspoke-analyzer_default \
+  -u $(id -u):$(id -g) \
+  -v ./results:/usr/src/app/results \
+  -e DATABASE_URL \
+  ghcr.io/peopleforbikes/brokenspoke-analyzer:2.4.0 \
+  -vv export local-calver "united states" "santa rosa" "new mexico"
+```
+
+Clean up:
+
+```bash
+docker compose down
+docker compose rm -sfv
+docker volume rm brokenspoke-analyzer_postgres
+```
+
+### Native w/ Database-only in Docker
+
+This method gives you the most control, and is recommended if you intend to work
+on the project.
+
+Export the database URL:
+
+```bash
+export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
+```
+
+At this point, all the requirements must be installed locally. Otherwise the
+brokenspoke-analyzer will not install.
+
+Once all the tools are installed, the brokenspoke-analyzer can be install. We
+recommend using [Poetry](https://python-poetry.org/) for installing the tool and
+working in a virtual environment. Once you have Poetry set up:
 
 ```bash
 git clone git@github.com:PeopleForBikes/brokenspoke-analyzer.git
@@ -35,24 +113,39 @@ cd brokenspoke-analyzer
 poetry install
 ```
 
-Activate the virtual environment in the cloned folder by using:
+Run the analysis:
 
 ```bash
-source .venv/bin/activate
-```
-
-The simplest way to run an analysis is to use docker compose.
-
-```bash
-bna run-with compose usa "santa rosa" "new mexico" 3570670
+poetry run bna run-with compose "united states" "santa rosa" "new mexico" 3570670
 ```
 
 This command takes care of starting and stopping the PostgreSQL/PostGIS server,
 running all the analysis commands, and exporting the results.
 
 The data required to perform the analysis will be saved in
-`data/santa-rosa-new-mexico-usa`, and the results exported in
-`results/usa/new mexico/santa rosa/23.11`.
+`data/santa-rosa-new-mexico-united-states`, and the results exported in
+`results/united-states/new mexico/santa rosa/23.11`.
 
-For more details about the different ways to run an analysis and how to adjust
-the options, please refer to the full documentation.
+### Configure the database manually
+
+In most cases, the brokenspoke-analyzer will auto-detect this information. But
+sometimes the auto-detection might fail. Here are the commands that will help
+retrieve the resource allocation values.
+
+Get the number of vCPUs allocated to Docker:
+
+```bash
+docker info --format json | jq .NCPU
+```
+
+Get the amount of memory (in MB) allocated to Docker:
+
+```bash
+docker info --format json | jq .MemTotal | numfmt --to-unit=1M
+```
+
+And then run the command to configure the database with custom values:
+
+```bash
+poetry run bna configure custom 4 4096 postgres
+```
