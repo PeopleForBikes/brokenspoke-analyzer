@@ -30,7 +30,8 @@ Thank you for joining our community and making a difference!
 [#648]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/648
 [#654]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/654
 [#660]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/660
-[2.3.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.3.0
+[2.3.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.3.0
 
 ## [2.2.1] - 2024-07-06
 
@@ -39,7 +40,8 @@ Thank you for joining our community and making a difference!
 - Fixed the Docker image. [#652]
 
 [#652]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/652
-[2.2.1]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.2.1
+[2.2.1]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.2.1
 
 ## [2.2.0] - 2024-07-06 [YANKED]
 
@@ -48,7 +50,8 @@ Thank you for joining our community and making a difference!
 - Added the ability to bundle the results. [#617]
 
 [#617]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/617
-[2.2.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.2.0
+[2.2.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.2.0
 
 ## [2.1.2] - 2024-05-14
 
@@ -57,13 +60,15 @@ Thank you for joining our community and making a difference!
 - Added missing parameter to the `run` command. [#603]
 
 [#603]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/603
-[2.1.2]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.1.2
+[2.1.2]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.1.2
 
 ## [2.1.1] - 2024-03-16
 
 This is a release to fix the release workflows.
 
-[2.1.1]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.1.1
+[2.1.1]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.1.1
 
 ## [2.1.0] - 2024-03-16
 
@@ -78,7 +83,8 @@ This is a release to fix the release workflows.
 
 [#518]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/518
 [#542]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/542
-[2.1.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.1.0
+[2.1.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.1.0
 
 ## [2.0.0] - 2024-02-19
 
@@ -102,7 +108,8 @@ up-to-date changelog, ensuring that all future enhancements and features will be
 meticulously documented to provide transparency and facilitate user
 understanding.
 
-[2.0.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.0.0
+[2.0.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.0.0
 
 ## [2.0.0-alpha] - 2023-09-16
 
@@ -148,7 +155,8 @@ understanding.
 [#321]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/321
 [#329]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/329
 [#330]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/330
-[2.0.0-alpha]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.0.0-alpha
+[2.0.0-alpha]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.0.0-alpha
 
 ## [1.3.0] - 2023-08-20
 
@@ -185,7 +193,8 @@ understanding.
 [#240]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/240
 [#259]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/259
 [#272]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/272
-[1.3.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.3.0
+[1.3.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.3.0
 
 ## [1.2.1] - 2023-06-18
 
@@ -196,7 +205,8 @@ understanding.
 
 [#205]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/205
 [#206]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/206
-[1.2.1]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.2.1
+[1.2.1]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.2.1
 
 ## [1.2.0] - 2023-06-14
 
@@ -216,7 +226,8 @@ understanding.
 [#152]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/152
 [#190]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/190
 [#191]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/191
-[1.2.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.2.0
+[1.2.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.2.0
 
 ## [1.1.0] - 2022-10-08
 
@@ -229,13 +240,15 @@ understanding.
 - Updated the analyzer image to 0.16.1. [#52]
 
 [#52]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/52
-[1.1.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.1.0
+[1.1.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.1.0
 
 ## [1.0.0] - 2022-08-14
 
 First stable version.
 
-[1.0.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0
+[1.0.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0
 
 ## [1.0.0-rc.1] - 2022-08-07
 
@@ -245,5 +258,6 @@ the world (although the analyzer will fail for some of them).
 The tool is still a bit rough on the edges, that is why this is a release
 candidate, but the quirks will be ironned out for 1.0.0.
 
-[1.0.0-rc.1]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0-rc.1
+[1.0.0-rc.1]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/1.0.0-rc.1
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
