@@ -35,6 +35,8 @@ TABLE_CATALOG = {
         "neighborhood_supermarkets",
         "neighborhood_transit",
         "neighborhood_universities",
+        "neighborhood_ways",
+        "neighborhood_ways_intersections",
     ],
     "csv": [
         "neighborhood_connected_census_blocks",
