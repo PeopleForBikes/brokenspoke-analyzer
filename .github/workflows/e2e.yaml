@@ -51,6 +51,8 @@ jobs:
           poetry run bna import all usa "santa rosa" "new mexico" 3570670 --input-dir data/santa-rosa-new-mexico-usa
           poetry run bna compute usa "santa rosa" "new mexico" --input-dir data/santa-rosa-new-mexico-usa
 
+      - name: Run integration tests
+        run: |
           set -x
           echo "List tables for debugging purpose."
           psql -c "\d" $DATABASE_URL
@@ -58,7 +60,3 @@ jobs:
           echo "Ensure neighborhood_overall_scores table contains 23 records."
           ACTUAL=$(psql -t -c "SELECT COUNT(*) FROM neighborhood_overall_scores;" $DATABASE_URL)
           test $ACTUAL -eq 23
-
-          # echo "Ensure received.neighborhood_ways table is not empty."
-          # ACTUAL=$(psql -t -c "SELECT COUNT(*) FROM received.neighborhood_ways;" $DATABASE_URL)
-          # test $ACTUAL -gt 0
