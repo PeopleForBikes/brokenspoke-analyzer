@@ -62,7 +62,7 @@ docs-clean:
 
 # Build the Docker image for local usage.
 docker-build:
-    docker buildx build -t ghcr.io/peopleforbikes/brokenspoke-analyzer .
+    docker buildx build -t ghcr.io/peopleforbikes/brokenspoke-analyzer --load .
 
 docker-prepare-all *args:
     echo "$@"
