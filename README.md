@@ -32,7 +32,7 @@ There are 2 main ways to use the brokenspoke-analyzer:
 - Native Python with the database running in a Docker container
 
 The different methods are being described in the sections below, with their
-advantages and inconvenients.
+advantages and inconveniences.
 
 For more details about the different ways to run an analysis and how to adjust
 the options, please refer to the full documentation.
