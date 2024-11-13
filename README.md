@@ -103,7 +103,7 @@ export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
 At this point, all the requirements must be installed locally. Otherwise the
 brokenspoke-analyzer will not install.
 
-Once all the tools are installed, the brokenspoke-analyzer can be install. We
+Once all the tools are installed, the brokenspoke-analyzer can be installed. We
 recommend using [Poetry](https://python-poetry.org/) for installing the tool and
 working in a virtual environment. Once you have Poetry set up:
 
