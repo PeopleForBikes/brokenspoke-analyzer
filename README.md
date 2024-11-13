@@ -41,7 +41,7 @@ the options, please refer to the full documentation.
 
 The benefit of running eveything using the provided Docker images, is that there
 is no need to install any of the required dependencies, except Docker itself of
-course. This guaranties that the user will have the right versions of the
+course. This guarantees that the user will have the right versions of the
 multiple tools that are combined to run an analysis. This is the simplest way,
 and the recommended way for people who just want to run the analyzer.
 
