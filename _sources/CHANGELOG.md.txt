@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [2.4.0] - 2024-11-13
+
+### Fixed
+
+- Prevent database tables from being moved incorrectly. [#727]
+- Extra dependencies were not being installed in the Docker image. [#729]
+
+### Added
+
+- Update the Docker Compose file to use PostgreSQL 17 and PostGIS 3.4. [#724]
+- Export all tables as GeoJSON. [#726]
+
+[2.4.0]: https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.4.0
+
 ## [2.3.0] - 2024-09-17
 
 ### Fixed
