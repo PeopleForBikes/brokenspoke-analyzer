@@ -45,17 +45,31 @@ course. This guarantees that the user will have the right versions of the
 multiple tools that are combined to run an analysis. This is the simplest way,
 and the recommended way for people who just want to run the analyzer.
 
+Export the database URL:
+
+```bash
+export DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
+```
+
 Start the database from Docker Compose, in the background:
 
 ```bash
 docker compose up -d
 ```
 
-Export the database URL:
+And configure it:
 
 ```bash
-export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
+docker run \
+  --rm \
+  --network brokenspoke-analyzer_default \
+  -e DATABASE_URL \
+  ghcr.io/peopleforbikes/brokenspoke-analyzer:2.4.0 \
+  -vv configure custom 4 4096 postgres
 ```
+
+**Remark: refer to the last section of this guide to find the optimal values for
+your system**
 
 Run the analysis:
 
@@ -68,6 +82,8 @@ docker run \
   -vv run "united states" "santa rosa" "new mexico" 3570670
 ```
 
+-v bna-data:/usr/src/app/data \
+
 Export the results:
 
 ```bash
@@ -78,14 +94,13 @@ docker run \
   -v ./results:/usr/src/app/results \
   -e DATABASE_URL \
   ghcr.io/peopleforbikes/brokenspoke-analyzer:2.4.0 \
-  -vv export local-calver "united states" "santa rosa" "new mexico"
+  -vv export local "united states" "santa rosa" "new mexico"
 ```
 
 Clean up:
 
 ```bash
 docker compose down
-docker compose rm -sfv
 docker volume rm brokenspoke-analyzer_postgres
 ```
 
