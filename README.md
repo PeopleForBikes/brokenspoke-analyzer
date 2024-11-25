@@ -82,7 +82,6 @@ docker run \
   -vv run "united states" "santa rosa" "new mexico" 3570670
 ```
 
-
 Export the results:
 
 ```bash
@@ -96,7 +95,7 @@ docker run \
   -vv export local "united states" "santa rosa" "new mexico"
 ```
 
-Clean up:
+Clean up (required before attempting to run another analysis):
 
 ```bash
 docker compose down
