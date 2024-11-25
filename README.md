@@ -82,7 +82,6 @@ docker run \
   -vv run "united states" "santa rosa" "new mexico" 3570670
 ```
 
--v bna-data:/usr/src/app/data \
 
 Export the results:
 
