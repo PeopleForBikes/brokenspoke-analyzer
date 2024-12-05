@@ -29,12 +29,13 @@ the Brokenspoke Analyzer as described under Quickstart.
 
 ## Quickstart
 
-There are 2 main ways to use the Brokenspoke Analyzer:
+There are 3 main ways to use the brokenspoke-analyzer:
 
 - All in Docker
 - Native Python with the database running in a Docker container
+- Development Container
 
-The two methods are described in the sections below along with their advantages
+The different methods are described in the sections below, with their advantages
 and inconveniences.
 
 For more details about the different ways to run an analysis and how to adjust
@@ -141,6 +142,47 @@ running all the analysis commands, and exporting the results.
 The data required to perform the analysis will be saved in
 `data/santa-rosa-new-mexico-united-states`, and the results exported in
 `results/united-states/new mexico/santa rosa/23.11`.
+
+### Development Container
+
+This method provides a replicable developer and debugging environment based on a
+VSCode development container.
+
+Export the database URL:
+
+```bash
+export DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
+```
+
+Build the analyzer application image from Docker Compose:
+
+```bash
+docker compose build analyzer-app
+```
+
+Build and open the application in a dev container in VS Code by running the
+command `Dev Containers: Rebuild and Reopen in Container` via the command
+palette (⇧⌘P in Mac or `Ctrl+Shift+P` in Windows). The database will be started
+in the background and once the dev container opens, a terminal will be available
+to run the analyzer.
+
+Configure the database:
+
+```bash
+bna -vv configure custom 4 4096 postgres
+```
+
+Run the analysis:
+
+```bash
+bna -vv run "united states" "santa rosa" "new mexico" 3570670
+```
+
+After the analysis runs, by default, the results will be exported locally.
+
+Close the container and return to your local environment by running the command
+`Dev Containers: Reopen Folder Locally` via the command palette (⇧⌘P in Mac or
+`Ctrl+Shift+P` in Windows). The database will be stopped.
 
 ### Configure the database manually
 
