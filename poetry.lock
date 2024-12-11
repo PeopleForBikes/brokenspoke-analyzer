@@ -4413,13 +4413,13 @@ files = [
 
 [[package]]
 name = "types-six"
-version = "1.16.21.20241105"
+version = "1.17.0.20241205"
 description = "Typing stubs for six"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "types-six-1.16.21.20241105.tar.gz", hash = "sha256:ce3534c38079ec3242f4a20376283eb265a3837f80592b0ecacb14bd41acc29e"},
-    {file = "types_six-1.16.21.20241105-py3-none-any.whl", hash = "sha256:8b4b29e5c8fe7f1131be8f3cb7cedbcd8bb889707336f32c3fb332c9b1c71991"},
+    {file = "types_six-1.17.0.20241205-py3-none-any.whl", hash = "sha256:a4947c2bdcd9ab69d44466a533a15839ff48ddc27223615cb8145d73ab805bc2"},
+    {file = "types_six-1.17.0.20241205.tar.gz", hash = "sha256:1f662347a8f3b2bf30517d629d82f591420df29811794b0bf3804e14d716f6e0"},
 ]
 
 [[package]]
@@ -4872,4 +4872,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "cf84b7ab4580b156d300c64570e965e449687a501cc228262fd537323a6e5f93"
+content-hash = "cc4f9792728a6aa93a1afe53944563722f1009f926d05e59e95a9620fbd38692"
