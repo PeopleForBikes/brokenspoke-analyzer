@@ -42,8 +42,7 @@ COPY --from=builder /usr/src/app/dist ./pkg/dist
 RUN  pip install pkg/deps/* \
   && pip install pkg/dist/brokenspoke_analyzer-*-py3-none-any.whl \
   && rm -fr /usr/src/app/pkg \
-  && addgroup --system --gid 1001 bna \
-  && adduser --system --uid 1001 bna \
+  && useradd --create-home --shell /bin/bash bna \
   && chown -R bna:bna /usr/src/app
 USER bna
 ENTRYPOINT [ "bna" ]
