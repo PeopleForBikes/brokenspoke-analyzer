@@ -5,10 +5,12 @@
 [![License](https://img.shields.io/badge/license-mit-blue.svg)](https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/LICENSE)
 [![Code of Conduct](https://img.shields.io/badge/code_of_conduct-🌐-ff69b4.svg?logoColor=white)](https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/code-of-conduct.md)
 
-The Brokenspoke Analyzer is a tool allowing the user to run “Bicycle Network
-Analysis” locally.
+The Brokenspoke Analyzer is a tool allowing the user to run the Bicycle Network
+Analysis locally.
 
 ## Requirements
+
+Install the software below only if using the native Python method for running the Brokenspoke Analyzer as described under Quickstart.
 
 - **docker**: [official page](https://www.docker.com/get-started/)
 - **docker compose plugin V2**:
@@ -26,12 +28,12 @@ Analysis” locally.
 
 ## Quickstart
 
-There are 2 main ways to use the brokenspoke-analyzer:
+There are 2 main ways to use the Brokenspoke Analyzer:
 
 - All in Docker
 - Native Python with the database running in a Docker container
 
-The different methods are being described in the sections below, with their
+The two methods are described in the sections below along with their
 advantages and inconveniences.
 
 For more details about the different ways to run an analysis and how to adjust
@@ -39,11 +41,10 @@ the options, please refer to the full documentation.
 
 ### All in Docker
 
-The benefit of running eveything using the provided Docker images, is that there
-is no need to install any of the required dependencies, except Docker itself of
-course. This guarantees that the user will have the right versions of the
-multiple tools that are combined to run an analysis. This is the simplest way,
-and the recommended way for people who just want to run the analyzer.
+The benefit of running everything using the provided Docker images, is that there
+is no need to install any of the required dependencies, except Docker itself. This guarantees that the user will have the right versions of the
+multiple tools that are combined to run an analysis. This is the simplest
+and recommended way for people who just want to run the analyzer.
 
 Export the database URL:
 
