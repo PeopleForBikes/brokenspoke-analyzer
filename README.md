@@ -10,7 +10,8 @@ Analysis locally.
 
 ## Requirements
 
-Install the software below only if using the native Python method for running the Brokenspoke Analyzer as described under Quickstart.
+Install the software below only if using the native Python method for running
+the Brokenspoke Analyzer as described under Quickstart.
 
 - **docker**: [official page](https://www.docker.com/get-started/)
 - **docker compose plugin V2**:
@@ -42,7 +43,8 @@ the options, please refer to the full documentation.
 ### All in Docker
 
 The benefit of running everything using the provided Docker images, is that there
-is no need to install any of the required dependencies, except Docker itself. This guarantees that the user will have the right versions of the
+is no need to install any of the required dependencies, except Docker itself.
+This guarantees that the user will have the right versions of the
 multiple tools that are combined to run an analysis. This is the simplest
 and recommended way for people who just want to run the analyzer.
 
