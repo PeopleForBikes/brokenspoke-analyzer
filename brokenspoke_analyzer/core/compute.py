@@ -58,11 +58,11 @@ def features(
     bind_params = {"nb_boundary_buffer": boundary_buffer}
     execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
 
-    # Remove paths that prohibit bicycles.
-    logger.info("Removing paths that prohibit bicycles")
+    # Remove anything that prohibits bicycles.
+    logger.info("Removing anything that prohibits bicycles")
     dbcore.execute_query(
         engine,
-        "DELETE FROM neighborhood_osm_full_line WHERE bicycle='no' and highway='path';",
+        "DELETE FROM neighborhood_osm_full_line WHERE bicycle='no';",
     )
 
     # Setting values on road segments.
