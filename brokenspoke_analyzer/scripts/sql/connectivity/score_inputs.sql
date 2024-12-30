@@ -113,7 +113,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.5) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_census_blocks
         WHERE EXISTS (
             SELECT 1
@@ -139,7 +141,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.7) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_census_blocks
         WHERE EXISTS (
             SELECT 1
@@ -165,7 +169,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.3) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_census_blocks
         WHERE EXISTS (
             SELECT 1
@@ -246,7 +252,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.5) WITHIN GROUP
-            (ORDER BY emp_low_stress::FLOAT / NULLIF(emp_high_stress, 0))
+            (
+                ORDER BY emp_low_stress::FLOAT / NULLIF(emp_high_stress, 0)
+            )
         FROM neighborhood_census_blocks
         WHERE EXISTS (
             SELECT 1
@@ -272,7 +280,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.7) WITHIN GROUP
-            (ORDER BY emp_low_stress::FLOAT / NULLIF(emp_high_stress, 0))
+            (
+                ORDER BY emp_low_stress::FLOAT / NULLIF(emp_high_stress, 0)
+            )
         FROM neighborhood_census_blocks
         WHERE EXISTS (
             SELECT 1
@@ -298,7 +308,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.3) WITHIN GROUP
-            (ORDER BY emp_low_stress::FLOAT / NULLIF(emp_high_stress, 0))
+            (
+                ORDER BY emp_low_stress::FLOAT / NULLIF(emp_high_stress, 0)
+            )
         FROM neighborhood_census_blocks
         WHERE EXISTS (
             SELECT 1
@@ -540,7 +552,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.5) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_schools
         WHERE EXISTS (
             SELECT 1
@@ -566,7 +580,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.7) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_schools
         WHERE EXISTS (
             SELECT 1
@@ -592,7 +608,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.3) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_schools
         WHERE EXISTS (
             SELECT 1
@@ -784,7 +802,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.5) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_colleges
         WHERE EXISTS (
             SELECT 1
@@ -816,7 +836,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.7) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_colleges
         WHERE EXISTS (
             SELECT 1
@@ -848,7 +870,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.3) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_colleges
         WHERE EXISTS (
             SELECT 1
@@ -1049,7 +1073,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.5) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_universities
         WHERE EXISTS (
             SELECT 1
@@ -1077,7 +1103,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.7) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_universities
         WHERE EXISTS (
             SELECT 1
@@ -1105,7 +1133,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.3) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_universities
         WHERE EXISTS (
             SELECT 1
@@ -1299,7 +1329,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.5) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_doctors
         WHERE EXISTS (
             SELECT 1
@@ -1327,7 +1359,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.7) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_doctors
         WHERE EXISTS (
             SELECT 1
@@ -1355,7 +1389,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.3) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_doctors
         WHERE EXISTS (
             SELECT 1
@@ -1548,7 +1584,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.5) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_dentists
         WHERE EXISTS (
             SELECT 1
@@ -1576,7 +1614,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.7) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_dentists
         WHERE EXISTS (
             SELECT 1
@@ -1604,7 +1644,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.3) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_dentists
         WHERE EXISTS (
             SELECT 1
@@ -1800,7 +1842,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.5) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_hospitals
         WHERE EXISTS (
             SELECT 1
@@ -1828,7 +1872,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.7) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_hospitals
         WHERE EXISTS (
             SELECT 1
@@ -1856,7 +1902,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.3) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_hospitals
         WHERE EXISTS (
             SELECT 1
@@ -2052,7 +2100,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.5) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_pharmacies
         WHERE EXISTS (
             SELECT 1
@@ -2080,7 +2130,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.7) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_pharmacies
         WHERE EXISTS (
             SELECT 1
@@ -2108,7 +2160,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.3) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_pharmacies
         WHERE EXISTS (
             SELECT 1
@@ -2162,7 +2216,10 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.5) WITHIN GROUP
-            (ORDER BY retail_low_stress::FLOAT / NULLIF(retail_high_stress, 0))
+            (
+                ORDER BY
+                    retail_low_stress::FLOAT / NULLIF(retail_high_stress, 0)
+            )
         FROM neighborhood_census_blocks
         WHERE EXISTS (
             SELECT 1
@@ -2188,7 +2245,10 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.7) WITHIN GROUP
-            (ORDER BY retail_low_stress::FLOAT / NULLIF(retail_high_stress, 0))
+            (
+                ORDER BY
+                    retail_low_stress::FLOAT / NULLIF(retail_high_stress, 0)
+            )
         FROM neighborhood_census_blocks
         WHERE EXISTS (
             SELECT 1
@@ -2214,7 +2274,10 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.3) WITHIN GROUP
-            (ORDER BY retail_low_stress::FLOAT / NULLIF(retail_high_stress, 0))
+            (
+                ORDER BY
+                    retail_low_stress::FLOAT / NULLIF(retail_high_stress, 0)
+            )
         FROM neighborhood_census_blocks
         WHERE EXISTS (
             SELECT 1
@@ -2292,7 +2355,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.5) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_retail
         WHERE EXISTS (
             SELECT 1
@@ -2320,7 +2385,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.7) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_retail
         WHERE EXISTS (
             SELECT 1
@@ -2348,7 +2415,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.3) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_retail
         WHERE EXISTS (
             SELECT 1
@@ -2545,7 +2614,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.5) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_supermarkets
         WHERE EXISTS (
             SELECT 1
@@ -2573,7 +2644,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.7) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_supermarkets
         WHERE EXISTS (
             SELECT 1
@@ -2601,7 +2674,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.3) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_supermarkets
         WHERE EXISTS (
             SELECT 1
@@ -2798,7 +2873,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.5) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_social_services
         WHERE EXISTS (
             SELECT 1
@@ -2828,7 +2905,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.7) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_social_services
         WHERE EXISTS (
             SELECT 1
@@ -2858,7 +2937,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.3) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_social_services
         WHERE EXISTS (
             SELECT 1
@@ -2914,7 +2995,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.5) WITHIN GROUP
-            (ORDER BY parks_low_stress::FLOAT / NULLIF(parks_high_stress, 0))
+            (
+                ORDER BY parks_low_stress::FLOAT / NULLIF(parks_high_stress, 0)
+            )
         FROM neighborhood_census_blocks
         WHERE EXISTS (
             SELECT 1
@@ -2940,7 +3023,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.7) WITHIN GROUP
-            (ORDER BY parks_low_stress::FLOAT / NULLIF(parks_high_stress, 0))
+            (
+                ORDER BY parks_low_stress::FLOAT / NULLIF(parks_high_stress, 0)
+            )
         FROM neighborhood_census_blocks
         WHERE EXISTS (
             SELECT 1
@@ -2966,7 +3051,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.3) WITHIN GROUP
-            (ORDER BY parks_low_stress::FLOAT / NULLIF(parks_high_stress, 0))
+            (
+                ORDER BY parks_low_stress::FLOAT / NULLIF(parks_high_stress, 0)
+            )
         FROM neighborhood_census_blocks
         WHERE EXISTS (
             SELECT 1
@@ -3044,7 +3131,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.5) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_parks
         WHERE EXISTS (
             SELECT 1
@@ -3072,7 +3161,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.7) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_parks
         WHERE EXISTS (
             SELECT 1
@@ -3100,7 +3191,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.3) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_parks
         WHERE EXISTS (
             SELECT 1
@@ -3154,7 +3247,10 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.5) WITHIN GROUP
-            (ORDER BY trails_low_stress::FLOAT / NULLIF(trails_high_stress, 0))
+            (
+                ORDER BY
+                    trails_low_stress::FLOAT / NULLIF(trails_high_stress, 0)
+            )
         FROM neighborhood_census_blocks
         WHERE EXISTS (
             SELECT 1
@@ -3180,7 +3276,10 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.7) WITHIN GROUP
-            (ORDER BY trails_low_stress::FLOAT / NULLIF(trails_high_stress, 0))
+            (
+                ORDER BY
+                    trails_low_stress::FLOAT / NULLIF(trails_high_stress, 0)
+            )
         FROM neighborhood_census_blocks
         WHERE EXISTS (
             SELECT 1
@@ -3206,7 +3305,10 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.3) WITHIN GROUP
-            (ORDER BY trails_low_stress::FLOAT / NULLIF(trails_high_stress, 0))
+            (
+                ORDER BY
+                    trails_low_stress::FLOAT / NULLIF(trails_high_stress, 0)
+            )
         FROM neighborhood_census_blocks
         WHERE EXISTS (
             SELECT 1
@@ -3429,7 +3531,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.5) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_community_centers
         WHERE EXISTS (
             SELECT 1
@@ -3461,7 +3565,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.7) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_community_centers
         WHERE EXISTS (
             SELECT 1
@@ -3491,7 +3597,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.3) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_community_centers
         WHERE EXISTS (
             SELECT 1
@@ -3686,7 +3794,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.5) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_transit
         WHERE EXISTS (
             SELECT 1
@@ -3716,7 +3826,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.7) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_transit
         WHERE EXISTS (
             SELECT 1
@@ -3747,7 +3859,9 @@ SELECT
     (
         SELECT
             PERCENTILE_CONT(0.3) WITHIN GROUP
-            (ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0))
+            (
+                ORDER BY pop_low_stress::FLOAT / NULLIF(pop_high_stress, 0)
+            )
         FROM neighborhood_transit
         WHERE EXISTS (
             SELECT 1
