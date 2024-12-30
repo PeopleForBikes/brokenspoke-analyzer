@@ -78,7 +78,8 @@ WHERE
     AND (osm.access IS NULL OR osm.access NOT IN ('no', 'private'));
 
 -- remove stuff that we don't want to route over
-DELETE FROM neighborhood_ways WHERE functional_class IS NULL;
+DELETE FROM neighborhood_ways
+WHERE functional_class IS NULL;
 
 -- remove orphans
 DELETE FROM neighborhood_ways
