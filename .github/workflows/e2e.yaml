@@ -7,6 +7,13 @@ on:
       - synchronize
       - reopened
 
+env:
+  TEST_TAG: test/brokenspoke-analyzer:test
+  TEST_COUNTRY: "united states"
+  TEST_STATE: "new mexico"
+  TEST_CITY: "santa rosa"
+  TEST_FIPS: "3570670"
+
 jobs:
   integration:
     runs-on: ubuntu-latest
@@ -46,10 +53,10 @@ jobs:
         run: poetry install
       - run: |
           poetry run bna configure docker
-          # poetry run bna run usa "santa rosa" "new mexico" 3570670
-          poetry run bna prepare all usa "santa rosa" "new mexico" 3570670
-          poetry run bna import all usa "santa rosa" "new mexico" 3570670 --input-dir data/santa-rosa-new-mexico-usa
-          poetry run bna compute usa "santa rosa" "new mexico" --input-dir data/santa-rosa-new-mexico-usa
+          # poetry run bna run "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
+          poetry run bna prepare all "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
+          poetry run bna import all "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}"  "${{ env.TEST_FIPS }}" --input-dir data/santa-rosa-new-mexico-united-states
+          poetry run bna compute "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" --input-dir data/santa-rosa-new-mexico-united-states
 
       - name: Run integration tests
         run: |
@@ -60,3 +67,74 @@ jobs:
           echo "Ensure neighborhood_overall_scores table contains 23 records."
           ACTUAL=$(psql -t -c "SELECT COUNT(*) FROM neighborhood_overall_scores;" $DATABASE_URL)
           test $ACTUAL -eq 23
+
+  docker-integration:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/postgres"
+
+    services:
+      postgres:
+        image: ghcr.io/peopleforbikes/docker-postgis-bna:17-3.4-1
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@49b3bc8e6bdd4a60e6116a5414239cba5943d3cf # v3.2.0
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@c47758b77c9736f4b2ef4073d4d51994fabfe349 # v3.7.1
+      - name: Extract repository name
+        id: repo-name
+        run: echo "repo_name=${GITHUB_REPOSITORY##*/}" >> $GITHUB_OUTPUT
+      - name: Build and push Docker image
+        uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75 # v6.9.0
+        with:
+          context: .
+          push: false
+          load: true
+          tags: ${{ env.TEST_TAG }}
+      - name: Configure PostgreSQL
+        run: >
+          docker run
+          --rm
+          --network ${{ job.services.postgres.network }}
+          -e DATABASE_URL
+          ${{ env.TEST_TAG }}
+          -vv configure custom 4 4096 postgres
+      - name: Run full analysis
+        run: >
+          docker run
+          --rm
+          --network ${{ job.services.postgres.network }}
+          -e DATABASE_URL
+          ${{ env.TEST_TAG }}
+          -vv run "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
+      - name: Export the results
+        run: >
+          docker run
+          --rm
+          --network ${{ job.services.postgres.network }}
+          -u $(id -u):$(id -g)
+          -v ${PWD}:/usr/src/app/results
+          -e DATABASE_URL
+          ${{ env.TEST_TAG }}
+          -vv export local-custom .
+      # - name: Asserts
+      #   run: |
+      #     ls
+      #     echo "Ensure neighborhood_overall_scores table contains 23 records + 1 header line."
+      #     x=$(wc -l < "neighborhood_overall_scores.csv")
+      #     test $x -eq 24
