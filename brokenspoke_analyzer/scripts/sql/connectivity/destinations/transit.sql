@@ -30,7 +30,7 @@ SELECT
 FROM neighborhood_osm_full_polygon
 WHERE
     amenity = 'bus_station'
-    OR railway = 'station'
+    OR (railway = 'station' AND (station IS NULL OR station != 'miniature'))
     OR public_transport = 'station';
 
 -- remove subareas
@@ -63,7 +63,7 @@ SELECT
 FROM neighborhood_osm_full_point
 WHERE (
     amenity = 'bus_station'
-    OR railway = 'station'
+    OR (railway = 'station' AND (station IS NULL OR station != 'miniature'))
     OR public_transport = 'station'
 )
 AND NOT EXISTS (
