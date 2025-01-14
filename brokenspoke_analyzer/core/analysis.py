@@ -116,10 +116,16 @@ def derive_state_info(state: str | None) -> typing.Tuple[str, str, bool]:
 
 
 def retrieve_city_boundaries(
-    output: pathlib.Path, country: str, city: str, state: typing.Optional[str] = None
+    output: pathlib.Path,
+    buffer: int,
+    country: str,
+    city: str,
+    state: typing.Optional[str] = None,
 ) -> str:
     """
-    Retrieve the city boundaries and save them as Shapefile and GeoJSON.
+    Retrieve the city boundaries and save into files.
+
+    Both the original boundaries and a buffered boundary as a Shapefile and GeoJSON.
 
     :return: the slugified query used to retrieve the city boundaries.
     """
@@ -130,15 +136,23 @@ def retrieve_city_boundaries(
     # Retrieve the geodataframe.
     settings.use_cache = os.getenv("BNA_OSMNX_CACHE", "1") == "1"
     city_gdf = geocoder.geocode_to_gdf(query)
+    buffered_city_gdf = city_gdf.copy()
+    # Project to 32613 for meter units and back to 4326
+    buffered_city_gdf["geometry"] = (
+        buffered_city_gdf.to_crs(32613).buffer(buffer).to_crs(4326)
+    )
     # Remove the display_name series to ensure there are no international
     # characters in the dataframe. The import will fail if the analyzer finds
     # non US characters.
     # https://github.com/PeopleForBikes/brokenspoke-analyzer/issues/24
     city_gdf.drop("display_name", axis=1)
+    buffered_city_gdf.drop("display_name", axis=1)
 
     # Export the boundaries.
     city_gdf.to_file(output / f"{slug}.shp", encoding="utf-8")
     city_gdf.to_file(output / f"{slug}.geojson")
+    buffered_city_gdf.to_file(output / f"buffered_{slug}.geojson")
+    buffered_city_gdf.to_file(output / f"buffered_{slug}.shp", encoding="utf-8")
 
     return slug
 
