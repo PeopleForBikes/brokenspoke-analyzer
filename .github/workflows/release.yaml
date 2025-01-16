@@ -26,7 +26,7 @@ jobs:
   release:
     needs:
       - docker
-    uses: PeopleForBikes/.github/.github/workflows/release-python.yml@main
+    uses: PeopleForBikes/.github/.github/workflows/release-python-uv.yml@main
 
   release-dist:
     runs-on: ubuntu-latest
@@ -34,15 +34,15 @@ jobs:
       - release
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
-      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+      - uses: astral-sh/setup-uv@887a942a15af3a7626099df99e897a18d9e5ab3a #v5.1.0
         with:
-          python-version: "3.12"
-          cache: "poetry"
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install
       - name: Setup the project
-        run: poetry install
+        run: uv sync --all-extras --dev
       - name: Build sdist and wheel
-        run: poetry build
+        run: uv build --sdist --wheel
       - name: Publish the release
         uses: softprops/action-gh-release@c95fe1489396fe8a9eb87c0abf8aa5b2ef267fda # v2.2.1
         with:

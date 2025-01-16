@@ -39,24 +39,24 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
-      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+      - uses: astral-sh/setup-uv@887a942a15af3a7626099df99e897a18d9e5ab3a #v5.1.0
         with:
-          python-version: "3.12"
-          cache: "poetry"
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install
       - name: install dependencies
         run: |
           sudo apt-get update
           DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends \
             osm2pgrouting osm2pgsql osmctools osmium-tool postgresql-client postgis
       - name: Setup the project
-        run: poetry install
+        run: uv sync --all-extras --dev
       - run: |
-          poetry run bna configure docker
-          # poetry run bna run "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
-          poetry run bna prepare all "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
-          poetry run bna import all "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}"  "${{ env.TEST_FIPS }}" --input-dir data/santa-rosa-new-mexico-united-states
-          poetry run bna compute "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" --input-dir data/santa-rosa-new-mexico-united-states
+          uv run bna configure docker
+          # uv run bna run "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
+          uv run bna prepare all "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
+          uv run bna import all "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}"  "${{ env.TEST_FIPS }}" --input-dir data/santa-rosa-new-mexico-united-states
+          uv run bna compute "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" --input-dir data/santa-rosa-new-mexico-united-states
 
       - name: Run integration tests
         run: |

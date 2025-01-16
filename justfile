@@ -14,14 +14,14 @@ lint-md:
 
 # Lint python files.
 lint-python:
-    poetry run isort --check .
-    poetry run ruff format --check {{ src_dir }}
-    poetry run ruff check {{ src_dir }}
-    poetry run mypy {{ src_dir }}
+    uv run isort --check .
+    uv run ruff format --check {{ src_dir }}
+    uv run ruff check {{ src_dir }}
+    uv run mypy {{ src_dir }}
 
 # Lint SQL files.
 lint-sql:
-    poetry run sqlfluff lint brokenspoke_analyzer/scripts/sql/
+    uv run sqlfluff lint brokenspoke_analyzer/scripts/sql/
 
 # Meta tasks running all formatters at once.
 fmt: fmt-md fmt-python fmt-just
@@ -36,17 +36,17 @@ fmt-md:
 
 # Format python files.
 fmt-python:
-    poetry run isort .
-    poetry run ruff format {{ src_dir }}
-    poetry run ruff check --fix {{ src_dir }}
+    uv run isort .
+    uv run ruff format {{ src_dir }}
+    uv run ruff check --fix {{ src_dir }}
 
 # Run the unit tests.
 test *extra_args='':
-    poetry run pytest --cov={{ src_dir }} -x $@
+    uv run pytest --cov={{ src_dir }} -x $@
 
 # Build the documentation
 docs:
-    cd docs && poetry run make html
+    cd docs && uv run make html
     @echo
     @echo "Click this link to open the documentation in the browser:"
     @echo "  file://${PWD}/docs/build/html/index.html"
@@ -54,7 +54,7 @@ docs:
 
 # Rebuild Sphinx documentation on changes, with live-reload in the browser
 docs-autobuild:
-    poetry run sphinx-autobuild docs/source docs/build/html
+    uv run sphinx-autobuild docs/source docs/build/html
 
 # Clean the docs
 docs-clean:
@@ -62,7 +62,7 @@ docs-clean:
 
 # Build the Docker image for local usage.
 docker-build:
-    docker buildx build -t ghcr.io/peopleforbikes/brokenspoke-analyzer --load .
+    docker buildx build -t ghcr.io/peopleforbikes/brokenspoke-analyzer:dev --load .
 
 docker-prepare-all *args:
     echo "$@"
@@ -78,3 +78,7 @@ docker-prepare-all *args:
 compose-clean:
     docker-compose rm -sfv
     docker volume rm brokenspoke-analyzer_postgres
+
+# Setup the project
+setup:
+    uv sync --all-extras --dev
