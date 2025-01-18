@@ -34,19 +34,19 @@ There are 2 main ways to use the Brokenspoke Analyzer:
 - All in Docker
 - Native Python with the database running in a Docker container
 
-The two methods are described in the sections below along with their
-advantages and inconveniences.
+The two methods are described in the sections below along with their advantages
+and inconveniences.
 
 For more details about the different ways to run an analysis and how to adjust
 the options, please refer to the full documentation.
 
 ### All in Docker
 
-The benefit of running everything using the provided Docker images, is that there
-is no need to install any of the required dependencies, except Docker itself.
-This guarantees that the user will have the right versions of the
-multiple tools that are combined to run an analysis. This is the simplest
-and recommended way for people who just want to run the analyzer.
+The benefit of running everything using the provided Docker images, is that
+there is no need to install any of the required dependencies, except Docker
+itself. This guarantees that the user will have the right versions of the
+multiple tools that are combined to run an analysis. This is the simplest and
+recommended way for people who just want to run the analyzer.
 
 Export the database URL:
 
@@ -120,19 +120,19 @@ At this point, all the requirements must be installed locally. Otherwise the
 brokenspoke-analyzer will not install.
 
 Once all the tools are installed, the brokenspoke-analyzer can be installed. We
-recommend using [Poetry](https://python-poetry.org/) for installing the tool and
-working in a virtual environment. Once you have Poetry set up:
+recommend using [uv] for installing the tool and working in a virtual
+environment. Once you have [uv] set up:
 
 ```bash
 git clone git@github.com:PeopleForBikes/brokenspoke-analyzer.git
 cd brokenspoke-analyzer
-poetry install
+uv sync --all-extras --dev
 ```
 
 Run the analysis:
 
 ```bash
-poetry run bna run-with compose "united states" "santa rosa" "new mexico" 3570670
+uv run bna run-with compose "united states" "santa rosa" "new mexico" 3570670
 ```
 
 This command takes care of starting and stopping the PostgreSQL/PostGIS server,
@@ -163,5 +163,7 @@ docker info --format json | jq .MemTotal | numfmt --to-unit=1M
 And then run the command to configure the database with custom values:
 
 ```bash
-poetry run bna configure custom 4 4096 postgres
+uv run bna configure custom 4 4096 postgres
 ```
+
+[uv]: https://docs.astral.sh/uv

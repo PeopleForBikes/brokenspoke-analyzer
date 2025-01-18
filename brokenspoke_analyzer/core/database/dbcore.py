@@ -76,7 +76,7 @@ def load_csv_file(
 
 def export_to_csv(engine: Engine, csvfile: pathlib.Path, table: str) -> None:
     """Dump the table content into a CSV file."""
-    psql_cmd = f"\\copy {table} TO '{csvfile.resolve()}' " "WITH (FORMAT CSV, HEADER);"
+    psql_cmd = f"\\copy {table} TO '{csvfile.resolve()}' WITH (FORMAT CSV, HEADER);"
     database_url = engine.engine.url.set(drivername="postgresql").render_as_string(
         hide_password=False
     )

@@ -1,4 +1,4 @@
-FROM python:3.12.4-slim-bookworm AS base
+FROM python:3.13.1-slim-bookworm AS base
 
 FROM base AS builder
 RUN apt-get update \
@@ -7,17 +7,15 @@ RUN apt-get update \
   g++ \
   gdal-bin \
   libgdal-dev \
-  python3-dev \
-  python3-poetry \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 WORKDIR /usr/src/app
 COPY . .
-RUN poetry self update \
-  && poetry export -f requirements.txt --output requirements.txt \
+RUN pip install uv \
+  && uv export --format requirements-txt --all-extras --no-group dev --no-hashes -o requirements.txt \
   && mkdir -p deps \
   && pip wheel -r requirements.txt -w deps \
-  && poetry build -f wheel
+  && uv build --wheel
 
 FROM base
 LABEL author="PeopleForBikes" \

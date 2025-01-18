@@ -15,18 +15,18 @@ permissions:
 
 jobs:
   ci:
-    uses: PeopleForBikes/.github/.github/workflows/ci-python.yml@main
+    uses: PeopleForBikes/.github/.github/workflows/ci-python-uv.yml@main
   lint-sql:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: extractions/setup-just@dd310ad5a97d8e7b41793f8ef055398d51ad4de6 # v2.0.0
-      - uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
-      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+      - uses: astral-sh/setup-uv@887a942a15af3a7626099df99e897a18d9e5ab3a #v5.1.0
         with:
-          python-version: "3.12"
-          cache: "poetry"
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install
       - name: Setup the project
-        run: poetry install
+        run: just setup
       - name: Lint SQL files
         run: just lint-sql
