@@ -5,9 +5,11 @@ Define functions to run the various SQL scripts performing the operations to
 compute the BNA scores.
 """
 
+import concurrent.futures
 import dataclasses
 import pathlib
 import typing
+from itertools import chain
 
 from loguru import logger
 from sqlalchemy.engine import Engine
@@ -23,10 +25,11 @@ def execute_sqlfile_with_substitutions(
     engine: Engine,
     sqlfile: pathlib.Path,
     bind_params: typing.Mapping[str, typing.Any] | None = None,
+    log_level: str = "DEBUG",
 ) -> None:
     """Execute SQL statements with substitutions."""
-    logger.debug(f"Execute {sqlfile}")
-    logger.debug(f"{bind_params=}")
+    logger.log(log_level, f"Execute {sqlfile}")
+    logger.log(log_level, f"{bind_params=}")
     statements = sqlfile.read_text()
     if bind_params:
         binding_names = sorted(bind_params.keys(), key=len, reverse=True)
@@ -328,13 +331,24 @@ def connectivity(  # noqa: PLR0915
             sql_connectivity_script_dir
             / f"reachable_roads_{stress_level}_stress_calc.sql"
         )
-        for i in range(8):
-            bind_params = {
-                "thread_num": 8,
-                "thread_no": i,
-                "nb_max_trip_distance": max_trip_distance,
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future_to_thread_no = {
+                executor.submit(
+                    execute_sqlfile_with_substitutions,
+                    engine,
+                    sql_script,
+                    {
+                        "thread_num": 8,
+                        "thread_no": i,
+                        "nb_max_trip_distance": max_trip_distance,
+                    },
+                    "TRACE",
+                ): i
+                for i in range(8)
             }
-            execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
+            for future in concurrent.futures.as_completed(future_to_thread_no):
+                _thread_no = future_to_thread_no[future]
+                _data = future.result()
 
         # Cleanup.
         logger.info(f"Reachable roads {stress_level} stress: cleanup")
@@ -351,12 +365,39 @@ def connectivity(  # noqa: PLR0915
 
     # Connected census blocks.
     logger.info("CONNECTIVITY: Connected census blocks")
+    sql_script = sql_connectivity_script_dir / "connected_census_blocks_prep.sql"
+    dbcore.execute_sql_file(engine, sql_script)
+
+    sql_script = sql_connectivity_script_dir / "connected_census_blocks_calc.sql"
+
+    # Fetch all blockids and then calculate stress for them individually but in parallel
+    result = dbcore.execute_query_with_result(
+        engine, "select geoid20 FROM neighborhood_census_blocks"
+    )
+    census_block_ids = list(chain.from_iterable(result))
+    census_block_ids.sort()
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future_to_census_block_id = {
+            executor.submit(
+                execute_sqlfile_with_substitutions,
+                engine,
+                sql_script,
+                {
+                    "nb_max_trip_distance": max_trip_distance,
+                    "nb_output_srid": output_srid,
+                    "block_id": f"'{i}'",
+                },
+                "TRACE",
+            ): i
+            for i in census_block_ids
+        }
+        for future in concurrent.futures.as_completed(future_to_census_block_id):
+            _census_block_id = future_to_census_block_id[future]
+            _data = future.result()
+
     sql_script = sql_connectivity_script_dir / "connected_census_blocks.sql"
-    bind_params = {
-        "nb_max_trip_distance": max_trip_distance,
-        "nb_output_srid": output_srid,
-    }
-    execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
+    dbcore.execute_sql_file(engine, sql_script)
 
     # Access population
     logger.info("METRICS: Access: population")
