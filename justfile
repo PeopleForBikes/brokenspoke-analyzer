@@ -1,6 +1,7 @@
 set positional-arguments := true
 
 src_dir := "brokenspoke_analyzer"
+docker_image := "ghcr.io/peopleforbikes/brokenspoke-analyzer"
 
 # Meta task running ALL the CI tasks at onces.
 ci: lint docs test
@@ -62,7 +63,11 @@ docs-clean:
 
 # Build the Docker image for local usage.
 docker-build:
-    docker buildx build -t ghcr.io/peopleforbikes/brokenspoke-analyzer:dev --load .
+    docker buildx build -t {{ docker_image }} --load .
+
+# Build the dev container.
+docker-build-devcontainer:
+    docker buildx build -t {{ docker_image }}:dev --target devcontainer --load .
 
 docker-prepare-all *args:
     echo "$@"
