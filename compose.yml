@@ -27,7 +27,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: brokenspoke-analyzer:analyzer-app
+    image: ghcr.io/peopleforbikes/brokenspoke-analyzer
     volumes:
       - ./:/usr/src/app
     networks:
@@ -36,10 +36,10 @@ services:
   analyzer-dev:
     build:
       context: .
-      dockerfile: .devcontainer/Dockerfile
+      target: devcontainer
     environment:
       DATABASE_URL: ${DATABASE_URL}
-    image: brokenspoke-analyzer:analyzer-dev
+    image: ghcr.io/peopleforbikes/brokenspoke-analyzer:dev
     entrypoint: sleep infinity
     volumes:
       - ./:/usr/src/app
