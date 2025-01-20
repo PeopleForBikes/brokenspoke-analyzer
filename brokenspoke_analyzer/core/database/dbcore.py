@@ -13,6 +13,12 @@ from sqlalchemy.engine import Engine
 from brokenspoke_analyzer.core import runner
 
 
+def execute_query_with_result(engine: Engine, query: str) -> typing.Any:
+    """Execute a query and commit it."""
+    with engine.begin() as conn:
+        return conn.execute(text(query)).all()
+
+
 def execute_query(engine: Engine, query: str) -> None:
     """Execute a query and commit it."""
     with engine.begin() as conn:
@@ -112,7 +118,9 @@ def configure_docker_db(engine: Engine) -> None:
 
 def create_psycopg_engine(database_url: str) -> Engine:
     """Create a SQLAlchemy engine with the psycopg3 driver."""
-    return create_engine(database_url.replace("postgresql://", "postgresql+psycopg://"))
+    return create_engine(
+        database_url.replace("postgresql://", "postgresql+psycopg://"), pool_size=20
+    )
 
 
 def execute_with_autocommit(engine: Engine, statements: typing.Sequence[str]) -> None:
