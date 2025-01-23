@@ -152,7 +152,7 @@ def configure_system(engine: Engine, cores: int, memory_mb: int) -> None:
         "ALTER SYSTEM SET listen_addresses TO '*';",
         "ALTER SYSTEM SET max_connections TO '100';",
         "ALTER SYSTEM SET random_page_cost TO '1.1';",
-        "ALTER SYSTEM SET effective_io_concurrency TO '200';",
+        # "ALTER SYSTEM SET effective_io_concurrency TO '200';",
         f"ALTER SYSTEM SET max_worker_processes TO '{cores}';",
         f"ALTER SYSTEM SET max_parallel_workers TO '{cores}';",
         f"ALTER SYSTEM SET max_parallel_workers_per_gather TO '{cores // 2}';",
