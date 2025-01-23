@@ -9,7 +9,7 @@ import concurrent.futures
 import dataclasses
 import pathlib
 import typing
-from random import uniform
+from itertools import chain
 
 from loguru import logger
 from sqlalchemy.engine import Engine
@@ -310,7 +310,7 @@ def conectivity(
     result = dbcore.execute_query_with_result(
         engine, "select road_id FROM neighborhood_ways"
     )
-    road_ids = [e for l in result for e in l]
+    road_ids = list(chain.from_iterable(result))
     road_ids.sort()
 
     # Reachable roads stress.
@@ -365,7 +365,7 @@ def conectivity(
     result = dbcore.execute_query_with_result(
         engine, "select blockid10 FROM neighborhood_census_blocks"
     )
-    census_block_ids = [e for l in result for e in l]
+    census_block_ids = list(chain.from_iterable(result))
     census_block_ids.sort()
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
