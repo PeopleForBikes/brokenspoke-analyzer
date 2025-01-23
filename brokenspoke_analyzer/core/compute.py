@@ -5,7 +5,9 @@ Define functions to run the various SQL scripts performing the operations to
 compute the BNA scores.
 """
 
-import concurrent.futures
+import asyncio
+
+# import concurrent.futures
 import dataclasses
 import pathlib
 import typing
@@ -37,6 +39,15 @@ def execute_sqlfile_with_substitutions(
             substitute = param if param else "NULL"
             statements = statements.replace(f":{binding_name}", f"{substitute}")
     dbcore.execute_query(engine, statements)
+
+
+async def async_execute_sqlfile_with_substitutions(
+    engine: Engine,
+    sqlfile: pathlib.Path,
+    bind_params: typing.Optional[typing.Mapping[str, typing.Any]] = None,
+    log_level: str = "DEBUG",
+) -> None:
+    execute_sqlfile_with_substitutions(engine, sqlfile, bind_params, log_level)
 
 
 def features(
@@ -271,7 +282,7 @@ class Access:
     max_score: int = 1
 
 
-def conectivity(
+async def conectivity(
     engine: Engine,
     sql_script_dir: pathlib.Path,
     output_srid: int,
@@ -331,20 +342,39 @@ def conectivity(
             sql_connectivity_script_dir
             / f"reachable_roads_{stress_level}_stress_calc.sql"
         )
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future_to_road_id = {
-                executor.submit(
-                    execute_sqlfile_with_substitutions,
-                    engine,
-                    sql_script,
-                    {"road_id": i, "nb_max_trip_distance": max_trip_distance},
-                    "TRACE",
-                ): i
-                for i in road_ids
-            }
-            for future in concurrent.futures.as_completed(future_to_road_id):
-                _road_id = future_to_road_id[future]
-                data = future.result()
+
+        # Create an async engine.
+        async_engine = dbcore.create_psycopg_engine(
+            engine.url.render_as_string(hide_password=False)
+        )
+
+        async with asyncio.TaskGroup() as tg:
+            for road_id in road_ids:
+                tg.create_task(
+                    async_execute_sqlfile_with_substitutions(
+                        engine=engine,
+                        sqlfile=sql_script,
+                        bind_params={
+                            "road_id": road_id,
+                            "nb_max_trip_distance": max_trip_distance,
+                        },
+                    )
+                )
+
+        # with concurrent.futures.ThreadPoolExecutor() as executor:
+        #     future_to_road_id = {
+        #         executor.submit(
+        #             execute_sqlfile_with_substitutions,
+        #             engine,
+        #             sql_script,
+        #             {"road_id": i, "nb_max_trip_distance": max_trip_distance},
+        #             "TRACE",
+        #         ): i
+        #         for i in road_ids
+        #     }
+        #     for future in concurrent.futures.as_completed(future_to_road_id):
+        #         _road_id = future_to_road_id[future]
+        #         data = future.result()
 
         # Cleanup.
         logger.info(f"Reachable roads {stress_level} stress: cleanup")
@@ -368,24 +398,38 @@ def conectivity(
     census_block_ids = list(chain.from_iterable(result))
     census_block_ids.sort()
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        future_to_census_block_id = {
-            executor.submit(
-                execute_sqlfile_with_substitutions,
-                engine,
-                sql_script,
-                {
-                    "nb_max_trip_distance": max_trip_distance,
-                    "nb_output_srid": output_srid,
-                    "block_id": f"'{i}'",
-                },
-                "TRACE",
-            ): i
-            for i in census_block_ids
-        }
-        for future in concurrent.futures.as_completed(future_to_census_block_id):
-            _census_block_id = future_to_census_block_id[future]
-            data = future.result()
+    async with asyncio.TaskGroup() as tg:
+        for census_block_id in census_block_ids:
+            tg.create_task(
+                async_execute_sqlfile_with_substitutions(
+                    engine=engine,
+                    sqlfile=sql_script,
+                    bind_params={
+                        "nb_max_trip_distance": max_trip_distance,
+                        "nb_output_srid": output_srid,
+                        "block_id": f"'{census_block_id}'",
+                    },
+                )
+            )
+
+    # with concurrent.futures.ThreadPoolExecutor() as executor:
+    #     future_to_census_block_id = {
+    #         executor.submit(
+    #             execute_sqlfile_with_substitutions,
+    #             engine,
+    #             sql_script,
+    #             {
+    #                 "nb_max_trip_distance": max_trip_distance,
+    #                 "nb_output_srid": output_srid,
+    #                 "block_id": f"'{i}'",
+    #             },
+    #             "TRACE",
+    #         ): i
+    #         for i in census_block_ids
+    #     }
+    #     for future in concurrent.futures.as_completed(future_to_census_block_id):
+    #         _census_block_id = future_to_census_block_id[future]
+    #         data = future.result()
 
     sql_script = sql_connectivity_script_dir / "connected_census_blocks.sql"
     dbcore.execute_sql_file(engine, sql_script)
@@ -553,10 +597,12 @@ def all(
 
     # Compute connectivity.
     logger.info("Compute connectivity")
-    conectivity(
-        engine,
-        sql_script_dir,
-        output_srid,
-        import_jobs,
-        max_trip_distance,
+    asyncio.run(
+        conectivity(
+            engine,
+            sql_script_dir,
+            output_srid,
+            import_jobs,
+            max_trip_distance,
+        )
     )

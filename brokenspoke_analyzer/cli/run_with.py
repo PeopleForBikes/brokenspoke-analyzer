@@ -240,6 +240,8 @@ def run_(
 
     # Prepare the database connection.
     engine = dbcore.create_psycopg_engine(database_url)
+    # logger.debug(f"{engine.dialect=}")
+    # logger.debug(f"{engine.url=}")
 
     # Prepare.
     logger.info("Prepare")

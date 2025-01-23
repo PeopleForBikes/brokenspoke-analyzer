@@ -11,6 +11,7 @@ from sqlalchemy.engine import (
     Engine,
     Row,
 )
+from sqlalchemy.ext.asyncio import create_async_engine
 
 from brokenspoke_analyzer.core import runner
 
@@ -121,8 +122,13 @@ def configure_docker_db(engine: Engine) -> None:
 
 def create_psycopg_engine(database_url: str) -> Engine:
     """Create a SQLAlchemy engine with the psycopg3 driver."""
-    return create_engine(
-        database_url.replace("postgresql://", "postgresql+psycopg://"), pool_size=20
+    return create_engine(database_url.replace("postgresql://", "postgresql+psycopg://"))
+
+
+def create_async_psycopg_engine(database_url: str) -> Engine:
+    """Create a SQLAlchemy engine with the psycopg3 driver in async mode."""
+    return create_async_engine(
+        database_url.replace("postgresql://", "postgresql+psycopg://")
     )
 
 
