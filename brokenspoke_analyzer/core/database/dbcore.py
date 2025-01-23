@@ -7,12 +7,17 @@ from sqlalchemy import (
     create_engine,
     text,
 )
-from sqlalchemy.engine import Engine
+from sqlalchemy.engine import (
+    Engine,
+    Row,
+)
 
 from brokenspoke_analyzer.core import runner
 
 
-def execute_query_with_result(engine: Engine, query: str) -> typing.Any:
+def execute_query_with_result(
+    engine: Engine, query: str
+) -> typing.Sequence[Row[typing.Any]]:
     """Execute a query and commit it."""
     with engine.begin() as conn:
         return conn.execute(text(query)).all()
