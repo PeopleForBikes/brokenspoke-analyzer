@@ -24,12 +24,11 @@ def execute_sqlfile_with_substitutions(
     engine: Engine,
     sqlfile: pathlib.Path,
     bind_params: typing.Optional[typing.Mapping[str, typing.Any]] = None,
-    log_percentage: typing.Optional[float] = None,
+    log_level: str = "DEBUG",
 ) -> None:
     """Execute SQL statements with substitutions."""
-    if log_percentage == None or uniform(0, 1) <= log_percentage:
-        logger.debug(f"Execute {sqlfile}")
-        logger.debug(f"{bind_params=}")
+    logger.log(log_level, f"Execute {sqlfile}")
+    logger.log(log_level, f"{bind_params=}")
     statements = sqlfile.read_text()
     if bind_params:
         binding_names = sorted(bind_params.keys(), key=len, reverse=True)
@@ -339,7 +338,7 @@ def conectivity(
                     engine,
                     sql_script,
                     {"road_id": i, "nb_max_trip_distance": max_trip_distance},
-                    0.001,
+                    "TRACE",
                 ): i
                 for i in road_ids
             }
@@ -380,7 +379,7 @@ def conectivity(
                     "nb_output_srid": output_srid,
                     "block_id": f"'{i}'",
                 },
-                0.001,
+                "TRACE",
             ): i
             for i in census_block_ids
         }
