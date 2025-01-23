@@ -345,7 +345,7 @@ def connectivity(
                 for i in road_ids
             }
             for future in concurrent.futures.as_completed(future_to_road_id):
-                url = future_to_road_id[future]
+                _road_id = future_to_road_id[future]
                 data = future.result()
 
         # Cleanup.
