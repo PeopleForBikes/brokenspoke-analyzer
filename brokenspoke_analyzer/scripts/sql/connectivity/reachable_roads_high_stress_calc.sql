@@ -23,7 +23,7 @@ FROM neighborhood_ways AS r1,
                     source_vert AS source,
                     target_vert AS target,
                     link_cost AS cost
-            FROM    neighborhood_ways_net_link',
+            FROM    neighborhood_ways_net_link l WHERE ST_DWithin(l.geom, (select ST_Union(geom) from neighborhood_ways where road_id =' || :road_id || '), ' || :nb_max_trip_distance + 100 || ')',
         v1.vert_id,
         :nb_max_trip_distance,
         directed := true  -- noqa: RF02
