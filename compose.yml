@@ -2,7 +2,7 @@ services:
   postgres:
     image: ghcr.io/peopleforbikes/docker-postgis-bna:17-3.4-1
     shm_size: 1g
-    cpus: 1
+    cpus: 8
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
