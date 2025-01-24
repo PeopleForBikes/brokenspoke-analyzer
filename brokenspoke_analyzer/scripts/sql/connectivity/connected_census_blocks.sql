@@ -7,7 +7,6 @@
 DROP TABLE IF EXISTS generated.neighborhood_connected_census_blocks;
 
 CREATE TABLE generated.neighborhood_connected_census_blocks (
-    id SERIAL PRIMARY KEY,
     source_blockid10 VARCHAR(15),
     target_blockid10 VARCHAR(15),
     low_stress BOOLEAN,
@@ -74,10 +73,6 @@ ON neighborhood_connected_census_blocks (
 );
 CREATE INDEX IF NOT EXISTS idx_neighborhood_blockpairs_lstress
 ON neighborhood_connected_census_blocks (
-    low_stress
-) WHERE low_stress IS TRUE;
-CREATE INDEX IF NOT EXISTS idx_neighborhood_blockpairs_hstress
-ON neighborhood_connected_census_blocks (
-    high_stress
-) WHERE high_stress IS TRUE;
+    source_blockid10, target_blockid10, low_stress
+);
 ANALYZE neighborhood_connected_census_blocks;
