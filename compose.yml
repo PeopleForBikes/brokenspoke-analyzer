@@ -21,7 +21,7 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
     networks:
-      - brokenspoke-analyzer_default
+      - default
 
   bna-dev:
     profiles:
@@ -36,12 +36,12 @@ services:
     volumes:
       - ./:/usr/src/app
     networks:
-      - brokenspoke-analyzer_default
+      - default
 
 volumes:
   postgres:
     external: false
 
 networks:
-  brokenspoke-analyzer_default:
+  default:
     driver: bridge
