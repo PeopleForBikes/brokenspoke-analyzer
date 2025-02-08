@@ -61,6 +61,7 @@ def compose(
             city=city,
             region=region,
             output_dir=output_dir,
+            export_dir=export_dir,
             fips_code=fips_code,
             buffer=buffer,
             city_speed_limit=city_speed_limit,
