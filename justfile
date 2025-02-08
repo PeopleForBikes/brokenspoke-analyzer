@@ -67,7 +67,7 @@ docker-build:
 
 # Build the dev container.
 docker-build-devcontainer:
-    docker buildx build -t {{ docker_image }}:dev --target devcontainer --load .
+    docker buildx build -t {{ docker_image }}:dev --target dev --load .
 
 docker-prepare-all *args:
     echo "$@"
@@ -79,10 +79,15 @@ docker-prepare-all *args:
       --output-dir /usr/src/app/data \
       "$@"
 
-# Clean up docker resources.
-compose-clean:
-    docker-compose rm -sfv
-    docker volume rm brokenspoke-analyzer_postgres
+# Spin up Docker Compose.
+compose-up:
+  docker compose up -d
+
+# Tear down Docker Compose.
+compose-down:
+  docker compose down
+  docker compose rm -sfv
+  docker volume rm -f brokenspoke-analyzer_postgres
 
 # Setup the project
 setup:

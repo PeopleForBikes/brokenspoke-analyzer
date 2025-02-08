@@ -47,7 +47,7 @@ RUN  pip install pkg/deps/* \
   && chown -R bna:bna /usr/src/app
 ENTRYPOINT [ "bna" ]
 
-FROM main AS devcontainer
+FROM main AS dev
 COPY --from=builder /usr/src/app/just /usr/local/bin/
 RUN pip install uv \
   && usermod --home /home/bna --move-home --shell /bin/bash bna

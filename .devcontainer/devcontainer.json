@@ -1,8 +1,8 @@
 {
   "name": "pfb/brokenspoke-analyzer",
   "dockerComposeFile": ["../compose.yml"],
-  "service": "analyzer-dev",
-  "runServices": ["analyzer-dev", "postgres"],
+  "service": "bna-dev",
+  "runServices": ["bna-dev", "postgres"],
   "workspaceFolder": "/usr/src/app",
   "customizations": {
     "vscode": {

@@ -23,20 +23,12 @@ services:
     networks:
       - brokenspoke-analyzer_default
 
-  analyzer-app:
+  bna-dev:
+    profiles:
+      - dev
     build:
       context: .
-      dockerfile: Dockerfile
-    image: ghcr.io/peopleforbikes/brokenspoke-analyzer
-    volumes:
-      - ./:/usr/src/app
-    networks:
-      - brokenspoke-analyzer_default
-
-  analyzer-dev:
-    build:
-      context: .
-      target: devcontainer
+      target: dev
     environment:
       DATABASE_URL: ${DATABASE_URL}
     image: ghcr.io/peopleforbikes/brokenspoke-analyzer:dev
