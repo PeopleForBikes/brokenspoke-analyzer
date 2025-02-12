@@ -49,8 +49,15 @@ ENTRYPOINT [ "bna" ]
 
 FROM main AS dev
 COPY --from=builder /usr/src/app/just /usr/local/bin/
-RUN pip install uv \
-  && usermod --home /home/bna --move-home --shell /bin/bash bna
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  git \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN deluser --remove-home bna \
+  && delgroup --only-if-empty bna \
+  && chown -R root:root /usr/src/app \
+  && pip install uv \
+  && useradd --create-home --shell /bin/bash bna
 USER bna
 
 FROM main
