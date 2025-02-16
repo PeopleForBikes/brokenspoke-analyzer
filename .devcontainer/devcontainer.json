@@ -4,6 +4,7 @@
   "service": "bna-dev",
   "runServices": ["bna-dev", "postgres"],
   "workspaceFolder": "/usr/src/app",
+  "postAttachCommand": ["/bin/bash", ".devcontainer/postAttach.sh"],
   "customizations": {
     "vscode": {
       // Set *default* container specific settings.json values on container create.

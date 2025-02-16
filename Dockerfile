@@ -51,6 +51,7 @@ FROM main AS dev
 COPY --from=builder /usr/src/app/just /usr/local/bin/
 RUN apt-get update && apt-get install -y --no-install-recommends \
   git \
+  curl \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN deluser --remove-home bna \
@@ -58,6 +59,8 @@ RUN deluser --remove-home bna \
   && chown -R root:root /usr/src/app \
   && pip install uv \
   && useradd --create-home --shell /bin/bash bna
+RUN curl -o /etc/bash_completion.d/git-completion.bash \
+  https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash
 USER bna
 
 FROM main
