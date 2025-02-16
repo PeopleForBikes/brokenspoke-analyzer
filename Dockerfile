@@ -52,6 +52,7 @@ COPY --from=builder /usr/src/app/just /usr/local/bin/
 RUN apt-get update && apt-get install -y --no-install-recommends \
   git \
   curl \
+  openssh-client \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN deluser --remove-home bna \
