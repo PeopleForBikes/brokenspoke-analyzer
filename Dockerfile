@@ -53,6 +53,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   git \
   curl \
   openssh-client \
+  gcc \
+  build-essential \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN deluser --remove-home bna \
