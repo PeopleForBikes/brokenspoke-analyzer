@@ -178,7 +178,7 @@ def table_exists(engine: Engine, table: str) -> bool:
     """Check whether a table exists or not."""
     query = f"""SELECT EXISTS (
         SELECT FROM information_schema.tables
-        WHERE table_schema = 'public'  -- or your specific schema
+        WHERE table_schema = 'generated'
         AND table_name = '{table}'
         );
     """
