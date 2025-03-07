@@ -177,7 +177,7 @@ def import_neighborhood(
     delete_block_outside_buffer(engine, buffer)
 
     # For US cities, remove the water blocks.
-    if country.upper() == constant.COUNTRY_USA:
+    if utils.is_usa(country):
         logger.info("Removing water blocks...")
         # By convention, this file is always named `censuswaterblocks.csv`.
         load_water_blocks(engine, water_blocks_file)
@@ -522,11 +522,10 @@ def neighborhood_wrapper(
     that cannot be computed.
     """
     # Handles us/usa as the same country.
-    if country.upper() == "US":
-        country = "usa"
+    country = utils.normalize_country_name(country)
 
     # Ensure US/USA cities have the right parameters.
-    if country.upper() == constant.COUNTRY_USA and not region:
+    if utils.is_usa(country) and not region:
         raise ValueError("`state` is required for US cities")
 
     # Prepare the database connection.
@@ -593,8 +592,7 @@ def osm_wrapper(
     engine = dbcore.create_psycopg_engine(database_url)
 
     # Handles us/usa as the same country.
-    if country.upper() == "US":
-        country = "usa"
+    country = utils.normalize_country_name(country)
 
     # Prepare the files to import.
     _, slug = analysis.osmnx_query(country, city, region)

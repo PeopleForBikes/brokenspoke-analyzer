@@ -225,3 +225,48 @@ def compare_bna_results(
     df.to_csv(output_csv)
 
     return df
+
+
+def normalize_country_name(country: str) -> str:
+    """
+    Normalize the country name.
+
+    The main goal of this function is to normalize the name of the United States
+    of America. Since the country can have 3 names, it can be confusing. As per
+    the BNA guidelines, the name of this country must be "united states".
+
+    Examples:
+        >>> normalize_country_name("US")
+        united states
+
+        >>> normalize_country_name("USA")
+        united states
+
+        >>> normalize_country_name("France")
+        France
+
+    """
+    if is_usa(country):
+        return "united states"
+    return country
+
+
+def is_usa(country: str) -> bool:
+    """
+    Return True if the country name is an alias of the USA.
+
+    Examples:
+        >>> is_usa('US')
+        True
+
+        >>> is_usa('USA')
+        True
+
+        >>> is_usa('United States')
+        True
+
+        >>> is_usa('France')
+        False
+
+    """
+    return country.upper() in ["US", "USA", "UNITED STATES"]

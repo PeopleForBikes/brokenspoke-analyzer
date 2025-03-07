@@ -134,9 +134,8 @@ def compute_cmd(
     state_default_speed, city_default_speed = ingestor.retrieve_default_speed_limits(
         engine
     )
-    if country.upper() == "US":
-        country = "usa"
-    import_jobs = country.upper() == constant.COUNTRY_USA
+    country = utils.normalize_country_name(country)
+    import_jobs = utils.is_usa(country)
 
     # Compute the output SRID from the boundary file.
     output_srid = utils.get_srid(boundary_file.resolve(strict=True))

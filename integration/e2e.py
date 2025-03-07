@@ -196,7 +196,7 @@ def test_all():
     path_constraint = compute.PathConstraint()
     block_road = compute.BlockRoad()
     score = compute.Score()
-    import_jobs = country == ingestor.COUNTRY_USA
+    import_jobs = utils.is_usa(country)
 
     # Prepare DB.
     logger.debug("Configure the database")
