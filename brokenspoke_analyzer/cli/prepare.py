@@ -57,11 +57,10 @@ def all(
         raise ValueError("`lodes_year` must be set")
 
     # Handles us/usa as the same country.
-    if country.upper() == "US":
-        country = "usa"
+    country = utils.normalize_country_name(country)
 
     # Ensure US/USA cities have the right parameters.
-    if country.upper() == constant.COUNTRY_USA:
+    if utils.is_usa(country):
         if not (region and fips_code != common.DEFAULT_CITY_FIPS_CODE):
             raise ValueError("`state` and `fips_code` are required for US cities")
     else:

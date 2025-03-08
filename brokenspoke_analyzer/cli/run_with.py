@@ -229,9 +229,8 @@ def run_(
         raise ValueError("the bucket name must be specified when exporting to S3")
 
     # Ensure US/USA cities have the right parameters.
-    if country.upper() == "US":
-        country = "usa"
-    if country.upper() == constant.COUNTRY_USA:
+    country = utils.normalize_country_name(country)
+    if utils.is_usa(country):
         if not (region and fips_code != common.DEFAULT_CITY_FIPS_CODE):
             raise ValueError("`state` and `fips_code` are required for US cities")
     else:
@@ -283,9 +282,8 @@ def run_(
     )
     logger.debug(f"{state_default_speed=}")
     logger.debug(f"{city_default_speed=}")
-    if country.upper() == "US":
-        country = "usa"
-    import_jobs = country.upper() == constant.COUNTRY_USA
+    country = utils.normalize_country_name(country)
+    import_jobs = utils.is_usa(country)
 
     compute.all(
         database_url=database_url,
