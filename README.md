@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Brokenspoke-analyzer
 
 [![ci](https://github.com/PeopleForBikes/brokenspoke-analyzer/actions/workflows/ci.yaml/badge.svg)](https://github.com/PeopleForBikes/brokenspoke-analyzer/actions/workflows/ci.yaml)
