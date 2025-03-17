@@ -476,6 +476,21 @@ def conectivity(
     execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
 
 
+def mileage(
+    engine: Engine,
+    sql_script_dir: pathlib.Path,
+) -> None:
+    """Compute BNA mileage."""
+    # Prepare the paths.
+    sql_script_dir = sql_script_dir.resolve(strict=True)
+    sql_connectivity_script_dir = sql_script_dir / "features"
+
+    # Calculating mileage.
+    logger.info("MILEAGE: Calculating mileage")
+    sql_script = sql_connectivity_script_dir / "calculate_mileage.sql"
+    execute_sqlfile_with_substitutions(engine, sql_script)
+
+
 def all(
     database_url: common.DatabaseURL,
     sql_script_dir: pathlib.Path,
@@ -515,4 +530,11 @@ def all(
         output_srid,
         import_jobs,
         max_trip_distance,
+    )
+
+    # Compute mileage.
+    logger.info("Compute mileage")
+    mileage(
+        engine,
+        sql_script_dir,
     )
