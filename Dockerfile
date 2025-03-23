@@ -1,4 +1,4 @@
-FROM python:3.13.1-slim-bookworm AS base
+FROM python:3.13.2-slim-bookworm AS base
 
 FROM base AS builder
 RUN apt-get update \

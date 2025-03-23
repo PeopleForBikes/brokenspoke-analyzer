@@ -81,14 +81,18 @@ docker-prepare-all *args:
 
 # Spin up Docker Compose.
 compose-up:
-  docker compose up -d
+    docker compose up -d
 
 # Tear down Docker Compose.
 compose-down:
-  docker compose down
-  docker compose rm -sfv
-  docker volume rm -f brokenspoke-analyzer_postgres
+    docker compose down
+    docker compose rm -sfv
+    docker volume rm -f brokenspoke-analyzer_postgres
 
 # Setup the project
 setup:
     uv sync --all-extras --dev
+
+# List outdated dependencies from the venv.
+list-outdated:
+    uv pip list --outdated
