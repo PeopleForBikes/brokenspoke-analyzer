@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [2.5.0] - 2025-03-22
+
+### Fixed
+
+- Water blocks where not being deleted. [#832]
+- `--export-dir` option was ignored. [#820]
+
+### Changed
+
+- Updated `width` calculation logic. [#800]
+
+### Added
+
+- Added the ability to use a development container for local development. [#718]
+
+[#718]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/718
+[#800]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/800
+[#820]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/820
+[#832]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/832
+[2.5.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.5.0
+
 ## [2.4.0] - 2024-11-13
 
 ### Fixed
@@ -19,6 +41,10 @@ and this project adheres to [Semantic Versioning].
 - Update the Docker Compose file to use PostgreSQL 17 and PostGIS 3.4. [#724]
 - Export all tables as GeoJSON. [#726]
 
+[#724]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/724
+[#726]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/726
+[#727]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/727
+[#729]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/729
 [2.4.0]:
   https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.4.0
 
