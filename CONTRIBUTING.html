@@ -5,9 +5,9 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="brokenspoke_analyzer package" href="api/brokenspoke_analyzer.html" /><link rel="prev" title="Community Code of Conduct" href="code-of-conduct.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
-        <title>Contributing - Brokenspoke Analyzer 2.4.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>Contributing - Brokenspoke Analyzer 2.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
@@ -207,7 +207,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">Brokenspoke Analyzer 2.4.0 documentation</div></a>
+      <a href="index.html"><div class="brand">Brokenspoke Analyzer 2.5.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -231,7 +231,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.4.0 documentation</span>
+  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.5.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -316,15 +316,18 @@
 <p>The Brokenspoke-analyzer project follows the
 <a class="reference external" href="https://peopleforbikes.github.io/contributing/">BNA Mechanics Contributing Guidelines</a>.
 Refer to them for general principles.</p>
-<p>Specific instructions will be described in other sections on this page.</p>
+<p>In the sections below we provide instructions for how to set up a
+<a class="reference internal" href="#developer-environment"><span class="std std-ref">developer environment locally</span></a> or using a
+<a class="reference internal" href="#development-container"><span class="std std-ref">development container</span></a>. Specific instructions will be
+described in other sections on this page.</p>
 </section>
 <section id="developer-environment">
-<h2>Developer environment<a class="headerlink" href="#developer-environment" title="Link to this heading">¶</a></h2>
+<span id="id1"></span><h2>Developer environment<a class="headerlink" href="#developer-environment" title="Link to this heading">¶</a></h2>
 <section id="requirements">
 <h3>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/casey/just">Just</a> (See the “Administration tasks” section for details)</p></li>
-<li><p><a class="reference external" href="https://python-poetry.org/">Poetry</a></p></li>
+<li><p><a class="reference external" href="https://docs.astral.sh/uv/">Uv</a></p></li>
 <li><p><a class="reference external" href="https://www.python.org/downloads/">Python</a> 3.12+</p></li>
 <li><p><a class="reference external" href="https://www.docker.com/get-started/">Docker</a></p></li>
 <li><p><a class="reference external" href="https://osmcode.org/osmium-tool/">Osmium</a></p></li>
@@ -339,7 +342,7 @@ development:</p>
 </div>
 <p>Then <code class="docutils literal notranslate"><span class="pre">cd</span></code> into <code class="docutils literal notranslate"><span class="pre">brokenspoke-analyzer</span></code>, and to setup the project and install
 dependencies, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>install
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>sync<span class="w"> </span>--all-extras<span class="w"> </span>--dev
 </pre></div>
 </div>
 <section id="database">
@@ -365,7 +368,7 @@ extensions</p></li>
 <p>The content will automatically be refreshed when a file is saved on disk.</p>
 </section>
 <section id="administration-tasks">
-<h2>Administration tasks<a class="headerlink" href="#administration-tasks" title="Link to this heading">¶</a></h2>
+<span id="id2"></span><h2>Administration tasks<a class="headerlink" href="#administration-tasks" title="Link to this heading">¶</a></h2>
 <p>Administration tasks are being provided as convenience in a <code class="docutils literal notranslate"><span class="pre">justfile</span></code>.</p>
 <p>More information about <a class="reference external" href="https://github.com/casey/just">Just</a> can be found in their repository. The
 <a class="reference external" href="https://github.com/casey/just#installation">installation</a> section of their
@@ -373,31 +376,53 @@ documentation will guide you through the setup process.</p>
 <p>Run <code class="docutils literal notranslate"><span class="pre">just</span> <span class="pre">-l</span></code> to see the list of provided tasks.</p>
 <section id="running-the-bna-using-brokenspoke-analyzer">
 <h3>Running the BNA using Brokenspoke-analyzer<a class="headerlink" href="#running-the-bna-using-brokenspoke-analyzer" title="Link to this heading">¶</a></h3>
+<p>To run using the virtual environment, prefix all your commands with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run
+</pre></div>
+</div>
+<p>See the
+<a class="reference external" href="https://docs.astral.sh/uv/reference/cli/#uv-run">command reference manual</a> for
+more details.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">brokenspoke-analyzer</span></code> can be run using the <code class="docutils literal notranslate"><span class="pre">bna</span></code> script defined in
 <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> or by activating the virtual environment that was created by
-<a class="reference external" href="https://python-poetry.org/">Poetry</a> inside the project (given the poetry config file, <code class="docutils literal notranslate"><span class="pre">poetry.toml</span></code>) and
-running the cli commands. To run the modified BNA for a city in the US, for
-example Flagstaff, AZ, using the <code class="docutils literal notranslate"><span class="pre">bna</span></code> script:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span>--help
+<a class="reference external" href="https://docs.astral.sh/uv/">uv</a> inside the project and running the cli commands. To run the modified BNA
+for a city in the US, for example Flagstaff, AZ, using the <code class="docutils literal notranslate"><span class="pre">bna</span></code> script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>bna<span class="w"> </span>--help
 </pre></div>
 </div>
 <p>For example to run an analysis for Santa Rosa, NM:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span>run<span class="w"> </span>usa<span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span><span class="w"> </span><span class="m">3570670</span>
-</pre></div>
-</div>
-<p>To run using the virtual environment, activate the virtual environment:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>shell
-</pre></div>
-</div>
-<p>Then run any of the cli commands, for example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>main.py<span class="w"> </span>run<span class="w"> </span>usa<span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span><span class="w"> </span><span class="m">3570670</span>
-</pre></div>
-</div>
-<p>To exit the virtual environment:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">exit</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>bna<span class="w"> </span>run<span class="w"> </span>usa<span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span><span class="w"> </span><span class="m">3570670</span>
 </pre></div>
 </div>
 </section>
+</section>
+<section id="development-container">
+<span id="id3"></span><h2>Development Container<a class="headerlink" href="#development-container" title="Link to this heading">¶</a></h2>
+<p>This method provides a replicable developer and debugging environment based on a
+VSCode development container.</p>
+<p>In the development container’s terminal, export the database URL:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql://postgres:postgres@postgres:5432/postgres
+</pre></div>
+</div>
+<p>Build and open the application in a development container in VS Code by running
+the command <code class="docutils literal notranslate"><span class="pre">Dev</span> <span class="pre">Containers:</span> <span class="pre">Rebuild</span> <span class="pre">and</span> <span class="pre">Reopen</span> <span class="pre">in</span> <span class="pre">Container</span></code> via the command
+palette (⇧⌘P in Mac or <code class="docutils literal notranslate"><span class="pre">Ctrl+Shift+P</span></code> in Windows). The database will be started
+in the background and once the development container opens, a terminal will be
+available to run the analyzer.</p>
+<p>In the development container’s terminal, configure the database:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span>-vv<span class="w"> </span>configure<span class="w"> </span>custom<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">4096</span><span class="w"> </span>postgres
+</pre></div>
+</div>
+<p>Run the analysis:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span>-vv<span class="w"> </span>run<span class="w"> </span><span class="s2">&quot;united states&quot;</span><span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span><span class="w"> </span><span class="m">3570670</span>
+</pre></div>
+</div>
+<p>After the analysis runs, by default, the results will be exported locally.</p>
+<p>All the <a class="reference internal" href="#administration-tasks"><span class="std std-ref">administration tasks</span></a> can also be ran inside the
+development container.</p>
+<p>Close the container and return to your local environment by running the command
+<code class="docutils literal notranslate"><span class="pre">Dev</span> <span class="pre">Containers:</span> <span class="pre">Reopen</span> <span class="pre">Folder</span> <span class="pre">Locally</span></code> via the command palette (⇧⌘P in Mac or
+<code class="docutils literal notranslate"><span class="pre">Ctrl+Shift+P</span></code> in Windows). The database will be stopped.</p>
 </section>
 </section>
 
@@ -478,6 +503,7 @@ example Flagstaff, AZ, using the <code class="docutils literal notranslate"><spa
 <li><a class="reference internal" href="#running-the-bna-using-brokenspoke-analyzer">Running the BNA using Brokenspoke-analyzer</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#development-container">Development Container</a></li>
 </ul>
 </li>
 </ul>
@@ -489,7 +515,7 @@ example Flagstaff, AZ, using the <code class="docutils literal notranslate"><spa
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=4d935f96"></script>
+</div><script src="_static/documentation_options.js?v=3c4615cf"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>

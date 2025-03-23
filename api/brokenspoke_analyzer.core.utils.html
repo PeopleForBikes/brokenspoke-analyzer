@@ -5,9 +5,9 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="author" title="About these documents" href="../about.html" /><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="brokenspoke_analyzer.core.database package" href="brokenspoke_analyzer.core.database.html" /><link rel="prev" title="brokenspoke_analyzer.core.runner module" href="brokenspoke_analyzer.core.runner.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
-        <title>brokenspoke_analyzer.core.utils module - Brokenspoke Analyzer 2.4.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>brokenspoke_analyzer.core.utils module - Brokenspoke Analyzer 2.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
@@ -207,7 +207,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Brokenspoke Analyzer 2.4.0 documentation</div></a>
+      <a href="../index.html"><div class="brand">Brokenspoke Analyzer 2.5.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -231,7 +231,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.4.0 documentation</span>
+  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.5.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -314,7 +314,7 @@
 <p>Define utility functions.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.PolygonFormat">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">PolygonFormat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.PolygonFormat" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">PolygonFormat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.PolygonFormat" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
 <p>Represent the available polygon formats from polygons.openstreetmap.fr.</p>
 <dl class="py attribute">
@@ -374,6 +374,65 @@
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.is_usa">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">is_usa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">country</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.is_usa" title="Link to this definition">¶</a></dt>
+<dd><p>Return True if the country name is an alias of the USA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+</dd>
+</dl>
+<dl>
+<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_usa</span><span class="p">(</span><span class="s1">&#39;US&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_usa</span><span class="p">(</span><span class="s1">&#39;USA&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_usa</span><span class="p">(</span><span class="s1">&#39;United States&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_usa</span><span class="p">(</span><span class="s1">&#39;France&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.normalize_country_name">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">normalize_country_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">country</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.normalize_country_name" title="Link to this definition">¶</a></dt>
+<dd><p>Normalize the country name.</p>
+<p>The main goal of this function is to normalize the name of the United States
+of America. Since the country can have 3 names, it can be confusing. As per
+the BNA guidelines, the name of this country must be “united states”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+</dl>
+<dl>
+<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">normalize_country_name</span><span class="p">(</span><span class="s2">&quot;US&quot;</span><span class="p">)</span>
+<span class="go">united states</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">normalize_country_name</span><span class="p">(</span><span class="s2">&quot;USA&quot;</span><span class="p">)</span>
+<span class="go">united states</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">normalize_country_name</span><span class="p">(</span><span class="s2">&quot;France&quot;</span><span class="p">)</span>
+<span class="go">France</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </dd></dl>
@@ -546,6 +605,8 @@ boundary file and the OSM file.</p>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.file_checksum_ok"><code class="docutils literal notranslate"><span class="pre">file_checksum_ok()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.get_srid"><code class="docutils literal notranslate"><span class="pre">get_srid()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.gunzip"><code class="docutils literal notranslate"><span class="pre">gunzip()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.is_usa"><code class="docutils literal notranslate"><span class="pre">is_usa()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.normalize_country_name"><code class="docutils literal notranslate"><span class="pre">normalize_country_name()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.normalize_unicode_name"><code class="docutils literal notranslate"><span class="pre">normalize_unicode_name()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.prepare_census_blocks"><code class="docutils literal notranslate"><span class="pre">prepare_census_blocks()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.prepare_city_inputs"><code class="docutils literal notranslate"><span class="pre">prepare_city_inputs()</span></code></a></li>
@@ -562,7 +623,7 @@ boundary file and the OSM file.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=4d935f96"></script>
+</div><script src="../_static/documentation_options.js?v=3c4615cf"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>

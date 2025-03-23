@@ -5,9 +5,9 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
-        <title>Brokenspoke-analyzer - Brokenspoke Analyzer 2.4.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>Brokenspoke-analyzer - Brokenspoke Analyzer 2.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
@@ -207,7 +207,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">Brokenspoke Analyzer 2.4.0 documentation</div></a>
+      <a href="index.html"><div class="brand">Brokenspoke Analyzer 2.5.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -231,7 +231,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.4.0 documentation</span>
+  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.5.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -315,10 +315,12 @@
 <a class="reference external" href="https://github.com/PeopleForBikes/brokenspoke-analyzer/"><img alt="Latest Version" src="https://img.shields.io/github/v/tag/PeopleForBikes/brokenspoke-analyzer?sort=semver&amp;label=version" /></a>
 <a class="reference external" href="https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/license-mit-blue.svg" /></a>
 <a class="reference external" href="https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/code-of-conduct.md"><img alt="Code of Conduct" src="https://img.shields.io/badge/code_of_conduct-%F0%9F%8C%90-ff69b4.svg?logoColor=white" /></a></p>
-<p>The Brokenspoke Analyzer is a tool allowing the user to run “Bicycle Network
-Analysis” locally.</p>
+<p>The Brokenspoke Analyzer is a tool allowing the user to run the Bicycle Network
+Analysis locally.</p>
 <section id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h2>
+<p>Install the software below only if using the native Python method for running
+the Brokenspoke Analyzer as described under Quickstart.</p>
 <ul class="simple">
 <li><p><strong>docker</strong>: <a class="reference external" href="https://www.docker.com/get-started/">official page</a></p></li>
 <li><p><strong>docker compose plugin V2</strong>:
@@ -337,30 +339,41 @@ Analysis” locally.</p>
 </section>
 <section id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading">¶</a></h2>
-<p>There are 2 main ways to use the brokenspoke-analyzer:</p>
+<p>There are 2 main ways to use the Brokenspoke Analyzer:</p>
 <ul class="simple">
 <li><p>All in Docker</p></li>
 <li><p>Native Python with the database running in a Docker container</p></li>
 </ul>
-<p>The different methods are being described in the sections below, with their
-advantages and inconveniences.</p>
+<p>The two methods are described in the sections below along with their advantages
+and inconveniences.</p>
 <p>For more details about the different ways to run an analysis and how to adjust
 the options, please refer to the full documentation.</p>
 <section id="all-in-docker">
 <h3>All in Docker<a class="headerlink" href="#all-in-docker" title="Link to this heading">¶</a></h3>
-<p>The benefit of running eveything using the provided Docker images, is that there
-is no need to install any of the required dependencies, except Docker itself of
-course. This guarantees that the user will have the right versions of the
-multiple tools that are combined to run an analysis. This is the simplest way,
-and the recommended way for people who just want to run the analyzer.</p>
+<p>The benefit of running everything using the provided Docker images, is that
+there is no need to install any of the required dependencies, except Docker
+itself. This guarantees that the user will have the right versions of the
+multiple tools that are combined to run an analysis. This is the simplest and
+recommended way for people who just want to run the analyzer.</p>
+<p>Export the database URL:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql://postgres:postgres@postgres:5432/postgres
+</pre></div>
+</div>
 <p>Start the database from Docker Compose, in the background:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </pre></div>
 </div>
-<p>Export the database URL:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql://postgres:postgres@localhost:5432/postgres
+<p>And configure it:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--rm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--network<span class="w"> </span>brokenspoke-analyzer_default<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span>DATABASE_URL<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>ghcr.io/peopleforbikes/brokenspoke-analyzer:2.4.0<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-vv<span class="w"> </span>configure<span class="w"> </span>custom<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">4096</span><span class="w"> </span>postgres
 </pre></div>
 </div>
+<p><strong>Remark: refer to the last section of this guide to find the optimal values for
+your system</strong></p>
 <p>Run the analysis:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--rm<span class="w"> </span><span class="se">\</span>
@@ -378,12 +391,11 @@ and the recommended way for people who just want to run the analyzer.</p>
 <span class="w">  </span>-v<span class="w"> </span>./results:/usr/src/app/results<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-e<span class="w"> </span>DATABASE_URL<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>ghcr.io/peopleforbikes/brokenspoke-analyzer:2.4.0<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-vv<span class="w"> </span><span class="nb">export</span><span class="w"> </span>local-calver<span class="w"> </span><span class="s2">&quot;united states&quot;</span><span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span>
+<span class="w">  </span>-vv<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nb">local</span><span class="w"> </span><span class="s2">&quot;united states&quot;</span><span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span>
 </pre></div>
 </div>
-<p>Clean up:</p>
+<p>Clean up (required before attempting to run another analysis):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>down
-docker<span class="w"> </span>compose<span class="w"> </span>rm<span class="w"> </span>-sfv
 docker<span class="w"> </span>volume<span class="w"> </span>rm<span class="w"> </span>brokenspoke-analyzer_postgres
 </pre></div>
 </div>
@@ -399,15 +411,15 @@ on the project.</p>
 <p>At this point, all the requirements must be installed locally. Otherwise the
 brokenspoke-analyzer will not install.</p>
 <p>Once all the tools are installed, the brokenspoke-analyzer can be installed. We
-recommend using <a class="reference external" href="https://python-poetry.org/">Poetry</a> for installing the tool and
-working in a virtual environment. Once you have Poetry set up:</p>
+recommend using <a class="reference external" href="https://docs.astral.sh/uv">uv</a> for installing the tool and working in a virtual
+environment. Once you have <a class="reference external" href="https://docs.astral.sh/uv">uv</a> set up:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:PeopleForBikes/brokenspoke-analyzer.git
 <span class="nb">cd</span><span class="w"> </span>brokenspoke-analyzer
-poetry<span class="w"> </span>install
+uv<span class="w"> </span>sync<span class="w"> </span>--all-extras<span class="w"> </span>--dev
 </pre></div>
 </div>
 <p>Run the analysis:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>bna<span class="w"> </span>run-with<span class="w"> </span>compose<span class="w"> </span><span class="s2">&quot;united states&quot;</span><span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span><span class="w"> </span><span class="m">3570670</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>bna<span class="w"> </span>run-with<span class="w"> </span>compose<span class="w"> </span><span class="s2">&quot;united states&quot;</span><span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span><span class="w"> </span><span class="m">3570670</span>
 </pre></div>
 </div>
 <p>This command takes care of starting and stopping the PostgreSQL/PostGIS server,
@@ -430,7 +442,7 @@ retrieve the resource allocation values.</p>
 </pre></div>
 </div>
 <p>And then run the command to configure the database with custom values:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>bna<span class="w"> </span>configure<span class="w"> </span>custom<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">4096</span><span class="w"> </span>postgres
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>bna<span class="w"> </span>configure<span class="w"> </span>custom<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">4096</span><span class="w"> </span>postgres
 </pre></div>
 </div>
 </section>
@@ -500,7 +512,7 @@ retrieve the resource allocation values.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=4d935f96"></script>
+</div><script src="_static/documentation_options.js?v=3c4615cf"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>

@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Brokenspoke-analyzer
 
 [![ci](https://github.com/PeopleForBikes/brokenspoke-analyzer/actions/workflows/ci.yaml/badge.svg)](https://github.com/PeopleForBikes/brokenspoke-analyzer/actions/workflows/ci.yaml)
@@ -5,10 +9,13 @@
 [![License](https://img.shields.io/badge/license-mit-blue.svg)](https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/LICENSE)
 [![Code of Conduct](https://img.shields.io/badge/code_of_conduct-🌐-ff69b4.svg?logoColor=white)](https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/code-of-conduct.md)
 
-The Brokenspoke Analyzer is a tool allowing the user to run “Bicycle Network
-Analysis” locally.
+The Brokenspoke Analyzer is a tool allowing the user to run the Bicycle Network
+Analysis locally.
 
 ## Requirements
+
+Install the software below only if using the native Python method for running
+the Brokenspoke Analyzer as described under Quickstart.
 
 - **docker**: [official page](https://www.docker.com/get-started/)
 - **docker compose plugin V2**:
@@ -26,24 +33,30 @@ Analysis” locally.
 
 ## Quickstart
 
-There are 2 main ways to use the brokenspoke-analyzer:
+There are 2 main ways to use the Brokenspoke Analyzer:
 
 - All in Docker
 - Native Python with the database running in a Docker container
 
-The different methods are being described in the sections below, with their
-advantages and inconveniences.
+The two methods are described in the sections below along with their advantages
+and inconveniences.
 
 For more details about the different ways to run an analysis and how to adjust
 the options, please refer to the full documentation.
 
 ### All in Docker
 
-The benefit of running eveything using the provided Docker images, is that there
-is no need to install any of the required dependencies, except Docker itself of
-course. This guarantees that the user will have the right versions of the
-multiple tools that are combined to run an analysis. This is the simplest way,
-and the recommended way for people who just want to run the analyzer.
+The benefit of running everything using the provided Docker images, is that
+there is no need to install any of the required dependencies, except Docker
+itself. This guarantees that the user will have the right versions of the
+multiple tools that are combined to run an analysis. This is the simplest and
+recommended way for people who just want to run the analyzer.
+
+Export the database URL:
+
+```bash
+export DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
+```
 
 Start the database from Docker Compose, in the background:
 
@@ -51,11 +64,19 @@ Start the database from Docker Compose, in the background:
 docker compose up -d
 ```
 
-Export the database URL:
+And configure it:
 
 ```bash
-export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
+docker run \
+  --rm \
+  --network brokenspoke-analyzer_default \
+  -e DATABASE_URL \
+  ghcr.io/peopleforbikes/brokenspoke-analyzer:2.4.0 \
+  -vv configure custom 4 4096 postgres
 ```
+
+**Remark: refer to the last section of this guide to find the optimal values for
+your system**
 
 Run the analysis:
 
@@ -78,14 +99,13 @@ docker run \
   -v ./results:/usr/src/app/results \
   -e DATABASE_URL \
   ghcr.io/peopleforbikes/brokenspoke-analyzer:2.4.0 \
-  -vv export local-calver "united states" "santa rosa" "new mexico"
+  -vv export local "united states" "santa rosa" "new mexico"
 ```
 
-Clean up:
+Clean up (required before attempting to run another analysis):
 
 ```bash
 docker compose down
-docker compose rm -sfv
 docker volume rm brokenspoke-analyzer_postgres
 ```
 
@@ -104,19 +124,19 @@ At this point, all the requirements must be installed locally. Otherwise the
 brokenspoke-analyzer will not install.
 
 Once all the tools are installed, the brokenspoke-analyzer can be installed. We
-recommend using [Poetry](https://python-poetry.org/) for installing the tool and
-working in a virtual environment. Once you have Poetry set up:
+recommend using [uv] for installing the tool and working in a virtual
+environment. Once you have [uv] set up:
 
 ```bash
 git clone git@github.com:PeopleForBikes/brokenspoke-analyzer.git
 cd brokenspoke-analyzer
-poetry install
+uv sync --all-extras --dev
 ```
 
 Run the analysis:
 
 ```bash
-poetry run bna run-with compose "united states" "santa rosa" "new mexico" 3570670
+uv run bna run-with compose "united states" "santa rosa" "new mexico" 3570670
 ```
 
 This command takes care of starting and stopping the PostgreSQL/PostGIS server,
@@ -147,5 +167,7 @@ docker info --format json | jq .MemTotal | numfmt --to-unit=1M
 And then run the command to configure the database with custom values:
 
 ```bash
-poetry run bna configure custom 4 4096 postgres
+uv run bna configure custom 4 4096 postgres
 ```
+
+[uv]: https://docs.astral.sh/uv
