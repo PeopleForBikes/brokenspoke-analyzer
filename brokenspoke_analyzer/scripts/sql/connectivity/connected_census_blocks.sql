@@ -29,7 +29,7 @@ SELECT
         WHERE
             ls.base_road = ANY(source.road_ids)
             AND ls.target_road = ANY(target.road_ids)
-    ),
+    ) AS min_ls_total_cost,
     TRUE, -- noqa: AL03
     (
         SELECT MIN(hs.total_cost)
@@ -37,7 +37,7 @@ SELECT
         WHERE
             hs.base_road = ANY(source.road_ids)
             AND hs.target_road = ANY(target.road_ids)
-    )
+    ) AS min_hs_total_cost
 FROM neighborhood_census_blocks AS source,
     neighborhood_census_blocks AS target,
     neighborhood_boundary

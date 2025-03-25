@@ -672,7 +672,7 @@ SELECT
             FROM neighborhood_boundary AS b
             WHERE ST_Intersects(b.geom, neighborhood_census_blocks.geom)
         )
-    ),
+    ) AS population,
     'Total population of boundary'; -- noqa: AL03
 
 
@@ -696,7 +696,7 @@ SELECT
             ) AS dist
         FROM neighborhood_ways AS w, neighborhood_boundary AS b
         WHERE ST_Intersects(w.geom, b.geom)
-    ),
+    ) AS distance,
     'Total low-stress miles'; -- noqa: AL03
 
 INSERT INTO generated.neighborhood_overall_scores (
@@ -718,7 +718,7 @@ SELECT
             ) AS dist
         FROM neighborhood_ways AS w, neighborhood_boundary AS b
         WHERE ST_Intersects(w.geom, b.geom)
-    ),
+    ) AS distance,
     'Total high-stress miles'; -- noqa: AL03
 
 UPDATE generated.neighborhood_overall_scores

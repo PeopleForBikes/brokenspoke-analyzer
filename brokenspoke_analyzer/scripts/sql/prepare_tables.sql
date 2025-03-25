@@ -118,7 +118,7 @@ SELECT
                 ST_StartPoint(neighborhood_cycwys_ways.the_geom), i.geom
             ) ASC
         LIMIT 1
-    ),
+    ) AS intersections_0,
     (
         SELECT i.int_id
         FROM neighborhood_ways_intersections AS i
@@ -128,7 +128,7 @@ SELECT
                 ST_EndPoint(neighborhood_cycwys_ways.the_geom), i.geom
             ) ASC
         LIMIT 1
-    ),
+    ) AS intersections_1,
     osm_id,
     the_geom
 FROM neighborhood_cycwys_ways
