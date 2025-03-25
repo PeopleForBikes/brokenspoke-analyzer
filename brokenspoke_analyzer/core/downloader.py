@@ -138,7 +138,7 @@ async def download_2010_census_blocks(
     """Download a 2010 census tabulation block code for a specific state."""
     tabblk2010_url = f"{TIGER_URL}/TIGER2010BLKPOPHU"
     tabblk2010_filename = f"tabblock2010_{fips}_pophu.zip"
-    tabblk2010_file = output_dir / tabblk2010_filename
+    tabblk2010_file = utils.get_user_cache_dir() / tabblk2010_filename
     tabblk2010_file = tabblk2010_file.resolve()
     population_file = output_dir / "population.shp"
     population_file = population_file.resolve()

@@ -494,7 +494,7 @@ def import_all(
     if run_import_jobs:
         if not lodes_year:
             raise ValueError("'lodes_year' is required when importing job data")
-        import_jobs(engine, state_abbrev, lodes_year, input_dir)
+        import_jobs(engine, state_abbrev, lodes_year, utils.get_user_cache_dir())
     import_osm_data(
         engine,
         osm_file,
@@ -535,7 +535,7 @@ def neighborhood_wrapper(
     _, slug = analysis.osmnx_query(country, city, region)
     boundary_file = input_dir / f"{slug}.shp"
     population_file = input_dir / "population.shp"
-    water_blocks_file = input_dir / "censuswaterblocks.csv"
+    water_blocks_file = utils.get_user_cache_dir() / "censuswaterblocks.csv"
 
     # compute the output SRID from the boundary file.
     output_srid = utils.get_srid(boundary_file.resolve(strict=True))
@@ -571,7 +571,7 @@ def jobs_wrapper(
     engine = dbcore.create_psycopg_engine(database_url)
 
     # Import the jobs.
-    import_jobs(engine, state_abbreviation, lodes_year, input_dir)
+    import_jobs(engine, state_abbreviation, lodes_year, utils.get_user_cache_dir())
 
 
 def osm_wrapper(
@@ -598,8 +598,8 @@ def osm_wrapper(
     _, slug = analysis.osmnx_query(country, city, region)
     boundary_file = input_dir / f"{slug}.shp"
     osm_file = input_dir / f"{slug}.osm"
-    state_speed_limits_csv = input_dir / "state_fips_speed.csv"
-    city_speed_limits_csv = input_dir / "city_fips_speed.csv"
+    state_speed_limits_csv = utils.get_user_cache_dir() / "state_fips_speed.csv"
+    city_speed_limits_csv = utils.get_user_cache_dir() / "city_fips_speed.csv"
 
     # Compute the output SRID from the boundary file.
     output_srid = utils.get_srid(boundary_file.resolve(strict=True))

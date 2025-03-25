@@ -182,7 +182,7 @@ async def prepare_(
                 await retryer(
                     downloader.download_lodes_data,
                     session,
-                    output_dir,
+                    utils.get_user_cache_dir(),
                     state_abbrev,
                     "main",
                     lodes_year,
@@ -190,7 +190,7 @@ async def prepare_(
                 await retryer(
                     downloader.download_lodes_data,
                     session,
-                    output_dir,
+                    utils.get_user_cache_dir(),
                     state_abbrev,
                     "aux",
                     lodes_year,
@@ -198,7 +198,9 @@ async def prepare_(
 
             with console.status("[bold green]Fetching US census waterblocks..."):
                 await retryer(
-                    downloader.download_census_waterblocks, session, output_dir
+                    downloader.download_census_waterblocks,
+                    session,
+                    utils.get_user_cache_dir(),
                 )
 
             with console.status("[bold green]Fetching 2010 US census blocks..."):
@@ -211,10 +213,14 @@ async def prepare_(
 
             with console.status("[bold green]Fetching US state speed limits..."):
                 await retryer(
-                    downloader.download_state_speed_limits, session, output_dir
+                    downloader.download_state_speed_limits,
+                    session,
+                    utils.get_user_cache_dir(),
                 )
 
             with console.status("[bold green]Fetching US city speed limits..."):
                 await retryer(
-                    downloader.download_city_speed_limits, session, output_dir
+                    downloader.download_city_speed_limits,
+                    session,
+                    utils.get_user_cache_dir(),
                 )
