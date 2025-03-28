@@ -5,26 +5,19 @@ from __future__ import annotations
 import enum
 import pathlib
 import typing
-import zipfile
 from collections import abc
 from typing import TYPE_CHECKING
 
-from obstore import open_writer, open_reader
 from obstore.store import (
     HTTPStore,
-    S3Store,
     from_url,
 )
-from loguru import logger
 
 from brokenspoke_analyzer.core import utils
 
 if TYPE_CHECKING:
-    from obstore.store import (
-        GetResult,
-        ObjectStore,
-        PutResult,
-    )
+    from obstore.store import ObjectStore
+
 
 CHUNK_SIZE = 5 * 1024 * 1024  # 5MB
 PFB_PUBLIC_DOCUMENTS_URL = "https://s3.amazonaws.com/pfb-public-documents"
@@ -85,22 +78,22 @@ class BNADataStore:
             case CacheType.AWS_S3:
                 self.cache = from_url(f"s3://{path}", client_options=client_options)
 
-    async def put(
-        self,
-        path: str,
-        file: typing.IO[bytes]
-        | pathlib.Path
-        | bytes
-        | abc.Buffer
-        | typing.Iterator[abc.Buffer]
-        | typing.Iterable[abc.Buffer],
-    ) -> PutResult:
-        """Save the provided bytes to the specified location."""
-        return await self.cache.put_async(path, file)
+    # async def put(
+    #     self,
+    #     path: str,
+    #     file: typing.IO[bytes]
+    #     | pathlib.Path
+    #     | bytes
+    #     | abc.Buffer
+    #     | typing.Iterator[abc.Buffer]
+    #     | typing.Iterable[abc.Buffer],
+    # ) -> PutResult:
+    #     """Save the provided bytes to the specified location."""
+    #     return await self.cache.put_async(path, file)
 
-    async def get(self, path: str):
-        """Return the bytes that are stored at the specified location."""
-        return await self.cache.get_async(path)
+    # async def get(self, path: str):
+    #     """Return the bytes that are stored at the specified location."""
+    #     return await self.cache.get_async(path)
 
     def _is_cached(self, path: str) -> bool:
         """Check wheter a file already exists in the cache store."""
@@ -110,7 +103,7 @@ class BNADataStore:
         """Check whether a file already exists in the data store."""
         return exists(self.store, path)
 
-    async def _copy_to_store(self, path: str):
+    async def _copy_to_store(self, path: str) -> None:
         """Copy a file from the cache to the store."""
         if not exists(self.cache, path):
             raise FileNotFoundError(f"{path} was not found in the cache")
@@ -119,7 +112,7 @@ class BNADataStore:
         res = await self.cache.get_async(path)
         await self.store.put_async(path, res)
 
-    async def _fetch_to_cache(self, root: str, path: str):
+    async def _fetch_to_cache(self, root: str, path: str) -> None:
         """Fetch a file into the cache."""
         # Check whether the file already exists in the cache.
         if not self._is_cached(path):
@@ -131,7 +124,7 @@ class BNADataStore:
             http_response = await http_store.get_async(path)
             await self.cache.put_async(path, http_response)
 
-    async def _fetch_to_store(self, root: str, path: str):
+    async def _fetch_to_store(self, root: str, path: str) -> None:
         """Fetch a file and store it."""
         # Check whether the file already exists in the store.
         if not self._is_stored(path):
@@ -143,24 +136,24 @@ class BNADataStore:
             http_response = await http_store.get_async(path)
             await self.store.put_async(path, http_response)
 
-    async def _fetch_to_store_with_cache(self, root: str, path: str):
+    async def _fetch_to_store_with_cache(self, root: str, path: str) -> None:
         """Fetch a file to the cache and copy it to the store."""
         await self._fetch_to_cache(root, path)
         await self._copy_to_store(path)
 
-    async def download_state_speed_limits(self):
+    async def download_state_speed_limits(self) -> None:
         """Download the state speed limits."""
         await self._fetch_to_store_with_cache(
             PFB_PUBLIC_DOCUMENTS_URL, "state_fips_speed.csv"
         )
 
-    async def download_city_speed_limits(self):
+    async def download_city_speed_limits(self) -> None:
         """Download the city speed limits."""
         await self._fetch_to_store_with_cache(
             PFB_PUBLIC_DOCUMENTS_URL, "city_fips_speed.csv"
         )
 
-    async def download_census_waterblocks(self):
+    async def download_census_waterblocks(self) -> None:
         """Download the census waterblocks."""
         waterblock_zip = "censuswaterblocks.zip"
         waterblock_csv = "censuswaterblocks.csv"
@@ -179,7 +172,7 @@ class BNADataStore:
         self,
         state: str,
         year: int,
-    ):
+    ) -> None:
         """Download employment data from the US census website: https://lehd.ces.census.gov/."""
         lehd_url = f"http://lehd.ces.census.gov/data/lodes/LODES7/{state.lower()}/od"
 
@@ -197,7 +190,7 @@ class BNADataStore:
             # Gunzip it in the store and delete the gz file.
             utils.gunzip(self.store.prefix / lehd_gz, self.store.prefix / lehd_csv)
 
-    async def download_2010_census_blocks(self, fips: str):
+    async def download_2010_census_blocks(self, fips: str) -> None:
         """Download a 2010 census tabulation block code for a specific state."""
         tabblk2010_url = f"{TIGER_URL}/TIGER2010BLKPOPHU"
         tabblk2010_zip = f"tabblock2010_{fips}_pophu.zip"
