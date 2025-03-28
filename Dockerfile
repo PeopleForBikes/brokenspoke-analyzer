@@ -69,5 +69,4 @@ RUN curl -o /etc/bash_completion.d/git-completion.bash \
 USER bna
 
 FROM main
-ENV HOME=/usr/src/app
 USER bna

@@ -43,7 +43,7 @@ fmt-python:
 
 # Run the unit tests.
 test *extra_args='':
-    uv run pytest --cov={{ src_dir }} -x $@
+    uv run pytest --log-level=DEBUG -s --cov={{ src_dir }} -x $@
 
 # Build the documentation
 docs:

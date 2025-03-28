@@ -98,7 +98,7 @@ def prepare_census_blocks(tabblk_file: pathlib.Path, output_dir: pathlib.Path) -
     for file in tabblk2010_files:
         file.rename(output_dir / f"population{file.suffix}")
     # shutil.copyfile(output_dir / "population.zip", output_dir / f"{tabblk_file.name}")
-    shutil.copyfile(tabblk_file.resolve(strict=True), output_dir / "population.zip")
+    # shutil.copyfile(tabblk_file.resolve(strict=True), output_dir / "population.zip")
 
 
 def normalize_unicode_name(value: str) -> str:
@@ -282,3 +282,25 @@ def get_user_cache_dir(ensure_exists: bool = True) -> pathlib.Path:
         constant.APPNAME, constant.APPAUTHOR, ensure_exists=ensure_exists
     )
     return pathlib.Path(dirs.user_cache_dir)
+
+
+class Cache(Enum):
+    """Define the types of caching strategies available to store downloaded artifacts."""
+
+    LOCAL = 0
+    USER_CACHE = 1
+    AWS_S3 = 2
+
+
+# def get_cache_store(cache_type: Cache, local_fs: pathlib.Path) -> ObjectStore:
+#     """Return the cache directory for the specified type."""
+#     match cache_type:
+#         case Cache.LOCAL:
+#             if not local_fs:
+#                 raise ValueError("a local directory must be specified")
+#             return ObjectStore(local_fs)
+#         case Cache.USER_CACHE:
+#             return ObjectStore(get_user_cache_dir())
+#         case Cache.AWS_S3:
+#             store = ObjectStore("memory://")
+#             # raise NotImplementedError

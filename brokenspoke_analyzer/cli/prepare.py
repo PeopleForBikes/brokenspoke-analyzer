@@ -20,6 +20,7 @@ from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core import (
     analysis,
     constant,
+    datastore,
     downloader,
     runner,
     utils,
@@ -174,53 +175,59 @@ async def prepare_(
                 f"Default city speed limit adjusted to {city_speed_limit} km/h."
             )
     else:
+        lodes_year = lodes_year
+        bna_store = datastore.BNADataStore(output_dir, datastore.CacheType.USER_CACHE)
         async with aiohttp.ClientSession() as session:
-            lodes_year = lodes_year
             with console.status(
                 f"[bold green]Fetching {lodes_year} US employment data..."
             ):
-                await retryer(
-                    downloader.download_lodes_data,
-                    session,
-                    utils.get_user_cache_dir(),
-                    state_abbrev,
-                    "main",
-                    lodes_year,
-                )
-                await retryer(
-                    downloader.download_lodes_data,
-                    session,
-                    utils.get_user_cache_dir(),
-                    state_abbrev,
-                    "aux",
-                    lodes_year,
-                )
+                # await retryer(
+                #     downloader.download_lodes_data,
+                #     session,
+                #     utils.get_cache_store(utils.Cache.USER_CACHE),
+                #     state_abbrev,
+                #     "main",
+                #     lodes_year,
+                # )
+                # await retryer(
+                #     downloader.download_lodes_data,
+                #     session,
+                #     utils.get_cache_store(utils.Cache.USER_CACHE),
+                #     state_abbrev,
+                #     "aux",
+                #     lodes_year,
+                # )
+                await bna_store.download_lodes_data(state_abbrev, lodes_year)
 
             with console.status("[bold green]Fetching US census waterblocks..."):
-                await retryer(
-                    downloader.download_census_waterblocks,
-                    session,
-                    utils.get_user_cache_dir(),
-                )
+                # await retryer(
+                #     downloader.download_census_waterblocks,
+                #     session,
+                #     utils.get_cache_store(utils.Cache.USER_CACHE),
+                # )
+                await bna_store.download_census_waterblocks()
 
             with console.status("[bold green]Fetching 2010 US census blocks..."):
-                await retryer(
-                    downloader.download_2010_census_blocks,
-                    session,
-                    output_dir,
-                    state_fips,
-                )
+                # await retryer(
+                #     downloader.download_2010_census_blocks,
+                #     session,
+                #     output_dir,
+                #     state_fips,
+                # )
+                await bna_store.download_2010_census_blocks(state_fips)
 
             with console.status("[bold green]Fetching US state speed limits..."):
-                await retryer(
-                    downloader.download_state_speed_limits,
-                    session,
-                    utils.get_user_cache_dir(),
-                )
+                # await retryer(
+                #     downloader.download_state_speed_limits,
+                #     session,
+                #     utils.get_cache_store(utils.Cache.USER_CACHE),
+                # )
+                await bna_store.download_state_speed_limits()
 
             with console.status("[bold green]Fetching US city speed limits..."):
-                await retryer(
-                    downloader.download_city_speed_limits,
-                    session,
-                    utils.get_user_cache_dir(),
-                )
+                # await retryer(
+                #     downloader.download_city_speed_limits,
+                #     session,
+                #     utils.get_cache_store(utils.Cache.USER_CACHE),
+                # )
+                await bna_store.download_city_speed_limits()
