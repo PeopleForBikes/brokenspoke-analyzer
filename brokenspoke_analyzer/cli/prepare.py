@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import os
 import pathlib
 import typing
 
@@ -27,6 +28,8 @@ from brokenspoke_analyzer.core import (
 )
 
 app = typer.Typer()
+
+BNA_CACHE_AWS_S3_BUCKET = "BNA_CACHE_AWS_S3_BUCKET"
 
 
 @app.command()
@@ -176,8 +179,24 @@ async def prepare_(
                 f"Default city speed limit adjusted to {city_speed_limit} km/h."
             )
     else:
-        lodes_year = lodes_year
-        bna_store = datastore.BNADataStore(output_dir, datastore.CacheType.NONE)
+        cache_aws_s3_bucket = None
+        match os.getenv("BNA_CACHING_STRATEGY"):
+            case "USER_CACHE":
+                caching_strategy = datastore.CacheType.USER_CACHE
+            case "AWS_S3":
+                caching_strategy = datastore.CacheType.AWS_S3
+                cache_aws_s3_bucket = os.getenv(BNA_CACHE_AWS_S3_BUCKET)
+                if not cache_aws_s3_bucket:
+                    raise ValueError(
+                        "the name of the S3 bucket must be specified in the {BNA_CACHE_AWS_S3_BUCKET} environment variable"
+                    )
+            case _:
+                caching_strategy = datastore.CacheType.NONE
+        logger.debug(f"{caching_strategy=}")
+        logger.debug(f"{cache_aws_s3_bucket=}")
+        bna_store = datastore.BNADataStore(
+            output_dir, caching_strategy, s3_bucket=cache_aws_s3_bucket
+        )
         async with aiohttp.ClientSession() as session:
             with console.status("[bold green]Fetching US state speed limits..."):
                 await bna_store.download_state_speed_limits()

@@ -55,7 +55,7 @@ class BNADataStore:
         path: pathlib.Path,
         cache_type: CacheType,
         *,
-        s3prefix: str | None = None,
+        s3_bucket: str | None = None,
     ):
         """
         Initialize the BNA data store.
@@ -85,7 +85,7 @@ class BNADataStore:
             case CacheType.USER_CACHE:
                 url = f"file://{utils.get_user_cache_dir()}"
             case CacheType.AWS_S3:
-                url = f"s3://{s3prefix}"
+                url = f"s3://{s3_bucket}"
         self.cache = from_url(url, client_options=client_options)  # type: ignore
 
     def is_cached(self, path: str) -> bool:
@@ -186,22 +186,16 @@ class BNADataStore:
     async def download_2010_census_blocks(self, fips: str) -> None:
         """Download a 2010 census tabulation block code for a specific state."""
         tabblk2010_zip = f"tabblock2010_{fips}_pophu.zip"
-        logger.info(f"{tabblk2010_zip=}")
 
         # Check the cache.
         if self.is_cached(tabblk2010_zip):
-            logger.info("is cached")
             await self.copy_to_store(tabblk2010_zip)
-            logger.info("is stored")
         else:
-            logger.info("was not cached")
             # Otherwise fetch the gz file to the store and cache it.
             async with aiohttp.ClientSession() as session:
-                logger.info("initialize download")
                 await downloader.download_2010_census_blocks(
                     session, self.store.prefix, fips
                 )
-                logger.info("download complete")
             await self.cache.put_async(
                 tabblk2010_zip, self.store.prefix / tabblk2010_zip
             )
