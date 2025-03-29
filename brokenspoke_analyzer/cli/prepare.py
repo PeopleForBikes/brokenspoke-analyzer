@@ -102,6 +102,7 @@ async def prepare_(
     # Prepare the output directory.
     output_dir /= slug
     output_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(f"{output_dir=}")
 
     # Prepare the Rich output.
     console = rich.get_console()
@@ -178,6 +179,30 @@ async def prepare_(
         lodes_year = lodes_year
         bna_store = datastore.BNADataStore(output_dir, datastore.CacheType.USER_CACHE)
         async with aiohttp.ClientSession() as session:
+            with console.status("[bold green]Fetching US state speed limits..."):
+                # await retryer(
+                #     downloader.download_state_speed_limits,
+                #     session,
+                #     utils.get_cache_store(utils.Cache.USER_CACHE),
+                # )
+                await bna_store.download_state_speed_limits()
+
+            with console.status("[bold green]Fetching US city speed limits..."):
+                # await retryer(
+                #     downloader.download_city_speed_limits,
+                #     session,
+                #     utils.get_cache_store(utils.Cache.USER_CACHE),
+                # )
+                await bna_store.download_city_speed_limits()
+
+            with console.status("[bold green]Fetching US census waterblocks..."):
+                # await retryer(
+                #     downloader.download_census_waterblocks,
+                #     session,
+                #     utils.get_cache_store(utils.Cache.USER_CACHE),
+                # )
+                await bna_store.download_census_waterblocks()
+
             with console.status(
                 f"[bold green]Fetching {lodes_year} US employment data..."
             ):
@@ -199,14 +224,6 @@ async def prepare_(
                 # )
                 await bna_store.download_lodes_data(state_abbrev, lodes_year)
 
-            with console.status("[bold green]Fetching US census waterblocks..."):
-                # await retryer(
-                #     downloader.download_census_waterblocks,
-                #     session,
-                #     utils.get_cache_store(utils.Cache.USER_CACHE),
-                # )
-                await bna_store.download_census_waterblocks()
-
             with console.status("[bold green]Fetching 2010 US census blocks..."):
                 # await retryer(
                 #     downloader.download_2010_census_blocks,
@@ -215,19 +232,3 @@ async def prepare_(
                 #     state_fips,
                 # )
                 await bna_store.download_2010_census_blocks(state_fips)
-
-            with console.status("[bold green]Fetching US state speed limits..."):
-                # await retryer(
-                #     downloader.download_state_speed_limits,
-                #     session,
-                #     utils.get_cache_store(utils.Cache.USER_CACHE),
-                # )
-                await bna_store.download_state_speed_limits()
-
-            with console.status("[bold green]Fetching US city speed limits..."):
-                # await retryer(
-                #     downloader.download_city_speed_limits,
-                #     session,
-                #     utils.get_cache_store(utils.Cache.USER_CACHE),
-                # )
-                await bna_store.download_city_speed_limits()

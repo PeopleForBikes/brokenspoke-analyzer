@@ -154,7 +154,7 @@ async def download_2010_census_blocks(
     )
 
     # Unzip and rename the tabulation block files to "population".
-    utils.prepare_census_blocks(tabblk2010_file, output_dir.resolve(strict=True))
+    # utils.prepare_census_blocks(tabblk2010_file, output_dir.resolve(strict=True))
 
 
 # # TODO(rgreinho): not used.

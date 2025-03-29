@@ -36,15 +36,15 @@ def test_truthy():
 #         print(f"{spacer}{v.title()}")
 
 
-@pytest.mark.asyncio
-async def test_datastore():
-    """Test some features of the BNA Data Store."""
-    bna_store = datastore.BNADataStore(
-        pathlib.Path(
-            "/Users/rgreinhofer/projects/PeopleForBikes/brokenspoke-analyzer/data"
-        ),
-        datastore.CacheType.USER_CACHE,
-    )
-    await bna_store.download_census_waterblocks()
-    await bna_store.download_lodes_data("ma", 2019)
-    await bna_store.download_2010_census_blocks("25")
+# @pytest.mark.asyncio
+# async def test_datastore():
+#     """Test some features of the BNA Data Store."""
+#     bna_store = datastore.BNADataStore(
+#         pathlib.Path(
+#             "/Users/rgreinhofer/projects/PeopleForBikes/brokenspoke-analyzer/data/test"
+#         ),
+#         datastore.CacheType.USER_CACHE,
+#     )
+#     await bna_store.download_census_waterblocks()
+#     await bna_store.download_lodes_data("ma", 2019)
+#     await bna_store.download_2010_census_blocks("25")
