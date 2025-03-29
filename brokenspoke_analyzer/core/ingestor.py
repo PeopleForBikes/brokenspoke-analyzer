@@ -494,12 +494,7 @@ def import_all(
     if run_import_jobs:
         if not lodes_year:
             raise ValueError("'lodes_year' is required when importing job data")
-        import_jobs(
-            engine,
-            state_abbrev,
-            lodes_year,
-            input_dir,
-        )
+        import_jobs(engine, state_abbrev, lodes_year, input_dir)
     import_osm_data(
         engine,
         osm_file,
@@ -576,12 +571,7 @@ def jobs_wrapper(
     engine = dbcore.create_psycopg_engine(database_url)
 
     # Import the jobs.
-    import_jobs(
-        engine,
-        state_abbreviation,
-        lodes_year,
-        input_dir,
-    )
+    import_jobs(engine, state_abbreviation, lodes_year, input_dir)
 
 
 def osm_wrapper(

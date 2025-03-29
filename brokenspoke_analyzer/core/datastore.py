@@ -50,7 +50,13 @@ class CacheType(enum.Enum):
 class BNADataStore:
     """Define the BNA data store."""
 
-    def __init__(self, path: pathlib.Path, cache_type: CacheType):
+    def __init__(
+        self,
+        path: pathlib.Path,
+        cache_type: CacheType,
+        *,
+        s3prefix: str | None = None,
+    ):
         """
         Initialize the BNA data store.
 
@@ -75,18 +81,12 @@ class BNADataStore:
         # Create the cache store based on the selected strategy.
         match cache_type:
             case CacheType.NONE:
-                # path MUST start with '/'.
-                self.cache = from_url(  # type: ignore
-                    f"file://{path}", client_options=client_options, mkdir=True
-                )
+                url = f"file://{path}"
             case CacheType.USER_CACHE:
-                self.cache = from_url(  # type: ignore
-                    f"file://{utils.get_user_cache_dir()}",
-                    client_options=client_options,
-                    mkdir=True,
-                )
+                url = f"file://{utils.get_user_cache_dir()}"
             case CacheType.AWS_S3:
-                self.cache = from_url(f"s3://{path}", client_options=client_options)  # type: ignore
+                url = f"s3://{s3prefix}"
+        self.cache = from_url(url, client_options=client_options)  # type: ignore
 
     def is_cached(self, path: str) -> bool:
         """Check whether a file already exists in the cache store."""
@@ -185,7 +185,6 @@ class BNADataStore:
 
     async def download_2010_census_blocks(self, fips: str) -> None:
         """Download a 2010 census tabulation block code for a specific state."""
-        tabblk2010_url = f"{TIGER_URL}/TIGER2010BLKPOPHU"
         tabblk2010_zip = f"tabblock2010_{fips}_pophu.zip"
         logger.info(f"{tabblk2010_zip=}")
 
@@ -196,8 +195,7 @@ class BNADataStore:
             logger.info("is stored")
         else:
             logger.info("was not cached")
-            # Otherwise fetch the gz file to the cache and the store.
-            # await self.fetch_to_store_with_cache(tabblk2010_url, tabblk2010_zip)
+            # Otherwise fetch the gz file to the store and cache it.
             async with aiohttp.ClientSession() as session:
                 logger.info("initialize download")
                 await downloader.download_2010_census_blocks(
