@@ -10,6 +10,7 @@ from brokenspoke_analyzer.core import utils
 
 PFB_PUBLIC_DOCUMENTS_URL = "https://s3.amazonaws.com/pfb-public-documents"
 TIGER_URL = "https://www2.census.gov/geo/tiger"
+CHUNK_SIZE = 65536
 
 
 async def download_file(
@@ -33,7 +34,7 @@ async def download_file(
     logger.debug(f"Downloading file from {url} to {output}...")
     async with session.get(url) as resp:
         with open(output, "wb") as fd:
-            async for chunk in resp.content.iter_chunked(8096):
+            async for chunk in resp.content.iter_chunked(CHUNK_SIZE):
                 fd.write(chunk)
 
 
@@ -151,9 +152,6 @@ async def download_2010_census_blocks(
     await download_file(
         session, f"{tabblk2010_url}/{tabblk2010_filename}", tabblk2010_file
     )
-
-    # Unzip and rename the tabulation block files to "population".
-    utils.prepare_census_blocks(tabblk2010_file, output_dir.resolve(strict=True))
 
 
 # # TODO(rgreinho): not used.

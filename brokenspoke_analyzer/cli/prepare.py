@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import os
 import pathlib
 import typing
 
@@ -20,12 +21,15 @@ from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core import (
     analysis,
     constant,
+    datastore,
     downloader,
     runner,
     utils,
 )
 
 app = typer.Typer()
+
+BNA_CACHE_AWS_S3_BUCKET = "BNA_CACHE_AWS_S3_BUCKET"
 
 
 @app.command()
@@ -101,6 +105,7 @@ async def prepare_(
     # Prepare the output directory.
     output_dir /= slug
     output_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(f"{output_dir=}")
 
     # Prepare the Rich output.
     console = rich.get_console()
@@ -174,47 +179,38 @@ async def prepare_(
                 f"Default city speed limit adjusted to {city_speed_limit} km/h."
             )
     else:
+        cache_aws_s3_bucket = None
+        match os.getenv("BNA_CACHING_STRATEGY"):
+            case "USER_CACHE":
+                caching_strategy = datastore.CacheType.USER_CACHE
+            case "AWS_S3":
+                caching_strategy = datastore.CacheType.AWS_S3
+                cache_aws_s3_bucket = os.getenv(BNA_CACHE_AWS_S3_BUCKET)
+                if not cache_aws_s3_bucket:
+                    raise ValueError(
+                        "the name of the S3 bucket must be specified in the {BNA_CACHE_AWS_S3_BUCKET} environment variable"
+                    )
+            case _:
+                caching_strategy = datastore.CacheType.NONE
+        logger.debug(f"{caching_strategy=}")
+        logger.debug(f"{cache_aws_s3_bucket=}")
+        bna_store = datastore.BNADataStore(
+            output_dir, caching_strategy, s3_bucket=cache_aws_s3_bucket
+        )
         async with aiohttp.ClientSession() as session:
-            lodes_year = lodes_year
+            with console.status("[bold green]Fetching US state speed limits..."):
+                await bna_store.download_state_speed_limits()
+
+            with console.status("[bold green]Fetching US city speed limits..."):
+                await bna_store.download_city_speed_limits()
+
+            with console.status("[bold green]Fetching US census waterblocks..."):
+                await bna_store.download_census_waterblocks()
+
             with console.status(
                 f"[bold green]Fetching {lodes_year} US employment data..."
             ):
-                await retryer(
-                    downloader.download_lodes_data,
-                    session,
-                    output_dir,
-                    state_abbrev,
-                    "main",
-                    lodes_year,
-                )
-                await retryer(
-                    downloader.download_lodes_data,
-                    session,
-                    output_dir,
-                    state_abbrev,
-                    "aux",
-                    lodes_year,
-                )
-
-            with console.status("[bold green]Fetching US census waterblocks..."):
-                await retryer(
-                    downloader.download_census_waterblocks, session, output_dir
-                )
+                await bna_store.download_lodes_data(state_abbrev, lodes_year)
 
             with console.status("[bold green]Fetching 2010 US census blocks..."):
-                await retryer(
-                    downloader.download_2010_census_blocks,
-                    session,
-                    output_dir,
-                    state_fips,
-                )
-
-            with console.status("[bold green]Fetching US state speed limits..."):
-                await retryer(
-                    downloader.download_state_speed_limits, session, output_dir
-                )
-
-            with console.status("[bold green]Fetching US city speed limits..."):
-                await retryer(
-                    downloader.download_city_speed_limits, session, output_dir
-                )
+                await bna_store.download_2010_census_blocks(state_fips)

@@ -11,7 +11,10 @@ from enum import Enum
 import geopandas as gpd
 import pandas as pd
 from loguru import logger
+from platformdirs import PlatformDirs
 from slugify import slugify
+
+from brokenspoke_analyzer.core import constant
 
 # WGS 84 / Pseudo-Mercator -- Spherical Mercator.
 # https://epsg.io/3857
@@ -90,7 +93,7 @@ def prepare_census_blocks(tabblk_file: pathlib.Path, output_dir: pathlib.Path) -
     unzip(tabblk_file.resolve(strict=True), output_dir, False)
 
     # Rename the tabulation block files to "population".
-    # But keep the original file.s
+    # But keep the original file.
     tabblk2010_files = output_dir.glob(f"{tabblk_file.stem}.*")
     for file in tabblk2010_files:
         file.rename(output_dir / f"population{file.suffix}")
@@ -270,3 +273,11 @@ def is_usa(country: str) -> bool:
 
     """
     return country.upper() in ["US", "USA", "UNITED STATES"]
+
+
+def get_user_cache_dir(ensure_exists: bool = True) -> pathlib.Path:
+    """Return the user cache directory."""
+    dirs = PlatformDirs(
+        constant.APPNAME, constant.APPAUTHOR, ensure_exists=ensure_exists
+    )
+    return pathlib.Path(dirs.user_cache_dir)
