@@ -186,7 +186,7 @@ class BNADataStore:
             await self.fetch(session, url, lehd_gz)
 
             # Gunzip it in the store and delete the gz file.
-            utils.gunzip(self.store.prefix / lehd_gz, self.store.prefix / lehd_csv)
+            # utils.gunzip(self.store.prefix / lehd_gz, self.store.prefix / lehd_csv)
 
     async def download_2010_census_blocks(
         self, session: aiohttp.ClientSession, fips: str
@@ -197,6 +197,6 @@ class BNADataStore:
         await self.fetch(session, url, tabblk2010_zip)
 
         # Unzip and rename the tabulation block files to "population".
-        utils.prepare_census_blocks(
-            self.store.prefix / tabblk2010_zip, self.store.prefix
-        )
+        # utils.prepare_census_blocks(
+        #     self.store.prefix / tabblk2010_zip, self.store.prefix
+        # )
