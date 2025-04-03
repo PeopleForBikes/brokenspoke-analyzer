@@ -1,4 +1,15 @@
-"""Pre-populate the analyzer cache."""
+"""
+Pre-populate the analyzer cache.
+
+This is a small utility to warm-up you cache with US data.
+
+The cache will be populated with the following items:
+    - US 2010 Census blocks
+    - US 2019 LODES data (employment)
+    - US Water blocks
+    - US State speed limits
+    - US City speed limits
+"""
 
 import asyncio
 import os
@@ -8,13 +19,17 @@ import aiohttp
 import us
 from loguru import logger
 
-from brokenspoke_analyzer.core import datastore
+from brokenspoke_analyzer.core import (
+    datastore,
+    utils,
+)
 
 
 async def main():
-    """."""
+    """Define the main function."""
     bna_store = datastore.BNADataStore(
-        pathlib.Path("/tmp/data/test"),
+        pathlib.Path(utils.get_user_cache_dir()),
+        # datastore.CacheType.USER_CACHE,
         datastore.CacheType.AWS_S3,
         s3_bucket=os.getenv("BNA_CACHE_AWS_S3_BUCKET"),
     )

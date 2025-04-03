@@ -15,6 +15,7 @@
    :caption: GENERAL:
 
    about
+   caching
    commands
    regions
    workflow
