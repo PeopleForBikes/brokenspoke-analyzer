@@ -25,7 +25,6 @@ from brokenspoke_analyzer.cli import (
 from brokenspoke_analyzer.core import (
     analysis,
     compute,
-    constant,
     exporter,
     ingestor,
     utils,
@@ -114,6 +113,7 @@ def compute_cmd(
     city: common.City,
     region: common.Region = None,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
+    with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
 ) -> None:
     """Run an analysis."""
     # Make MyPy happy.
@@ -143,7 +143,7 @@ def compute_cmd(
 
     console = Console()
     with console.status("[bold green]Running the full analysis (may take a while)..."):
-        compute.all(
+        compute.parts(
             database_url=database_url,
             sql_script_dir=sql_script_dir,
             output_srid=output_srid,
@@ -176,6 +176,7 @@ def run(
     ] = None,
     s3_dir: typing.Optional[pathlib.Path] = None,
     with_bundle: typing.Optional[bool] = False,
+    with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
 ) -> None:
     """Run an analysis."""
     run_with.run_(
@@ -196,4 +197,5 @@ def run(
         s3_bucket=s3_bucket,
         s3_dir=s3_dir,
         with_bundle=with_bundle,
+        with_parts=with_parts,
     )

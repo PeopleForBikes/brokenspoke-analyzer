@@ -61,6 +61,9 @@ def export_to_csv(
 ) -> None:
     """Export a list of PostgreSQL tables to CSV files."""
     for table in tables:
+        # Skip export if the table does not exist.
+        if not dbcore.table_exists(engine, table):
+            continue
         csv_file = export_dir / f"{table}.csv"
         dbcore.export_to_csv(engine, csv_file, table)
 
@@ -69,7 +72,11 @@ def export_to_geojson(
     export_dir: pathlib.Path, tables: typing.Sequence[str], database_url: str
 ) -> None:
     """Export a list of PostGIS tables to GeoJSON files."""
+    engine = dbcore.create_psycopg_engine(database_url)
     for table in tables:
+        # Skip export if the table does not exist.
+        if not dbcore.table_exists(engine, table):
+            continue
         geojson_file = export_dir / f"{table}.geojson"
         runner.run_ogr2ogr_geojson_export(database_url, geojson_file, table)
 
@@ -78,7 +85,11 @@ def export_to_shp(
     export_dir: pathlib.Path, tables: typing.Sequence[str], database_url: str
 ) -> None:
     """Export a list of PostGIS tables to Shapefiles."""
+    engine = dbcore.create_psycopg_engine(database_url)
     for table in tables:
+        # Skip export if the table does not exist.
+        if not dbcore.table_exists(engine, table):
+            continue
         shapefile = export_dir / f"{table}.shp"
         runner.run_pgsql2shp(database_url, shapefile, table)
 
