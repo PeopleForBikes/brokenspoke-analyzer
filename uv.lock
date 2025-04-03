@@ -324,7 +324,7 @@ requires-dist = [
     { name = "osmnx", specifier = ">=2.0.1,<3" },
     { name = "python-dotenv", specifier = ">=1.0.1,<2" },
     { name = "python-slugify", specifier = ">=8.0.4,<9" },
-    { name = "rich", specifier = ">=13.9.4,<14" },
+    { name = "rich", specifier = ">=13.9.4,<15" },
     { name = "sqlalchemy", extras = ["asyncio", "postgresql-psycopg"], specifier = ">=2.0.39,<3" },
     { name = "tenacity", specifier = ">=9.0.0,<10" },
     { name = "typer", specifier = ">=0.15.2,<0.16" },
