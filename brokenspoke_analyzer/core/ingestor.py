@@ -13,7 +13,6 @@ from sqlalchemy.engine import Engine
 from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core import (
     analysis,
-    constant,
     runner,
     utils,
 )

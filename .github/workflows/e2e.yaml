@@ -51,7 +51,8 @@ jobs:
             osm2pgrouting osm2pgsql osmctools osmium-tool postgresql-client postgis
       - name: Setup the project
         run: uv sync --all-extras --dev
-      - run: |
+      - name: Run analysis
+        run: |
           uv run bna configure docker
           # uv run bna run "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
           uv run bna prepare all "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"

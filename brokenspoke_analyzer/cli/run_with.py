@@ -49,6 +49,7 @@ def compose(
     with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
     s3_bucket: typing.Optional[str] = None,
     with_bundle: typing.Optional[bool] = False,
+    with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
 ) -> typing.Optional[pathlib.Path]:
     """Manage Docker Compose when running the analysis."""
     database_url = "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -73,6 +74,7 @@ def compose(
             with_export=with_export,
             s3_bucket=s3_bucket,
             with_bundle=with_bundle,
+            with_parts=with_parts,
         )
     finally:
         subprocess.run(["docker", "compose", "rm", "-sfv"], check=True)
@@ -212,6 +214,7 @@ def run_(
     s3_bucket: typing.Optional[str] = None,
     s3_dir: typing.Optional[pathlib.Path] = None,
     with_bundle: typing.Optional[bool] = False,
+    with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
 ) -> typing.Optional[pathlib.Path]:
     """Run an analysis."""
     # Make mypy happy.
@@ -285,7 +288,7 @@ def run_(
     country = utils.normalize_country_name(country)
     import_jobs = utils.is_usa(country)
 
-    compute.all(
+    compute.parts(
         database_url=database_url,
         sql_script_dir=sql_script_dir,
         output_srid=output_srid,
@@ -294,6 +297,7 @@ def run_(
         city_default_speed=city_default_speed,
         import_jobs=import_jobs,
         max_trip_distance=max_trip_distance,
+        compute_parts=with_parts,
     )
 
     # Export.

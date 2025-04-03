@@ -13,6 +13,7 @@ from loguru import logger
 from sqlalchemy.engine import Engine
 
 from brokenspoke_analyzer.cli import common
+from brokenspoke_analyzer.core import constant
 from brokenspoke_analyzer.core.database import dbcore
 
 NB_SIGCTL_SEARCH_DIST = 25
@@ -268,7 +269,7 @@ class Access:
     max_score: int = 1
 
 
-def conectivity(
+def connectivity(
     engine: Engine,
     sql_script_dir: pathlib.Path,
     output_srid: int,
@@ -487,32 +488,66 @@ def all(
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
 ) -> None:
     """Compute all features."""
+    parts(
+        database_url=database_url,
+        sql_script_dir=sql_script_dir,
+        output_srid=output_srid,
+        state_default_speed=state_default_speed,
+        city_default_speed=city_default_speed,
+        import_jobs=import_jobs,
+        buffer=buffer,
+        max_trip_distance=max_trip_distance,
+        compute_parts=constant.COMPUTE_PARTS_ALL,
+    )
+
+
+def parts(
+    database_url: common.DatabaseURL,
+    sql_script_dir: pathlib.Path,
+    output_srid: int,
+    state_default_speed: int | None,
+    city_default_speed: int | None,
+    import_jobs: bool,
+    buffer: common.Buffer = common.DEFAULT_BUFFER,
+    max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
+    compute_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
+) -> None:
+    """Cherry pick the parts of the analysis to compute."""
     # Make mypy happy.
     if not buffer:
         raise ValueError("`buffer` must be set")
+    if not compute_parts:
+        raise ValueError("`compute_parts` must be set")
+
+    if not compute_parts:
+        logger.info("no compute action was specified")
 
     # Prepare the database connection.
     engine = dbcore.create_psycopg_engine(database_url)
 
     # Compute features.
+    # Features are required to compute ALL the other parts, therefore are being
+    # run every time.
     logger.info("Compute features")
     features(engine, sql_script_dir, output_srid, buffer)
 
     # Compute stress.
-    logger.info("Compute stress")
-    stress(
-        engine,
-        sql_script_dir,
-        state_default_speed,
-        city_default_speed,
-    )
+    if constant.ComputePart.STRESS in compute_parts:
+        logger.info("Compute stress")
+        stress(
+            engine,
+            sql_script_dir,
+            state_default_speed,
+            city_default_speed,
+        )
 
     # Compute connectivity.
-    logger.info("Compute connectivity")
-    conectivity(
-        engine,
-        sql_script_dir,
-        output_srid,
-        import_jobs,
-        max_trip_distance,
-    )
+    if constant.ComputePart.CONNECTIVITY in compute_parts:
+        logger.info("Compute connectivity")
+        connectivity(
+            engine,
+            sql_script_dir,
+            output_srid,
+            import_jobs,
+            max_trip_distance,
+        )
