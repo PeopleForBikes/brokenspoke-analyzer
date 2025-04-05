@@ -19,7 +19,6 @@ from tenacity import (
 from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core import (
     analysis,
-    constant,
     downloader,
     runner,
     utils,
