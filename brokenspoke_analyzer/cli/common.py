@@ -6,6 +6,8 @@ import typing
 import typer
 from typing_extensions import Annotated
 
+from brokenspoke_analyzer.core import constant
+
 # Default constants.
 DEFAULT_BLOCK_POPULATION = 100
 DEFAULT_BLOCK_SIZE = 500
@@ -19,6 +21,7 @@ DEFAULT_OUTPUT_DIR = pathlib.Path("./data")
 DEFAULT_EXPORT_DIR = pathlib.Path("./results")
 DEFAULT_RETRIES = 2
 DEFAULT_MAX_TRIP_DISTANCE = 2680
+DEFAULT_COMPUTE_PARTS = constant.COMPUTE_PARTS_ALL
 
 # Default Typer Arguments/Options.
 BlockPopulation = Annotated[
@@ -34,6 +37,10 @@ LODESYear = Annotated[
     typing.Optional[int], typer.Option(help="year to use to retrieve US job data")
 ]
 City = Annotated[str, typer.Argument()]
+ComputeParts = Annotated[
+    typing.Optional[typing.List[constant.ComputePart]],
+    typer.Option(help="parts of the analysis to compute"),
+]
 ContainerName = Annotated[
     typing.Optional[str],
     typer.Option(help="give a specific name to the container running the BNA"),
