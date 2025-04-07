@@ -31,7 +31,19 @@ async def download_file(
         logger.debug(f"the file {output} already exists, skipping...")
         return
     logger.debug(f"Downloading file from {url} to {output}...")
-    async with session.get(url) as resp:
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:137.0) Gecko/20100101 Firefox/137.0",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Upgrade-Insecure-Requests": "1",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "none",
+        "Sec-Fetch-User": "?1",
+        "Sec-GPC": "1",
+        "Priority": "u=0, i",
+    }
+    async with session.get(url, headers=headers) as resp:
         with open(output, "wb") as fd:
             async for chunk in resp.content.iter_chunked(8096):
                 fd.write(chunk)

@@ -174,7 +174,7 @@ async def prepare_(
                 f"Default city speed limit adjusted to {city_speed_limit} km/h."
             )
     else:
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(cookie_jar=aiohttp.CookieJar()) as session:
             lodes_year = lodes_year
             with console.status(
                 f"[bold green]Fetching {lodes_year} US employment data..."
