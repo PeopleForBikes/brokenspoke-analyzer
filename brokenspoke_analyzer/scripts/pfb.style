@@ -130,6 +130,15 @@ way        parking:lane:width        text  linear
 way        parking:lane:right:width  text  linear
 way        parking:lane:left:width   text  linear
 way        parking:lane:both:width   text  linear
+way        parking:right  text  linear
+way        parking:left   text  linear
+way        parking:both   text  linear
+way        parking:right:restriction  text  linear
+way        parking:left:restriction   text  linear
+way        parking:both:restriction   text  linear
+way        parking:right:width  text  linear
+way        parking:left:width   text  linear
+way        parking:both:width   text  linear
 node,way   public_transport    text  linear,polygon
 node,way   railway      text         linear,polygon
 node,way   segregated   text         linear
