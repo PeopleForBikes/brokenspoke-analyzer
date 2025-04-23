@@ -203,7 +203,7 @@ async def prepare_(
 
             with console.status("[bold green]Fetching 2010 US census blocks..."):
                 await retryer(
-                    downloader.download_2010_census_blocks,
+                    downloader.download_2020_census_blocks,
                     session,
                     output_dir,
                     state_fips,

@@ -123,18 +123,14 @@ def load_water_blocks(engine: Engine, csvfile: pathlib.Path) -> None:
 
 def delete_water_blocks(engine: Engine) -> None:
     """Delete the water blocks located within the city boundaries."""
-    query = (
-        f"DELETE FROM {CENSUS_BLOCKS_TABLE} AS blocks "
-        f"USING {WATER_BLOCKS_TABLE} AS water "
-        "WHERE blocks.BLOCKID10 = water.geoid;"
-    )
+    query = f"DELETE FROM {CENSUS_BLOCKS_TABLE} AS blocks WHERE blocks.aland20 = 0;"
     dbcore.execute_query(engine, query)
 
 
 def retrieve_population(engine: Engine) -> int:
     """Retrieve the population from the imported census data."""
     with engine.connect() as conn:
-        result = conn.execute(text("SELECT SUM(pop10) FROM neighborhood_census_blocks"))
+        result = conn.execute(text("SELECT SUM(pop20) FROM neighborhood_census_blocks"))
         return int(result.scalar_one())
 
 
@@ -182,6 +178,11 @@ def import_neighborhood(
         # By convention, this file is always named `censuswaterblocks.csv`.
         load_water_blocks(engine, water_blocks_file)
         delete_water_blocks(engine)
+
+    transform_query = (
+        f"ALTER TABLE {CENSUS_BLOCKS_TABLE} RENAME COLUMN geoid20 TO blockid20"
+    )
+    dbcore.execute_query(engine, transform_query)
 
     # Ensure there are inhabitants within the boundaries.
     logger.info("Retrieving the population...")
