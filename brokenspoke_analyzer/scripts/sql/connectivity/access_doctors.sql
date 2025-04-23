@@ -15,10 +15,10 @@ SET
             SELECT 1
             FROM neighborhood_connected_census_blocks
             WHERE
-                neighborhood_connected_census_blocks.source_blockid10
-                = neighborhood_census_blocks.blockid10
-                AND neighborhood_connected_census_blocks.target_blockid10
-                = ANY(neighborhood_doctors.blockid10)
+                neighborhood_connected_census_blocks.source_blockid20
+                = neighborhood_census_blocks.geoid20
+                AND neighborhood_connected_census_blocks.target_blockid20
+                = ANY(neighborhood_doctors.blockid20)
                 AND neighborhood_connected_census_blocks.low_stress
         )
     ),
@@ -29,10 +29,10 @@ SET
             SELECT 1
             FROM neighborhood_connected_census_blocks
             WHERE
-                neighborhood_connected_census_blocks.source_blockid10
-                = neighborhood_census_blocks.blockid10
-                AND neighborhood_connected_census_blocks.target_blockid10
-                = ANY(neighborhood_doctors.blockid10)
+                neighborhood_connected_census_blocks.source_blockid20
+                = neighborhood_census_blocks.geoid20
+                AND neighborhood_connected_census_blocks.target_blockid20
+                = ANY(neighborhood_doctors.blockid20)
         )
     )
 WHERE EXISTS (
@@ -87,29 +87,29 @@ SET
         SELECT SUM(shed.pop)
         FROM (
             SELECT
-                cb.blockid10,
-                MAX(cb.pop10) AS pop
+                cb.geoid20,
+                MAX(cb.pop20) AS pop
             FROM neighborhood_census_blocks AS cb,
                 neighborhood_connected_census_blocks AS cbs
             WHERE
-                cbs.source_blockid10 = cb.blockid10
-                AND cbs.target_blockid10 = ANY(neighborhood_doctors.blockid10)
-            GROUP BY cb.blockid10
+                cbs.source_blockid20 = cb.geoid20
+                AND cbs.target_blockid20 = ANY(neighborhood_doctors.blockid20)
+            GROUP BY cb.geoid20
         ) AS shed
     ),
     pop_low_stress = (
         SELECT SUM(shed.pop)
         FROM (
             SELECT
-                cb.blockid10,
-                MAX(cb.pop10) AS pop
+                cb.geoid20,
+                MAX(cb.pop20) AS pop
             FROM neighborhood_census_blocks AS cb,
                 neighborhood_connected_census_blocks AS cbs
             WHERE
-                cbs.source_blockid10 = cb.blockid10
-                AND cbs.target_blockid10 = ANY(neighborhood_doctors.blockid10)
+                cbs.source_blockid20 = cb.geoid20
+                AND cbs.target_blockid20 = ANY(neighborhood_doctors.blockid20)
                 AND cbs.low_stress
-            GROUP BY cb.blockid10
+            GROUP BY cb.geoid20
         ) AS shed
     )
 WHERE EXISTS (

@@ -12,26 +12,26 @@
 UPDATE neighborhood_census_blocks
 SET
     pop_low_stress = (
-        SELECT SUM(blocks2.pop10)
+        SELECT SUM(blocks2.pop20)
         FROM neighborhood_census_blocks AS blocks2
         WHERE EXISTS (
             SELECT 1
             FROM neighborhood_connected_census_blocks AS cb
             WHERE
-                cb.source_blockid10 = neighborhood_census_blocks.blockid10
-                AND cb.target_blockid10 = blocks2.blockid10
+                cb.source_blockid20 = neighborhood_census_blocks.geoid20
+                AND cb.target_blockid20 = blocks2.geoid20
                 AND cb.low_stress
         )
     ),
     pop_high_stress = (
-        SELECT SUM(blocks2.pop10)
+        SELECT SUM(blocks2.pop20)
         FROM neighborhood_census_blocks AS blocks2
         WHERE EXISTS (
             SELECT 1
             FROM neighborhood_connected_census_blocks AS cb
             WHERE
-                cb.source_blockid10 = neighborhood_census_blocks.blockid10
-                AND cb.target_blockid10 = blocks2.blockid10
+                cb.source_blockid20 = neighborhood_census_blocks.geoid20
+                AND cb.target_blockid20 = blocks2.geoid20
         )
     )
 WHERE EXISTS (
