@@ -132,31 +132,6 @@ async def download_census_waterblocks(
     utils.unzip(zipped_waterblock_file, output_dir, False)
 
 
-async def download_2010_census_blocks(
-    session: aiohttp.ClientSession, output_dir: pathlib.Path, fips: str
-) -> None:
-    """Download a 2010 census tabulation block code for a specific state."""
-    tabblk2010_url = f"{TIGER_URL}/TIGER2010BLKPOPHU"
-    tabblk2010_filename = f"tabblock2010_{fips}_pophu.zip"
-    tabblk2010_file = output_dir / tabblk2010_filename
-    tabblk2010_file = tabblk2010_file.resolve()
-    population_file = output_dir / "population.shp"
-    population_file = population_file.resolve()
-
-    # Skip the download if the target file already exists.
-    if population_file.exists():
-        return
-
-    # Download the file.
-    await download_file(
-        session, f"{tabblk2010_url}/{tabblk2010_filename}", tabblk2010_file
-    )
-
-    # Unzip and rename the tabulation block files to "population".
-    utils.prepare_census_blocks(tabblk2010_file, output_dir.resolve(strict=True))
-
-
-# # TODO(rgreinho): not used.
 async def download_2020_census_blocks(
     session: aiohttp.ClientSession, output_dir: pathlib.Path, state_fips: str
 ) -> None:
