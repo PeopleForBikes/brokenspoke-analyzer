@@ -49,7 +49,7 @@ ANALYZE generated.neighborhood_retail (geom_poly);
 -- set blockid20
 UPDATE generated.neighborhood_retail
 SET blockid20 = array((
-    SELECT cb.blockid20
+    SELECT cb.geoid20
     FROM neighborhood_census_blocks AS cb
     WHERE ST_Intersects(neighborhood_retail.geom_poly, cb.geom)
 ));

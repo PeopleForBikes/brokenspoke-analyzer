@@ -33,7 +33,7 @@ CREATE TABLE generated.neighborhood_census_block_jobs (
 
 -- add blocks of interest
 INSERT INTO generated.neighborhood_census_block_jobs (blockid20)
-SELECT blocks.blockid20
+SELECT blocks.geoid20
 FROM neighborhood_census_blocks AS blocks;
 
 -- add main data

@@ -113,9 +113,9 @@ ALTER TABLE neighborhood_census_blocks ADD COLUMN transit_score FLOAT;
 ALTER TABLE neighborhood_census_blocks ADD COLUMN overall_score FLOAT; -- noqa: enable=all
 
 -- indexes
-CREATE INDEX IF NOT EXISTS idx_neighborhood_blockid20
+CREATE INDEX IF NOT EXISTS idx_neighborhood_geoid20
 ON neighborhood_census_blocks (
-    blockid20
+    geoid20
 );
 CREATE INDEX IF NOT EXISTS idx_neighborhood_geom
 ON neighborhood_census_blocks USING gist (

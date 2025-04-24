@@ -76,7 +76,7 @@ ANALYZE generated.neighborhood_hospitals (geom_pt);
 -- set blockid20
 UPDATE generated.neighborhood_hospitals
 SET blockid20 = array((
-    SELECT cb.blockid20
+    SELECT cb.geoid20
     FROM neighborhood_census_blocks AS cb
     WHERE
         ST_Intersects(neighborhood_hospitals.geom_poly, cb.geom)

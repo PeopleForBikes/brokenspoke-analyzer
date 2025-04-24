@@ -20,8 +20,8 @@ INSERT INTO generated.neighborhood_connected_census_blocks (
     low_stress, low_stress_cost, high_stress, high_stress_cost
 )
 SELECT
-    source.blockid20, -- noqa: AL08
-    target.blockid20, -- noqa: AL08
+    source.geoid20, -- noqa: AL08
+    target.geoid20, -- noqa: AL08
     FALSE, -- noqa: AL03
     (
         SELECT MIN(ls.total_cost)
@@ -53,9 +53,9 @@ WHERE EXISTS (
     FROM neighborhood_census_blocks AS source,
         neighborhood_census_blocks AS target
     WHERE
-        neighborhood_connected_census_blocks.source_blockid20 = source.blockid20
+        neighborhood_connected_census_blocks.source_blockid20 = source.geoid20
         AND neighborhood_connected_census_blocks.target_blockid20
-        = target.blockid20
+        = target.geoid20
         AND source.road_ids && target.road_ids
 )
 OR (

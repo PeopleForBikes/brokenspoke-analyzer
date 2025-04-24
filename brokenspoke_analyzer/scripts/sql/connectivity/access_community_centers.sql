@@ -16,7 +16,7 @@ SET
             FROM neighborhood_connected_census_blocks
             WHERE
                 neighborhood_connected_census_blocks.source_blockid20
-                = neighborhood_census_blocks.blockid20
+                = neighborhood_census_blocks.geoid20
                 AND neighborhood_connected_census_blocks.target_blockid20
                 = ANY(neighborhood_community_centers.blockid20)
                 AND neighborhood_connected_census_blocks.low_stress
@@ -30,7 +30,7 @@ SET
             FROM neighborhood_connected_census_blocks
             WHERE
                 neighborhood_connected_census_blocks.source_blockid20
-                = neighborhood_census_blocks.blockid20
+                = neighborhood_census_blocks.geoid20
                 AND neighborhood_connected_census_blocks.target_blockid20
                 = ANY(neighborhood_community_centers.blockid20)
         )
@@ -94,31 +94,31 @@ SET
         SELECT SUM(shed.pop)
         FROM (
             SELECT
-                cb.blockid20,
+                cb.geoid20,
                 MAX(cb.pop20) AS pop
             FROM neighborhood_census_blocks AS cb,
                 neighborhood_connected_census_blocks AS cbs
             WHERE
-                cbs.source_blockid20 = cb.blockid20
+                cbs.source_blockid20 = cb.geoid20
                 AND cbs.target_blockid20
                 = ANY(neighborhood_community_centers.blockid20)
-            GROUP BY cb.blockid20
+            GROUP BY cb.geoid20
         ) AS shed
     ),
     pop_low_stress = (
         SELECT SUM(shed.pop)
         FROM (
             SELECT
-                cb.blockid20,
+                cb.geoid20,
                 MAX(cb.pop20) AS pop
             FROM neighborhood_census_blocks AS cb,
                 neighborhood_connected_census_blocks AS cbs
             WHERE
-                cbs.source_blockid20 = cb.blockid20
+                cbs.source_blockid20 = cb.geoid20
                 AND cbs.target_blockid20
                 = ANY(neighborhood_community_centers.blockid20)
                 AND cbs.low_stress
-            GROUP BY cb.blockid20
+            GROUP BY cb.geoid20
         ) AS shed
     )
 WHERE EXISTS (

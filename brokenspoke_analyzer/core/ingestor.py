@@ -179,11 +179,6 @@ def import_neighborhood(
         load_water_blocks(engine, water_blocks_file)
         delete_water_blocks(engine)
 
-    transform_query = (
-        f"ALTER TABLE {CENSUS_BLOCKS_TABLE} RENAME COLUMN geoid20 TO blockid20"
-    )
-    dbcore.execute_query(engine, transform_query)
-
     # Ensure there are inhabitants within the boundaries.
     logger.info("Retrieving the population...")
     population = retrieve_population(engine)

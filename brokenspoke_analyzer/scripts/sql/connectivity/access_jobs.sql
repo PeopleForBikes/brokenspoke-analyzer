@@ -18,7 +18,7 @@ SET
             SELECT 1
             FROM neighborhood_connected_census_blocks AS cb
             WHERE
-                cb.source_blockid20 = neighborhood_census_blocks.blockid20
+                cb.source_blockid20 = neighborhood_census_blocks.geoid20
                 AND cb.target_blockid20 = blocks2.blockid20
                 AND cb.low_stress
         )
@@ -30,7 +30,7 @@ SET
             SELECT 1
             FROM neighborhood_connected_census_blocks AS cb
             WHERE
-                cb.source_blockid20 = neighborhood_census_blocks.blockid20
+                cb.source_blockid20 = neighborhood_census_blocks.geoid20
                 AND cb.target_blockid20 = blocks2.blockid20
         )
     )
