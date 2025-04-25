@@ -124,6 +124,7 @@ def compute_cmd(
     engine = dbcore.create_psycopg_engine(database_url)
 
     # Prepare directories.
+    country = utils.normalize_country_name(country)
     _, slug = analysis.osmnx_query(country, city, region)
     traversable = resources.files("brokenspoke_analyzer.scripts.sql")
     res = pathlib.Path(traversable._paths[0])  # type: ignore
@@ -134,7 +135,6 @@ def compute_cmd(
     state_default_speed, city_default_speed = ingestor.retrieve_default_speed_limits(
         engine
     )
-    country = utils.normalize_country_name(country)
     import_jobs = utils.is_usa(country)
 
     # Compute the output SRID from the boundary file.
