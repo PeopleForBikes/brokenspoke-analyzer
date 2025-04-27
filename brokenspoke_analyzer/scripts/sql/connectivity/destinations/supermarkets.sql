@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS generated.neighborhood_supermarkets;
 
 CREATE TABLE generated.neighborhood_supermarkets (
     id SERIAL PRIMARY KEY,
-    blockid10 CHARACTER VARYING(15) [],
+    blockid20 CHARACTER VARYING(15) [],
     osm_id BIGINT,
     supermarket_name TEXT,
     pop_low_stress INT,
@@ -71,10 +71,10 @@ ON neighborhood_supermarkets USING gist (
 );
 ANALYZE generated.neighborhood_supermarkets (geom_pt);
 
--- set blockid10
+-- set blockid20
 UPDATE generated.neighborhood_supermarkets
-SET blockid10 = array((
-    SELECT cb.blockid10
+SET blockid20 = array((
+    SELECT cb.geoid20
     FROM neighborhood_census_blocks AS cb
     WHERE
         ST_Intersects(neighborhood_supermarkets.geom_poly, cb.geom)
@@ -82,8 +82,8 @@ SET blockid10 = array((
 ));
 
 -- block index
-CREATE INDEX IF NOT EXISTS aidx_neighborhood_supermarkets_blockid10
+CREATE INDEX IF NOT EXISTS aidx_neighborhood_supermarkets_blockid20
 ON neighborhood_supermarkets USING gin (
-    blockid10
+    blockid20
 );
-ANALYZE generated.neighborhood_supermarkets (blockid10);
+ANALYZE generated.neighborhood_supermarkets (blockid20);

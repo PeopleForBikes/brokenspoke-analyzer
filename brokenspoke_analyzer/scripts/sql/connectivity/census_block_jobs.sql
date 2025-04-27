@@ -27,13 +27,13 @@ ANALYZE state_od_main_jt00 (w_geocode);
 DROP TABLE IF EXISTS generated.neighborhood_census_block_jobs;
 CREATE TABLE generated.neighborhood_census_block_jobs (
     id SERIAL PRIMARY KEY,
-    blockid10 VARCHAR(15),
+    blockid20 VARCHAR(15),
     jobs INT
 );
 
 -- add blocks of interest
-INSERT INTO generated.neighborhood_census_block_jobs (blockid10)
-SELECT blocks.blockid10
+INSERT INTO generated.neighborhood_census_block_jobs (blockid20)
+SELECT blocks.geoid20
 FROM neighborhood_census_blocks AS blocks;
 
 -- add main data
@@ -41,7 +41,7 @@ UPDATE generated.neighborhood_census_block_jobs
 SET jobs = coalesce((
     SELECT sum(j.s000)
     FROM state_od_main_jt00 AS j
-    WHERE j.w_geocode = neighborhood_census_block_jobs.blockid10
+    WHERE j.w_geocode = neighborhood_census_block_jobs.blockid20
 ), 0);
 
 -- add aux data
@@ -51,12 +51,12 @@ SET
     + coalesce((
         SELECT sum(j.s000)
         FROM state_od_aux_jt00 AS j
-        WHERE j.w_geocode = neighborhood_census_block_jobs.blockid10
+        WHERE j.w_geocode = neighborhood_census_block_jobs.blockid20
     ), 0);
 
 -- indexes
 CREATE INDEX IF NOT EXISTS idx_neighborhood_blkjobs
 ON neighborhood_census_block_jobs (
-    blockid10
+    blockid20
 );
-ANALYZE neighborhood_census_block_jobs (blockid10);
+ANALYZE neighborhood_census_block_jobs (blockid20);

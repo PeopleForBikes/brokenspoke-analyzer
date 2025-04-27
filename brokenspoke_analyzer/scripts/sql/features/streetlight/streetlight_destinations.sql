@@ -8,20 +8,20 @@ CREATE TABLE generated.neighborhood_streetlight_destinations (
     id SERIAL PRIMARY KEY,
     geom GEOMETRY (MULTIPOLYGON, 4326),
     name TEXT,
-    blockid10 TEXT,
+    blockid20 TEXT,
     is_pass INT
 );
 
 INSERT INTO neighborhood_streetlight_destinations (
-    blockid10,
+    blockid20,
     name,
     geom,
     is_pass
 )
 -- noqa: disable=AL08
 SELECT
-    blocks.blockid10,
-    blocks.blockid10,
+    blocks.geoid20,
+    blocks.geoid20,
     -- Transform to 4326, this is what StreetLightData expects
     ST_Transform(blocks.geom, 4326), -- noqa: AL03
     0 -- noqa: AL03
