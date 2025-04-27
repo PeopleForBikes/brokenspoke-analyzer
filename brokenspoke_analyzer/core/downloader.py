@@ -111,27 +111,6 @@ async def download_lodes_data(
     utils.gunzip(gzipped_lehd_file, decompressed_lefh_file, False)
 
 
-async def download_census_waterblocks(
-    session: aiohttp.ClientSession, output_dir: pathlib.Path
-) -> None:
-    """Download the census waterblocks."""
-    waterblock_url = f"{PFB_PUBLIC_DOCUMENTS_URL}/censuswaterblocks.zip"
-    zipped_waterblock_file = output_dir / "censuswaterblocks.zip"
-    zipped_waterblock_file = zipped_waterblock_file.resolve()
-    decompressed_waterblock_file = output_dir / "censuswaterblocks.csv"
-    decompressed_waterblock_file = decompressed_waterblock_file.resolve()
-
-    # Skip the download if the target file already exists.
-    if decompressed_waterblock_file.exists():
-        return
-
-    # Download the file.
-    await download_file(session, waterblock_url, zipped_waterblock_file)
-
-    # Unzip it.
-    utils.unzip(zipped_waterblock_file, output_dir, False)
-
-
 async def download_2020_census_blocks(
     session: aiohttp.ClientSession, output_dir: pathlib.Path, state_fips: str
 ) -> None:

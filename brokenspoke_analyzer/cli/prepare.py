@@ -196,11 +196,6 @@ async def prepare_(
                     lodes_year,
                 )
 
-            with console.status("[bold green]Fetching US census waterblocks..."):
-                await retryer(
-                    downloader.download_census_waterblocks, session, output_dir
-                )
-
             with console.status("[bold green]Fetching 2010 US census blocks..."):
                 await retryer(
                     downloader.download_2020_census_blocks,
