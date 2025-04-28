@@ -1,4 +1,4 @@
-FROM python:3.13.2-slim-bookworm AS base
+FROM python:3.13.3-slim-bookworm AS base
 
 FROM base AS builder
 RUN apt-get update \
@@ -50,13 +50,14 @@ ENTRYPOINT [ "bna" ]
 FROM main AS dev
 COPY --from=builder /usr/src/app/just /usr/local/bin/
 RUN apt-get update && apt-get install -y --no-install-recommends \
-  git \
-  curl \
-  openssh-client \
-  gcc \
   build-essential \
+  curl \
+  gcc \
+  git \
+  graphviz \
   locales \
   npm \
+  openssh-client \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN deluser --remove-home bna \

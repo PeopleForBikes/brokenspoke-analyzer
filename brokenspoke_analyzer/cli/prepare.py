@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import os
 import pathlib
 import typing
 
@@ -19,13 +20,15 @@ from tenacity import (
 from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core import (
     analysis,
-    constant,
-    downloader,
+    datastore,
     runner,
     utils,
 )
 
 app = typer.Typer()
+
+AWS_REGION = "AWS_REGION"
+BNA_CACHE_AWS_S3_BUCKET = "BNA_CACHE_AWS_S3_BUCKET"
 
 
 @app.command()
@@ -101,6 +104,7 @@ async def prepare_(
     # Prepare the output directory.
     output_dir /= slug
     output_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(f"{output_dir=}")
 
     # Prepare the Rich output.
     console = rich.get_console()
@@ -113,15 +117,17 @@ async def prepare_(
     )
 
     # Retrieve city boundaries.
-    with console.status("[bold green]Querying OSM to retrieve the city boundaries..."):
-        slug = retryer(
-            analysis.retrieve_city_boundaries, output_dir, country, city, region
-        )
-        boundary_file = output_dir / f"{slug}.shp"
-        console.log("Boundary files ready.")
+    console.log(
+        f"[bold green]Querying OSM to retrieve {city} boundaries...",
+    )
+    slug = retryer(analysis.retrieve_city_boundaries, output_dir, country, city, region)
+    boundary_file = output_dir / f"{slug}.shp"
 
     # Download the OSM region file.
-    with console.status("[bold green]Downloading the OSM region file..."):
+    console.log(
+        f"[bold green]Fetching the OSM region file for {region}...",
+    )
+    with console.status("Downloading..."):
         try:
             if not region:
                 raise ValueError
@@ -132,19 +138,15 @@ async def prepare_(
             region_file_path = retryer(
                 analysis.retrieve_region_file, country, output_dir
             )
-        region_file_path_md5 = pathlib.Path(str(region_file_path) + ".md5")
-        if not utils.file_checksum_ok(region_file_path, region_file_path_md5):
-            raise ValueError("Invalid OSM region file")
-        console.log("OSM Region file downloaded.")
+    region_file_path_md5 = pathlib.Path(str(region_file_path) + ".md5")
+    if not utils.file_checksum_ok(region_file_path, region_file_path_md5):
+        raise ValueError("Invalid OSM region file")
 
     # Reduce the osm file with osmium.
-    with console.status(f"[bold green]Reducing the OSM file for {city} with osmium..."):
-        polygon_file = output_dir / f"{slug}.geojson"
-        pfb_osm_file = pathlib.Path(f"{slug}.osm")
-        analysis.prepare_city_file(
-            output_dir, region_file_path, polygon_file, pfb_osm_file
-        )
-        console.log(f"OSM file for {city} ready.")
+    console.log(f"[bold green]Reducing the OSM file for {city} with osmium...")
+    polygon_file = output_dir / f"{slug}.geojson"
+    pfb_osm_file = pathlib.Path(f"{slug}.osm")
+    analysis.prepare_city_file(output_dir, region_file_path, polygon_file, pfb_osm_file)
 
     # Retrieve the state info if needed.
     state_abbrev, state_fips, _ = analysis.derive_state_info(region)
@@ -152,69 +154,65 @@ async def prepare_(
     # Perform some specific operations for non-US cities.
     if state_fips == runner.NON_US_STATE_FIPS:
         # Create synthetic population.
-        with console.status("[bold green]Prepare synthetic population..."):
-            CELL_SIZE = (block_size, block_size)
-            city_boundaries_gdf = gpd.read_file(boundary_file)
-            synthetic_population = analysis.create_synthetic_population(
-                city_boundaries_gdf, *CELL_SIZE, population=block_population
-            )
-            console.log("Synthetic population ready.")
+        console.log("[bold green]Preparing synthetic population...")
+        CELL_SIZE = (block_size, block_size)
+        city_boundaries_gdf = gpd.read_file(boundary_file)
+        synthetic_population = analysis.create_synthetic_population(
+            city_boundaries_gdf, *CELL_SIZE, population=block_population
+        )
 
         # Simulate the census blocks.
-        with console.status("[bold green]Simulate census blocks..."):
-            analysis.simulate_census_blocks(output_dir, synthetic_population)
-            console.log("Census blocks ready.")
+        console.log("[bold green]Simulating census blocks...")
+        analysis.simulate_census_blocks(output_dir, synthetic_population)
 
         # Change the speed limit.
-        with console.status("[bold green]Adjust default city speed limit..."):
-            analysis.change_speed_limit(
-                output_dir, city, state_abbrev, city_speed_limit
-            )
-            console.log(
-                f"Default city speed limit adjusted to {city_speed_limit} km/h."
-            )
+        console.log(
+            f"[bold green]Adjusting default city speed limit to {city_speed_limit} km/h..."
+        )
+        analysis.change_speed_limit(output_dir, city, state_abbrev, city_speed_limit)
     else:
+        # Prepare the caching strategy.
+        cache_aws_s3_bucket = None
+        match os.getenv("BNA_CACHING_STRATEGY"):
+            case "USER_CACHE":
+                caching_strategy = datastore.CacheType.USER_CACHE
+            case "AWS_S3":
+                caching_strategy = datastore.CacheType.AWS_S3
+                cache_aws_s3_bucket = os.getenv(BNA_CACHE_AWS_S3_BUCKET)
+                if not cache_aws_s3_bucket:
+                    raise ValueError(
+                        f"the name of the S3 bucket must be specified in the {BNA_CACHE_AWS_S3_BUCKET} environment variable"
+                    )
+                aws_region = os.getenv(AWS_REGION)
+                if not aws_region:
+                    raise ValueError("AWS_REGION must be set")
+
+            case _:
+                caching_strategy = datastore.CacheType.NONE
+        logger.debug(f"{caching_strategy=}")
+        logger.debug(f"{cache_aws_s3_bucket=}")
+        bna_store = datastore.BNADataStore(
+            output_dir, caching_strategy, s3_bucket=cache_aws_s3_bucket
+        )
+
+        # Fetch the data.
         async with aiohttp.ClientSession() as session:
-            lodes_year = lodes_year
-            with console.status(
-                f"[bold green]Fetching {lodes_year} US employment data..."
-            ):
-                await retryer(
-                    downloader.download_lodes_data,
-                    session,
-                    output_dir,
-                    state_abbrev,
-                    "main",
-                    lodes_year,
-                )
-                await retryer(
-                    downloader.download_lodes_data,
-                    session,
-                    output_dir,
-                    state_abbrev,
-                    "aux",
-                    lodes_year,
-                )
+            console.log("[bold green]Fetching US state speed limits...")
+            with console.status("Downloading..."):
+                await bna_store.download_state_speed_limits(session)
 
-            with console.status("[bold green]Fetching US census waterblocks..."):
-                await retryer(
-                    downloader.download_census_waterblocks, session, output_dir
-                )
+            console.log("[bold green]Fetching US city speed limits...")
+            with console.status("Downloading..."):
+                await bna_store.download_city_speed_limits(session)
 
-            with console.status("[bold green]Fetching 2010 US census blocks..."):
-                await retryer(
-                    downloader.download_2010_census_blocks,
-                    session,
-                    output_dir,
-                    state_fips,
-                )
+            console.log("[bold green]Fetching US census waterblocks...")
+            with console.status("Downloading..."):
+                await bna_store.download_census_waterblocks(session)
 
-            with console.status("[bold green]Fetching US state speed limits..."):
-                await retryer(
-                    downloader.download_state_speed_limits, session, output_dir
-                )
+            console.log(f"[bold green]Fetching US employment data ({lodes_year})...")
+            with console.status("Downloading..."):
+                await bna_store.download_lodes_data(session, state_abbrev, lodes_year)
 
-            with console.status("[bold green]Fetching US city speed limits..."):
-                await retryer(
-                    downloader.download_city_speed_limits, session, output_dir
-                )
+            console.log("[bold green]Fetching US census blocks (2010)...")
+            with console.status("Downloading..."):
+                await bna_store.download_2010_census_blocks(session, state_fips)
