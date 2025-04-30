@@ -1,11 +1,13 @@
 """Test module."""
 
+import os
 import pathlib
 
 import pytest
 from loguru import logger
 
 from brokenspoke_analyzer.core import datastore
+from brokenspoke_analyzer.core.database import dbcore
 from brokenspoke_analyzer.pyrosm import data
 
 logger.enable("brokenspoke_analyzer")
@@ -48,3 +50,9 @@ def test_truthy():
 #     await bna_store.download_census_waterblocks()
 #     await bna_store.download_lodes_data("ma", 2019)
 #     await bna_store.download_2010_census_blocks("25")
+
+# def test_table_exists():
+#     """Checks whether a table exists or not."""
+#     engine = dbcore.create_psycopg_engine(os.getenv("DATABASE_URL"))
+#     res = dbcore.table_exists(engine=engine, table="neighborhood_colleges")
+#     assert res == True
