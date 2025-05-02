@@ -1,6 +1,7 @@
 set positional-arguments := true
 
 src_dir := "brokenspoke_analyzer"
+utils_dir := "utils"
 docker_image := "ghcr.io/peopleforbikes/brokenspoke-analyzer"
 
 # Meta task running ALL the CI tasks at onces.
@@ -16,8 +17,8 @@ lint-md:
 # Lint python files.
 lint-python:
     uv run isort --check .
-    uv run ruff format --check {{ src_dir }}
-    uv run ruff check {{ src_dir }}
+    uv run ruff format --check {{ src_dir }} {{ utils_dir }}
+    uv run ruff check {{ src_dir }} {{ utils_dir }}
     uv run mypy {{ src_dir }}
 
 # Lint SQL files.
@@ -38,8 +39,8 @@ fmt-md:
 # Format python files.
 fmt-python:
     uv run isort .
-    uv run ruff format {{ src_dir }}
-    uv run ruff check --fix {{ src_dir }}
+    uv run ruff format {{ src_dir }} {{ utils_dir }}
+    uv run ruff check --fix {{ src_dir }} {{ utils_dir }}
 
 # Run the unit tests.
 test *extra_args='':

@@ -31,6 +31,10 @@ from brokenspoke_analyzer.core import (
 )
 from brokenspoke_analyzer.core.database import dbcore
 
+# Create the CLI app.
+app = typer.Typer()
+verbose = False
+
 
 def _verbose_callback(value: int) -> None:
     """Configure the logger."""
@@ -58,6 +62,8 @@ def _verbose_callback(value: int) -> None:
         colorize=True,
     )
 
+    verbose = value > 0
+
 
 def _version_callback(value: bool) -> None:
     """Get the package's version."""
@@ -65,10 +71,6 @@ def _version_callback(value: bool) -> None:
     if value:
         typer.echo(f"brokenspoke-analyzer version: {package_version}")
         raise typer.Exit()
-
-
-# Create the CLI app.
-app = typer.Typer()
 
 
 @app.callback()
@@ -96,6 +98,7 @@ def callback(
     return
 
 
+# Register the sub-commands.
 app.add_typer(
     configure.app, name="configure", help="Configure a database for an analysis."
 )
@@ -103,6 +106,9 @@ app.add_typer(prepare.app, name="prepare", help="Prepare files needed for an ana
 app.add_typer(importer.app, name="import", help="Import files into database.")
 app.add_typer(export.app, name="export", help="Export tables from database.")
 app.add_typer(run_with.app, name="run-with", help="Run an analysis in different ways.")
+
+# Make shared options accessible to appropriate subcommands.
+run_with.verbose = verbose
 
 
 @app.command(name="compute")
@@ -142,7 +148,7 @@ def compute_cmd(
     logger.debug(f"{output_srid=}")
 
     console = Console()
-    with console.status("[bold green]Running the full analysis (may take a while)..."):
+    with console.status("[green]Running the full analysis (may take a while)..."):
         compute.parts(
             database_url=database_url,
             sql_script_dir=sql_script_dir,
