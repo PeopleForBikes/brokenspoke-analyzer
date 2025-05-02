@@ -19,7 +19,7 @@ console = rich.get_console()
 @app.command()
 def docker(database_url: common.DatabaseURL) -> None:
     """Configure a database running in a Docker container."""
-    console.log("[bold green]Configure the Docker database...")
+    console.log("[green]Configuring the Docker database...")
     engine = dbcore.create_psycopg_engine(database_url)
     dbcore.configure_docker_db(engine)
 
@@ -29,7 +29,7 @@ def custom(
     cores: Cores, memory_mb: MemoryMB, pguser: PGUser, database_url: common.DatabaseURL
 ) -> None:
     """Configure a database with custom values."""
-    console.log("[bold green]Configure the database with custom settings...")
+    console.log("[green]Configuring the database with custom settings...")
     system(database_url, cores, memory_mb)
     extensions(database_url)
     schemas(database_url, pguser)
@@ -38,7 +38,7 @@ def custom(
 @app.command()
 def system(database_url: common.DatabaseURL, cores: Cores, memory_mb: MemoryMB) -> None:
     """Configure the database system parameters."""
-    console.log("[bold green]Configure the system parameters...")
+    console.log("[green]Configuring the system parameters...")
     engine = dbcore.create_psycopg_engine(database_url)
     dbcore.configure_system(engine, cores, memory_mb)
 
@@ -46,7 +46,7 @@ def system(database_url: common.DatabaseURL, cores: Cores, memory_mb: MemoryMB) 
 @app.command()
 def extensions(database_url: common.DatabaseURL) -> None:
     """Configure the database extensions."""
-    console.log("[bold green]Configure the extensions...")
+    console.log("[green]Configuring the extensions...")
     engine = dbcore.create_psycopg_engine(database_url)
     dbcore.configure_extensions(engine)
 
@@ -54,6 +54,6 @@ def extensions(database_url: common.DatabaseURL) -> None:
 @app.command()
 def schemas(database_url: common.DatabaseURL, pguser: PGUser) -> None:
     """Configure the database schemas."""
-    console.log("[bold green]Configure the schemas...")
+    console.log("[green]Configuring the schemas...")
     engine = dbcore.create_psycopg_engine(database_url)
     dbcore.configure_schemas(engine, pguser)
