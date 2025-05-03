@@ -43,6 +43,7 @@ TABLE_CATALOG = {
         "neighborhood_overall_scores",
         "neighborhood_score_inputs",
         "residential_speed_limit",
+        "mileage",
     ],
 }
 

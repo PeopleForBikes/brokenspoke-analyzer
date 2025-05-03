@@ -6,6 +6,7 @@ compute the BNA scores.
 """
 
 import dataclasses
+import os
 import pathlib
 import typing
 
@@ -477,6 +478,21 @@ def connectivity(
     execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
 
 
+def measure(
+    engine: Engine,
+    sql_script_dir: pathlib.Path,
+) -> None:
+    """Compute BNA mileage."""
+    # Prepare the paths.
+    sql_script_dir = sql_script_dir.resolve(strict=True)
+    sql_connectivity_script_dir = sql_script_dir / "features"
+
+    # Calculating mileage.
+    logger.info("MILEAGE: Calculating mileage")
+    sql_script = sql_connectivity_script_dir / "calculate_mileage.sql"
+    execute_sqlfile_with_substitutions(engine, sql_script)
+
+
 def all(
     database_url: common.DatabaseURL,
     sql_script_dir: pathlib.Path,
@@ -550,4 +566,15 @@ def parts(
             output_srid,
             import_jobs,
             max_trip_distance,
+        )
+
+    # Compute mileage.
+    if (
+        constant.ComputePart.MEASURE in compute_parts
+        and os.getenv("BNA_EXPERIMENTAL", "0") == "1"
+    ):
+        logger.info("Compute mileage")
+        measure(
+            engine,
+            sql_script_dir,
         )
