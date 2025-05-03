@@ -169,7 +169,9 @@ Several parts are available for computing:
 
 - features
 - stress
-- connectivity.
+- connectivity
+- measure (available in experimental mode only, to use set the
+  `BNA_EXPERIMENTAL` environment variable to `1`)
 
 It is possible to use only some parts for the analysis. In this case, the
 `--with-parts` option can be used to specify which part to compute.
