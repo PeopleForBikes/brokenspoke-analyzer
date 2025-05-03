@@ -192,12 +192,23 @@ def calver_revision(dirs: typing.Sequence[pathlib.Path]) -> int:
 
     Examples:
         >>> dirs=[pathlib.Path('usa/new mexico/santa rosa/23.08')]
-        >>> assert calver_revision(dirs) == 1
+        >>> calver_revision(dirs)
+        1
         >>> dirs.append(pathlib.Path('usa/new mexico/santa rosa/23.08.1'))
-        >>> assert calver_revision(dirs) == 2
+        >>> calver_revision(dirs)
+        2
+        >>> dirs.append(pathlib.Path('usa/new mexico/santa rosa/23.08.15'))
+        >>> calver_revision(dirs)
+        16
+        >>> dirs.append(pathlib.Path('usa/new mexico/santa rosa/23.08.150'))
+        >>> calver_revision(dirs)
+        151
+
     """
     # Collect the directories with the suffixes.
-    with_micro = [int(d.suffixes[-1][-1:]) for d in dirs if len(d.suffixes) == 2]
+    with_micro = [
+        int(d.suffixes[-1].replace(".", "")) for d in dirs if len(d.suffixes) == 2
+    ]
 
     # If there is no directory with a micro part, create the first one.
     if not with_micro:
