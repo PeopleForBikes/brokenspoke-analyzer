@@ -151,6 +151,7 @@ def compute_cmd(
             state_default_speed=state_default_speed,
             city_default_speed=city_default_speed,
             import_jobs=import_jobs,
+            compute_parts=with_parts,
         )
         console.log(f"Analysis for {slug} complete.")
 
