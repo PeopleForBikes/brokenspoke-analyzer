@@ -6,6 +6,7 @@ import typing
 from importlib import resources
 
 import pandas as pd
+import rich
 import typer
 from loguru import logger
 from rich.console import Console
@@ -20,7 +21,6 @@ from brokenspoke_analyzer.cli import (
 from brokenspoke_analyzer.core import (
     analysis,
     compute,
-    constant,
     exporter,
     ingestor,
     runner,
@@ -29,6 +29,7 @@ from brokenspoke_analyzer.core import (
 from brokenspoke_analyzer.core.database import dbcore
 
 app = typer.Typer()
+verbose = False
 
 
 @app.command()
@@ -54,7 +55,11 @@ def compose(
     """Manage Docker Compose when running the analysis."""
     database_url = "postgresql://postgres:postgres@localhost:5432/postgres"
     try:
-        subprocess.run(["docker", "compose", "up", "-d", "--wait"], check=True)
+        subprocess.run(
+            ["docker", "compose", "up", "-d", "--wait"],
+            check=True,
+            capture_output=not verbose,
+        )
         configure.docker(database_url)
         export_dir_: typing.Optional[pathlib.Path] = run_(
             database_url=database_url,
@@ -77,9 +82,12 @@ def compose(
             with_parts=with_parts,
         )
     finally:
-        subprocess.run(["docker", "compose", "rm", "-sfv"], check=True)
         subprocess.run(
-            ["docker", "volume", "rm", "-f", "brokenspoke-analyzer_postgres"]
+            ["docker", "compose", "rm", "-sfv"], check=True, capture_output=True
+        )
+        subprocess.run(
+            ["docker", "volume", "rm", "-f", "brokenspoke-analyzer_postgres"],
+            capture_output=True,
         )
     return export_dir_
 
@@ -104,7 +112,7 @@ def original_bna(
         raise ValueError("`container_name` must be set")
 
     console = Console()
-    with console.status("[bold green]Running the full analysis (may take a while)..."):
+    with console.status("[green]Running the full analysis (may take a while)..."):
         state_abbrev, state_fips = (
             analysis.state_info(region)
             if region
@@ -243,8 +251,13 @@ def run_(
     # Prepare the database connection.
     engine = dbcore.create_psycopg_engine(database_url)
 
+    # Prepare the Rich output.
+    console = rich.get_console()
+    console.log(
+        f"[bold bright_blue]Processing {country}, {region}, {city} ({fips_code})"
+    )
+
     # Prepare.
-    logger.info("Prepare")
     logger.debug(f"{output_dir=}")
     prepare.all(
         country=country,
@@ -259,22 +272,23 @@ def run_(
     )
 
     # Import.
-    logger.info("Import")
-    _, slug = analysis.osmnx_query(country, city, region)
-    input_dir = output_dir / slug
-    importer.all(
-        database_url=database_url,
-        input_dir=input_dir,
-        country=country,
-        city=city,
-        region=region,
-        lodes_year=lodes_year,
-        buffer=buffer,
-        fips_code=fips_code,
-    )
+    console.log("[green]Importing input files into the database...")
+    with console.status("Importing..."):
+        _, slug = analysis.osmnx_query(country, city, region)
+        input_dir = output_dir / slug
+        importer.all(
+            database_url=database_url,
+            input_dir=input_dir,
+            country=country,
+            city=city,
+            region=region,
+            lodes_year=lodes_year,
+            buffer=buffer,
+            fips_code=fips_code,
+        )
 
     # Compute.
-    logger.info("Compute")
+    console.log("[green]Computing the data...")
     traversable = resources.files("brokenspoke_analyzer.scripts.sql")
     res = pathlib.Path(traversable._paths[0])  # type: ignore
     sql_script_dir = res.resolve(strict=True)
@@ -288,43 +302,45 @@ def run_(
     country = utils.normalize_country_name(country)
     import_jobs = utils.is_usa(country)
 
-    compute.parts(
-        database_url=database_url,
-        sql_script_dir=sql_script_dir,
-        output_srid=output_srid,
-        buffer=buffer,
-        state_default_speed=state_default_speed,
-        city_default_speed=city_default_speed,
-        import_jobs=import_jobs,
-        max_trip_distance=max_trip_distance,
-        compute_parts=with_parts,
-    )
+    with console.status("[green]Computing..."):
+        compute.parts(
+            database_url=database_url,
+            sql_script_dir=sql_script_dir,
+            output_srid=output_srid,
+            buffer=buffer,
+            state_default_speed=state_default_speed,
+            city_default_speed=city_default_speed,
+            import_jobs=import_jobs,
+            max_trip_distance=max_trip_distance,
+            compute_parts=with_parts,
+        )
 
     # Export.
-    logger.info("Export")
-    if with_export == exporter.Exporter.none:
-        return None
-    elif with_export == exporter.Exporter.local:
-        export_dir = export.local(
-            database_url=database_url,
-            country=country,
-            city=city,
-            region=region,
-            export_dir=export_dir,
-            with_bundle=with_bundle,
-        )
-    elif with_export == exporter.Exporter.s3:
-        export_dir = export.s3(
-            database_url=database_url,
-            bucket_name=s3_bucket,  # type: ignore
-            country=country,
-            city=city,
-            region=region,
-        )
-    elif with_export == exporter.Exporter.s3_custom:
-        export_dir = export.s3_custom(
-            database_url=database_url,
-            bucket_name=s3_bucket,  # type: ignore
-            s3_dir=s3_dir,
-        )
+    console.log("[green]Exporting the results...")
+    with console.status("Exporting..."):
+        if with_export == exporter.Exporter.none:
+            return None
+        elif with_export == exporter.Exporter.local:
+            export_dir = export.local(
+                database_url=database_url,
+                country=country,
+                city=city,
+                region=region,
+                export_dir=export_dir,
+                with_bundle=with_bundle,
+            )
+        elif with_export == exporter.Exporter.s3:
+            export_dir = export.s3(
+                database_url=database_url,
+                bucket_name=s3_bucket,  # type: ignore
+                country=country,
+                city=city,
+                region=region,
+            )
+        elif with_export == exporter.Exporter.s3_custom:
+            export_dir = export.s3_custom(
+                database_url=database_url,
+                bucket_name=s3_bucket,  # type: ignore
+                s3_dir=s3_dir,
+            )
     return export_dir
