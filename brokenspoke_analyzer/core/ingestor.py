@@ -307,6 +307,8 @@ def manage_speed_limits(
     logger.info("Importing state speed limits...")
     state_default_speed_limit = None
     if state_fips != runner.NON_US_STATE_FIPS:
+        tt = state_speed_limits_csv.read_text()
+        print(f"DEBUG DEBUG DEBUG!!! {state_speed_limits_csv=}")
         dbcore.import_csv_file_with_header(
             engine, state_speed_limits_csv, STATE_SPEED_TABLE
         )
