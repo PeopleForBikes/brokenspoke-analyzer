@@ -173,12 +173,11 @@ def configure_schemas(engine: Engine, pguser: str) -> None:
     execute_with_autocommit(engine, statements)
 
 
-# (TODO)rgreinho: Check the schema of the tables. Maybe schema should be a parameter.
 def table_exists(engine: Engine, table: str) -> bool:
     """Check whether a table exists or not."""
     query = f"""SELECT EXISTS (
         SELECT FROM information_schema.tables
-        WHERE table_schema = 'generated'
+        WHERE (table_schema = 'generated' OR table_schema = 'received')
         AND table_name = '{table}'
         );
     """
