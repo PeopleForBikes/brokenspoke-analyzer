@@ -30,7 +30,7 @@ def s3(
     with_bundle: typing.Optional[bool] = False,
 ) -> pathlib.Path:
     """Export results to a S3 bucket following the PFB calver convention."""
-    with console.status("[bold green]Uploading results to AWS S3..."):
+    with console.status("[green]Uploading results to AWS S3..."):
         folder = exporter.create_calver_s3_directories(
             bucket_name, country, city, region
         )
@@ -46,7 +46,7 @@ def s3_custom(
     with_bundle: typing.Optional[bool] = False,
 ) -> pathlib.Path:
     """Export results to a custom S3 bucket."""
-    with console.status("[bold green]Uploading results to AWS S3..."):
+    with console.status("[green]Uploading results to AWS S3..."):
         folder = exporter.s3_directories(bucket_name, s3_dir)
         exporter.s3(database_url, bucket_name, folder, with_bundle)
         return folder
@@ -85,7 +85,7 @@ def _local(
     export_dir: pathlib.Path,
     with_bundle: typing.Optional[bool] = False,
 ) -> None:
-    console.log(f"[bold green]Saving results to {export_dir}...")
+    console.log(f"[green]Saving results to {export_dir}...")
     exporter.local_files(
         database_url=database_url, export_dir=export_dir, with_bundle=with_bundle
     )

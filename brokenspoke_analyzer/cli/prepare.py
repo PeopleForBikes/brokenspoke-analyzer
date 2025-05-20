@@ -118,14 +118,14 @@ async def prepare_(
 
     # Retrieve city boundaries.
     console.log(
-        f"[bold green]Querying OSM to retrieve {city} boundaries...",
+        f"[green]Querying OSM to retrieve {city} boundaries...",
     )
     slug = retryer(analysis.retrieve_city_boundaries, output_dir, country, city, region)
     boundary_file = output_dir / f"{slug}.shp"
 
     # Download the OSM region file.
     console.log(
-        f"[bold green]Fetching the OSM region file for {region}...",
+        f"[green]Fetching the OSM region file for {region}...",
     )
     with console.status("Downloading..."):
         try:
@@ -143,7 +143,7 @@ async def prepare_(
         raise ValueError("Invalid OSM region file")
 
     # Reduce the osm file with osmium.
-    console.log(f"[bold green]Reducing the OSM file for {city} with osmium...")
+    console.log(f"[green]Reducing the OSM file for {city} with osmium...")
     polygon_file = output_dir / f"{slug}.geojson"
     pfb_osm_file = pathlib.Path(f"{slug}.osm")
     analysis.prepare_city_file(output_dir, region_file_path, polygon_file, pfb_osm_file)
@@ -154,7 +154,7 @@ async def prepare_(
     # Perform some specific operations for non-US cities.
     if state_fips == runner.NON_US_STATE_FIPS:
         # Create synthetic population.
-        console.log("[bold green]Preparing synthetic population...")
+        console.log("[green]Preparing synthetic population...")
         CELL_SIZE = (block_size, block_size)
         city_boundaries_gdf = gpd.read_file(boundary_file)
         synthetic_population = analysis.create_synthetic_population(
@@ -162,12 +162,12 @@ async def prepare_(
         )
 
         # Simulate the census blocks.
-        console.log("[bold green]Simulating census blocks...")
+        console.log("[green]Simulating census blocks...")
         analysis.simulate_census_blocks(output_dir, synthetic_population)
 
         # Change the speed limit.
         console.log(
-            f"[bold green]Adjusting default city speed limit to {city_speed_limit} km/h..."
+            f"[green]Adjusting default city speed limit to {city_speed_limit} km/h..."
         )
         analysis.change_speed_limit(output_dir, city, state_abbrev, city_speed_limit)
     else:
@@ -197,22 +197,22 @@ async def prepare_(
 
         # Fetch the data.
         async with aiohttp.ClientSession() as session:
-            console.log("[bold green]Fetching US state speed limits...")
+            console.log("[green]Fetching US state speed limits...")
             with console.status("Downloading..."):
                 await bna_store.download_state_speed_limits(session)
 
-            console.log("[bold green]Fetching US city speed limits...")
+            console.log("[green]Fetching US city speed limits...")
             with console.status("Downloading..."):
                 await bna_store.download_city_speed_limits(session)
 
-            console.log("[bold green]Fetching US census waterblocks...")
+            console.log("[green]Fetching US census waterblocks...")
             with console.status("Downloading..."):
                 await bna_store.download_census_waterblocks(session)
 
-            console.log(f"[bold green]Fetching US employment data ({lodes_year})...")
+            console.log(f"[green]Fetching US employment data ({lodes_year})...")
             with console.status("Downloading..."):
                 await bna_store.download_lodes_data(session, state_abbrev, lodes_year)
 
-            console.log("[bold green]Fetching US census blocks (2010)...")
+            console.log("[green]Fetching US census blocks (2010)...")
             with console.status("Downloading..."):
                 await bna_store.download_2010_census_blocks(session, state_fips)
