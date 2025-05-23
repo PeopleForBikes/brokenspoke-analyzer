@@ -124,8 +124,9 @@ async def prepare_(
     boundary_file = output_dir / f"{slug}.shp"
 
     # Download the OSM region file.
+    osm_region = region if region else country
     console.log(
-        f"[green]Fetching the OSM region file for {region}...",
+        f"[green]Fetching the OSM region file for {osm_region}...",
     )
     with console.status("Downloading..."):
         try:

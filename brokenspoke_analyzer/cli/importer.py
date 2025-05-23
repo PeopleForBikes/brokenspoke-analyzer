@@ -22,14 +22,16 @@ def all(
 ) -> None:
     """Import all files into database."""
     # Make MyPy happy.
-    if not region:
-        raise ValueError("`region` must be set")
     if not fips_code:
         raise ValueError("`fips_code` must be set")
     if not lodes_year:
         raise ValueError("`lodes_year` must be set")
     if not buffer:
         raise ValueError("`buffer` must be set")
+
+    # Set the region as the country if it was not provided.
+    if not region:
+        region = country
 
     ingestor.all_wrapper(
         database_url=database_url,

@@ -253,9 +253,11 @@ def run_(
 
     # Prepare the Rich output.
     console = rich.get_console()
-    console.log(
-        f"[bold bright_blue]Processing {country}, {region}, {city} ({fips_code})"
-    )
+    msg = [f"[bold bright_blue]Processing {country}"]
+    if region:
+        msg.append(region)
+    msg.append(f"{city} ({fips_code})")
+    console.log(", ".join(msg))
 
     # Prepare.
     logger.debug(f"{output_dir=}")

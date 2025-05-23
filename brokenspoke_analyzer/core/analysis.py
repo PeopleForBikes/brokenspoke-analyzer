@@ -33,6 +33,8 @@ def osmnx_query(country: str, city: str, state: str | None) -> typing.Tuple[str,
 
     Returns: the OSMNX query and its slugified version.
     """
+    if country == state:
+        state = None
     query = ", ".join(filter(None, [city, state, country]))
     slug = slugify(query)
     return (query, slug)
@@ -240,6 +242,11 @@ def simulate_census_blocks(
 
 def retrieve_region_file(region: str, output_dir: pathlib.Path) -> pathlib.Path:
     """Retrieve the region file from Geofabrik or BBike."""
+    # As per https://github.com/PeopleForBikes/brokenspoke-analyzer/issues/863
+    # we must define an exception for the countries of Malaysia, Singapore and
+    # Brunei as they have been grouped together in the Geofabrik dataset.
+    if region in {"malaysia", "singapore", "brunei"}:
+        region = "malaysia_singapore_brunei"
     dataset = utils.normalize_unicode_name(region)
     dataset_file = data.get_data(dataset, directory=output_dir)  # type: ignore
     region_file_path: pathlib.Path = pathlib.Path(dataset_file)
