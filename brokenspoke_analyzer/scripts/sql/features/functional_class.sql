@@ -23,6 +23,14 @@ WHERE
         'secondary',
         'primary',
         'living_street'
+    )
+    AND (
+        osm.access IS NULL
+        OR (
+            osm.access = 'no'
+            AND osm.bicycle IN ('yes', 'permissive', 'designated')
+        )
+        OR osm.access NOT IN ('no', 'private')
     );
 
 UPDATE neighborhood_ways
@@ -31,14 +39,30 @@ FROM neighborhood_osm_full_line AS osm
 WHERE
     neighborhood_ways.osm_id = osm.osm_id
     AND osm.highway = 'track'
-    AND osm.tracktype = 'grade1';
+    AND osm.tracktype = 'grade1'
+    AND (
+        osm.access IS NULL
+        OR (
+            osm.access = 'no'
+            AND osm.bicycle IN ('yes', 'permissive', 'designated')
+        )
+        OR osm.access NOT IN ('no', 'private')
+    );
 
 UPDATE neighborhood_ways
 SET functional_class = 'path'
 FROM neighborhood_osm_full_line AS osm
 WHERE
     neighborhood_ways.osm_id = osm.osm_id
-    AND osm.highway IN ('cycleway', 'path');
+    AND osm.highway IN ('cycleway', 'path')
+    AND (
+        osm.access IS NULL
+        OR (
+            osm.access = 'no'
+            AND osm.bicycle IN ('yes', 'permissive', 'designated')
+        )
+        OR osm.access NOT IN ('no', 'private')
+    );
 
 UPDATE neighborhood_ways
 SET
@@ -48,7 +72,15 @@ FROM neighborhood_osm_full_line AS osm
 WHERE
     neighborhood_ways.osm_id = osm.osm_id
     AND osm.highway = 'footway'
-    AND osm.footway IN ('crossing', 'traffic_island');
+    AND osm.footway IN ('crossing', 'traffic_island')
+    AND (
+        osm.access IS NULL
+        OR (
+            osm.access = 'no'
+            AND osm.bicycle IN ('yes', 'permissive', 'designated')
+        )
+        OR osm.access NOT IN ('no', 'private')
+    );
 
 UPDATE neighborhood_ways
 SET functional_class = 'path'
@@ -57,7 +89,14 @@ WHERE
     neighborhood_ways.osm_id = osm.osm_id
     AND osm.highway = 'footway'
     AND osm.bicycle IN ('yes', 'permissive', 'designated')
-    AND (osm.access IS NULL OR osm.access NOT IN ('no', 'private'))
+    AND (
+        osm.access IS NULL
+        OR (
+            osm.access = 'no'
+            AND osm.bicycle IN ('yes', 'permissive', 'designated')
+        )
+        OR osm.access NOT IN ('no', 'private')
+    )
     AND COALESCE(width_ft, 0) >= 8;
 
 UPDATE neighborhood_ways
@@ -66,7 +105,15 @@ FROM neighborhood_osm_full_line AS osm
 WHERE
     neighborhood_ways.osm_id = osm.osm_id
     AND osm.highway = 'service'
-    AND osm.bicycle IN ('yes', 'permissive', 'designated');
+    AND osm.bicycle IN ('yes', 'permissive', 'designated')
+    AND (
+        osm.access IS NULL
+        OR (
+            osm.access = 'no'
+            AND osm.bicycle IN ('yes', 'permissive', 'designated')
+        )
+        OR osm.access NOT IN ('no', 'private')
+    );
 
 UPDATE neighborhood_ways
 SET functional_class = 'living_street'
@@ -75,7 +122,14 @@ WHERE
     neighborhood_ways.osm_id = osm.osm_id
     AND osm.highway = 'pedestrian'
     AND osm.bicycle IN ('yes', 'permissive', 'designated')
-    AND (osm.access IS NULL OR osm.access NOT IN ('no', 'private'));
+    AND (
+        osm.access IS NULL
+        OR (
+            osm.access = 'no'
+            AND osm.bicycle IN ('yes', 'permissive', 'designated')
+        )
+        OR osm.access NOT IN ('no', 'private')
+    );
 
 -- remove stuff that we don't want to route over
 DELETE FROM neighborhood_ways
