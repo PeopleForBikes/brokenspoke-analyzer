@@ -22,8 +22,21 @@ FROM (
         LATERAL (
             VALUES
             (neighborhood_ways.ft_bike_infra),
-            (neighborhood_ways.tf_bike_infra)
+            (neighborhood_ways.tf_bike_infra),
+            (
+                CASE
+                    WHEN
+                        (
+                            neighborhood_ways.functional_class = 'path'
+                            AND neighborhood_ways.xwalk IS NULL
+                        )
+                        THEN 'path'
+                END
+            )
         ) AS features (feature_type)
-    WHERE features.feature_type IN ('sharrow', 'buffered_lane', 'lane', 'track')
+    WHERE
+        features.feature_type IN (
+            'sharrow', 'buffered_lane', 'lane', 'track', 'path'
+        )
 ) AS all_features
 GROUP BY all_features.feature_type;
