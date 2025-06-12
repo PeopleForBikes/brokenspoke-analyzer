@@ -100,7 +100,7 @@ WHERE
     AND COALESCE(width_ft, 0) >= 8;
 
 UPDATE neighborhood_ways
-SET functional_class = 'path'
+SET functional_class = 'unclassified'
 FROM neighborhood_osm_full_line AS osm
 WHERE
     neighborhood_ways.osm_id = osm.osm_id
