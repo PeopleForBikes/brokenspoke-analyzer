@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Changelog" href="CHANGELOG.html" /><link rel="prev" title="Preparation Workflow" href="workflow.html" />
+<link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Commands" href="commands.html" /><link rel="prev" title="About" href="about.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>Resources - Brokenspoke Analyzer 2.6.0 documentation</title>
+        <title>Caching - Brokenspoke Analyzer 2.6.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -219,7 +219,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -242,11 +242,11 @@
   <p class="caption" role="heading"><span class="caption-text">GENERAL:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
-<li class="toctree-l1"><a class="reference internal" href="caching.html">Caching</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Caching</a></li>
 <li class="toctree-l1"><a class="reference internal" href="commands.html">Commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="regions.html">Regions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Preparation Workflow</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Changelog</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">DEVELOPMENT:</span></p>
@@ -290,7 +290,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="_sources/resources.rst.txt" title="View this page">
+  <a class="muted-link" href="_sources/caching.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -304,28 +304,110 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="resources">
-<h1>Resources<a class="headerlink" href="#resources" title="Link to this heading">¶</a></h1>
-<p>This page lists various resources that provided useful information while working
-on this project.</p>
+          <section class="tex2jax_ignore mathjax_ignore" id="caching">
+<h1>Caching<a class="headerlink" href="#caching" title="Link to this heading">¶</a></h1>
+<p>Depending on how you use the analyzer and how frequently, caching the files
+downloaded from the internet can be very beneficial and substantially reduce the
+time spent for preparing the analysis.</p>
+<p>Here is a flowchart depicting the process:</p>
+<div class="graphviz"><img src="_images/graphviz-e499d0cf9f7c49ba2186c3f4e002ab690bdc0adf.png" alt="digraph Flowchart {
+    rankdir=LR;
+    node [shape=rectangle, style=filled, fillcolor=lightgray];
+
+    A [label=&quot;File Request&quot;];
+    B [label=&quot;Cached?&quot;, shape=diamond, fillcolor=white];
+    D [label=&quot;Download into cache&quot;];
+    F [label=&quot;Copy to Store&quot;];
+    G [label=&quot;Processing?&quot;, shape=diamond, fillcolor=white];
+    H [label=&quot;Process&quot;];
+    K [label=&quot;Done&quot;];
+
+    A -&gt; B;
+    B -&gt; F [label=&quot;Yes&quot;];
+    B -&gt; D [label=&quot;No&quot;];
+    D -&gt; F;
+    F -&gt; G;
+    G -&gt; H [label=&quot;Yes&quot;];
+    G -&gt; K [label=&quot;No&quot;];
+    H -&gt; K;
+}" class="graphviz" /></div>
+<p>The following files will be cached:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://download.geofabrik.de/">Open Street Map planet extracts</a></p></li>
-<li><p><a class="reference external" href="https://www.guillaumedueymes.com/post/shapefiles_in_python/">Shapefiles in Python</a></p></li>
-<li><p><a class="reference external" href="https://pygis.io/docs/a_intro.html">PyGIS - Open Source Spatial Programming &amp; Remote Sensing</a></p></li>
-<li><p><a class="reference external" href="https://2019.stateofthemap.us/program/fri/a-turbo-introduction-to-overpass.html">A turbo introduction to Overpass</a></p></li>
-<li><p><a class="reference external" href="https://pyrosm.readthedocs.io/en/latest/index.html">PyrOSM: OpenStreeMap PBF Data Parser for Python</a></p></li>
-<li><p><a class="reference external" href="https://www.youtube.com/watch?v=fRTHshCj-L0">Finding City Boundaries in OSM | Python + OpenStreet Maps + Overpass</a></p></li>
-<li><p><a class="reference external" href="https://autogis-site.readthedocs.io/en/stable/index.html">Automating GIS-processes</a></p></li>
-<li><p><a class="reference external" href="https://atmamani.github.io/cheatsheets/open-geo/geopandas-4/">GeoPandas - PySal, OSM data IO</a></p></li>
-<li><p><a class="reference external" href="https://geoffboeing.com/2016/11/osmnx-python-street-networks/">OSMnx: Python for Street Networks</a></p></li>
-<li><p><a class="reference external" href="https://james-brennan.github.io/posts/fast_gridding_geopandas/">Fast and easy gridding of point data with geopandas</a></p></li>
+<li><p>US 2010 Census blocks</p></li>
+<li><p>US 2019 LODES data (employment)</p></li>
+<li><p>US Water blocks</p></li>
+<li><p>US State speed limits</p></li>
+<li><p>US City speed limits</p></li>
 </ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The brokenspoke-analyzer does not perform any cache management operation, like
+invalidating the cache or cleaning up the files. This is the user’s
+responsability to ensure the content of the cache is up to date.</p>
+</div>
+<section id="caching-strategies">
+<h2>Caching strategies<a class="headerlink" href="#caching-strategies" title="Link to this heading">¶</a></h2>
+<p>The brokenspoke analyzer provides several caching strategies:</p>
+<ul class="simple">
+<li><p>No cache</p></li>
+<li><p>User cache directory</p></li>
+<li><p>AWS S3 Bucket</p></li>
+</ul>
+<p>The cache is configured using environment variables only.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Environment variables are case sensitive. If the value is incorrect, it falls
+back to the “no cache” strategy.</p>
+</div>
+<section id="no-cache-default">
+<h3>No cache (default)<a class="headerlink" href="#no-cache-default" title="Link to this heading">¶</a></h3>
+<p>By default, the brokenspoke-analyzer does not cache any data. It simply stores
+them in the <code class="docutils literal notranslate"><span class="pre">output</span> <span class="pre">directory</span></code> specified by the user via the <code class="docutils literal notranslate"><span class="pre">--output-dir</span></code>
+option (by default it is <code class="docutils literal notranslate"><span class="pre">./data</span></code>).</p>
+<p>However if the files already exist in the <code class="docutils literal notranslate"><span class="pre">output</span> <span class="pre">directory</span></code>, then they won’t be
+redownloaded.</p>
+<p>If you use the analyzer occasionally for only one or two cities, this strategy
+is most likely the best match.</p>
+</section>
+<section id="user-cache-directory">
+<h3>User cache directory<a class="headerlink" href="#user-cache-directory" title="Link to this heading">¶</a></h3>
+<p>For users running multiple or frequent analyses, this is the recomended caching
+strategy.</p>
+<p>Files will be downloaded and stored in the user cache directory for future uses,
+speeding up the data ingestion phase.</p>
+<p>Depending on the platform, the user cache directory will be one of the
+following:</p>
+<ul class="simple">
+<li><p>OSX: <code class="docutils literal notranslate"><span class="pre">~/Library/Application</span> <span class="pre">Support/brokenspoke-analyzer</span></code></p></li>
+<li><p>Linux: <code class="docutils literal notranslate"><span class="pre">~/.local/share/brokenspoke-analyzer</span></code></p></li>
+<li><p>Windows:
+<code class="docutils literal notranslate"><span class="pre">C:\Documents</span> <span class="pre">and</span> <span class="pre">Settings\&lt;User&gt;\Application</span> <span class="pre">Data\Local</span> <span class="pre">Settings\PeopleForBikes\brokenspoke-analyzer</span></code></p></li>
+</ul>
+<p>To use it, set the following environment variable:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">BNA_CACHING_STRATEGY</span><span class="o">=</span>USER_CACHE
+</pre></div>
+</div>
+</section>
+<section id="aws-s3-bucket">
+<h3>AWS S3 bucket<a class="headerlink" href="#aws-s3-bucket" title="Link to this heading">¶</a></h3>
+<p>When using the brokenspoke-analyzer in the AWS cloud there is the possibility to
+cache them in an S3 bucket.</p>
+<p>The bucket name (i.e. wthout the <code class="docutils literal notranslate"><span class="pre">s3://</span></code> scheme) and the AWS region of the
+account must be specified.</p>
+<p>To use it, set the following environment variables:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">BNA_CACHING_STRATEGY</span><span class="o">=</span>AWS_S3
+<span class="nb">export</span><span class="w"> </span><span class="nv">BNA_CACHE_AWS_S3_BUCKET</span><span class="o">=</span>my-aws-cache-bucket
+<span class="nb">export</span><span class="w"> </span><span class="nv">AWS_REGION</span><span class="o">=</span>us-east-1
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 
         </article>
@@ -333,23 +415,23 @@ on this project.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="CHANGELOG.html">
+          <a class="next-page" href="commands.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Changelog</div>
+                <div class="title">Commands</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="workflow.html">
+          <a class="prev-page" href="about.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Preparation Workflow</div>
+                <div class="title">About</div>
                 
               </div>
             </a>
@@ -378,8 +460,32 @@ on this project.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Caching</a><ul>
+<li><a class="reference internal" href="#caching-strategies">Caching strategies</a><ul>
+<li><a class="reference internal" href="#no-cache-default">No cache (default)</a></li>
+<li><a class="reference internal" href="#user-cache-directory">User cache directory</a></li>
+<li><a class="reference internal" href="#aws-s3-bucket">AWS S3 bucket</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

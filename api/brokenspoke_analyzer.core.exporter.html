@@ -6,7 +6,7 @@
 <link rel="author" title="About these documents" href="../about.html" /><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="brokenspoke_analyzer.core.ingestor module" href="brokenspoke_analyzer.core.ingestor.html" /><link rel="prev" title="brokenspoke_analyzer.core.downloader module" href="brokenspoke_analyzer.core.downloader.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>brokenspoke_analyzer.core.exporter module - Brokenspoke Analyzer 2.5.0 documentation</title>
+        <title>brokenspoke_analyzer.core.exporter module - Brokenspoke Analyzer 2.6.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -207,7 +207,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Brokenspoke Analyzer 2.5.0 documentation</div></a>
+      <a href="../index.html"><div class="brand">Brokenspoke Analyzer 2.6.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -231,7 +231,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.5.0 documentation</span>
+  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.6.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -242,6 +242,7 @@
   <p class="caption" role="heading"><span class="caption-text">GENERAL:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../caching.html">Caching</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../commands.html">Commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../regions.html">Regions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../workflow.html">Preparation Workflow</a></li>
@@ -385,9 +386,17 @@ to geojson or sometimes shapefiles (or both).</p>
 </dl>
 <dl>
 <dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dirs</span><span class="o">=</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;usa/new mexico/santa rosa/23.08&#39;</span><span class="p">)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">calver_revision</span><span class="p">(</span><span class="n">dirs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">calver_revision</span><span class="p">(</span><span class="n">dirs</span><span class="p">)</span>
+<span class="go">1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;usa/new mexico/santa rosa/23.08.1&#39;</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">calver_revision</span><span class="p">(</span><span class="n">dirs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">calver_revision</span><span class="p">(</span><span class="n">dirs</span><span class="p">)</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;usa/new mexico/santa rosa/23.08.15&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">calver_revision</span><span class="p">(</span><span class="n">dirs</span><span class="p">)</span>
+<span class="go">16</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;usa/new mexico/santa rosa/23.08.150&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">calver_revision</span><span class="p">(</span><span class="n">dirs</span><span class="p">)</span>
+<span class="go">151</span>
 </pre></div>
 </div>
 </dd>
@@ -404,14 +413,18 @@ See <a class="reference external" href="https://calver.org/#scheme">https://calv
 <p>Examples:
 * usa/tx/austin/23.08
 * usa/tx/austin/23.12.2
-* spain/valencia/valencia/23.08
-:rtype: <span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
+* spain/valencia/valencia/23.08</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">today</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">calver</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">today</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%y.%m&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">directory</span> <span class="o">=</span> <span class="n">create_calver_directories</span><span class="p">(</span><span class="s2">&quot;usa&quot;</span><span class="p">,</span> <span class="s2">&quot;austin&quot;</span><span class="p">,</span> <span class="s2">&quot;tx&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">directory</span> <span class="o">==</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;usa/tx/austin/</span><span class="si">{</span><span class="n">calver</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -586,7 +599,7 @@ See <a class="reference external" href="https://calver.org/#scheme">https://calv
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=3c4615cf"></script>
+</div><script src="../_static/documentation_options.js?v=ae39cb24"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>

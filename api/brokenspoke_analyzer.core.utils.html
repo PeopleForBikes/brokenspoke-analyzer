@@ -6,7 +6,7 @@
 <link rel="author" title="About these documents" href="../about.html" /><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="brokenspoke_analyzer.core.database package" href="brokenspoke_analyzer.core.database.html" /><link rel="prev" title="brokenspoke_analyzer.core.runner module" href="brokenspoke_analyzer.core.runner.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>brokenspoke_analyzer.core.utils module - Brokenspoke Analyzer 2.5.0 documentation</title>
+        <title>brokenspoke_analyzer.core.utils module - Brokenspoke Analyzer 2.6.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -207,7 +207,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Brokenspoke Analyzer 2.5.0 documentation</div></a>
+      <a href="../index.html"><div class="brand">Brokenspoke Analyzer 2.6.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -231,7 +231,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.5.0 documentation</span>
+  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.6.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -242,6 +242,7 @@
   <p class="caption" role="heading"><span class="caption-text">GENERAL:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../caching.html">Caching</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../commands.html">Commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../regions.html">Regions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../workflow.html">Preparation Workflow</a></li>
@@ -363,6 +364,17 @@
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.utils.get_user_cache_dir">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.utils.</span></span><span class="sig-name descname"><span class="pre">get_user_cache_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensure_exists</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.utils.get_user_cache_dir" title="Link to this definition">¶</a></dt>
+<dd><p>Return the user cache directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -604,6 +616,7 @@ boundary file and the OSM file.</p>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.compare_bna_results"><code class="docutils literal notranslate"><span class="pre">compare_bna_results()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.file_checksum_ok"><code class="docutils literal notranslate"><span class="pre">file_checksum_ok()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.get_srid"><code class="docutils literal notranslate"><span class="pre">get_srid()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.get_user_cache_dir"><code class="docutils literal notranslate"><span class="pre">get_user_cache_dir()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.gunzip"><code class="docutils literal notranslate"><span class="pre">gunzip()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.is_usa"><code class="docutils literal notranslate"><span class="pre">is_usa()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.utils.normalize_country_name"><code class="docutils literal notranslate"><span class="pre">normalize_country_name()</span></code></a></li>
@@ -623,7 +636,7 @@ boundary file and the OSM file.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=3c4615cf"></script>
+</div><script src="../_static/documentation_options.js?v=ae39cb24"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>

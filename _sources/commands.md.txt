@@ -165,7 +165,31 @@ also required and must be specified with the `--input-dir` option flag.
 bna compute usa "santa rosa" "new mexico" --input-dir data/santa-rosa-new-mexico-usa
 ```
 
-All the results will be stored in various table in the database.
+Several parts are available for computing:
+
+- features
+- stress
+- connectivity
+- measure (available in experimental mode only, to use set the
+  `BNA_EXPERIMENTAL` environment variable to `1`)
+
+It is possible to use only some parts for the analysis. In this case, the
+`--with-parts` option can be used to specify which part to compute.
+
+```bash
+bna compute --with-parts stress usa "santa rosa" "new mexico" --input-dir data/santa-rosa-new-mexico-usa
+```
+
+You can also specify multiple parts by repeating the `--with-parts` option:
+
+```bash
+bna compute --with-parts stress --with-parts connectivity usa "santa rosa" "new mexico"
+--input-dir data/santa-rosa-new-mexico-usa
+```
+
+If the `--with-parts` option is not specified, all the parts will be computed.
+
+All the results will be stored in various tables in the database.
 
 ## Export
 
@@ -307,6 +331,9 @@ It still requires a configured, up and running database in order to complete.
 bna run usa "santa rosa" "new mexico" 3570670
 ```
 
+Like the for the [compute](#compute) command, the parts to be analyzed may be
+specified individually with the `--with-parts` argument.
+
 ## Run-with
 
 This command provides alternative ways to run the analysis.
@@ -331,6 +358,9 @@ Usage: bna run-with compose [OPTIONS] COUNTRY CITY [STATE] [FIPS_CODE]
 It combines the `configure`, `prepare`, `import`, `compute`, `export`
 sub-commands and wraps them into the setup and tear-down of the Docker Compose
 environment.
+
+Like the for the [compute](#compute) command, the parts to be analyzed may be
+specified individually with the `--with-parts` argument.
 
 ### Original-BNA
 

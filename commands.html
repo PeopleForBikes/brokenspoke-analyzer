@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Regions" href="regions.html" /><link rel="prev" title="About" href="about.html" />
+<link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Regions" href="regions.html" /><link rel="prev" title="Caching" href="caching.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>Commands - Brokenspoke Analyzer 2.5.0 documentation</title>
+        <title>Commands - Brokenspoke Analyzer 2.6.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -207,7 +207,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">Brokenspoke Analyzer 2.5.0 documentation</div></a>
+      <a href="index.html"><div class="brand">Brokenspoke Analyzer 2.6.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -231,7 +231,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.5.0 documentation</span>
+  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.6.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -242,6 +242,7 @@
   <p class="caption" role="heading"><span class="caption-text">GENERAL:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caching.html">Caching</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="regions.html">Regions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">Preparation Workflow</a></li>
@@ -452,7 +453,26 @@ also required and must be specified with the <code class="docutils literal notra
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span>compute<span class="w"> </span>usa<span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span><span class="w"> </span>--input-dir<span class="w"> </span>data/santa-rosa-new-mexico-usa
 </pre></div>
 </div>
-<p>All the results will be stored in various table in the database.</p>
+<p>Several parts are available for computing:</p>
+<ul class="simple">
+<li><p>features</p></li>
+<li><p>stress</p></li>
+<li><p>connectivity</p></li>
+<li><p>measure (available in experimental mode only, to use set the
+<code class="docutils literal notranslate"><span class="pre">BNA_EXPERIMENTAL</span></code> environment variable to <code class="docutils literal notranslate"><span class="pre">1</span></code>)</p></li>
+</ul>
+<p>It is possible to use only some parts for the analysis. In this case, the
+<code class="docutils literal notranslate"><span class="pre">--with-parts</span></code> option can be used to specify which part to compute.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span>compute<span class="w"> </span>--with-parts<span class="w"> </span>stress<span class="w"> </span>usa<span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span><span class="w"> </span>--input-dir<span class="w"> </span>data/santa-rosa-new-mexico-usa
+</pre></div>
+</div>
+<p>You can also specify multiple parts by repeating the <code class="docutils literal notranslate"><span class="pre">--with-parts</span></code> option:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span>compute<span class="w"> </span>--with-parts<span class="w"> </span>stress<span class="w"> </span>--with-parts<span class="w"> </span>connectivity<span class="w"> </span>usa<span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span>
+--input-dir<span class="w"> </span>data/santa-rosa-new-mexico-usa
+</pre></div>
+</div>
+<p>If the <code class="docutils literal notranslate"><span class="pre">--with-parts</span></code> option is not specified, all the parts will be computed.</p>
+<p>All the results will be stored in various tables in the database.</p>
 </section>
 <section id="export">
 <h2>Export<a class="headerlink" href="#export" title="Link to this heading">¶</a></h2>
@@ -571,6 +591,8 @@ and <code class="docutils literal notranslate"><span class="pre">export</span></
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bna<span class="w"> </span>run<span class="w"> </span>usa<span class="w"> </span><span class="s2">&quot;santa rosa&quot;</span><span class="w"> </span><span class="s2">&quot;new mexico&quot;</span><span class="w"> </span><span class="m">3570670</span>
 </pre></div>
 </div>
+<p>Like the for the <a class="reference internal" href="#compute">compute</a> command, the parts to be analyzed may be
+specified individually with the <code class="docutils literal notranslate"><span class="pre">--with-parts</span></code> argument.</p>
 </section>
 <section id="run-with">
 <h2>Run-with<a class="headerlink" href="#run-with" title="Link to this heading">¶</a></h2>
@@ -592,6 +614,8 @@ original BNA, then compares the results.</p>
 <p>It combines the <code class="docutils literal notranslate"><span class="pre">configure</span></code>, <code class="docutils literal notranslate"><span class="pre">prepare</span></code>, <code class="docutils literal notranslate"><span class="pre">import</span></code>, <code class="docutils literal notranslate"><span class="pre">compute</span></code>, <code class="docutils literal notranslate"><span class="pre">export</span></code>
 sub-commands and wraps them into the setup and tear-down of the Docker Compose
 environment.</p>
+<p>Like the for the <a class="reference internal" href="#compute">compute</a> command, the parts to be analyzed may be
+specified individually with the <code class="docutils literal notranslate"><span class="pre">--with-parts</span></code> argument.</p>
 </section>
 <section id="original-bna">
 <h3>Original-BNA<a class="headerlink" href="#original-bna" title="Link to this heading">¶</a></h3>
@@ -619,14 +643,14 @@ for the city to analyze.</p>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="about.html">
+          <a class="prev-page" href="caching.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">About</div>
+                <div class="title">Caching</div>
                 
               </div>
             </a>
@@ -702,7 +726,7 @@ for the city to analyze.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=3c4615cf"></script>
+</div><script src="_static/documentation_options.js?v=ae39cb24"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>
