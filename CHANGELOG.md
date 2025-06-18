@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [2.6.0] - 2025-06-18
+
+### Fixed
+
+- Removed unused columns and indices in `neighborhood_connected_census_blocks`
+  table. [#824]
+- Fixed normalizing country name before building location slug in compute
+  command. [#851]
+- Fixed the calver algorithm to handle more than 10 revisions. [#856]
+- Fixed issues preventing running cities in Malaysia. [#864]
+
+### Changed
+
+- Used new format for street parking tagging. [#807]
+- Excluded ways with access=private or have access=no and do no explicitly allow
+  bicycles. [#847]
+
+### Added
+
+- Added cache folder for downloads. [#842]
+- Added ability to run partial analysis. [#845]
+- Added ability to compute bike lane mileage. [#831] [#870]
+
+### External contributor(s)
+
+- [@mitchellhenke](https://github.com/mitchellhenke)
+
+[#807]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/807
+[#824]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/824
+[#831]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/831
+[#842]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/842
+[#845]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/845
+[#847]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/847
+[#851]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/851
+[#856]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/856
+[#864]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/864
+[#870]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/870
+[2.6.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.6.0
+
 ## [2.5.0] - 2025-03-22
 
 ### Fixed
