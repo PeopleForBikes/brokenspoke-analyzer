@@ -319,30 +319,29 @@ def run_(
 
     # Export.
     console.log("[green]Exporting the results...")
-    with console.status("Exporting..."):
-        if with_export == exporter.Exporter.none:
-            return None
-        elif with_export == exporter.Exporter.local:
-            export_dir = export.local(
-                database_url=database_url,
-                country=country,
-                city=city,
-                region=region,
-                export_dir=export_dir,
-                with_bundle=with_bundle,
-            )
-        elif with_export == exporter.Exporter.s3:
-            export_dir = export.s3(
-                database_url=database_url,
-                bucket_name=s3_bucket,  # type: ignore
-                country=country,
-                city=city,
-                region=region,
-            )
-        elif with_export == exporter.Exporter.s3_custom:
-            export_dir = export.s3_custom(
-                database_url=database_url,
-                bucket_name=s3_bucket,  # type: ignore
-                s3_dir=s3_dir,
-            )
+    if with_export == exporter.Exporter.none:
+        return None
+    elif with_export == exporter.Exporter.local:
+        export_dir = export.local(
+            database_url=database_url,
+            country=country,
+            city=city,
+            region=region,
+            export_dir=export_dir,
+            with_bundle=with_bundle,
+        )
+    elif with_export == exporter.Exporter.s3:
+        export_dir = export.s3(
+            database_url=database_url,
+            bucket_name=s3_bucket,  # type: ignore
+            country=country,
+            city=city,
+            region=region,
+        )
+    elif with_export == exporter.Exporter.s3_custom:
+        export_dir = export.s3_custom(
+            database_url=database_url,
+            bucket_name=s3_bucket,  # type: ignore
+            s3_dir=s3_dir,
+        )
     return export_dir
