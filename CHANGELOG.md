@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [2.6.1] - 2025-06-29
+
+### Fixed
+
+- Fixed a bug preventing to export the results in some cases. [#883]
+
+[#883]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/883
+[2.6.1]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.6.1
+
 ## [2.6.0] - 2025-06-18
 
 ### Fixed
