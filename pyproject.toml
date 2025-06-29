@@ -6,17 +6,17 @@ authors = [
   { name = "Rémy Greinhofer", email = "remy.greinhofer@gmail.com" },
   { name = "Luis Alvergue", email = "lalver1@gmail.com" },
 ]
-requires-python = "~=3.13"
+requires-python = "~=3.13.0"
 license = "MIT"
 dependencies = [
   "aiohttp>=3.12.13,<4",
-  "boto3>=1.38.37,<2",
-  "geopandas>=1.1.0,<2",
+  "boto3>=1.38.46,<2",
+  "geopandas>=1.1.1,<2",
   "loguru>=0.7.3,<0.8",
-  "obstore>=0.6.0",
+  "obstore>=0.7.0",
   "osmnx>=2.0.4,<3",
   "platformdirs>=4.3.8",
-  "python-dotenv>=1.1.0,<2",
+  "python-dotenv>=1.1.1,<2",
   "python-slugify>=8.0.4,<9",
   "rich>=14.0.0,<15",
   "sqlalchemy[asyncio, postgresql_psycopg]>=2.0.41,<3",
@@ -33,7 +33,7 @@ dev = [
   "bpython>=0.25,<0.26",
   "furo>=2024.8.6,<2025",
   "isort>=6.0.1,<7",
-  "jupyterlab>=4.4.3,<5",
+  "jupyterlab>=4.4.4,<5",
   "mypy>=1.16.1,<2",
   "myst-parser>=4.0.1,<5",
   "pytest>=8.4.1,<9",
@@ -42,7 +42,7 @@ dev = [
   "pytest-rerunfailures~=15.1",
   "pytest-socket>=0.7.0,<0.8",
   "pytest-xdist>=3.7.0,<4",
-  "ruff>=0.11.13",
+  "ruff>=0.12.1",
   "Sphinx>=8.1.3,<9",
   "sphinx-autobuild>=2024.10.3,<2025",
   "sphinx-autodoc-typehints>=3.2.0,<4",
