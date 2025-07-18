@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS generated.neighborhood_retail;
 
 CREATE TABLE generated.neighborhood_retail (
     id SERIAL PRIMARY KEY,
-    blockid10 CHARACTER VARYING(15) [],
+    blockid20 CHARACTER VARYING(15) [],
     pop_low_stress INT,
     pop_high_stress INT,
     pop_score FLOAT,
@@ -46,17 +46,17 @@ ON neighborhood_retail USING gist (
 );
 ANALYZE generated.neighborhood_retail (geom_poly);
 
--- set blockid10
+-- set blockid20
 UPDATE generated.neighborhood_retail
-SET blockid10 = array((
-    SELECT cb.blockid10
+SET blockid20 = array((
+    SELECT cb.geoid20
     FROM neighborhood_census_blocks AS cb
     WHERE ST_Intersects(neighborhood_retail.geom_poly, cb.geom)
 ));
 
 -- block index
-CREATE INDEX IF NOT EXISTS aidx_neighborhood_retail_blockid10
+CREATE INDEX IF NOT EXISTS aidx_neighborhood_retail_blockid20
 ON neighborhood_retail USING gin (
-    blockid10
+    blockid20
 );
-ANALYZE generated.neighborhood_retail (blockid10);
+ANALYZE generated.neighborhood_retail (blockid20);

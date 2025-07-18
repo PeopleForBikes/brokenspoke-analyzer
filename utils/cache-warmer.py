@@ -4,8 +4,8 @@ Pre-populate the analyzer cache.
 This is a small utility to warm-up you cache with US data.
 
 The cache will be populated with the following items:
-    - US 2010 Census blocks
-    - US 2019 LODES data (employment)
+    - US 2020 Census blocks
+    - US 2022 LODES data (employment)
     - US Water blocks
     - US State speed limits
     - US City speed limits
@@ -37,7 +37,6 @@ async def main():
     )
 
     async with aiohttp.ClientSession() as session:
-        await bna_store.download_census_waterblocks(session)
         await bna_store.download_state_speed_limits(session)
         await bna_store.download_city_speed_limits(session)
         for fips, abbr in us.states.mapping("fips", "abbr").items():
