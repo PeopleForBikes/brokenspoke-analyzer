@@ -29,9 +29,19 @@ SET
             THEN 'lane'
         WHEN osm."cycleway:both" = 'track'
             THEN 'track'
-        WHEN (osm."cycleway:right" = 'track' AND osm."oneway:bicycle" = 'no')
+        WHEN
+            (
+                osm."cycleway:right" = 'track'
+                AND osm."oneway:bicycle" = 'no'
+                AND osm."cycleway:right:oneway" != '-1'
+            )
             THEN 'track'
-        WHEN (osm."cycleway:left" = 'track' AND osm."oneway:bicycle" = 'no')
+        WHEN
+            (
+                osm."cycleway:left" = 'track'
+                AND osm."oneway:bicycle" = 'no'
+                AND osm."cycleway:left:oneway" != '-1'
+            )
             THEN 'track'
         WHEN (osm.cycleway = 'track' AND osm."oneway:bicycle" = 'no')
             THEN 'track'
@@ -43,19 +53,25 @@ SET
                     THEN 'sharrow'
                 WHEN
                     osm."cycleway:left" = 'lane'
+                    AND osm."cycleway:left:oneway" != '-1'
                     AND osm."cycleway:buffer" IN (
                         'yes', 'both', 'right', 'left'
                     )
                     THEN 'buffered_lane'
                 WHEN
                     osm."cycleway:left" = 'lane'
+                    AND osm."cycleway:left:oneway" != '-1'
                     AND osm."cycleway:left:buffer" IN (
                         'yes', 'both', 'right', 'left'
                     )
                     THEN 'buffered_lane'
-                WHEN osm."cycleway:left" = 'lane'
+                WHEN
+                    osm."cycleway:left" = 'lane'
+                    AND osm."cycleway:left:oneway" != '-1'
                     THEN 'lane'
-                WHEN osm."cycleway:left" = 'track'
+                WHEN
+                    osm."cycleway:left" = 'track'
+                    AND osm."cycleway:left:oneway" != '-1'
                     THEN 'track'
 
                 -- stuff from two-way that also applies to one-way=ft
@@ -65,7 +81,9 @@ SET
                     THEN 'sharrow'
                 WHEN osm.cycleway = 'buffered_lane'
                     THEN 'buffered_lane'
-                WHEN osm."cycleway:right" = 'buffered_lane'
+                WHEN
+                    osm."cycleway:right" = 'buffered_lane'
+                    AND osm."cycleway:right:oneway" != '-1'
                     THEN 'buffered_lane'
                 WHEN
                     osm.cycleway = 'lane'
@@ -75,23 +93,29 @@ SET
                     THEN 'buffered_lane'
                 WHEN
                     osm."cycleway:right" = 'lane'
+                    AND osm."cycleway:right:oneway" != '-1'
                     AND osm."cycleway:buffer" IN (
                         'yes', 'both', 'right', 'left'
                     )
                     THEN 'buffered_lane'
                 WHEN
                     osm."cycleway:right" = 'lane'
+                    AND osm."cycleway:right:oneway" != '-1'
                     AND osm."cycleway:right:buffer" IN (
                         'yes', 'both', 'right', 'left'
                     )
                     THEN 'buffered_lane'
                 WHEN osm.cycleway = 'lane'
                     THEN 'lane'
-                WHEN osm."cycleway:right" = 'lane'
+                WHEN
+                    osm."cycleway:right" = 'lane'
+                    AND osm."cycleway:right:oneway" != '-1'
                     THEN 'lane'
                 WHEN osm.cycleway = 'track'
                     THEN 'track'
-                WHEN osm."cycleway:right" = 'track'
+                WHEN
+                    osm."cycleway:right" = 'track'
+                    AND osm."cycleway:right:oneway" != '-1'
                     THEN 'track'
             END
 
@@ -116,6 +140,32 @@ SET
                         'yes', 'both', 'right', 'left'
                     )
                     THEN 'buffered_lane'
+                WHEN
+                    osm."cycleway:left:oneway" = '-1'
+                    AND "cycleway:left" = 'track'
+                    THEN 'track'
+                WHEN
+                    osm."cycleway:right:oneway" = '-1'
+                    AND "cycleway:right" = 'track'
+                    THEN 'track'
+                WHEN
+                    osm."cycleway:left:oneway" = '-1'
+                    AND "cycleway:left" = 'lane'
+                    AND "cycleway:left:buffer" = 'yes'
+                    THEN 'buffered_lane'
+                WHEN
+                    osm."cycleway:right:oneway" = '-1'
+                    AND "cycleway:right" = 'lane'
+                    AND "cycleway:right:buffer" = 'yes'
+                    THEN 'buffered_lane'
+                WHEN
+                    osm."cycleway:left:oneway" = '-1'
+                    AND "cycleway:left" = 'lane'
+                    THEN 'lane'
+                WHEN
+                    osm."cycleway:right:oneway" = '-1'
+                    AND "cycleway:right" = 'lane'
+                    THEN 'lane'
                 WHEN osm.cycleway = 'opposite_lane'
                     THEN 'lane'
                 WHEN osm."cycleway:right" = 'opposite_lane'
@@ -195,9 +245,19 @@ SET
             THEN 'lane'
         WHEN osm."cycleway:both" = 'track'
             THEN 'track'
-        WHEN (osm."cycleway:right" = 'track' AND osm."oneway:bicycle" = 'no')
+        WHEN
+            (
+                osm."cycleway:right" = 'track'
+                AND osm."oneway:bicycle" = 'no'
+                AND osm."cycleway:right:oneway" != '-1'
+            )
             THEN 'track'
-        WHEN (osm."cycleway:left" = 'track' AND osm."oneway:bicycle" = 'no')
+        WHEN
+            (
+                osm."cycleway:left" = 'track'
+                AND osm."oneway:bicycle" = 'no'
+                AND osm."cycleway:left:oneway" != '-1'
+            )
             THEN 'track'
         WHEN (osm.cycleway = 'track' AND osm."oneway:bicycle" = 'no')
             THEN 'track'
@@ -209,19 +269,25 @@ SET
                     THEN 'sharrow'
                 WHEN
                     osm."cycleway:right" = 'lane'
+                    AND osm."cycleway:right:oneway" != '-1'
                     AND osm."cycleway:buffer" IN (
                         'yes', 'both', 'right', 'left'
                     )
                     THEN 'buffered_lane'
                 WHEN
                     osm."cycleway:right" = 'lane'
+                    AND osm."cycleway:right:oneway" != '-1'
                     AND osm."cycleway:right:buffer" IN (
                         'yes', 'both', 'right', 'left'
                     )
                     THEN 'buffered_lane'
-                WHEN osm."cycleway:right" = 'lane'
+                WHEN
+                    osm."cycleway:right" = 'lane'
+                    AND osm."cycleway:right:oneway" != '-1'
                     THEN 'lane'
-                WHEN osm."cycleway:right" = 'track'
+                WHEN
+                    osm."cycleway:right" = 'track'
+                    AND osm."cycleway:right:oneway" != '-1'
                     THEN 'track'
 
                 -- stuff from two-way that also applies to one-way=tf
@@ -231,33 +297,41 @@ SET
                     THEN 'sharrow'
                 WHEN osm.cycleway = 'buffered_lane'
                     THEN 'buffered_lane'
-                WHEN osm."cycleway:left" = 'buffered_lane'
+                WHEN
+                    osm."cycleway:left" = 'buffered_lane'
+                    AND osm."cycleway:left:oneway" != '-1'
                     THEN 'buffered_lane'
                 WHEN
-                    osm.cycleway = 'lane'
+                    osm.cycleway = 'lane' AND osm."cycleway:left:oneway" != '-1'
                     AND osm."cycleway:buffer" IN (
                         'yes', 'both', 'right', 'left'
                     )
                     THEN 'buffered_lane'
                 WHEN
                     osm."cycleway:left" = 'lane'
+                    AND osm."cycleway:left:oneway" != '-1'
                     AND osm."cycleway:buffer" IN (
                         'yes', 'both', 'right', 'left'
                     )
                     THEN 'buffered_lane'
                 WHEN
                     osm."cycleway:left" = 'lane'
+                    AND osm."cycleway:left:oneway" != '-1'
                     AND osm."cycleway:left:buffer" IN (
                         'yes', 'both', 'right', 'left'
                     )
                     THEN 'buffered_lane'
                 WHEN osm.cycleway = 'lane'
                     THEN 'lane'
-                WHEN osm."cycleway:left" = 'lane'
+                WHEN
+                    osm."cycleway:left" = 'lane'
+                    AND osm."cycleway:left:oneway" != '-1'
                     THEN 'lane'
                 WHEN osm.cycleway = 'track'
                     THEN 'track'
-                WHEN osm."cycleway:left" = 'track'
+                WHEN
+                    osm."cycleway:left" = 'track'
+                    AND osm."cycleway:left:oneway" != '-1'
                     THEN 'track'
             END
 
@@ -282,6 +356,32 @@ SET
                         'yes', 'both', 'right', 'left'
                     )
                     THEN 'buffered_lane'
+                WHEN
+                    osm."cycleway:left:oneway" = '-1'
+                    AND "cycleway:left" = 'track'
+                    THEN 'track'
+                WHEN
+                    osm."cycleway:right:oneway" = '-1'
+                    AND "cycleway:right" = 'track'
+                    THEN 'track'
+                WHEN
+                    osm."cycleway:left:oneway" = '-1'
+                    AND "cycleway:left" = 'lane'
+                    AND "cycleway:left:buffer" = 'yes'
+                    THEN 'buffered_lane'
+                WHEN
+                    osm."cycleway:right:oneway" = '-1'
+                    AND "cycleway:right" = 'lane'
+                    AND "cycleway:right:buffer" = 'yes'
+                    THEN 'buffered_lane'
+                WHEN
+                    osm."cycleway:left:oneway" = '-1'
+                    AND "cycleway:left" = 'lane'
+                    THEN 'lane'
+                WHEN
+                    osm."cycleway:right:oneway" = '-1'
+                    AND "cycleway:right" = 'lane'
+                    THEN 'lane'
                 WHEN osm.cycleway = 'opposite_lane'
                     THEN 'lane'
                 WHEN osm."cycleway:right" = 'opposite_lane'
