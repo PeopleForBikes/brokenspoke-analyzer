@@ -106,6 +106,8 @@ way        cycleway:both:width  text linear
 node,way   flashing_lights      text linear
 node,way   foot         text         linear
 way        footway      text         linear
+way        golf         text         linear
+way        golf_cart    text         linear
 node,way   healthcare   text         polygon
 node,way   highway      text         linear
 node,way   junction     text         linear
