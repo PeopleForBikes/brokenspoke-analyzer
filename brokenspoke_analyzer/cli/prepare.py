@@ -206,14 +206,10 @@ async def prepare_(
             with console.status("Downloading..."):
                 await bna_store.download_city_speed_limits(session)
 
-            console.log("[green]Fetching US census waterblocks...")
-            with console.status("Downloading..."):
-                await bna_store.download_census_waterblocks(session)
-
             console.log(f"[green]Fetching US employment data ({lodes_year})...")
             with console.status("Downloading..."):
                 await bna_store.download_lodes_data(session, state_abbrev, lodes_year)
 
-            console.log("[green]Fetching US census blocks (2010)...")
+            console.log("[green]Fetching US census blocks (2020)...")
             with console.status("Downloading..."):
-                await bna_store.download_2010_census_blocks(session, state_fips)
+                await bna_store.download_2020_census_blocks(session, state_fips)
