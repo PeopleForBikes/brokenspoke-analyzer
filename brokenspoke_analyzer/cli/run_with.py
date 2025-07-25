@@ -51,6 +51,8 @@ def compose(
     s3_bucket: typing.Optional[str] = None,
     with_bundle: typing.Optional[bool] = False,
     with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
+    mirror: common.Mirror = None,
+    no_cache: common.NoCache = False,
 ) -> typing.Optional[pathlib.Path]:
     """Manage Docker Compose when running the analysis."""
     database_url = "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -80,6 +82,8 @@ def compose(
             s3_bucket=s3_bucket,
             with_bundle=with_bundle,
             with_parts=with_parts,
+            mirror=mirror,
+            no_cache=no_cache,
         )
     finally:
         subprocess.run(
@@ -223,6 +227,8 @@ def run_(
     s3_dir: typing.Optional[pathlib.Path] = None,
     with_bundle: typing.Optional[bool] = False,
     with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
+    mirror: common.Mirror = None,
+    no_cache: common.NoCache = False,
 ) -> typing.Optional[pathlib.Path]:
     """Run an analysis."""
     # Make mypy happy.
@@ -271,6 +277,8 @@ def run_(
         block_size=block_size,
         block_population=block_population,
         retries=retries,
+        mirror=mirror,
+        no_cache=no_cache,
     )
 
     # Import.

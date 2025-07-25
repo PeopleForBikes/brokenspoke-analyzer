@@ -33,9 +33,6 @@ BlockSize = Annotated[
     typer.Option(help="size of a synthetic block for non-US cities (in meters)"),
 ]
 Buffer = Annotated[typing.Optional[int], typer.Option(help="define the buffer area")]
-LODESYear = Annotated[
-    typing.Optional[int], typer.Option(help="year to use to retrieve US job data")
-]
 City = Annotated[str, typer.Argument()]
 ComputeParts = Annotated[
     typing.Optional[typing.List[constant.ComputePart]],
@@ -69,7 +66,17 @@ InputDir = Annotated[
         help="directory where the files to import are located",
     ),
 ]
+LODESYear = Annotated[
+    typing.Optional[int], typer.Option(help="year to use to retrieve US job data")
+]
 MaxTripDistance = Annotated[typing.Optional[int], typer.Option()]
+Mirror = Annotated[
+    typing.Optional[str],
+    typer.Option(help="Set a mirror to use to download the census files"),
+]
+NoCache = Annotated[
+    typing.Optional[bool], typer.Option("--no-cache", help="disable the cache folder")
+]
 OutputDir = Annotated[
     typing.Optional[pathlib.Path],
     typer.Option(

@@ -14,7 +14,6 @@ Submodules
 
    brokenspoke_analyzer.core.analysis
    brokenspoke_analyzer.core.compute
-   brokenspoke_analyzer.core.downloader
    brokenspoke_analyzer.core.exporter
    brokenspoke_analyzer.core.ingestor
    brokenspoke_analyzer.core.runner

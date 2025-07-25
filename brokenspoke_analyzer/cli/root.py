@@ -15,6 +15,7 @@ from rich.logging import RichHandler
 from typing_extensions import Annotated
 
 from brokenspoke_analyzer.cli import (
+    cache,
     common,
     configure,
     export,
@@ -99,12 +100,13 @@ def callback(
 
 
 # Register the sub-commands.
+app.add_typer(cache.app, name="cache", help="Manage bna's cache.")
 app.add_typer(
     configure.app, name="configure", help="Configure a database for an analysis."
 )
-app.add_typer(prepare.app, name="prepare", help="Prepare files needed for an analysis.")
-app.add_typer(importer.app, name="import", help="Import files into database.")
 app.add_typer(export.app, name="export", help="Export tables from database.")
+app.add_typer(importer.app, name="import", help="Import files into database.")
+app.add_typer(prepare.app, name="prepare", help="Prepare files needed for an analysis.")
 app.add_typer(run_with.app, name="run-with", help="Run an analysis in different ways.")
 
 # Make shared options accessible to appropriate subcommands.
@@ -184,6 +186,8 @@ def run(
     s3_dir: typing.Optional[pathlib.Path] = None,
     with_bundle: typing.Optional[bool] = False,
     with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
+    mirror: common.Mirror = None,
+    no_cache: common.NoCache = False,
 ) -> None:
     """Run an analysis."""
     run_with.run_(
@@ -205,4 +209,6 @@ def run(
         s3_dir=s3_dir,
         with_bundle=with_bundle,
         with_parts=with_parts,
+        mirror=mirror,
+        no_cache=no_cache,
     )
