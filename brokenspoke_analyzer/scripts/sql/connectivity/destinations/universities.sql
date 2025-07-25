@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS generated.neighborhood_universities;
 
 CREATE TABLE generated.neighborhood_universities (
     id SERIAL PRIMARY KEY,
-    blockid10 CHARACTER VARYING(15) [],
+    blockid20 CHARACTER VARYING(15) [],
     osm_id BIGINT,
     college_name TEXT,
     pop_low_stress INT,
@@ -70,10 +70,10 @@ ON neighborhood_universities USING gist (
 );
 ANALYZE generated.neighborhood_universities (geom_pt);
 
--- set blockid10
+-- set blockid20
 UPDATE generated.neighborhood_universities
-SET blockid10 = array((
-    SELECT cb.blockid10
+SET blockid20 = array((
+    SELECT cb.geoid20
     FROM neighborhood_census_blocks AS cb
     WHERE
         ST_Intersects(neighborhood_universities.geom_poly, cb.geom)
@@ -81,8 +81,8 @@ SET blockid10 = array((
 ));
 
 -- block index
-CREATE INDEX IF NOT EXISTS aidx_neighborhood_universities_blockid10
+CREATE INDEX IF NOT EXISTS aidx_neighborhood_universities_blockid20
 ON neighborhood_universities USING gin (
-    blockid10
+    blockid20
 );
-ANALYZE generated.neighborhood_universities (blockid10);
+ANALYZE generated.neighborhood_universities (blockid20);

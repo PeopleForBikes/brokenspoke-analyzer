@@ -36,7 +36,6 @@ def test_import_neighborhood():
     input_dir = pathlib.Path("data")
     boundary_file = input_dir / "santa-rosa-new-mexico-usa.shp"
     population_file = input_dir / "population.shp"
-    water_blocks_file = input_dir / "censuswaterblocks.csv"
     print(f"{input_dir=}")
     assert input_dir.exists()
     print(f"{boundary_file=}")
@@ -47,7 +46,6 @@ def test_import_neighborhood():
         country="USA",
         boundary_file=boundary_file,
         population_file=population_file,
-        water_blocks_file=water_blocks_file,
         output_srid=output_srid,
         buffer=buffer,
     )
@@ -91,7 +89,6 @@ def test_import_all():
     input_dir = pathlib.Path("data")
     boundary_file = input_dir / "santa-rosa-new-mexico-usa.shp"
     population_file = input_dir / "population.shp"
-    water_blocks_file = input_dir / "censuswaterblocks.csv"
     osm_file = input_dir / "santa-rosa-new-mexico-usa.osm"
     state_speed_limits_csv = input_dir / "state_fips_speed.csv"
     city_speed_limits_csv = input_dir / "city_fips_speed.csv"
@@ -110,7 +107,6 @@ def test_import_all():
         buffer,
         boundary_file,
         population_file,
-        water_blocks_file,
         input_dir,
         osm_file,
         state_speed_limits_csv,
@@ -184,7 +180,6 @@ def test_all():
     input_dir = pathlib.Path("data")
     boundary_file = input_dir / "santa-rosa-new-mexico-usa.shp"
     population_file = input_dir / "population.shp"
-    water_blocks_file = input_dir / "censuswaterblocks.csv"
     osm_file = input_dir / "santa-rosa-new-mexico-usa.osm"
     state_speed_limits_csv = input_dir / "state_fips_speed.csv"
     city_speed_limits_csv = input_dir / "city_fips_speed.csv"
@@ -212,7 +207,6 @@ def test_all():
         buffer,
         boundary_file,
         population_file,
-        water_blocks_file,
         input_dir,
         osm_file,
         state_speed_limits_csv,
