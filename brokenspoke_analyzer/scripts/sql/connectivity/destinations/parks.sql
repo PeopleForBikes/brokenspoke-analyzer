@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS generated.neighborhood_parks;
 
 CREATE TABLE generated.neighborhood_parks (
     id SERIAL PRIMARY KEY,
-    blockid10 CHARACTER VARYING(15) [],
+    blockid20 CHARACTER VARYING(15) [],
     osm_id BIGINT,
     park_name TEXT,
     pop_low_stress INT,
@@ -76,10 +76,10 @@ CREATE INDEX sidx_neighborhood_parks_geompt ON neighborhood_parks USING gist (
 );
 ANALYZE generated.neighborhood_parks (geom_pt);
 
--- set blockid10
+-- set blockid20
 UPDATE generated.neighborhood_parks
-SET blockid10 = array((
-    SELECT cb.blockid10
+SET blockid20 = array((
+    SELECT cb.geoid20
     FROM neighborhood_census_blocks AS cb
     WHERE
         ST_Intersects(neighborhood_parks.geom_poly, cb.geom)
@@ -87,8 +87,8 @@ SET blockid10 = array((
 ));
 
 -- block index
-CREATE INDEX IF NOT EXISTS aidx_neighborhood_parks_blockid10
+CREATE INDEX IF NOT EXISTS aidx_neighborhood_parks_blockid20
 ON neighborhood_parks USING gin (
-    blockid10
+    blockid20
 );
-ANALYZE generated.neighborhood_parks (blockid10);
+ANALYZE generated.neighborhood_parks (blockid20);

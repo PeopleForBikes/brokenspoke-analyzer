@@ -2,13 +2,13 @@
 -- INPUTS
 -- location: neighborhood
 -- data downloaded from http://lehd.ces.census.gov/data/
--- or http://lehd.ces.census.gov/data/lodes/LODES7/
+-- or http://lehd.ces.census.gov/data/lodes/LODES8/
 --     "ma_od_main_jt00_{year}".csv
 --     ma_od_aux_jt00_{year}.csv
 -- import to DB and check the block id to have 15 characters
 -- also aggregate so 1 block has 1 number of total jobs
 --     (total jobs comes from S000 field
---     as per http://lehd.ces.census.gov/data/lodes/LODES7/LODESTechDoc7.2.pdf
+--     as per https://lehd.ces.census.gov/doc/help/onthemap/LODESTechDoc.pdf
 ----------------------------------------
 
 -- process imported tables
@@ -27,13 +27,13 @@ ANALYZE state_od_main_jt00 (w_geocode);
 DROP TABLE IF EXISTS generated.neighborhood_census_block_jobs;
 CREATE TABLE generated.neighborhood_census_block_jobs (
     id SERIAL PRIMARY KEY,
-    blockid10 VARCHAR(15),
+    blockid20 VARCHAR(15),
     jobs INT
 );
 
 -- add blocks of interest
-INSERT INTO generated.neighborhood_census_block_jobs (blockid10)
-SELECT blocks.blockid10
+INSERT INTO generated.neighborhood_census_block_jobs (blockid20)
+SELECT blocks.geoid20
 FROM neighborhood_census_blocks AS blocks;
 
 -- add main data
@@ -41,7 +41,7 @@ UPDATE generated.neighborhood_census_block_jobs
 SET jobs = coalesce((
     SELECT sum(j.s000)
     FROM state_od_main_jt00 AS j
-    WHERE j.w_geocode = neighborhood_census_block_jobs.blockid10
+    WHERE j.w_geocode = neighborhood_census_block_jobs.blockid20
 ), 0);
 
 -- add aux data
@@ -51,12 +51,12 @@ SET
     + coalesce((
         SELECT sum(j.s000)
         FROM state_od_aux_jt00 AS j
-        WHERE j.w_geocode = neighborhood_census_block_jobs.blockid10
+        WHERE j.w_geocode = neighborhood_census_block_jobs.blockid20
     ), 0);
 
 -- indexes
 CREATE INDEX IF NOT EXISTS idx_neighborhood_blkjobs
 ON neighborhood_census_block_jobs (
-    blockid10
+    blockid20
 );
-ANALYZE neighborhood_census_block_jobs (blockid10);
+ANALYZE neighborhood_census_block_jobs (blockid20);

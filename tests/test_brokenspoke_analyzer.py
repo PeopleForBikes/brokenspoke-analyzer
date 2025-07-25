@@ -47,9 +47,8 @@ def test_truthy():
 #         ),
 #         datastore.CacheType.USER_CACHE,
 #     )
-#     await bna_store.download_census_waterblocks()
 #     await bna_store.download_lodes_data("ma", 2019)
-#     await bna_store.download_2010_census_blocks("25")
+#     await bna_store.download_2020_census_blocks("25")
 
 # def test_table_exists():
 #     """Checks whether a table exists or not."""
