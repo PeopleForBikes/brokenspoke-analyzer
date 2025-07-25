@@ -116,6 +116,27 @@ WHERE
     );
 
 UPDATE neighborhood_ways
+SET functional_class = 'unclassified'
+FROM neighborhood_osm_full_line AS osm
+WHERE
+    neighborhood_ways.osm_id = osm.osm_id
+    AND osm.highway = 'path'
+    AND (
+        osm.golf = 'path'
+        OR osm.golf = 'cartpath'
+        OR osm.golf_cart = 'yes'
+        OR osm.golf_cart = 'designated'
+    )
+    AND (
+        osm.access IS NULL
+        OR (
+            osm.access = 'no'
+            AND osm.bicycle IN ('yes', 'permissive', 'designated')
+        )
+        OR osm.access NOT IN ('no', 'private')
+    );
+
+UPDATE neighborhood_ways
 SET functional_class = 'living_street'
 FROM neighborhood_osm_full_line AS osm
 WHERE
