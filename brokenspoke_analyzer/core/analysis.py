@@ -213,8 +213,8 @@ def create_synthetic_population(
     grid = gpd.GeoDataFrame(
         {
             "geometry": cells,
-            "POP10": population,
-            "BLOCKID10": [
+            "POP20": population,
+            "BLOCKID20": [
                 "".join(
                     random.choice(string.ascii_lowercase) for x in range(BLOCKID_LEN)
                 )

@@ -94,7 +94,7 @@ async def download_lodes_data(
     More information about the formast can be found on the website:
     https://lehd.ces.census.gov/data/#lodes.
     """
-    lehd_url = f"http://lehd.ces.census.gov/data/lodes/LODES7/{state.lower()}/od"
+    lehd_url = f"http://lehd.ces.census.gov/data/lodes/LODES8/{state.lower()}/od"
     lehd_filename = f"{state.lower()}_od_{part.lower()}_JT00_{year}.csv.gz"
     gzipped_lehd_file = output_dir / lehd_filename
     decompressed_lefh_file = output_dir / gzipped_lehd_file.stem
@@ -112,56 +112,23 @@ async def download_lodes_data(
     utils.gunzip(gzipped_lehd_file, decompressed_lefh_file, False)
 
 
-async def download_census_waterblocks(
-    session: aiohttp.ClientSession, output_dir: pathlib.Path
+async def download_2020_census_blocks(
+    session: aiohttp.ClientSession, output_dir: pathlib.Path, state_fips: str
 ) -> None:
-    """Download the census waterblocks."""
-    waterblock_url = f"{PFB_PUBLIC_DOCUMENTS_URL}/censuswaterblocks.zip"
-    zipped_waterblock_file = output_dir / "censuswaterblocks.zip"
-    zipped_waterblock_file = zipped_waterblock_file.resolve()
-    decompressed_waterblock_file = output_dir / "censuswaterblocks.csv"
-    decompressed_waterblock_file = decompressed_waterblock_file.resolve()
+    """Download a 2021 census tabulation block code for a specific state."""
+    tiger_url = f"{TIGER_URL}/TIGER2020/TABBLOCK20/tl_2020_{state_fips}_tabblock20.zip"
+    tabblk2020_filename = f"tl_2020_{state_fips}_tabblock20.zip"
+    tabblk_file = output_dir / f"tl_2020_{state_fips}_tabblock20.zip"
+    tabblk_file = tabblk_file.resolve()
 
-    # Skip the download if the target file already exists.
-    if decompressed_waterblock_file.exists():
-        return
-
-    # Download the file.
-    await download_file(session, waterblock_url, zipped_waterblock_file)
-
-    # Unzip it.
-    utils.unzip(zipped_waterblock_file, output_dir, False)
-
-
-async def download_2010_census_blocks(
-    session: aiohttp.ClientSession, output_dir: pathlib.Path, fips: str
-) -> None:
-    """Download a 2010 census tabulation block code for a specific state."""
-    tabblk2010_url = f"{TIGER_URL}/TIGER2010BLKPOPHU"
-    tabblk2010_filename = f"tabblock2010_{fips}_pophu.zip"
-    tabblk2010_file = output_dir / tabblk2010_filename
-    tabblk2010_file = tabblk2010_file.resolve()
+    tabblk2020_file = output_dir / tabblk2020_filename
+    tabblk2020_file = tabblk2020_file.resolve()
     population_file = output_dir / "population.shp"
     population_file = population_file.resolve()
 
     # Skip the download if the target file already exists.
     if population_file.exists():
         return
-
-    # Download the file.
-    await download_file(
-        session, f"{tabblk2010_url}/{tabblk2010_filename}", tabblk2010_file
-    )
-
-
-# # TODO(rgreinho): not used.
-async def download_2021_census_blocks(
-    session: aiohttp.ClientSession, output_dir: pathlib.Path, state_fips: str
-) -> None:
-    """Download a 2021 census tabulation block code for a specific state."""
-    tiger_url = f"{TIGER_URL}/TIGER2021/PLACE/tl_2021_{state_fips}_place.zip"
-    tabblk_file = output_dir / f"tl_2021_{state_fips}_place.zip"
-    tabblk_file = tabblk_file.resolve()
 
     # Download the file.
     await download_file(session, tiger_url, tabblk_file)
