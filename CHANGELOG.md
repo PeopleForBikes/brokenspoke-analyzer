@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [2.6.2] - 2025-07-23
+
+### Fixed
+
+- Excluded golf courses paths from bicycle infrastructure. [#889]
+
+[#889]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/870
+[2.6.2]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.6.2
+
 ## [2.6.1] - 2025-06-29
 
 ### Fixed
