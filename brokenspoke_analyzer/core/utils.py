@@ -93,8 +93,9 @@ def prepare_census_blocks(tabblk_file: pathlib.Path, output_dir: pathlib.Path) -
     unzip(tabblk_file.resolve(strict=True), output_dir, False)
 
     # Rename the tabulation block files to "population".
-    tabblk2010_files = output_dir.glob(f"{tabblk_file.stem}.*")
-    for file in tabblk2010_files:
+    # But keep the original file.s
+    tabblk2020_files = output_dir.glob(f"{tabblk_file.stem}.*")
+    for file in tabblk2020_files:
         file.rename(output_dir / f"population{file.suffix}")
 
 

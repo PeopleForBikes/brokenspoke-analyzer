@@ -23,7 +23,6 @@ BOUNDARY_TABLE = "neighborhood_boundary"
 CENSUS_BLOCKS_TABLE = "neighborhood_census_blocks"
 CITY_SPEED_TABLE = "city_speed"
 STATE_SPEED_TABLE = "state_speed"
-WATER_BLOCKS_TABLE = "water_blocks"
 RESIDENTIAL_SPEED_LIMIT_TABLE = "residential_speed_limit"
 script_dir = resources.files("brokenspoke_analyzer.scripts")
 
@@ -109,31 +108,16 @@ def delete_block_outside_buffer(engine: Engine, buffer: int) -> None:
     dbcore.execute_query(engine, query)
 
 
-def load_water_blocks(engine: Engine, csvfile: pathlib.Path) -> None:
-    """Create the water blocks table and load the data into it from a CSV file."""
-    sql_script_dir = pathlib.Path(script_dir._paths[0]) / "sql"  # type: ignore
-    dbcore.load_csv_file(
-        engine,
-        sql_script_dir / "create_us_water_blocks_table.sql",
-        csvfile,
-        WATER_BLOCKS_TABLE,
-    )
-
-
 def delete_water_blocks(engine: Engine) -> None:
     """Delete the water blocks located within the city boundaries."""
-    query = (
-        f"DELETE FROM {CENSUS_BLOCKS_TABLE} AS blocks "
-        f"USING {WATER_BLOCKS_TABLE} AS water "
-        "WHERE blocks.BLOCKID10 = water.geoid;"
-    )
+    query = f"DELETE FROM {CENSUS_BLOCKS_TABLE} AS blocks WHERE blocks.aland20 = 0;"
     dbcore.execute_query(engine, query)
 
 
 def retrieve_population(engine: Engine) -> int:
     """Retrieve the population from the imported census data."""
     with engine.connect() as conn:
-        result = conn.execute(text("SELECT SUM(pop10) FROM neighborhood_census_blocks"))
+        result = conn.execute(text("SELECT SUM(pop20) FROM neighborhood_census_blocks"))
         return int(result.scalar_one())
 
 
@@ -142,7 +126,6 @@ def import_neighborhood(
     country: str,
     boundary_file: pathlib.Path,
     population_file: pathlib.Path,
-    water_blocks_file: pathlib.Path,
     output_srid: int,
     buffer: int,
 ) -> None:
@@ -156,7 +139,6 @@ def import_neighborhood(
     logger.debug(f"{buffer=}")
     logger.debug(f"{boundary_file=}")
     logger.debug(f"{population_file=}")
-    logger.debug(f"{water_blocks_file=}")
 
     # Import neighborhood boundary.
     logger.info("Importing neighborhood boundary...")
@@ -178,8 +160,6 @@ def import_neighborhood(
     # For US cities, remove the water blocks.
     if utils.is_usa(country):
         logger.info("Removing water blocks...")
-        # By convention, this file is always named `censuswaterblocks.csv`.
-        load_water_blocks(engine, water_blocks_file)
         delete_water_blocks(engine)
 
     # Ensure there are inhabitants within the boundaries.
@@ -468,7 +448,6 @@ def import_all(
     buffer: int,
     boundary_file: pathlib.Path,
     population_file: pathlib.Path,
-    water_blocks_file: pathlib.Path,
     input_dir: pathlib.Path,
     osm_file: pathlib.Path,
     state_speed_limits_csv: pathlib.Path,
@@ -484,7 +463,6 @@ def import_all(
         country,
         boundary_file,
         population_file,
-        water_blocks_file,
         output_srid,
         buffer,
     )
@@ -534,7 +512,6 @@ def neighborhood_wrapper(
     _, _, slug = analysis.osmnx_query(country, city, region)
     boundary_file = input_dir / f"{slug}.shp"
     population_file = input_dir / "population.shp"
-    water_blocks_file = input_dir / "censuswaterblocks.csv"
 
     # compute the output SRID from the boundary file.
     output_srid = utils.get_srid(boundary_file.resolve(strict=True))
@@ -546,7 +523,6 @@ def neighborhood_wrapper(
         country=country,
         boundary_file=boundary_file.resolve(),
         population_file=population_file.resolve(strict=True),
-        water_blocks_file=water_blocks_file.resolve(),
         output_srid=output_srid,
         buffer=buffer,
     )
