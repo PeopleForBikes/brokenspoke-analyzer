@@ -666,7 +666,7 @@ INSERT INTO generated.neighborhood_overall_scores (
 SELECT
     'population_total', -- noqa: AL03
     (
-        SELECT SUM(pop10) FROM neighborhood_census_blocks
+        SELECT SUM(pop20) FROM neighborhood_census_blocks
         WHERE EXISTS (
             SELECT 1
             FROM neighborhood_boundary AS b

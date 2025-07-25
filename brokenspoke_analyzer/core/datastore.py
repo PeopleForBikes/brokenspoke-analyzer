@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 CHUNK_SIZE = 5 * 1024 * 1024  # 5MB
 PFB_PUBLIC_DOCUMENTS_URL = "https://s3.amazonaws.com/pfb-public-documents"
-TIGER_2010_URL = "https://www2.census.gov/geo/tiger/TIGER2010BLKPOPHU"
+TIGER_URL = "https://www2.census.gov/geo/tiger"
 
 
 def exists(store: ObjectStore, path: str) -> bool:
@@ -147,15 +147,6 @@ class BNADataStore:
         url = f"{PFB_PUBLIC_DOCUMENTS_URL}/{city_speed_csv}"
         await self.fetch(session, url, city_speed_csv)
 
-    async def download_census_waterblocks(self, session: aiohttp.ClientSession) -> None:
-        """Download the census waterblocks."""
-        waterblock_zip = "censuswaterblocks.zip"
-        url = f"{PFB_PUBLIC_DOCUMENTS_URL}/{waterblock_zip}"
-        await self.fetch(session, url, waterblock_zip)
-
-        # Unzip it in the store and delete the zip file.
-        utils.unzip(self.store.prefix / waterblock_zip, self.store.prefix)
-
     async def download_lodes_data(
         self,
         session: aiohttp.ClientSession,
@@ -191,7 +182,7 @@ class BNADataStore:
         More information about the formast can be found on the website:
         https://lehd.ces.census.gov/data/#lodes.
         """
-        lehd_url = f"https://lehd.ces.census.gov/data/lodes/LODES7/{state.lower()}/od"
+        lehd_url = f"https://lehd.ces.census.gov/data/lodes/LODES8/{state.lower()}/od"
 
         for part in ["main", "aux"]:
             lehd_gz = f"{state.lower()}_od_{part.lower()}_JT00_{year}.csv.gz"
@@ -202,15 +193,15 @@ class BNADataStore:
             # Gunzip it in the store and delete the gz file.
             utils.gunzip(self.store.prefix / lehd_gz, self.store.prefix / lehd_csv)
 
-    async def download_2010_census_blocks(
+    async def download_2020_census_blocks(
         self, session: aiohttp.ClientSession, fips: str
     ) -> None:
-        """Download a 2010 census tabulation block code for a specific state."""
-        tabblk2010_zip = f"tabblock2010_{fips}_pophu.zip"
-        url = f"{TIGER_2010_URL}/{tabblk2010_zip}"
-        await self.fetch(session, url, tabblk2010_zip)
+        """Download a 2020 census tabulation block code for a specific state."""
+        tabblk2020_zip = f"tl_2020_{fips}_tabblock20.zip"
+        url = f"{TIGER_URL}/TIGER2020/TABBLOCK20/tl_2020_{fips}_tabblock20.zip"
+        await self.fetch(session, url, tabblk2020_zip)
 
         # Unzip and rename the tabulation block files to "population".
         utils.prepare_census_blocks(
-            self.store.prefix / tabblk2010_zip, self.store.prefix
+            self.store.prefix / tabblk2020_zip, self.store.prefix
         )
