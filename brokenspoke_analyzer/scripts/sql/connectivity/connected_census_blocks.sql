@@ -7,8 +7,8 @@
 DROP TABLE IF EXISTS generated.neighborhood_connected_census_blocks;
 
 CREATE TABLE generated.neighborhood_connected_census_blocks (
-    source_blockid10 VARCHAR(15),
-    target_blockid10 VARCHAR(15),
+    source_blockid20 VARCHAR(15),
+    target_blockid20 VARCHAR(15),
     low_stress BOOLEAN,
     low_stress_cost INT,
     high_stress BOOLEAN,
@@ -16,12 +16,12 @@ CREATE TABLE generated.neighborhood_connected_census_blocks (
 );
 
 INSERT INTO generated.neighborhood_connected_census_blocks (
-    source_blockid10, target_blockid10,
+    source_blockid20, target_blockid20,
     low_stress, low_stress_cost, high_stress, high_stress_cost
 )
 SELECT
-    source.blockid10, -- noqa: AL08
-    target.blockid10, -- noqa: AL08
+    source.geoid20, -- noqa: AL08
+    target.geoid20, -- noqa: AL08
     FALSE, -- noqa: AL03
     (
         SELECT MIN(ls.total_cost)
@@ -53,9 +53,9 @@ WHERE EXISTS (
     FROM neighborhood_census_blocks AS source,
         neighborhood_census_blocks AS target
     WHERE
-        neighborhood_connected_census_blocks.source_blockid10 = source.blockid10
-        AND neighborhood_connected_census_blocks.target_blockid10
-        = target.blockid10
+        neighborhood_connected_census_blocks.source_blockid20 = source.geoid20
+        AND neighborhood_connected_census_blocks.target_blockid20
+        = target.geoid20
         AND source.road_ids && target.road_ids
 )
 OR (
@@ -69,10 +69,10 @@ OR (
 -- indexes
 CREATE UNIQUE INDEX idx_neighborhood_blockpairs
 ON neighborhood_connected_census_blocks (
-    source_blockid10, target_blockid10
+    source_blockid20, target_blockid20
 );
 CREATE INDEX IF NOT EXISTS idx_neighborhood_blockpairs_lstress
 ON neighborhood_connected_census_blocks (
-    source_blockid10, target_blockid10, low_stress
+    source_blockid20, target_blockid20, low_stress
 );
 ANALYZE neighborhood_connected_census_blocks;

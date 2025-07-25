@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS generated.neighborhood_hospitals;
 
 CREATE TABLE generated.neighborhood_hospitals (
     id SERIAL PRIMARY KEY,
-    blockid10 CHARACTER VARYING(15) [],
+    blockid20 CHARACTER VARYING(15) [],
     osm_id BIGINT,
     hospital_name TEXT,
     pop_low_stress INT,
@@ -73,10 +73,10 @@ ON neighborhood_hospitals USING gist (
 );
 ANALYZE generated.neighborhood_hospitals (geom_pt);
 
--- set blockid10
+-- set blockid20
 UPDATE generated.neighborhood_hospitals
-SET blockid10 = array((
-    SELECT cb.blockid10
+SET blockid20 = array((
+    SELECT cb.geoid20
     FROM neighborhood_census_blocks AS cb
     WHERE
         ST_Intersects(neighborhood_hospitals.geom_poly, cb.geom)
@@ -84,8 +84,8 @@ SET blockid10 = array((
 ));
 
 -- block index
-CREATE INDEX IF NOT EXISTS aidx_neighborhood_hospitals_blockid10
+CREATE INDEX IF NOT EXISTS aidx_neighborhood_hospitals_blockid20
 ON neighborhood_hospitals USING gin (
-    blockid10
+    blockid20
 );
-ANALYZE generated.neighborhood_hospitals (blockid10);
+ANALYZE generated.neighborhood_hospitals (blockid20);
