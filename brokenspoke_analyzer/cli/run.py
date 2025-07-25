@@ -34,6 +34,8 @@ def run(
     data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
     lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
+    mirror: common.Mirror = None,
+    no_cache: common.NoCache = False,
     retries: common.Retries = common.DEFAULT_RETRIES,
     s3_bucket: Annotated[
         typing.Optional[str], typer.Option(help="S3 bucket name where to export")
@@ -56,6 +58,8 @@ def run(
         fips_code=fips_code,
         lodes_year=lodes_year,
         max_trip_distance=max_trip_distance,
+        mirror=mirror,
+        no_cache=no_cache,
         region=region,
         retries=retries,
         s3_bucket=s3_bucket,
