@@ -58,40 +58,40 @@ INSERT INTO tmp_pop (
     retail, grocery, social_svcs, parks, trails, comm_ctrs, transit
 )
 SELECT
-    SUM(pop10),
-    SUM(CASE WHEN COALESCE(schools_high_stress, 0) = 0 THEN 0 ELSE pop10 END),
-    SUM(CASE WHEN COALESCE(colleges_high_stress, 0) = 0 THEN 0 ELSE pop10 END),
+    SUM(pop20),
+    SUM(CASE WHEN COALESCE(schools_high_stress, 0) = 0 THEN 0 ELSE pop20 END),
+    SUM(CASE WHEN COALESCE(colleges_high_stress, 0) = 0 THEN 0 ELSE pop20 END),
     SUM(
         CASE
-            WHEN COALESCE(universities_high_stress, 0) = 0 THEN 0 ELSE pop10
+            WHEN COALESCE(universities_high_stress, 0) = 0 THEN 0 ELSE pop20
         END
     ),
-    SUM(CASE WHEN COALESCE(doctors_high_stress, 0) = 0 THEN 0 ELSE pop10 END),
-    SUM(CASE WHEN COALESCE(dentists_high_stress, 0) = 0 THEN 0 ELSE pop10 END),
-    SUM(CASE WHEN COALESCE(hospitals_high_stress, 0) = 0 THEN 0 ELSE pop10 END),
+    SUM(CASE WHEN COALESCE(doctors_high_stress, 0) = 0 THEN 0 ELSE pop20 END),
+    SUM(CASE WHEN COALESCE(dentists_high_stress, 0) = 0 THEN 0 ELSE pop20 END),
+    SUM(CASE WHEN COALESCE(hospitals_high_stress, 0) = 0 THEN 0 ELSE pop20 END),
     SUM(
-        CASE WHEN COALESCE(pharmacies_high_stress, 0) = 0 THEN 0 ELSE pop10 END
+        CASE WHEN COALESCE(pharmacies_high_stress, 0) = 0 THEN 0 ELSE pop20 END
     ),
-    SUM(CASE WHEN COALESCE(retail_high_stress, 0) = 0 THEN 0 ELSE pop10 END),
-    SUM(
-        CASE
-            WHEN COALESCE(supermarkets_high_stress, 0) = 0 THEN 0 ELSE pop10
-        END
-    ),
+    SUM(CASE WHEN COALESCE(retail_high_stress, 0) = 0 THEN 0 ELSE pop20 END),
     SUM(
         CASE
-            WHEN COALESCE(social_services_high_stress, 0) = 0 THEN 0 ELSE pop10
+            WHEN COALESCE(supermarkets_high_stress, 0) = 0 THEN 0 ELSE pop20
         END
     ),
-    SUM(CASE WHEN COALESCE(parks_high_stress, 0) = 0 THEN 0 ELSE pop10 END),
-    SUM(CASE WHEN COALESCE(trails_high_stress, 0) = 0 THEN 0 ELSE pop10 END),
+    SUM(
+        CASE
+            WHEN COALESCE(social_services_high_stress, 0) = 0 THEN 0 ELSE pop20
+        END
+    ),
+    SUM(CASE WHEN COALESCE(parks_high_stress, 0) = 0 THEN 0 ELSE pop20 END),
+    SUM(CASE WHEN COALESCE(trails_high_stress, 0) = 0 THEN 0 ELSE pop20 END),
     SUM(
         CASE
             WHEN COALESCE(community_centers_high_stress, 0) = 0 THEN 0 ELSE
-                pop10
+                pop20
         END
     ),
-    SUM(CASE WHEN COALESCE(transit_high_stress, 0) = 0 THEN 0 ELSE pop10 END)
+    SUM(CASE WHEN COALESCE(transit_high_stress, 0) = 0 THEN 0 ELSE pop20 END)
 FROM neighborhood_census_blocks
 WHERE EXISTS (
     SELECT 1
@@ -221,7 +221,7 @@ SELECT
     SUM(
         CASE
             WHEN tmp_pop.overall = 0 THEN 0 ELSE
-                neighborhood_census_blocks.pop10
+                neighborhood_census_blocks.pop20
                 * neighborhood_census_blocks.pop_score / tmp_pop.overall
         END
     ),
@@ -360,7 +360,7 @@ SELECT
     SUM(
         CASE
             WHEN tmp_pop.overall = 0 THEN 0 ELSE
-                neighborhood_census_blocks.pop10
+                neighborhood_census_blocks.pop20
                 * neighborhood_census_blocks.emp_score / tmp_pop.overall
         END
     ),
@@ -500,7 +500,7 @@ SELECT
     SUM(
         CASE
             WHEN tmp_pop.k12 = 0 THEN 0 ELSE
-                neighborhood_census_blocks.pop10
+                neighborhood_census_blocks.pop20
                 * neighborhood_census_blocks.schools_score / tmp_pop.k12
         END
     ),
@@ -750,7 +750,7 @@ SELECT
     SUM(
         CASE
             WHEN tmp_pop.tech = 0 THEN 0 ELSE
-                neighborhood_census_blocks.pop10
+                neighborhood_census_blocks.pop20
                 * neighborhood_census_blocks.colleges_score / tmp_pop.tech
         END
     ),
@@ -1021,7 +1021,7 @@ SELECT
     SUM(
         CASE
             WHEN tmp_pop.univ = 0 THEN 0 ELSE
-                neighborhood_census_blocks.pop10
+                neighborhood_census_blocks.pop20
                 * neighborhood_census_blocks.universities_score / tmp_pop.univ
         END
     ),
@@ -1277,7 +1277,7 @@ SELECT
     SUM(
         CASE
             WHEN tmp_pop.doctor = 0 THEN 0 ELSE
-                neighborhood_census_blocks.pop10
+                neighborhood_census_blocks.pop20
                 * neighborhood_census_blocks.doctors_score / tmp_pop.doctor
         END
     ),
@@ -1532,7 +1532,7 @@ SELECT
     SUM(
         CASE
             WHEN tmp_pop.dentist = 0 THEN 0 ELSE
-                neighborhood_census_blocks.pop10
+                neighborhood_census_blocks.pop20
                 * neighborhood_census_blocks.dentists_score / tmp_pop.dentist
         END
     ),
@@ -1790,7 +1790,7 @@ SELECT
     SUM(
         CASE
             WHEN tmp_pop.hospital = 0 THEN 0 ELSE
-                neighborhood_census_blocks.pop10
+                neighborhood_census_blocks.pop20
                 * neighborhood_census_blocks.hospitals_score / tmp_pop.hospital
         END
     ),
@@ -2048,7 +2048,7 @@ SELECT
     SUM(
         CASE
             WHEN tmp_pop.pharmacy = 0 THEN 0 ELSE
-                neighborhood_census_blocks.pop10
+                neighborhood_census_blocks.pop20
                 * neighborhood_census_blocks.pharmacies_score / tmp_pop.pharmacy
         END
     ),
@@ -2303,7 +2303,7 @@ SELECT
     SUM(
         CASE
             WHEN tmp_pop.retail = 0 THEN 0 ELSE
-                neighborhood_census_blocks.pop10
+                neighborhood_census_blocks.pop20
                 * neighborhood_census_blocks.retail_score / tmp_pop.retail
         END
     ),
@@ -2561,7 +2561,7 @@ SELECT
     SUM(
         CASE
             WHEN tmp_pop.grocery = 0 THEN 0 ELSE
-                neighborhood_census_blocks.pop10
+                neighborhood_census_blocks.pop20
                 * neighborhood_census_blocks.supermarkets_score
                 / tmp_pop.grocery
         END
@@ -2820,7 +2820,7 @@ SELECT
     SUM(
         CASE
             WHEN tmp_pop.social_svcs = 0 THEN 0 ELSE
-                neighborhood_census_blocks.pop10
+                neighborhood_census_blocks.pop20
                 * neighborhood_census_blocks.social_services_score
                 / tmp_pop.social_svcs
         END
@@ -3079,7 +3079,7 @@ SELECT
     SUM(
         CASE
             WHEN tmp_pop.parks = 0 THEN 0 ELSE
-                neighborhood_census_blocks.pop10
+                neighborhood_census_blocks.pop20
                 * neighborhood_census_blocks.parks_score / tmp_pop.parks
         END
     ),
@@ -3334,7 +3334,7 @@ SELECT
     SUM(
         CASE
             WHEN tmp_pop.trails = 0 THEN 0 ELSE
-                neighborhood_census_blocks.pop10
+                neighborhood_census_blocks.pop20
                 * neighborhood_census_blocks.trails_score / tmp_pop.trails
         END
     ),
@@ -3478,7 +3478,7 @@ SELECT
     SUM(
         CASE
             WHEN tmp_pop.comm_ctrs = 0 THEN 0 ELSE
-                neighborhood_census_blocks.pop10
+                neighborhood_census_blocks.pop20
                 * neighborhood_census_blocks.community_centers_score
                 / tmp_pop.comm_ctrs
         END
@@ -3742,7 +3742,7 @@ SELECT
     SUM(
         CASE
             WHEN tmp_pop.transit = 0 THEN 0 ELSE
-                neighborhood_census_blocks.pop10
+                neighborhood_census_blocks.pop20
                 * neighborhood_census_blocks.transit_score / tmp_pop.transit
         END
     ),

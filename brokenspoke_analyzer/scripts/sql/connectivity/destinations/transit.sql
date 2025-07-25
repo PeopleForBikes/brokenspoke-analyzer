@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS generated.neighborhood_transit;
 
 CREATE TABLE generated.neighborhood_transit (
     id SERIAL PRIMARY KEY,
-    blockid10 CHARACTER VARYING(15) [],
+    blockid20 CHARACTER VARYING(15) [],
     osm_id BIGINT,
     transit_name TEXT,
     pop_low_stress INT,
@@ -82,10 +82,10 @@ ON neighborhood_transit USING gist (
 );
 ANALYZE generated.neighborhood_transit (geom_pt);
 
--- set blockid10
+-- set blockid20
 UPDATE generated.neighborhood_transit
-SET blockid10 = array((
-    SELECT cb.blockid10
+SET blockid20 = array((
+    SELECT cb.geoid20
     FROM neighborhood_census_blocks AS cb
     WHERE
         ST_Intersects(neighborhood_transit.geom_poly, cb.geom)
@@ -93,8 +93,8 @@ SET blockid10 = array((
 ));
 
 -- block index
-CREATE INDEX IF NOT EXISTS aidx_neighborhood_transit_blockid10
+CREATE INDEX IF NOT EXISTS aidx_neighborhood_transit_blockid20
 ON neighborhood_transit USING gin (
-    blockid10
+    blockid20
 );
-ANALYZE generated.neighborhood_transit (blockid10);
+ANALYZE generated.neighborhood_transit (blockid20);
