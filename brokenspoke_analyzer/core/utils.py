@@ -11,7 +11,6 @@ from enum import Enum
 import geopandas as gpd
 import pandas as pd
 from loguru import logger
-from platformdirs import PlatformDirs
 from slugify import slugify
 
 from brokenspoke_analyzer.core import constant
@@ -272,11 +271,3 @@ def is_usa(country: str) -> bool:
 
     """
     return country.upper() in ["US", "USA", "UNITED STATES"]
-
-
-def get_user_cache_dir(ensure_exists: bool = True) -> pathlib.Path:
-    """Return the user cache directory."""
-    dirs = PlatformDirs(
-        constant.APPNAME, constant.APPAUTHOR, ensure_exists=ensure_exists
-    )
-    return pathlib.Path(dirs.user_cache_dir)
