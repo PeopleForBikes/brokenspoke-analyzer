@@ -36,13 +36,13 @@ def all(
     country: common.Country,
     city: common.City,
     region: common.Region = None,
-    fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
-    output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
-    city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
-    block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
     block_population: common.BlockPopulation = common.DEFAULT_BLOCK_POPULATION,
-    retries: common.Retries = common.DEFAULT_RETRIES,
+    block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
+    city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
+    fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
     lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
+    output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
+    retries: common.Retries = common.DEFAULT_RETRIES,
 ) -> None:
     """Prepare all the files required for an analysis."""
     # Make MyPy happy.
