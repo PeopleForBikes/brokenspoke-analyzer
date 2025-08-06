@@ -33,7 +33,7 @@ def execute_sqlfile_with_substitutions(
         binding_names = sorted(bind_params.keys(), key=len, reverse=True)
         for binding_name in binding_names:
             param = bind_params[binding_name]
-            substitute = param if param else "NULL"
+            substitute = param if param is not None else "NULL"
             statements = statements.replace(f":{binding_name}", f"{substitute}")
     dbcore.execute_query(engine, statements)
 
