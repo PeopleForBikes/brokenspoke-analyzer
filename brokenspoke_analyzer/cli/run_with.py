@@ -262,14 +262,15 @@ def run_(
     # Prepare.
     logger.debug(f"{output_dir=}")
     prepare.all(
-        country=country,
-        city=city,
-        region=region,
-        fips_code=fips_code,
-        output_dir=output_dir,
-        city_speed_limit=city_speed_limit,
-        block_size=block_size,
         block_population=block_population,
+        block_size=block_size,
+        city_speed_limit=city_speed_limit,
+        city=city,
+        country=country,
+        fips_code=fips_code,
+        lodes_year=lodes_year,
+        output_dir=output_dir,
+        region=region,
         retries=retries,
     )
 
