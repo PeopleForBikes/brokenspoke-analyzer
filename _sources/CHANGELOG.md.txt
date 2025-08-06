@@ -7,13 +7,25 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [2.6.3] - 2025-08-06
+
+### Fixed
+
+- Fixed conversion of zero to NULL in SQL query substitution .[#895]
+- Fixed ignored `lodes_year` parameter in the run-with command.[#910]
+
+[#895]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/895
+[#910]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/910
+[2.6.3]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.6.3
+
 ## [2.6.2] - 2025-07-23
 
 ### Fixed
 
 - Excluded golf courses paths from bicycle infrastructure. [#889]
 
-[#889]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/870
+[#889]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/889
 [2.6.2]:
   https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.6.2
 
