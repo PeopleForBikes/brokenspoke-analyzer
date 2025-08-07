@@ -6,6 +6,7 @@
 ----------------------------------------
 UPDATE neighborhood_ways_intersections SET island = FALSE;
 
+-- noqa: disable=RF05
 UPDATE neighborhood_ways_intersections
 SET island = TRUE
 WHERE
@@ -15,10 +16,11 @@ WHERE
         FROM neighborhood_osm_full_point AS osm
         WHERE
             osm.highway = 'crossing'
-            AND osm.crossing = 'island'
+            AND (osm.crossing = 'island' OR osm."crossing:island" = 'yes')
             AND ST_DWithin(
                 neighborhood_ways_intersections.geom,
                 osm.way,
                 :sigctl_search_dist
             )
     );
+-- noqa: enable=all
