@@ -27,7 +27,9 @@ from brokenspoke_analyzer.pyrosm import data
 warnings.filterwarnings("ignore")
 
 
-def osmnx_query(country: str, city: str, state: str | None) -> typing.Tuple[str, str]:
+def osmnx_query(
+    country: str, city: str, state: str | None
+) -> typing.Tuple[typing.Dict[str, str], str]:
     """
     Prepare the osmnx.
 
@@ -35,8 +37,15 @@ def osmnx_query(country: str, city: str, state: str | None) -> typing.Tuple[str,
     """
     if country == state:
         state = None
-    query = ", ".join(filter(None, [city, state, country]))
-    slug = slugify(query)
+    slug = slugify(", ".join(filter(None, [city, state, country])))
+    query = {
+        "city": city,
+        "country": country,
+    }
+
+    if state is not None:
+        query["state"] = state
+
     return (query, slug)
 
 
