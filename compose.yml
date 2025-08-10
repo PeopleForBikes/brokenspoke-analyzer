@@ -11,7 +11,7 @@ services:
       POSTGRESQL_PASSWORD: bna
       POSTGRESQL_DATABASE: bna
     healthcheck:
-      test: ["CMD", "pg_isready"]
+      test: ["CMD", "pg_isready", "-d", "postgres", "-U", "postgres"]
       interval: 10s
       timeout: 60s
       retries: 6
