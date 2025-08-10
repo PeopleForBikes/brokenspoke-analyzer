@@ -159,7 +159,7 @@ def compare(
     """Run the analysis using the original BNA and teh brokenspoke-analyzer."""
     # Make mypy happy.
     if not data_dir:
-        raise ValueError("`output_dir` must be set")
+        raise ValueError("`data_dir` must be set")
 
     logger.info("Run with compose")
     brokenspoke_export_dir = compose(
