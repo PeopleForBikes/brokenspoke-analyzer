@@ -28,12 +28,19 @@ warnings.filterwarnings("ignore")
 
 
 def osmnx_query(
-    country: str, city: str, state: str | None
+    country: str, city: str, state: typing.Optional[str] = None
 ) -> typing.Tuple[typing.Dict[str, str], str]:
     """
     Prepare the osmnx.
 
     Returns: the OSMNX query and its slugified version.
+
+    Example:
+        >>> osmnx_query("united states", "santa rosa", "new mexico")
+        ({'city': 'santa rosa', 'country': 'united states', 'state': 'new mexico'}, 'santa-rosa-new-mexico-united-states')
+
+        >>> osmnx_query("malta", "valletta")
+        ({'city': 'valletta', 'country': 'malta'}, 'valletta-malta')
     """
     if country == state:
         state = None
@@ -43,7 +50,7 @@ def osmnx_query(
         "country": country,
     }
 
-    if state is not None:
+    if state:
         query["state"] = state
 
     return (query, slug)
