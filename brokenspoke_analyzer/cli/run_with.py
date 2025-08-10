@@ -105,7 +105,7 @@ def original_bna(
     """Use the original BNA Docker image to run the analysis."""
     # Make mypy happy.
     if not data_dir:
-        raise ValueError("`output_dir` must be set")
+        raise ValueError("`data_dir` must be set")
     if not docker_image:
         raise ValueError("`docker_image` must be set")
     if not container_name:
