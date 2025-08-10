@@ -47,7 +47,7 @@ def prepare_cmd(
     """Prepare all the files required for an analysis."""
     # Make MyPy happy.
     if not data_dir:
-        raise ValueError("`output_dir` must be set")
+        raise ValueError("`data_dir` must be set")
     if not city_speed_limit:
         raise ValueError("`city_speed_limit` must be set")
     if not block_size:
