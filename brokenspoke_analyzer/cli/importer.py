@@ -6,19 +6,21 @@ from typing_extensions import Annotated
 from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core import ingestor
 
+StateAbbreviation = Annotated[str, typer.Argument(help="two-letter US state name")]
+
 app = typer.Typer()
 
 
 @app.command()
 def all(
+    data_dir: common.DataDir,
     database_url: common.DatabaseURL,
-    input_dir: common.InputDir,
     country: common.Country,
     city: common.City,
     region: common.Region = None,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
-    lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
+    lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
 ) -> None:
     """Import all files into database."""
     # Make MyPy happy.
@@ -34,21 +36,21 @@ def all(
         region = country
 
     ingestor.all_wrapper(
-        database_url=database_url,
-        input_dir=input_dir,
-        country=country,
+        buffer=buffer,
         city=city,
-        region=region,
+        country=country,
+        data_dir=data_dir,
+        database_url=database_url,
         fips_code=fips_code,
         lodes_year=lodes_year,
-        buffer=buffer,
+        region=region,
     )
 
 
 @app.command()
 def neighborhood(
+    data_dir: common.DataDir,
     database_url: common.DatabaseURL,
-    input_dir: common.InputDir,
     country: common.Country,
     city: common.City,
     region: common.Region = None,
@@ -62,20 +64,20 @@ def neighborhood(
         raise ValueError("`buffer` must be set")
 
     ingestor.neighborhood_wrapper(
-        database_url=database_url,
-        input_dir=input_dir,
-        country=country,
-        city=city,
-        region=region,
         buffer=buffer,
+        city=city,
+        country=country,
+        data_dir=data_dir,
+        database_url=database_url,
+        region=region,
     )
 
 
 @app.command()
 def jobs(
+    data_dir: common.DataDir,
     database_url: common.DatabaseURL,
-    input_dir: common.InputDir,
-    state_abbreviation: Annotated[str, typer.Argument(help="two-letter US state name")],
+    state_abbreviation: StateAbbreviation,
     lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
 ) -> None:
     """Import US census job data."""
@@ -84,17 +86,17 @@ def jobs(
         raise ValueError("`lodes_year` must be set")
 
     ingestor.jobs_wrapper(
+        data_dir=data_dir,
         database_url=database_url,
-        input_dir=input_dir,
-        state_abbreviation=state_abbreviation,
         lodes_year=lodes_year,
+        state_abbreviation=state_abbreviation,
     )
 
 
 @app.command()
 def osm(
+    data_dir: common.DataDir,
     database_url: common.DatabaseURL,
-    input_dir: common.InputDir,
     country: common.Country,
     city: common.City,
     region: common.Region = None,
@@ -108,10 +110,10 @@ def osm(
         raise ValueError("`fips_code` must be set")
 
     ingestor.osm_wrapper(
-        database_url=database_url,
-        input_dir=input_dir,
-        country=country,
         city=city,
-        region=region,
+        country=country,
+        data_dir=data_dir,
+        database_url=database_url,
         fips_code=fips_code,
+        region=region,
     )
