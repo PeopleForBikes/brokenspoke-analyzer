@@ -228,7 +228,7 @@ def run_(
     """Run an analysis."""
     # Make mypy happy.
     if not data_dir:
-        raise ValueError("`output_dir` must be set")
+        raise ValueError("`data_dir` must be set")
     if not block_size:
         raise ValueError("`block_size` must be set")
     if not block_population:
