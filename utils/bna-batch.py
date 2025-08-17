@@ -1,16 +1,44 @@
 """
-Wraps the bna run-with command to process the cities from a csv file.
+Wraps the bna run-with command to process a batch of cities from a CSV file.
+
+From the root of this repository run:
+```bash
+uv run python utils/bna-batch.py
+```
+## Usage
+
+```bash
+bna-batch.py [OPTIONS] [BATCH_FILE]
+```
+
+### options
+
+- `batch_file` _batch-file_
+
+    - CSV file containing the cities to process.
+
+      Defaults to `./cities.csv`.
+
+- `--lodes-year` _lodes-year_
+    - Year to use to retrieve US job data.
+
+      Defaults to 2022.
+
+- `--with-parts` _parts_
+  - Parts of the analysis to compute.
+
+    Valid values are: `features`, `stress`, `connectivity`, and `measure`. This
+    option can be repeated if multiple parts are needed.
+
+    Defaults to `measure`.
+
+### Batch file format
 
 `cities.csv`:
 ```csv
 country,region,city,fips_code
 "united states","new mexico","santa rosa",3570670
 "united states",massachusetts,provincetown,555535
-```
-
-From the root of this repository run:
-```bash
-uv run python utils/bna-wrapper.py
 ```
 """
 
@@ -22,14 +50,17 @@ import shutil
 import subprocess
 
 import rich
+import typer
 from loguru import logger
 from tenacity import (
     Retrying,
     before_log,
     stop_after_attempt,
 )
+from typing_extensions import Annotated
 
 from brokenspoke_analyzer.cli import (
+    common,
     root,
     run_with,
 )
@@ -38,11 +69,29 @@ from brokenspoke_analyzer.core import (
     constant,
 )
 
+BatchFile = Annotated[
+    pathlib.Path,
+    typer.Argument(
+        dir_okay=False,
+        exists=True,
+        file_okay=True,
+        help="CSV file containing the cities to process",
+        readable=True,
+        resolve_path=True,
+    ),
+]
+DATA_DIR = pathlib.Path("./data").resolve()
 MAX_RETRIES = 2
+OSM_CACHE_DIR = pathlib.Path("./osm_cache").resolve()
+OSM_CACHE_FILE_SUFFIX = ".pbf.md5"
 
 
-def main():
-    """Define the main function."""
+def main(
+    batch_file: BatchFile = "cities.csv",
+    lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
+    parts: common.ComputeParts = [constant.ComputePart.MEASURE],
+):
+    """Process a batch of cities."""
     # Disable logging.
     root._verbose_callback(0)
 
@@ -53,7 +102,7 @@ def main():
     os.environ["BNA_CACHING_STRATEGY"] = "USER_CACHE"
 
     # Simulate a caching mechanism for OSM data.
-    osm_cache = pathlib.Path("./osm_cache").resolve()
+    osm_cache = OSM_CACHE_DIR
     osm_cache.mkdir(parents=True, exist_ok=True)
 
     # Prepare the Rich output.
@@ -67,8 +116,7 @@ def main():
     )
 
     # Read the CSV file.
-    input_csv = pathlib.Path("cities.csv")
-    with input_csv.open() as f:
+    with batch_file.open() as f:
         reader = csv.DictReader(f)
 
         # Process each entry.
@@ -87,14 +135,16 @@ def main():
                     cached_region_file = retryer(
                         analysis.retrieve_region_file, region, osm_cache
                     )
-                    cached_region_file_md5 = cached_region_file.with_suffix(".pbf.md5")
+                    cached_region_file_md5 = cached_region_file.with_suffix(
+                        OSM_CACHE_FILE_SUFFIX
+                    )
                 except Exception as e:
                     print(e)
+                    return
 
             # Prepare the data directory ahead of the analysis.
-            data_dir = pathlib.Path("./data").resolve()
             _, slug = analysis.osmnx_query(country, city, region)
-            data_dir /= slug
+            data_dir = DATA_DIR / slug
             data_dir.mkdir(parents=True, exist_ok=True)
 
             # Copy the OSM data into the data directory.
@@ -103,11 +153,12 @@ def main():
 
             # Run the analysis.
             run_with.compose(
-                country=country,
                 city=city,
-                region=region,
+                country=country,
                 fips_code=fips_code,
-                with_parts=constant.ComputePart.MEASURE,
+                lodes_year=lodes_year,
+                region=region,
+                with_parts=parts,
             )
 
 
@@ -197,4 +248,4 @@ def run_with_docker(
 
 
 if __name__ == "__main__":
-    main()
+    typer.run(main)
