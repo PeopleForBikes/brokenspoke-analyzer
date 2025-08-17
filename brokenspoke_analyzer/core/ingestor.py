@@ -33,10 +33,11 @@ ESPG_4326 = 4326
 
 
 def import_and_transform_shapefile(
+    *,
     engine: Engine,
+    output_srid: int,
     shapefile: pathlib.Path,
     table: str,
-    output_srid: int,
     input_srid: typing.Optional[int] = ESPG_4326,
 ) -> None:
     """Import a shapefile into PostGIS with shp2pgsql."""
@@ -122,12 +123,13 @@ def retrieve_population(engine: Engine) -> int:
 
 
 def import_neighborhood(
-    engine: Engine,
-    country: str,
+    *,
     boundary_file: pathlib.Path,
-    population_file: pathlib.Path,
-    output_srid: int,
     buffer: int,
+    country: str,
+    engine: Engine,
+    output_srid: int,
+    population_file: pathlib.Path,
 ) -> None:
     """
     Import neighborhood data.
@@ -143,14 +145,20 @@ def import_neighborhood(
     # Import neighborhood boundary.
     logger.info("Importing neighborhood boundary...")
     import_and_transform_shapefile(
-        engine, boundary_file, BOUNDARY_TABLE, output_srid=output_srid
+        engine=engine,
+        output_srid=output_srid,
+        shapefile=boundary_file,
+        table=BOUNDARY_TABLE,
     )
 
     # Import census blocks.
     # By convention, this file is always named `population.shp`.
     logger.info("Importing census blocks...")
     import_and_transform_shapefile(
-        engine, population_file, CENSUS_BLOCKS_TABLE, output_srid=output_srid
+        engine=engine,
+        output_srid=output_srid,
+        shapefile=population_file,
+        table=CENSUS_BLOCKS_TABLE,
     )
 
     # Discard blocks outside of the boundary+buffer.
@@ -459,12 +467,12 @@ def import_all(
 ) -> None:
     """Import all the data."""
     import_neighborhood(
-        engine,
-        country,
-        boundary_file,
-        population_file,
-        output_srid,
-        buffer,
+        boundary_file=boundary_file,
+        buffer=buffer,
+        country=country,
+        engine=engine,
+        output_srid=output_srid,
+        population_file=population_file,
     )
     state_abbrev, state_fips, run_import_jobs = analysis.derive_state_info(state)
     logger.debug(f"{run_import_jobs=}")
@@ -485,12 +493,13 @@ def import_all(
 
 
 def neighborhood_wrapper(
-    database_url: str,
-    input_dir: pathlib.Path,
-    country: str,
-    city: str,
-    region: str,
+    *,
     buffer: int,
+    city: str,
+    country: str,
+    data_dir: pathlib.Path,
+    database_url: str,
+    region: str,
 ) -> None:
     """
     Wrap the `import_neighborhood` .
@@ -510,8 +519,8 @@ def neighborhood_wrapper(
 
     # Prepare the files to import.
     _, _, slug = analysis.osmnx_query(country, city, region)
-    boundary_file = input_dir / f"{slug}.shp"
-    population_file = input_dir / "population.shp"
+    boundary_file = data_dir / f"{slug}.shp"
+    population_file = data_dir / "population.shp"
 
     # compute the output SRID from the boundary file.
     output_srid = utils.get_srid(boundary_file.resolve(strict=True))
@@ -519,17 +528,21 @@ def neighborhood_wrapper(
 
     # Import the neighborhood data.
     import_neighborhood(
-        engine,
-        country=country,
         boundary_file=boundary_file.resolve(),
-        population_file=population_file.resolve(strict=True),
-        output_srid=output_srid,
         buffer=buffer,
+        country=country,
+        engine=engine,
+        output_srid=output_srid,
+        population_file=population_file.resolve(strict=True),
     )
 
 
 def jobs_wrapper(
-    database_url: str, input_dir: pathlib.Path, state_abbreviation: str, lodes_year: int
+    *,
+    data_dir: pathlib.Path,
+    database_url: str,
+    lodes_year: int,
+    state_abbreviation: str,
 ) -> None:
     """
     Wrap the `import_jobs` function.
@@ -546,16 +559,17 @@ def jobs_wrapper(
     engine = dbcore.create_psycopg_engine(database_url)
 
     # Import the jobs.
-    import_jobs(engine, state_abbreviation, lodes_year, input_dir)
+    import_jobs(engine, state_abbreviation, lodes_year, data_dir)
 
 
 def osm_wrapper(
-    database_url: str,
-    input_dir: pathlib.Path,
-    country: str,
+    *,
     city: str,
-    region: str,
+    country: str,
+    data_dir: pathlib.Path,
+    database_url: str,
     fips_code: str,
+    region: str,
 ) -> None:
     """
     Wrap the `import_osm_data` function.
@@ -571,10 +585,10 @@ def osm_wrapper(
 
     # Prepare the files to import.
     _, _, slug = analysis.osmnx_query(country, city, region)
-    boundary_file = input_dir / f"{slug}.shp"
-    osm_file = input_dir / f"{slug}.osm"
-    state_speed_limits_csv = input_dir / "state_fips_speed.csv"
-    city_speed_limits_csv = input_dir / "city_fips_speed.csv"
+    boundary_file = data_dir / f"{slug}.shp"
+    osm_file = data_dir / f"{slug}.osm"
+    state_speed_limits_csv = data_dir / "state_fips_speed.csv"
+    city_speed_limits_csv = data_dir / "city_fips_speed.csv"
 
     # Compute the output SRID from the boundary file.
     output_srid = utils.get_srid(boundary_file.resolve(strict=True))
@@ -596,14 +610,15 @@ def osm_wrapper(
 
 
 def all_wrapper(
-    database_url: str,
-    input_dir: pathlib.Path,
-    country: str,
+    *,
+    buffer: int = common.DEFAULT_BUFFER,
     city: str,
-    region: str,
+    country: str,
+    data_dir: pathlib.Path,
+    database_url: str,
     fips_code: str = common.DEFAULT_CITY_FIPS_CODE,
     lodes_year: int = common.DEFAULT_LODES_YEAR,
-    buffer: int = common.DEFAULT_BUFFER,
+    region: str,
 ) -> None:
     """
     Wrap the all the `import_*` functions.
@@ -612,12 +627,31 @@ def all_wrapper(
     that cannot be computed.
     """
     # Import neighborhood data.
-    neighborhood_wrapper(database_url, input_dir, country, city, region, buffer)
+    neighborhood_wrapper(
+        buffer=buffer,
+        city=city,
+        country=country,
+        data_dir=data_dir,
+        database_url=database_url,
+        region=region,
+    )
 
     # Import job data.
     state_abbreviation, _, import_jobs = analysis.derive_state_info(region)
     if import_jobs:
-        jobs_wrapper(database_url, input_dir, state_abbreviation, lodes_year)
+        jobs_wrapper(
+            data_dir=data_dir,
+            database_url=database_url,
+            lodes_year=lodes_year,
+            state_abbreviation=state_abbreviation,
+        )
 
     # Import OSM data.
-    osm_wrapper(database_url, input_dir, country, city, region, fips_code)
+    osm_wrapper(
+        city=city,
+        country=country,
+        data_dir=data_dir,
+        database_url=database_url,
+        fips_code=fips_code,
+        region=region,
+    )

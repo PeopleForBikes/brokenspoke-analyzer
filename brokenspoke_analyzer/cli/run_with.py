@@ -37,19 +37,19 @@ def compose(
     country: common.Country,
     city: common.City,
     region: common.Region = None,
-    output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
-    export_dir: common.ExportDirOpt = common.DEFAULT_EXPORT_DIR,
+    block_population: common.BlockPopulation = common.DEFAULT_BLOCK_POPULATION,
+    block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
     city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
-    block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
-    block_population: common.BlockPopulation = common.DEFAULT_BLOCK_POPULATION,
+    export_dir: common.ExportDirOpt = common.DEFAULT_EXPORT_DIR,
     lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
-    retries: common.Retries = common.DEFAULT_RETRIES,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
-    with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
+    data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
+    retries: common.Retries = common.DEFAULT_RETRIES,
     s3_bucket: typing.Optional[str] = None,
     with_bundle: typing.Optional[bool] = False,
+    with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
     with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
 ) -> typing.Optional[pathlib.Path]:
     """Manage Docker Compose when running the analysis."""
@@ -66,7 +66,7 @@ def compose(
             country=country,
             city=city,
             region=region,
-            output_dir=output_dir,
+            data_dir=data_dir,
             export_dir=export_dir,
             fips_code=fips_code,
             buffer=buffer,
@@ -97,15 +97,15 @@ def original_bna(
     city_shp: pathlib.Path,
     pfb_osm_file: pathlib.Path,
     region: common.Region = None,
-    output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
+    data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
     docker_image: common.DockerImage = common.DEFAULT_DOCKER_IMAGE,
     container_name: common.ContainerName = common.DEFAULT_CONTAINER_NAME,
     city_fips: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
 ) -> pathlib.Path:
     """Use the original BNA Docker image to run the analysis."""
     # Make mypy happy.
-    if not output_dir:
-        raise ValueError("`output_dir` must be set")
+    if not data_dir:
+        raise ValueError("`data_dir` must be set")
     if not docker_image:
         raise ValueError("`docker_image` must be set")
     if not container_name:
@@ -127,7 +127,7 @@ def original_bna(
             state_fips,
             city_shp,
             pfb_osm_file,
-            output_dir,
+            data_dir,
             docker_image,
             container_name,
             city_fips=city_fips,
@@ -135,7 +135,7 @@ def original_bna(
         console.log(f"Analysis for {city_shp} complete.")
 
     # Grab the last result directory.
-    result_dirs = list(output_dir.glob("local-analysis-*"))
+    result_dirs = list(data_dir.glob("local-analysis-*"))
     result_dirs.sort()
     return result_dirs[-1]
 
@@ -145,7 +145,7 @@ def compare(
     country: common.Country,
     city: common.City,
     region: common.Region = None,
-    output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
+    data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
     city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
@@ -158,15 +158,15 @@ def compare(
 ) -> pd.DataFrame:
     """Run the analysis using the original BNA and teh brokenspoke-analyzer."""
     # Make mypy happy.
-    if not output_dir:
-        raise ValueError("`output_dir` must be set")
+    if not data_dir:
+        raise ValueError("`data_dir` must be set")
 
     logger.info("Run with compose")
     brokenspoke_export_dir = compose(
         country=country,
         city=city,
         region=region,
-        output_dir=output_dir,
+        data_dir=data_dir,
         fips_code=fips_code,
         buffer=buffer,
         city_speed_limit=city_speed_limit,
@@ -183,11 +183,11 @@ def compare(
 
     logger.info("Run with original BNA")
     _, _, slug = analysis.osmnx_query(country, city, region)
-    city_shp = output_dir / f"{slug}.shp"
+    city_shp = data_dir / f"{slug}.shp"
     pfb_osm_file = city_shp.with_suffix(".osm")
     original_export_dir = original_bna(
         region=region,
-        output_dir=output_dir / slug,
+        data_dir=data_dir / slug,
         city_shp=city_shp,
         pfb_osm_file=pfb_osm_file,
         city_fips=fips_code,
@@ -198,36 +198,37 @@ def compare(
     logger.info("Compare the results")
     brokenspoke_scores = brokenspoke_export_dir / "neighborhood_overall_scores.csv"
     original_scores = original_export_dir / "neighborhood_overall_scores.csv"
-    output_csv = output_dir / slug / f"{slug}.csv"
+    output_csv = data_dir / slug / f"{slug}.csv"
     logger.debug(f"{output_csv=}")
     return utils.compare_bna_results(brokenspoke_scores, original_scores, output_csv)
 
 
 def run_(
+    *,
     database_url: str,
     country: str,
     city: str,
     region: typing.Optional[str] = None,
-    output_dir: typing.Optional[pathlib.Path] = common.DEFAULT_OUTPUT_DIR,
-    export_dir: typing.Optional[pathlib.Path] = common.DEFAULT_EXPORT_DIR,
-    fips_code: typing.Optional[str] = common.DEFAULT_CITY_FIPS_CODE,
+    block_population: typing.Optional[int] = common.DEFAULT_BLOCK_POPULATION,
+    block_size: typing.Optional[int] = common.DEFAULT_BLOCK_SIZE,
     buffer: typing.Optional[int] = common.DEFAULT_BUFFER,
     city_speed_limit: typing.Optional[int] = common.DEFAULT_CITY_SPEED_LIMIT,
-    block_size: typing.Optional[int] = common.DEFAULT_BLOCK_SIZE,
-    block_population: typing.Optional[int] = common.DEFAULT_BLOCK_POPULATION,
+    data_dir: typing.Optional[pathlib.Path] = common.DEFAULT_DATA_DIR,
+    export_dir: typing.Optional[pathlib.Path] = common.DEFAULT_EXPORT_DIR,
+    fips_code: typing.Optional[str] = common.DEFAULT_CITY_FIPS_CODE,
     lodes_year: typing.Optional[int] = common.DEFAULT_LODES_YEAR,
-    retries: typing.Optional[int] = common.DEFAULT_RETRIES,
     max_trip_distance: typing.Optional[int] = common.DEFAULT_MAX_TRIP_DISTANCE,
-    with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
+    retries: typing.Optional[int] = common.DEFAULT_RETRIES,
     s3_bucket: typing.Optional[str] = None,
     s3_dir: typing.Optional[pathlib.Path] = None,
     with_bundle: typing.Optional[bool] = False,
+    with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
     with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
 ) -> typing.Optional[pathlib.Path]:
     """Run an analysis."""
     # Make mypy happy.
-    if not output_dir:
-        raise ValueError("`output_dir` must be set")
+    if not data_dir:
+        raise ValueError("`data_dir` must be set")
     if not block_size:
         raise ValueError("`block_size` must be set")
     if not block_population:
@@ -260,8 +261,8 @@ def run_(
     console.log(", ".join(msg))
 
     # Prepare.
-    logger.debug(f"{output_dir=}")
-    prepare.all(
+    logger.debug(f"{data_dir=}")
+    prepare.prepare_cmd(
         block_population=block_population,
         block_size=block_size,
         city_speed_limit=city_speed_limit,
@@ -269,7 +270,7 @@ def run_(
         country=country,
         fips_code=fips_code,
         lodes_year=lodes_year,
-        output_dir=output_dir,
+        data_dir=data_dir,
         region=region,
         retries=retries,
     )
@@ -278,16 +279,16 @@ def run_(
     console.log("[green]Importing input files into the database...")
     with console.status("Importing..."):
         _, _, slug = analysis.osmnx_query(country, city, region)
-        input_dir = output_dir / slug
+        input_dir = data_dir / slug
         importer.all(
-            database_url=database_url,
-            input_dir=input_dir,
-            country=country,
-            city=city,
-            region=region,
-            lodes_year=lodes_year,
             buffer=buffer,
+            city=city,
+            country=country,
+            data_dir=input_dir,
+            database_url=database_url,
             fips_code=fips_code,
+            lodes_year=lodes_year,
+            region=region,
         )
 
     # Compute.
@@ -307,15 +308,15 @@ def run_(
 
     with console.status("[green]Computing..."):
         compute.parts(
-            database_url=database_url,
-            sql_script_dir=sql_script_dir,
-            output_srid=output_srid,
             buffer=buffer,
-            state_default_speed=state_default_speed,
             city_default_speed=city_default_speed,
+            compute_parts=with_parts,
+            database_url=database_url,
             import_jobs=import_jobs,
             max_trip_distance=max_trip_distance,
-            compute_parts=with_parts,
+            output_srid=output_srid,
+            sql_script_dir=sql_script_dir,
+            state_default_speed=state_default_speed,
         )
 
     # Export.
@@ -324,25 +325,25 @@ def run_(
         return None
     elif with_export == exporter.Exporter.local:
         export_dir = export.local(
-            database_url=database_url,
-            country=country,
             city=city,
-            region=region,
+            country=country,
+            database_url=database_url,
             export_dir=export_dir,
+            region=region,
             with_bundle=with_bundle,
         )
     elif with_export == exporter.Exporter.s3:
         export_dir = export.s3(
-            database_url=database_url,
             bucket_name=s3_bucket,  # type: ignore
-            country=country,
             city=city,
+            country=country,
+            database_url=database_url,
             region=region,
         )
     elif with_export == exporter.Exporter.s3_custom:
         export_dir = export.s3_custom(
-            database_url=database_url,
             bucket_name=s3_bucket,  # type: ignore
+            database_url=database_url,
             s3_dir=s3_dir,
         )
     return export_dir

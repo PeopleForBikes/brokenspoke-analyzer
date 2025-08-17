@@ -7,10 +7,6 @@ recommend setting the `DATABASE_URL` environment variable, even though it is
 possible to specify it on the CLI. This will keep the commands shorter and
 reduce the chance of error in the connection URL.
 
-Not all the CLI flags will be described on this page. For more details, please
-refer to the help screens by using the `--help` flag associated with the command
-to review.
-
 All the commands follow a very similar pattern, therefore they use almost all
 the same parameters accross the board.
 
@@ -27,28 +23,49 @@ the same parameters accross the board.
 
 ## Configure
 
+Configure a database for an analysis.
+
 Configure is a helper command, in the sense that it is completely optional to
-the process, but may help to configure the PostgreSQL which will be used for the
-analysis.
+the process, but may help to configure the PostgreSQL instance which will be
+used for the analysis.
+
+```bash
+bna configure [OPTIONS] COMMAND [ARGS]
+```
+
+### configure docker
+
+Configure a database running in a Docker container.
+
+```bash
+bna configure docker [OPTIONS]
+```
 
 The most common use case is to configure a PostgreSQL instance which is running
-in a Docker container (via the Docker Compose file that we provide for
-instance). To do so, simply run:
-
-```bash
-bna configure docker
-```
+in a Docker container (via the Docker Compose file that we provide for example).
 
 The command will autodetect the number of cores and the memory allocated to the
-Docker daemon, and will use this information to determine the optimal values to
-use to configure the PostgreSQL instance.
+Docker daemon, and will use this information to set the values to use to
+configure the PostgreSQL instance.
 
-If for some reason a more fine grained configuration is prefered, another
-command is provided where the user has to specify the information manually:
+#### options
+
+- `--database-url` _database-url_
+
+  - Set the database URL
+
+    May also be set with the `DATABASE_URL` environment variable.
+
+### configure custom
+
+Configure a database with custom values.
 
 ```bash
-bna configure custom 4 4096 pguser
+bna configure custom [OPTIONS] CORES MEMORY_MB PGUSER
 ```
+
+If for some reason a more fine grained configuration is prefered, another
+command is provided where the user has to specify the information manually.
 
 The parameters are:
 
@@ -56,7 +73,7 @@ The parameters are:
 - the amount of memory to allocate, in MB
 - the name of the PostgreSQL user to connect as
 
-### Reset
+### configure reset
 
 The reset comand is a convenience command that resets the database. It deletes
 tables associated with an analysis and recreates the necessary schema. Its main
@@ -64,25 +81,81 @@ use case is when developing/debugging locally and you need to try out another
 analysis without having to swith to your host system and using Docker to
 stop/remove the database associated with the previous analysis.
 
-## Prepare
+#### options
 
-This command prepares all the input files required for an analysis.
+- `--database-url` _database-url_
+
+  - Set the database URL
+
+    May also be set with the `DATABASE_URL` environment variable.
+
+### configure system
+
+Configure the database system parameters.
 
 ```bash
-Usage: bna prepare all [OPTIONS] COUNTRY CITY [STATE] [FIPS_CODE]
+bna configure system [OPTIONS] CORES MEMORY_MB
+```
+
+#### options
+
+- `--database-url` _database-url_
+
+  - Set the database URL
+
+    May also be set with the `DATABASE_URL` environment variable.
+
+### configure extensions
+
+Configure the database extensions.
+
+```bash
+bna configure extensions [OPTIONS]
+```
+
+#### options
+
+- `--database-url` _database-url_
+
+  - Set the database URL
+
+    May also be set with the `DATABASE_URL` environment variable.
+
+### configure schemas
+
+Configure the database schemas.
+
+```bash
+bna configure schemas [OPTIONS] PGUSER
+```
+
+#### options
+
+- `--database-url` _database-url_
+
+  - Set the database URL
+
+    May also be set with the `DATABASE_URL` environment variable.
+
+## Prepare
+
+Prepare all the input files required for an analysis.
+
+```bash
+bna prepare [OPTIONS] COUNTRY CITY [STATE] [FIPS_CODE]
 ```
 
 For US cities, the full name of the state as well as the city FIPS code are
 required:
 
 ```bash
-bna prepare all usa "santa rosa" "new mexico" 3570670
+bna prepare "united states" "santa rosa" "new mexico" 3570670
 ```
 
 For non US cities, only the name and the country are required:
 
 ```bash
-bna prepare all malta valletta
+bna prepare malta valletta
 ```
 
 However, specifying a region can speed up the process since it will reduce the
@@ -91,51 +164,80 @@ the province of Québec in Canada. If `québec` was omitted, it would download t
 map of the full country instead.
 
 ```bash
-bna prepare all canada "ancienne-lorette" québec
+bna prepare canada "ancienne-lorette" québec
 ```
 
 For non US cities, the FIPS code is always ignored.
 
 By default the files will be saved in their own sub-directory in the `./data`
 directory, relative to where the command was executed. This can be changed with
-the `--output-dir` option flag.
+the `--data-dir` option flag.
 
 For the 3 previous examples, the files will be located in:
 
 ```bash
 data
 ├── ancienne-lorette-quebec-canada
-├── santa-rosa-new-mexico-usa
+├── santa-rosa-new-mexico-united-states
 └── valletta-malta
 ```
 
 All of this should already be enough to gather the information required to
 perform an analysis, but a few more knobs are available to override the default
-values:
+values in the options.
 
-- **--speed-limit**: overrides the city speed limit.
-- **--block-size**: defines the size of a synthetic block (only used for non US
-  cities)
-- **--block-population**: defines the population of a synthetic block (only used
-  for non US cities)
-- **--census-year**: year to use to retrieve US census data (only used for US
-  cities)
+### options
+
+- `--block-population` _block-population_
+
+  - Population of a synthetic block for non-US cities.
+
+    Defaults to 100.
+
+- `--block-size` _block-size_
+
+  - Size of a synthetic block for non-US cities (in meters).
+
+    Defaults to 500.
+
+- `--city-speed-limit` _city-speed-limit_
+
+  - Override the default speed limit (in mph).
+
+    Defaults to 30.
+
+- `--data-dir` _data-dir_
+
+  - Directory where to store the files required for the analysis.
+
+    Defaults to `./data`.
+
+- `--lodes-year` _lodes-year_
+
+  - Year to use to retrieve US job data.
+
+    Defaults to 2022.
+
+- `--retries` _retries_
+
+  - Number of times to retry downloading files.
+
+    Defaults to 2.
 
 ## Import
 
-This command imports all files from the `prepare` command into the database.
+Import files from the `prepare` command into the database.
 
 The sub-command which is the most commonly used is `all`, but in case of
 exploration, a particular type of import can be specified: `jobs`,
 `neighborhood` and `osm`.
 
-Since they all work the same way, only the `all` sub-command will be described
-below.
+### import all
 
-### All
+Import all files into the database.
 
 ```bash
-Usage: bna import all [OPTIONS] COUNTRY CITY [STATE] [FIPS_CODE]
+bna import all [OPTIONS] COUNTRY CITY [STATE] [FIPS_CODE]
 ```
 
 Same conditions as before, `country` and `city` arguments are mandatory, while
@@ -147,18 +249,105 @@ guarantee correct results.
 :::
 
 In addition to these parameters, the directory where the input files were stored
-is also required and must be specified with the `--input-dir` option flag.
+is also required and must be specified with the `--data-dir` option flag.
 
 ```bash
-bna import all usa "santa rosa" "new mexico" 3570670 --input-dir data/santa-rosa-new-mexico-usa
+bna import all "united states" "santa rosa" "new mexico" 3570670 --data-dir data/santa-rosa-new-mexico-united-states
 ```
+
+#### options
+
+- `--buffer` _buffer_
+
+  - Define the buffer area
+
+    Defaults to 2680.
+
+- `--data-dir` _data-dir_
+
+  - Directory where the files to import are located.
+
+    This is usually the output directory of the `prepare` command.
+
+- `--database-url` _database-url_
+
+  - Set the database URL
+
+    May also be set with the `DATABASE_URL` environment variable.
+
+- `--lodes-year` _lodes-year_
+
+  - Year to use to retrieve US job data.
+
+    Defaults to 2022
+
+### import neighborhood
+
+Import neighborhood data.
+
+```bash
+bna import neighborhood [OPTIONS] COUNTRY CITY [REGION]
+```
+
+### import jobs
+
+Import US census job data.
+
+```bash
+bna import jobs [OPTIONS] STATE_ABBREVIATION
+```
+
+#### options
+
+- `--buffer` _buffer_
+
+  - Define the buffer area
+
+    Defaults to 2680.
+
+- `--data-dir` _data-dir_
+
+  - Directory where the files to import are located.
+
+    This is usually the output directory of the `prepare` command.
+
+- `--database-url` _database-url_
+
+  - Set the database URL
+
+    May also be set with the `DATABASE_URL` environment variable.
+
+### import osm
+
+Import OSM data.
+
+```bash
+bna import osm [OPTIONS] COUNTRY CITY [REGION] [FIPS_CODE]
+```
+
+#### options
+
+- `--data-dir` _data-dir_
+
+  - Directory where the files to import are located.
+
+    This is usually the output directory of the `prepare` command.
+
+- `--database-url` _database-url_
+
+  - Set the database URL
+
+    May also be set with the `DATABASE_URL` environment variable.
 
 ## Compute
 
-This is the command which actually computes the numbers.
+Compute the numbers.
+
+This is the command which actually computes the scores and generates the geojson
+files resulting from the analysis.
 
 ```bash
-Usage: bna compute [OPTIONS] COUNTRY CITY [STATE]
+bna compute [OPTIONS] COUNTRY CITY [REGION]
 ```
 
 <!-- prettier-ignore -->
@@ -167,10 +356,10 @@ guarantee correct results.
 :::
 
 In addition to these parameters, the directory where the files were stored is
-also required and must be specified with the `--input-dir` option flag.
+also required and must be specified with the `--data-dir` option flag.
 
 ```bash
-bna compute usa "santa rosa" "new mexico" --input-dir data/santa-rosa-new-mexico-usa
+bna compute "united states" "santa rosa" "new mexico" --data-dir data/santa-rosa-new-mexico-united-states
 ```
 
 Several parts are available for computing:
@@ -178,30 +367,58 @@ Several parts are available for computing:
 - features
 - stress
 - connectivity
-- measure (available in experimental mode only, to use set the
-  `BNA_EXPERIMENTAL` environment variable to `1`)
+- measure
 
 It is possible to use only some parts for the analysis. In this case, the
 `--with-parts` option can be used to specify which part to compute.
 
 ```bash
-bna compute --with-parts stress usa "santa rosa" "new mexico" --input-dir data/santa-rosa-new-mexico-usa
+bna compute --with-parts stress "united states" "santa rosa" "new mexico" --data-dir data/santa-rosa-new-mexico-united-states
 ```
 
 You can also specify multiple parts by repeating the `--with-parts` option:
 
 ```bash
-bna compute --with-parts stress --with-parts connectivity usa "santa rosa" "new mexico"
---input-dir data/santa-rosa-new-mexico-usa
+bna compute --with-parts stress --with-parts connectivity "united states" "santa rosa" "new mexico"
+--data-dir data/santa-rosa-new-mexico-united-states
 ```
 
 If the `--with-parts` option is not specified, all the parts will be computed.
 
 All the results will be stored in various tables in the database.
 
+### options
+
+- `--buffer` _buffer_
+
+  - Define the buffer area
+
+    Defaults to 2680.
+
+- `--data-dir` _data-dir_
+
+  - Directory where the files to import are located.
+
+    This is usually the output directory of the `prepare` command.
+
+- `--database-url` _database-url_
+
+  - Set the database URL
+
+    May also be set with the `DATABASE_URL` environment variable.
+
+- `--with-parts` _parts_
+
+  - Parts of the analysis to compute.
+
+    Valid values are: `features`, `stress`, `connectivity`, and `measure`. This
+    option can be repeated if multiple parts are needed.
+
+    Defaults to all the parts (features, stress, connectivity, measure).
+
 ## Export
 
-This command exports the tables from the database.
+Export the tables from the database.
 
 Several exporters are available to export the results that where previously
 computed.
@@ -240,94 +457,146 @@ The following files will be created from the PostgreSQL tables:
 └── residential_speed_limit.csv
 ```
 
-### local-custom
+### export local
 
-This sub-command exports the results to a local directory.
-
-```bash
-Usage: bna export local [OPTIONS] EXPORT_DIR
-```
-
-Example:
+Export the results to a local directory following the PeopleForBikes [calver]
+convention.
 
 ```bash
-bna export local ~/bna/santa-rosa-new-mexico-usa
-```
-
-The directories will be created if they do not exist.
-
-### local
-
-This sub-command exports the results to a local directory created based on the
-PeopleForBikes convention and [calver] versioning.
-
-```bash
-Usage: bna export local-calver [OPTIONS] COUNTRY CITY [REGION] [EXPORT_DIR]
-```
-
-The calver [scheme](https://calver.org/#scheme) used here is `YY.MINOR[.MICRO]`,
-similar to what [pip](https://pip.pypa.io/en/stable/news/), the official package
-manager for Python uses.
-
-```bash
-bna export local-calver usa "santa rosa" "new mexico"
+bna export local [OPTIONS] COUNTRY CITY [REGION] [EXPORT_DIR]
 ```
 
 The final directory structure follows the PeopleForBikes convention
-`<output_dir>/<country>/<region>/<city>/<calver>` and the structure will look
-like this:
+`<export_dir>/<country>/<region>/<city>/<calver_version>`.
+
+The directories will be created if they do not exist.
+
+The calver [scheme](https://calver.org/#scheme) used here is `YY.0M[.MINOR]`,
+similar to what [Ubuntu](https://en.wikipedia.org/wiki/Ubuntu_version_history)
+does.
+
+#### Example
+
+Running:
 
 ```bash
-results
-└── usa
-    └── new mexico
-        └── santa rosa
-            └── 23.9
-              └── ...
+bna export local "united states" "santa rosa" "new mexico" ~/bna/
 ```
+
+Would export the results into `~/bna/united states/new mexico/santa rosa/25.06`
+if the analysis was run in June 2025 for the first time.
+
+#### options
+
+- `--database-url` _database-url_
+
+  - Set the database URL
+
+    May also be set with the `DATABASE_URL` environment variable.
+
+- `--with-bundle`
+
+  - Add a zip archive which bundles the result files altogether.
+
+    Defaults to no bundle.
+
+### export local-custom
+
+Export results to a custom directory.
+
+```bash
+bna export local-custom [OPTIONS] EXPORT_DIR
+```
+
+#### options
+
+- `--database-url` _database-url_
+
+  - Set the database URL
+
+    May also be set with the `DATABASE_URL` environment variable.
+
+- `--with-bundle`
+
+  - Add a zip archive which bundles the result files altogether.
+
+    Defaults to no bundle.
 
 ### S3
 
-This sub-command exports the result to an AWS S3 bucket, respecting the calver
-representation.
+Export the result to an AWS S3 bucket, respecting the calver representation.
 
 ```bash
-Usage: bna export s3 [OPTIONS] BUCKET_NAME COUNTRY CITY [REGION]
+bna export s3 [OPTIONS] BUCKET_NAME COUNTRY CITY [REGION]
 ```
 
 Therefore the output is similar to the `local` export:
 
 ```bash
 my_s3_bucket
-└── usa
+└── united states
     └── new mexico
         └── santa rosa
             └── 23.9
               └── ...
 ```
 
+#### options
+
+- `--database-url` _database-url_
+
+  - Set the database URL
+
+    May also be set with the `DATABASE_URL` environment variable.
+
+- `--with-bundle`
+
+  - Add a zip archive which bundles the result files altogether.
+
+    Defaults to no bundle.
+
 ### S3 Custom
 
-This sub-command exports the results to a custom AWS S3 bucket.
+Export the results to a custom AWS S3 bucket.
 
 ```bash
-Usage: bna export s3-custom [OPTIONS] BUCKET_NAME S3_DIR
+bna export s3-custom [OPTIONS] BUCKET_NAME
 ```
 
 And the output could look like that:
 
 ```bash
 my_s3_bucket
-└── usa-new mexico-santa rosa-23.9
+└── united-states-new mexico-santa rosa-23.9
   └── ...
 ```
 
+#### options
+
+- `--database-url` _database-url_
+
+  - Set the database URL
+
+    May also be set with the `DATABASE_URL` environment variable.
+
+- `--s3-dir` _s3-dir_
+
+  - Directory where to store the results within the S3 bucket.
+
+    Defaults to the root of the bucket.
+
+- `--with-bundle`
+
+  - Add a zip archive which bundles the result files altogether.
+
+    Defaults to no bundle.
+
 ## Run
 
-This command runs the full analysis in one command.
+Run the full analysis in one command.
 
 ```bash
-Usage: bna run [OPTIONS] COUNTRY CITY [STATE] [FIPS_CODE]
+bna run [OPTIONS] COUNTRY CITY [STATE] [FIPS_CODE]
 ```
 
 Basically this command is a combination of the `prepare`, `import`, `compute`
@@ -336,49 +605,207 @@ and `export` sub-commands.
 It still requires a configured, up and running database in order to complete.
 
 ```bash
-bna run usa "santa rosa" "new mexico" 3570670
+bna run "united states" "santa rosa" "new mexico" 3570670
 ```
 
-Like the for the [compute](#compute) command, the parts to be analyzed may be
-specified individually with the `--with-parts` argument.
+### options
+
+- `--block-population` _block-population_
+
+  - Population of a synthetic block for non-US cities.
+
+    Defaults to 100.
+
+- `--block-size` _block-size_
+
+  - Size of a synthetic block for non-US cities (in meters).
+
+    Defaults to 500.
+
+- `--buffer` _buffer_
+
+  - Define the buffer area
+
+    Defaults to 2680.
+
+- `--city-speed-limit` _city-speed-limit_
+
+  - Override the default speed limit (in mph).
+
+    Defaults to 30.
+
+- `--data-dir` _data-dir_
+
+  - Directory where to store the files required for the analysis.
+
+    Defaults to `./data`.
+
+- `--database-url` _database-url_
+
+  - Set the database URL
+
+    May also be set with the `DATABASE_URL` environment variable.
+
+- `--lodes-year` _lodes-year_
+
+  - Year to use to retrieve US job data.
+
+    Defaults to 2022.
+
+- `--max-trip-distance` _max-trip-distance_
+
+  - Distance maximal of a trip.
+
+    Defaults to 2680.
+
+- `--retries` _retries_
+
+  - Number of times to retry downloading files.
+
+    Defaults to 2.
+
+- `--s3-bucket` _s3-bucket_
+
+  - S3 bucket to use to store the result files.
+
+- `--s3-dir` _s3-dir_
+
+  - Directory where to store the results within the S3 bucket.
+
+    Defaults to the root of the bucket.
+
+- `--with-bundle`
+
+  - Add a zip archive which bundles the result files altogether.
+
+    Defaults to no bundle.
+
+- `--with-export` _with-export_
+
+  - Export strategy
+
+    Valid values are: `none` `local` `s3` `s3_custom`.
+
+    Defaults to `local`.
+
+- `--with-parts` _parts_
+
+  - Parts of the analysis to compute.
+
+    Valid values are: `features`, `stress`, `connectivity`, and `measure`. This
+    option can be repeated if multiple parts are needed.
+
+    Defaults to all the parts (features, stress, connectivity, measure).
 
 ## Run-with
 
-This command provides alternative ways to run the analysis.
-
-### Compare
-
-This sub-command runs the analysis with both the brokenspoke-analyzer and the
-original BNA, then compares the results.
-
-```bash
-Usage: bna run-with compare [OPTIONS] COUNTRY CITY [STATE] [FIPS_CODE]
-```
+Provide alternative ways to run the analysis.
 
 ### Compose
 
-This sub-command manages the Docker Compose environment automatically.
+Manage the Docker Compose environment automatically.
 
 ```bash
-Usage: bna run-with compose [OPTIONS] COUNTRY CITY [STATE] [FIPS_CODE]
+bna run-with compose [OPTIONS] COUNTRY CITY [STATE] [FIPS_CODE]
 ```
 
 It combines the `configure`, `prepare`, `import`, `compute`, `export`
 sub-commands and wraps them into the setup and tear-down of the Docker Compose
 environment.
 
-Like the for the [compute](#compute) command, the parts to be analyzed may be
-specified individually with the `--with-parts` argument.
+#### options
 
-### Original-BNA
+- `--block-population` _block-population_
 
-This sub-command runs an anlalysis using the original BNA.
+  - Population of a synthetic block for non-US cities.
 
-```bash
-Usage: bna run-with original-bna [OPTIONS] CITY_SHP PFB_OSM_FILE [CITY_FIPS]
-```
+    Defaults to 100.
 
-It runs the Docker container of the original BNA with the appropriate parameters
-for the city to analyze.
+- `--block-size` _block-size_
+
+  - Size of a synthetic block for non-US cities (in meters).
+
+    Defaults to 500.
+
+- `--buffer` _buffer_
+
+  - Define the buffer area
+
+    Defaults to 2680.
+
+- `--city-speed-limit` _city-speed-limit_
+
+  - Override the default speed limit (in mph).
+
+    Defaults to 30.
+
+- `--data-dir` _data-dir_
+
+  - Directory where to store the files required for the analysis.
+
+    Defaults to `./data`.
+
+- `--database-url` _database-url_
+
+  - Set the database URL
+
+    May also be set with the `DATABASE_URL` environment variable.
+
+- `--export-dir` _export-dir_
+
+  - Directory where to export the results.
+
+    Defaults to `./results`
+
+- `--lodes-year` _lodes-year_
+
+  - Year to use to retrieve US job data.
+
+    Defaults to 2022.
+
+- `--max-trip-distance` _max-trip-distance_
+
+  - Distance maximal of a trip.
+
+    Defaults to 2680.
+
+- `--retries` _retries_
+
+  - Number of times to retry downloading files.
+
+    Defaults to 2.
+
+- `--s3-bucket` _s3-bucket_
+
+  - S3 bucket to use to store the result files.
+
+- `--s3-dir` _s3-dir_
+
+  - Directory where to store the results within the S3 bucket.
+
+    Defaults to the root of the bucket.
+
+- `--with-bundle`
+
+  - Add a zip archive which bundles the result files altogether.
+
+    Defaults to no bundle.
+
+- `--with-export` _with-export_
+
+  - Export strategy
+
+    Valid values are: `none` `local` `s3` `s3_custom`.
+
+    Defaults to `local`.
+
+- `--with-parts` _parts_
+
+  - Parts of the analysis to compute.
+
+    Valid values are: `features`, `stress`, `connectivity`, and `measure`. This
+    option can be repeated if multiple parts are needed.
+
+    Defaults to all the parts (features, stress, connectivity, measure).
 
 [calver]: https://calver.org
