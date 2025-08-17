@@ -31,8 +31,8 @@ AWS_REGION = "AWS_REGION"
 BNA_CACHE_AWS_S3_BUCKET = "BNA_CACHE_AWS_S3_BUCKET"
 
 
-@app.command()
-def all(
+@app.command(name="prepare")
+def prepare_cmd(
     country: common.Country,
     city: common.City,
     region: common.Region = None,
@@ -41,13 +41,13 @@ def all(
     city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
     lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
-    output_dir: common.OutputDir = common.DEFAULT_OUTPUT_DIR,
+    data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
     retries: common.Retries = common.DEFAULT_RETRIES,
 ) -> None:
     """Prepare all the files required for an analysis."""
     # Make MyPy happy.
-    if not output_dir:
-        raise ValueError("`output_dir` must be set")
+    if not data_dir:
+        raise ValueError("`data_dir` must be set")
     if not city_speed_limit:
         raise ValueError("`city_speed_limit` must be set")
     if not block_size:
@@ -70,13 +70,13 @@ def all(
         # Ensure FIPS code has the default value for non-US cities.
         fips_code = common.DEFAULT_CITY_FIPS_CODE
 
-    logger.debug(f"{output_dir=}")
+    logger.debug(f"{data_dir=}")
     asyncio.run(
         prepare_(
             country=country,
             region=region,
             city=city,
-            output_dir=output_dir,
+            data_dir=data_dir,
             city_speed_limit=city_speed_limit,
             block_size=block_size,
             block_population=block_population,
@@ -87,14 +87,15 @@ def all(
 
 
 async def prepare_(
-    country: str,
-    city: str,
-    output_dir: pathlib.Path,
-    city_speed_limit: int,
-    block_size: int,
+    *,
     block_population: int,
-    retries: int,
+    block_size: int,
+    city_speed_limit: int,
+    city: str,
+    country: str,
+    data_dir: pathlib.Path,
     lodes_year: int,
+    retries: int,
     region: typing.Optional[str] = None,
 ) -> None:
     """Prepare and kicks off the analysis."""
@@ -102,9 +103,9 @@ async def prepare_(
     _, _, slug = analysis.osmnx_query(country, city, region)
 
     # Prepare the output directory.
-    output_dir /= slug
-    output_dir.mkdir(parents=True, exist_ok=True)
-    logger.info(f"{output_dir=}")
+    data_dir /= slug
+    data_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(f"{data_dir=}")
 
     # Prepare the Rich output.
     console = rich.get_console()
@@ -120,8 +121,8 @@ async def prepare_(
     console.log(
         f"[green]Querying OSM to retrieve {city} boundaries...",
     )
-    slug = retryer(analysis.retrieve_city_boundaries, output_dir, country, city, region)
-    boundary_file = output_dir / f"{slug}.shp"
+    slug = retryer(analysis.retrieve_city_boundaries, data_dir, country, city, region)
+    boundary_file = data_dir / f"{slug}.shp"
 
     # Download the OSM region file.
     osm_region = region if region else country
@@ -132,22 +133,18 @@ async def prepare_(
         try:
             if not region:
                 raise ValueError
-            region_file_path = retryer(
-                analysis.retrieve_region_file, region, output_dir
-            )
+            region_file_path = retryer(analysis.retrieve_region_file, region, data_dir)
         except ValueError:
-            region_file_path = retryer(
-                analysis.retrieve_region_file, country, output_dir
-            )
+            region_file_path = retryer(analysis.retrieve_region_file, country, data_dir)
     region_file_path_md5 = pathlib.Path(str(region_file_path) + ".md5")
     if not utils.file_checksum_ok(region_file_path, region_file_path_md5):
         raise ValueError("Invalid OSM region file")
 
     # Reduce the osm file with osmium.
     console.log(f"[green]Reducing the OSM file for {city} with osmium...")
-    polygon_file = output_dir / f"{slug}.geojson"
+    polygon_file = data_dir / f"{slug}.geojson"
     pfb_osm_file = pathlib.Path(f"{slug}.osm")
-    analysis.prepare_city_file(output_dir, region_file_path, polygon_file, pfb_osm_file)
+    analysis.prepare_city_file(data_dir, region_file_path, polygon_file, pfb_osm_file)
 
     # Retrieve the state info if needed.
     state_abbrev, state_fips, _ = analysis.derive_state_info(region)
@@ -164,13 +161,13 @@ async def prepare_(
 
         # Simulate the census blocks.
         console.log("[green]Simulating census blocks...")
-        analysis.simulate_census_blocks(output_dir, synthetic_population)
+        analysis.simulate_census_blocks(data_dir, synthetic_population)
 
         # Change the speed limit.
         console.log(
             f"[green]Adjusting default city speed limit to {city_speed_limit} km/h..."
         )
-        analysis.change_speed_limit(output_dir, city, state_abbrev, city_speed_limit)
+        analysis.change_speed_limit(data_dir, city, state_abbrev, city_speed_limit)
     else:
         # Prepare the caching strategy.
         cache_aws_s3_bucket = None
@@ -193,7 +190,7 @@ async def prepare_(
         logger.debug(f"{caching_strategy=}")
         logger.debug(f"{cache_aws_s3_bucket=}")
         bna_store = datastore.BNADataStore(
-            output_dir, caching_strategy, s3_bucket=cache_aws_s3_bucket
+            data_dir, caching_strategy, s3_bucket=cache_aws_s3_bucket
         )
 
         # Fetch the data.
