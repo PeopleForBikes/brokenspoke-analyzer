@@ -509,28 +509,29 @@ def all(
 ) -> None:
     """Compute all features."""
     parts(
-        database_url=database_url,
-        sql_script_dir=sql_script_dir,
-        output_srid=output_srid,
-        state_default_speed=state_default_speed,
-        city_default_speed=city_default_speed,
-        import_jobs=import_jobs,
         buffer=buffer,
-        max_trip_distance=max_trip_distance,
+        city_default_speed=city_default_speed,
         compute_parts=constant.COMPUTE_PARTS_ALL,
+        database_url=database_url,
+        import_jobs=import_jobs,
+        max_trip_distance=max_trip_distance,
+        output_srid=output_srid,
+        sql_script_dir=sql_script_dir,
+        state_default_speed=state_default_speed,
     )
 
 
 def parts(
+    *,
     database_url: common.DatabaseURL,
     sql_script_dir: pathlib.Path,
     output_srid: int,
-    state_default_speed: int | None,
-    city_default_speed: int | None,
-    import_jobs: bool,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
-    max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
+    city_default_speed: int | None,
     compute_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
+    import_jobs: bool,
+    max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
+    state_default_speed: int | None,
 ) -> None:
     """Cherry pick the parts of the analysis to compute."""
     # Make mypy happy.
@@ -573,10 +574,7 @@ def parts(
         )
 
     # Compute mileage.
-    if (
-        constant.ComputePart.MEASURE in compute_parts
-        and os.getenv("BNA_EXPERIMENTAL", "0") == "1"
-    ):
+    if constant.ComputePart.MEASURE in compute_parts:
         logger.info("Compute mileage")
         measure(
             engine,
