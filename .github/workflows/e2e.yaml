@@ -51,13 +51,21 @@ jobs:
             osm2pgrouting osm2pgsql osmctools osmium-tool postgresql-client postgis
       - name: Setup the project
         run: uv sync --all-extras --dev
-      - name: Run analysis
+
+      - name: Configure Docker
         run: |
           uv run bna configure docker
-          # uv run bna run "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
-          uv run bna prepare all "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
-          uv run bna import all "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}"  "${{ env.TEST_FIPS }}" --input-dir data/santa-rosa-new-mexico-united-states
-          uv run bna compute "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" --input-dir data/santa-rosa-new-mexico-united-states
+      - name: Prepare the files for the analysis
+        run: |
+          uv run bna prepare "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
+
+      - name: Import the files for the analysis
+        run: |
+          uv run bna import all "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}"  "${{ env.TEST_FIPS }}" --data-dir data/santa-rosa-new-mexico-united-states
+
+      - name: Compute the analysis
+        run: |
+          uv run bna compute "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" --data-dir data/santa-rosa-new-mexico-united-states
 
       - name: Run integration tests
         run: |
