@@ -7,7 +7,9 @@ uv run python utils/bna-batch.py
 ```
 ## Usage
 
+```bash
 bna-batch.py [OPTIONS] [BATCH_FILE]
+```
 
 ### options
 
@@ -15,7 +17,7 @@ bna-batch.py [OPTIONS] [BATCH_FILE]
 
     - CSV file containing the cities to process.
 
-      Defaults to `cities.csv`.
+      Defaults to `./cities.csv`.
 
 - `--lodes-year` _lodes-year_
     - Year to use to retrieve US job data.
@@ -138,11 +140,11 @@ def main(
                     )
                 except Exception as e:
                     print(e)
+                    return
 
             # Prepare the data directory ahead of the analysis.
-            data_dir = DATA_DIR
             _, slug = analysis.osmnx_query(country, city, region)
-            data_dir /= slug
+            data_dir = DATA_DIR / slug
             data_dir.mkdir(parents=True, exist_ok=True)
 
             # Copy the OSM data into the data directory.
