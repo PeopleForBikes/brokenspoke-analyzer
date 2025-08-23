@@ -42,10 +42,12 @@ def compose(
     block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
     city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
+    data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
     export_dir: common.ExportDirOpt = common.DEFAULT_EXPORT_DIR,
     lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
-    data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
+    mirror: common.Mirror = None,
+    no_cache: common.NoCache = False,
     retries: common.Retries = common.DEFAULT_RETRIES,
     s3_bucket: typing.Optional[str] = None,
     with_bundle: typing.Optional[bool] = False,
@@ -62,23 +64,25 @@ def compose(
         )
         configure.docker(database_url)
         export_dir_: typing.Optional[pathlib.Path] = run_(
-            database_url=database_url,
-            country=country,
-            city=city,
-            region=region,
-            data_dir=data_dir,
-            export_dir=export_dir,
-            fips_code=fips_code,
+            block_population=block_population,
+            block_size=block_size,
             buffer=buffer,
             city_speed_limit=city_speed_limit,
-            block_size=block_size,
-            block_population=block_population,
+            city=city,
+            country=country,
+            data_dir=data_dir,
+            database_url=database_url,
+            export_dir=export_dir,
+            fips_code=fips_code,
             lodes_year=lodes_year,
-            retries=retries,
             max_trip_distance=max_trip_distance,
-            with_export=with_export,
+            mirror=mirror,
+            no_cache=no_cache,
+            region=region,
+            retries=retries,
             s3_bucket=s3_bucket,
             with_bundle=with_bundle,
+            with_export=with_export,
             with_parts=with_parts,
         )
     finally:
@@ -92,123 +96,11 @@ def compose(
     return export_dir_
 
 
-@app.command()
-def original_bna(
-    city_shp: pathlib.Path,
-    pfb_osm_file: pathlib.Path,
-    region: common.Region = None,
-    data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
-    docker_image: common.DockerImage = common.DEFAULT_DOCKER_IMAGE,
-    container_name: common.ContainerName = common.DEFAULT_CONTAINER_NAME,
-    city_fips: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
-) -> pathlib.Path:
-    """Use the original BNA Docker image to run the analysis."""
-    # Make mypy happy.
-    if not data_dir:
-        raise ValueError("`data_dir` must be set")
-    if not docker_image:
-        raise ValueError("`docker_image` must be set")
-    if not container_name:
-        raise ValueError("`container_name` must be set")
-
-    console = Console()
-    with console.status("[green]Running the full analysis (may take a while)..."):
-        state_abbrev, state_fips = (
-            analysis.state_info(region)
-            if region
-            else (
-                runner.NON_US_STATE_ABBREV,
-                runner.NON_US_STATE_FIPS,
-            )
-        )
-        logger.debug(f"{state_abbrev=} | {state_fips=}")
-        runner.run_analysis(
-            state_abbrev,
-            state_fips,
-            city_shp,
-            pfb_osm_file,
-            data_dir,
-            docker_image,
-            container_name,
-            city_fips=city_fips,
-        )
-        console.log(f"Analysis for {city_shp} complete.")
-
-    # Grab the last result directory.
-    result_dirs = list(data_dir.glob("local-analysis-*"))
-    result_dirs.sort()
-    return result_dirs[-1]
-
-
-@app.command()
-def compare(
-    country: common.Country,
-    city: common.City,
-    region: common.Region = None,
-    data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
-    fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
-    buffer: common.Buffer = common.DEFAULT_BUFFER,
-    city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
-    block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
-    block_population: common.BlockPopulation = common.DEFAULT_BLOCK_POPULATION,
-    lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
-    retries: common.Retries = common.DEFAULT_RETRIES,
-    max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
-    with_bundle: typing.Optional[bool] = False,
-) -> pd.DataFrame:
-    """Run the analysis using the original BNA and teh brokenspoke-analyzer."""
-    # Make mypy happy.
-    if not data_dir:
-        raise ValueError("`data_dir` must be set")
-
-    logger.info("Run with compose")
-    brokenspoke_export_dir = compose(
-        country=country,
-        city=city,
-        region=region,
-        data_dir=data_dir,
-        fips_code=fips_code,
-        buffer=buffer,
-        city_speed_limit=city_speed_limit,
-        block_size=block_size,
-        block_population=block_population,
-        lodes_year=lodes_year,
-        retries=retries,
-        max_trip_distance=max_trip_distance,
-        with_export=exporter.Exporter.local,
-        with_bundle=with_bundle,
-    )
-    if brokenspoke_export_dir is None:
-        raise ValueError("the export must be specified")
-
-    logger.info("Run with original BNA")
-    _, _, slug = analysis.osmnx_query(country, city, region)
-    city_shp = data_dir / f"{slug}.shp"
-    pfb_osm_file = city_shp.with_suffix(".osm")
-    original_export_dir = original_bna(
-        region=region,
-        data_dir=data_dir / slug,
-        city_shp=city_shp,
-        pfb_osm_file=pfb_osm_file,
-        city_fips=fips_code,
-        docker_image=common.DEFAULT_DOCKER_IMAGE,
-        container_name=common.DEFAULT_CONTAINER_NAME,
-    )
-
-    logger.info("Compare the results")
-    brokenspoke_scores = brokenspoke_export_dir / "neighborhood_overall_scores.csv"
-    original_scores = original_export_dir / "neighborhood_overall_scores.csv"
-    output_csv = data_dir / slug / f"{slug}.csv"
-    logger.debug(f"{output_csv=}")
-    return utils.compare_bna_results(brokenspoke_scores, original_scores, output_csv)
-
-
 def run_(
     *,
-    database_url: str,
-    country: str,
     city: str,
-    region: typing.Optional[str] = None,
+    country: str,
+    database_url: str,
     block_population: typing.Optional[int] = common.DEFAULT_BLOCK_POPULATION,
     block_size: typing.Optional[int] = common.DEFAULT_BLOCK_SIZE,
     buffer: typing.Optional[int] = common.DEFAULT_BUFFER,
@@ -218,6 +110,9 @@ def run_(
     fips_code: typing.Optional[str] = common.DEFAULT_CITY_FIPS_CODE,
     lodes_year: typing.Optional[int] = common.DEFAULT_LODES_YEAR,
     max_trip_distance: typing.Optional[int] = common.DEFAULT_MAX_TRIP_DISTANCE,
+    mirror: common.Mirror = None,
+    no_cache: common.NoCache = False,
+    region: typing.Optional[str] = None,
     retries: typing.Optional[int] = common.DEFAULT_RETRIES,
     s3_bucket: typing.Optional[str] = None,
     s3_dir: typing.Optional[pathlib.Path] = None,
@@ -268,9 +163,11 @@ def run_(
         city_speed_limit=city_speed_limit,
         city=city,
         country=country,
+        data_dir=data_dir,
         fips_code=fips_code,
         lodes_year=lodes_year,
-        data_dir=data_dir,
+        mirror=mirror,
+        no_cache=no_cache,
         region=region,
         retries=retries,
     )

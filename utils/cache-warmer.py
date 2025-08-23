@@ -23,14 +23,14 @@ from loguru import logger
 
 from brokenspoke_analyzer.core import (
     datastore,
-    utils,
+    file_utils,
 )
 
 
 async def main():
     """Define the main function."""
     bna_store = datastore.BNADataStore(
-        pathlib.Path(utils.get_user_cache_dir()),
+        pathlib.Path(file_utils.get_user_cache_dir()),
         # datastore.CacheType.USER_CACHE,
         datastore.CacheType.AWS_S3,
         s3_bucket=os.getenv("BNA_CACHE_AWS_S3_BUCKET"),
@@ -59,7 +59,7 @@ async def main():
 async def main_2020():
     """Define the main function for  caching the 2020 files."""
     bna_store = datastore.BNADataStore(
-        pathlib.Path(utils.get_user_cache_dir()),
+        pathlib.Path(file_utils.get_user_cache_dir()),
         # datastore.CacheType.USER_CACHE,
         datastore.CacheType.AWS_S3,
         s3_bucket=os.getenv("BNA_CACHE_AWS_S3_BUCKET"),
