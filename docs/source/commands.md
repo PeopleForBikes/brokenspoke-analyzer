@@ -200,6 +200,16 @@ values in the options.
 
     Defaults to 2022.
 
+- `--mirror` _mirror_
+  - Use a mirror to fetch the US census files.
+
+    Defaults to `None`, meaning it fetches the data from the US census sites.
+
+- `--no-cache`
+  - Disable the cache folder.
+
+    Defaults to `False`.
+
 - `--retries` _retries_
   - Number of times to retry downloading files.
 
@@ -609,6 +619,16 @@ bna run "united states" "santa rosa" "new mexico" 3570670
 
     Defaults to 2680.
 
+- `--mirror` _mirror_
+  - Use a mirror to fetch the US census files.
+
+    Defaults to `None`, meaning it fetches the data from the US census sites.
+
+- `--no-cache`
+  - Disable the cache folder.
+
+    Defaults to `False`.
+
 - `--retries` _retries_
   - Number of times to retry downloading files.
 
@@ -705,6 +725,16 @@ environment.
 
     Defaults to 2680.
 
+- `--mirror` _mirror_
+  - Use a mirror to fetch the US census files.
+
+    Defaults to `None`, meaning it fetches the data from the US census sites.
+
+- `--no-cache`
+  - Disable the cache folder.
+
+    Defaults to `False`.
+
 - `--retries` _retries_
   - Number of times to retry downloading files.
 
@@ -737,5 +767,36 @@ environment.
     option can be repeated if multiple parts are needed.
 
     Defaults to all the parts (features, stress, connectivity, measure).
+
+## Cache
+
+Manage the cache.
+
+### clean
+
+Clean the cache directory.
+
+```bash
+bna cache clean [OPTIONS]
+```
+
+#### options
+
+- `--dry-run`, `-n`
+  - Dry run.
+
+    Does not actually perform any action, but show the simulated results.
+
+- `--quiet`, `-q`
+  - Quiet mode.
+    - Does not display any information on the output.
+
+### dir
+
+Show the cache directory.
+
+```bash
+bna cache dir [OPTIONS]
+```
 
 [calver]: https://calver.org

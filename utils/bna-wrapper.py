@@ -143,7 +143,7 @@ def run_with_docker(
             "DATABASE_URL",
         ]
         docker_image = [
-            "ghcr.io/peopleforbikes/brokenspoke-analyzer:2.5.0",
+            "ghcr.io/peopleforbikes/brokenspoke-analyzer:2.6.3",
             "-vv",
         ]
         subprocess.run(

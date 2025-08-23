@@ -33,9 +33,6 @@ BlockSize = Annotated[
     typer.Option(help="size of a synthetic block for non-US cities (in meters)"),
 ]
 Buffer = Annotated[typing.Optional[int], typer.Option(help="define the buffer area")]
-LODESYear = Annotated[
-    typing.Optional[int], typer.Option(help="year to use to retrieve US job data")
-]
 City = Annotated[str, typer.Argument()]
 ComputeParts = Annotated[
     typing.Optional[typing.List[constant.ComputePart]],
@@ -69,7 +66,17 @@ export_dir_kwargs = dict(
 ExportDirArg = Annotated[pathlib.Path, typer.Argument(**export_dir_kwargs)]
 ExportDirOpt = Annotated[pathlib.Path, typer.Option(**export_dir_kwargs)]
 FIPSCode = Annotated[typing.Optional[str], typer.Argument(help="US city FIPS code")]
+LODESYear = Annotated[
+    typing.Optional[int], typer.Option(help="year to use to retrieve US job data")
+]
 MaxTripDistance = Annotated[typing.Optional[int], typer.Option()]
+Mirror = Annotated[
+    typing.Optional[str],
+    typer.Option(help="use a mirror to fetch the US census files"),
+]
+NoCache = Annotated[
+    typing.Optional[bool], typer.Option("--no-cache", help="disable the cache folder")
+]
 Region = Annotated[
     typing.Optional[str],
     typer.Argument(help="world region (e.g., state, province, community, etc...)"),
