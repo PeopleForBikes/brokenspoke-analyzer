@@ -12,6 +12,8 @@ from rich.logging import RichHandler
 from typing_extensions import Annotated
 
 from brokenspoke_analyzer.cli import (
+    cache,
+    common,
     compute,
     configure,
     export,
@@ -89,6 +91,7 @@ def callback(
 
 
 # Register the sub-commands.
+app.add_typer(cache.app, name="cache", help="Manage bna's cache.")
 app.add_typer(compute.app, help="Compute the analysis results.")
 app.add_typer(
     configure.app, name="configure", help="Configure a database for an analysis."
