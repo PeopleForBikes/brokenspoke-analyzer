@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import enum
 import pathlib
+import typing
 from collections import abc
 from typing import TYPE_CHECKING
 
@@ -14,6 +15,7 @@ from obstore.store import (
 )
 
 from brokenspoke_analyzer.core import (
+    file_utils,
     utils,
 )
 
@@ -23,7 +25,8 @@ if TYPE_CHECKING:
 
 CHUNK_SIZE = 5 * 1024 * 1024  # 5MB
 PFB_PUBLIC_DOCUMENTS_URL = "https://s3.amazonaws.com/pfb-public-documents"
-TIGER_URL = "https://www2.census.gov/geo/tiger"
+LODES_202x_URL = "https://lehd.ces.census.gov/data/lodes/LODES8/"
+TIGER_2020_URL = "https://www2.census.gov/geo/tiger/TIGER2020/TABBLOCK20"
 
 
 def exists(store: ObjectStore, path: str) -> bool:
@@ -55,7 +58,6 @@ class CacheType(enum.Enum):
 
     NONE = 0
     USER_CACHE = 1
-    AWS_S3 = 2
 
 
 class BNADataStore:
@@ -66,7 +68,7 @@ class BNADataStore:
         path: pathlib.Path,
         cache_type: CacheType,
         *,
-        s3_bucket: str | None = None,
+        mirror: typing.Optional[str] = None,
     ):
         """
         Initialize the BNA data store.
@@ -74,7 +76,10 @@ class BNADataStore:
         This will create or load the data and the cache stores.
 
         The data store is ALWAYS a local directory.
-        The cache store location varies depending on the strategy.
+        The cache store location varies depending on the OS, but is always the
+        user cache directory.
+
+        If a mirror is specified, it is used instead of the original URL.
 
         """
         # `path` MUST start with '/'.
@@ -94,10 +99,11 @@ class BNADataStore:
             case CacheType.NONE:
                 url = f"file://{path}"
             case CacheType.USER_CACHE:
-                url = f"file://{utils.get_user_cache_dir()}"
-            case CacheType.AWS_S3:
-                url = f"s3://{s3_bucket}"
+                url = f"file://{file_utils.get_user_cache_dir()}"
         self.cache = from_url(url, client_options=client_options)  # type: ignore
+
+        # Set the mirror if any was provided.
+        self.mirror = mirror
 
     def is_cached(self, path: str) -> bool:
         """Check whether a file already exists in the cache store."""
@@ -138,13 +144,15 @@ class BNADataStore:
     async def download_state_speed_limits(self, session: aiohttp.ClientSession) -> None:
         """Download the state speed limits."""
         state_speed_csv = "state_fips_speed.csv"
-        url = f"{PFB_PUBLIC_DOCUMENTS_URL}/{state_speed_csv}"
+        root_url = self.mirror if self.mirror else PFB_PUBLIC_DOCUMENTS_URL
+        url = f"{root_url}/{state_speed_csv}"
         await self.fetch(session, url, state_speed_csv)
 
     async def download_city_speed_limits(self, session: aiohttp.ClientSession) -> None:
         """Download the city speed limits."""
         city_speed_csv = "city_fips_speed.csv"
-        url = f"{PFB_PUBLIC_DOCUMENTS_URL}/{city_speed_csv}"
+        root_url = self.mirror if self.mirror else PFB_PUBLIC_DOCUMENTS_URL
+        url = f"{root_url}/{city_speed_csv}"
         await self.fetch(session, url, city_speed_csv)
 
     async def download_lodes_data(
@@ -182,23 +190,25 @@ class BNADataStore:
         More information about the formast can be found on the website:
         https://lehd.ces.census.gov/data/#lodes.
         """
-        lehd_url = f"https://lehd.ces.census.gov/data/lodes/LODES8/{state.lower()}/od"
+        lodes_url = f"{LODES_202x_URL}/{state.lower()}/od"
+        root_url = self.mirror if self.mirror else lodes_url
 
         for part in ["main", "aux"]:
-            lehd_gz = f"{state.lower()}_od_{part.lower()}_JT00_{year}.csv.gz"
-            lehd_csv = f"{state.lower()}_od_{part.lower()}_JT00_{year}.csv"
-            url = f"{lehd_url}/{lehd_gz}"
-            await self.fetch(session, url, lehd_gz)
+            lodes_gz = f"{state.lower()}_od_{part.lower()}_JT00_{year}.csv.gz"
+            lodes_csv = f"{state.lower()}_od_{part.lower()}_JT00_{year}.csv"
+            url = f"{root_url}/{lodes_gz}"
+            await self.fetch(session, url, lodes_gz)
 
             # Gunzip it in the store and delete the gz file.
-            utils.gunzip(self.store.prefix / lehd_gz, self.store.prefix / lehd_csv)
+            utils.gunzip(self.store.prefix / lodes_gz, self.store.prefix / lodes_csv)
 
     async def download_2020_census_blocks(
         self, session: aiohttp.ClientSession, fips: str
     ) -> None:
         """Download a 2020 census tabulation block code for a specific state."""
         tabblk2020_zip = f"tl_2020_{fips}_tabblock20.zip"
-        url = f"{TIGER_URL}/TIGER2020/TABBLOCK20/tl_2020_{fips}_tabblock20.zip"
+        root_url = self.mirror if self.mirror else TIGER_2020_URL
+        url = f"{root_url}/{tabblk2020_zip}"
         await self.fetch(session, url, tabblk2020_zip)
 
         # Unzip and rename the tabulation block files to "population".
