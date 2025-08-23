@@ -39,9 +39,11 @@ def prepare_cmd(
     block_population: common.BlockPopulation = common.DEFAULT_BLOCK_POPULATION,
     block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
     city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
+    data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
     lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
-    data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
+    mirror: common.Mirror = None,
+    no_cache: common.NoCache = False,
     retries: common.Retries = common.DEFAULT_RETRIES,
 ) -> None:
     """Prepare all the files required for an analysis."""
@@ -59,6 +61,10 @@ def prepare_cmd(
     if not lodes_year:
         raise ValueError("`lodes_year` must be set")
 
+    # Ensure lodes_year match the census decade.
+    if 2020 > lodes_year > 2029:
+        raise ValueError("`lodes_year` value must be set between 2020 and 2029")
+
     # Handles us/usa as the same country.
     country = utils.normalize_country_name(country)
 
@@ -73,15 +79,17 @@ def prepare_cmd(
     logger.debug(f"{data_dir=}")
     asyncio.run(
         prepare_(
-            country=country,
-            region=region,
-            city=city,
-            data_dir=data_dir,
-            city_speed_limit=city_speed_limit,
-            block_size=block_size,
             block_population=block_population,
-            retries=retries,
+            block_size=block_size,
+            city_speed_limit=city_speed_limit,
+            city=city,
+            country=country,
+            data_dir=data_dir,
             lodes_year=lodes_year,
+            mirror=mirror or None,
+            no_cache=bool(no_cache),
+            region=region or None,
+            retries=retries,
         )
     )
 
@@ -96,7 +104,9 @@ async def prepare_(
     data_dir: pathlib.Path,
     lodes_year: int,
     retries: int,
-    region: typing.Optional[str] = None,
+    no_cache: bool,
+    mirror: typing.Optional[str],
+    region: typing.Optional[str],
 ) -> None:
     """Prepare and kicks off the analysis."""
     # Compute the city slug.
@@ -170,28 +180,10 @@ async def prepare_(
         analysis.change_speed_limit(data_dir, city, state_abbrev, city_speed_limit)
     else:
         # Prepare the caching strategy.
-        cache_aws_s3_bucket = None
-        match os.getenv("BNA_CACHING_STRATEGY"):
-            case "USER_CACHE":
-                caching_strategy = datastore.CacheType.USER_CACHE
-            case "AWS_S3":
-                caching_strategy = datastore.CacheType.AWS_S3
-                cache_aws_s3_bucket = os.getenv(BNA_CACHE_AWS_S3_BUCKET)
-                if not cache_aws_s3_bucket:
-                    raise ValueError(
-                        f"the name of the S3 bucket must be specified in the {BNA_CACHE_AWS_S3_BUCKET} environment variable"
-                    )
-                aws_region = os.getenv(AWS_REGION)
-                if not aws_region:
-                    raise ValueError("AWS_REGION must be set")
-
-            case _:
-                caching_strategy = datastore.CacheType.NONE
-        logger.debug(f"{caching_strategy=}")
-        logger.debug(f"{cache_aws_s3_bucket=}")
-        bna_store = datastore.BNADataStore(
-            data_dir, caching_strategy, s3_bucket=cache_aws_s3_bucket
+        caching_strategy = (
+            datastore.CacheType.NONE if no_cache else datastore.CacheType.USER_CACHE
         )
+        bna_store = datastore.BNADataStore(data_dir, caching_strategy, mirror=mirror)
 
         # Fetch the data.
         async with aiohttp.ClientSession() as session:

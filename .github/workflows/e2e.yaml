@@ -130,7 +130,7 @@ jobs:
           --network ${{ job.services.postgres.network }}
           -e DATABASE_URL
           ${{ env.TEST_TAG }}
-          -vv run "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
+          -vv run --no-cache "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
       - name: Export the results
         run: >
           docker run
