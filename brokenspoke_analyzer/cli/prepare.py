@@ -38,6 +38,7 @@ def prepare_cmd(
     region: common.Region = None,
     block_population: common.BlockPopulation = common.DEFAULT_BLOCK_POPULATION,
     block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
+    cache_dir: common.CacheDir = None,
     city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
     data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
@@ -81,6 +82,7 @@ def prepare_cmd(
         prepare_(
             block_population=block_population,
             block_size=block_size,
+            cache_dir=cache_dir,
             city_speed_limit=city_speed_limit,
             city=city,
             country=country,
@@ -98,6 +100,7 @@ async def prepare_(
     *,
     block_population: int,
     block_size: int,
+    cache_dir: typing.Optional[pathlib.Path],
     city_speed_limit: int,
     city: str,
     country: str,
@@ -180,10 +183,15 @@ async def prepare_(
         analysis.change_speed_limit(data_dir, city, state_abbrev, city_speed_limit)
     else:
         # Prepare the caching strategy.
-        caching_strategy = (
-            datastore.CacheType.NONE if no_cache else datastore.CacheType.USER_CACHE
+        caching_strategy = datastore.CacheType.USER_CACHE
+        if no_cache:
+            caching_strategy = datastore.CacheType.NONE
+        elif cache_dir:
+            caching_strategy = datastore.CacheType.CUSTOM
+
+        bna_store = datastore.BNADataStore(
+            data_dir, caching_strategy, mirror=mirror, custom_dir=cache_dir
         )
-        bna_store = datastore.BNADataStore(data_dir, caching_strategy, mirror=mirror)
 
         # Fetch the data.
         async with aiohttp.ClientSession() as session:
