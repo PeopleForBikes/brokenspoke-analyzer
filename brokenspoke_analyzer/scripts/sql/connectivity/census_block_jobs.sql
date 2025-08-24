@@ -11,12 +11,6 @@
 --     as per https://lehd.ces.census.gov/doc/help/onthemap/LODESTechDoc.pdf
 ----------------------------------------
 
--- process imported tables
-ALTER TABLE state_od_aux_jt00 ALTER COLUMN w_geocode TYPE VARCHAR(15);
-UPDATE state_od_aux_jt00 SET w_geocode = rpad(w_geocode, 15, '0'); --just in case we lost any trailing zeros
-ALTER TABLE state_od_main_jt00 ALTER COLUMN w_geocode TYPE VARCHAR(15);
-UPDATE state_od_main_jt00 SET w_geocode = rpad(w_geocode, 15, '0'); --just in case we lost any trailing zeros
-
 -- indexes
 CREATE INDEX IF NOT EXISTS tidx_auxjtw ON state_od_aux_jt00 (w_geocode);
 CREATE INDEX IF NOT EXISTS tidx_mainjtw ON state_od_main_jt00 (w_geocode);
