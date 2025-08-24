@@ -185,6 +185,12 @@ values in the options.
 
     Defaults to 500.
 
+- `--cache-dir` _cache-dir_
+  - Path to the custom cache directory.
+
+    When sets, it replaces the default user cache directory (platform specific,
+    see [bna cache dir](#cache)).
+
 - `--city-speed-limit` _city-speed-limit_
   - Override the default speed limit (in mph).
 
@@ -594,6 +600,12 @@ bna run "united states" "santa rosa" "new mexico" 3570670
 
     Defaults to 2680.
 
+- `--cache-dir` _cache-dir_
+  - Path to the custom cache directory.
+
+    When sets, it replaces the default user cache directory (platform specific,
+    see [bna cache dir](#cache)).
+
 - `--city-speed-limit` _city-speed-limit_
   - Override the default speed limit (in mph).
 
@@ -694,6 +706,12 @@ environment.
   - Define the buffer area
 
     Defaults to 2680.
+
+- `--cache-dir` _cache-dir_
+  - Path to the custom cache directory.
+
+    When sets, it replaces the default user cache directory (platform specific,
+    see [bna cache dir](#cache)).
 
 - `--city-speed-limit` _city-speed-limit_
   - Override the default speed limit (in mph).

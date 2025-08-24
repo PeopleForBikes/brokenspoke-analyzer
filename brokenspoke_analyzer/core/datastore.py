@@ -58,6 +58,7 @@ class CacheType(enum.Enum):
 
     NONE = 0
     USER_CACHE = 1
+    CUSTOM = 2
 
 
 class BNADataStore:
@@ -69,6 +70,7 @@ class BNADataStore:
         cache_type: CacheType,
         *,
         mirror: typing.Optional[str] = None,
+        custom_dir: typing.Optional[pathlib.Path] = None,
     ):
         """
         Initialize the BNA data store.
@@ -76,8 +78,9 @@ class BNADataStore:
         This will create or load the data and the cache stores.
 
         The data store is ALWAYS a local directory.
-        The cache store location varies depending on the OS, but is always the
-        user cache directory.
+        The cache store is the user cache directory, whose location varies
+        depending on the OS. It however be overridden to be a custom location if
+        needed.
 
         If a mirror is specified, it is used instead of the original URL.
 
@@ -100,6 +103,10 @@ class BNADataStore:
                 url = f"file://{path}"
             case CacheType.USER_CACHE:
                 url = f"file://{file_utils.get_user_cache_dir()}"
+            case CacheType.CUSTOM:
+                if not custom_dir:
+                    raise ValueError("a custom directory must be specified")
+                url = f"file://{custom_dir}"
         self.cache = from_url(url, client_options=client_options)  # type: ignore
 
         # Set the mirror if any was provided.
