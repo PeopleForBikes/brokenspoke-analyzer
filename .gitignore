@@ -13,7 +13,7 @@ __pycache__/
 .python-version
 .tox/
 .venv/
-.vscode/
+.vscode/settings.json
 *.csv
 *.egg
 *.egg-info/

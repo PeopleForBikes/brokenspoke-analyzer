@@ -184,3 +184,20 @@ def table_exists(engine: Engine, table: str) -> bool:
     with engine.connect() as conn:
         res = conn.execute(text(query))
         return bool(res.scalar_one())
+
+
+def reset_tables(engine: Engine, pguser: str) -> None:
+    """
+    Delete tables and reset the schemas.
+
+    Required to get the database to a clean state before a new run.
+    """
+    statements = [
+        "DROP SCHEMA IF EXISTS generated CASCADE;",
+        "DROP SCHEMA IF EXISTS received CASCADE;",
+        "DROP SCHEMA IF EXISTS scratch CASCADE;",
+        f"CREATE SCHEMA generated AUTHORIZATION {pguser};",
+        f"CREATE SCHEMA received AUTHORIZATION {pguser};",
+        f"CREATE SCHEMA scratch AUTHORIZATION {pguser};",
+    ]
+    execute_with_autocommit(engine, statements)

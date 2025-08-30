@@ -1,0 +1,22 @@
+{
+  "configurations": [
+    {
+      "name": "bna run",
+      "type": "debugpy",
+      "justMyCode": false,
+      "request": "launch",
+      "program": "brokenspoke_analyzer/main.py",
+      "console": "integratedTerminal",
+      "args": [
+        "run",
+        "united states",
+        "provincetown",
+        "massachusetts",
+        "2555500"
+      ],
+      "env": {
+        "DATABASE_URL": "postgresql://postgres:postgres@postgres:5432/postgres"
+      }
+    }
+  ]
+}

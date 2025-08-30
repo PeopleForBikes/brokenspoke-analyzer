@@ -114,13 +114,7 @@ uv run bna run usa "santa rosa" "new mexico" 3570670
 ## Development Container
 
 This method provides a replicable developer and debugging environment based on a
-VSCode development container.
-
-In the development container's terminal, export the database URL:
-
-```bash
-export DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
-```
+VS Code development container.
 
 Build and open the application in a development container in VS Code by running
 the command `Dev Containers: Rebuild and Reopen in Container` via the command
@@ -147,4 +141,22 @@ development container.
 
 Close the container and return to your local environment by running the command
 `Dev Containers: Reopen Folder Locally` via the command palette (⇧⌘P in Mac or
-`Ctrl+Shift+P` in Windows). The database will be stopped.
+`Ctrl+Shift+P` in Windows). The container running the database will be stopped.
+
+### Debugging
+
+You can make changes to the source code of `brokenspoke-analyzer` and run the
+debugger to see the effect of your changes. But since the `brokenspoke-analyzer`
+package is already installed in the dev container, running the system `python`
+interpreter in `/usr/local/bin/python/` will run the `brokenspoke-analyzer`
+installed in `usr/local/lib/python3.13/site-packages`. What we need to do is run
+the debugger using the source `brokenspoke-analyzer` in `/usr/src/app` so we
+create a virtual environment:
+
+```bash
+uv sync
+```
+
+Then we open the the command palette (⇧⌘P in Mac or `Ctrl+Shift+P` in Windows)
+and choose `Python: Select Interpreter`, `./.venv/bin/python`. Once we are set
+up, we can place breakpoints, and the debugger will pause at breakpoints.
