@@ -57,3 +57,11 @@ def schemas(database_url: common.DatabaseURL, pguser: PGUser) -> None:
     console.log("[green]Configuring the schemas...")
     engine = dbcore.create_psycopg_engine(database_url)
     dbcore.configure_schemas(engine, pguser)
+
+
+@app.command()
+def reset(database_url: common.DatabaseURL) -> None:
+    """Reset the database tables created by a BNA run."""
+    console.log("[green]Resetting the database tables...")
+    engine = dbcore.create_psycopg_engine(database_url)
+    dbcore.reset_tables(engine)

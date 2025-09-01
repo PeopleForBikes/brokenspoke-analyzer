@@ -56,6 +56,14 @@ The parameters are:
 - the amount of memory to allocate, in MB
 - the name of the PostgreSQL user to connect as
 
+### Reset
+
+The reset comand is a convenience command that resets the database. It deletes
+tables associated with an analysis and recreates the necessary schema. Its main
+use case is when developing/debugging locally and you need to try out another
+analysis without having to swith to your host system and using Docker to
+stop/remove the database associated with the previous analysis.
+
 ## Prepare
 
 This command prepares all the input files required for an analysis.
