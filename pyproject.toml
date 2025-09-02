@@ -21,7 +21,7 @@ dependencies = [
   "rich>=14.1.0,<15",
   "sqlalchemy[asyncio, postgresql_psycopg]>=2.0.42,<3",
   "tenacity>=9.1.2,<10",
-  "typer>=0.16.0,<0.17",
+  "typer>=0.16.0,<0.18",
   "us>=3.2.0,<4",
 ]
 
