@@ -6,7 +6,7 @@
 <link rel="author" title="About these documents" href="about.html" /><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="brokenspoke_analyzer package" href="api/brokenspoke_analyzer.html" /><link rel="prev" title="Community Code of Conduct" href="code-of-conduct.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
-        <title>Contributing - Brokenspoke Analyzer 2.6.3 documentation</title>
+        <title>Contributing - Brokenspoke Analyzer 2.6.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -207,7 +207,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">Brokenspoke Analyzer 2.6.3 documentation</div></a>
+      <a href="index.html"><div class="brand">Brokenspoke Analyzer 2.6.4 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -230,7 +230,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
-  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.6.3 documentation</span>
+  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.6.4 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -399,11 +399,7 @@ for a city in the US, for example Flagstaff, AZ, using the <code class="docutils
 <section id="development-container">
 <span id="id3"></span><h2>Development Container<a class="headerlink" href="#development-container" title="Link to this heading">¶</a></h2>
 <p>This method provides a replicable developer and debugging environment based on a
-VSCode development container.</p>
-<p>In the development container’s terminal, export the database URL:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql://postgres:postgres@postgres:5432/postgres
-</pre></div>
-</div>
+VS Code development container.</p>
 <p>Build and open the application in a development container in VS Code by running
 the command <code class="docutils literal notranslate"><span class="pre">Dev</span> <span class="pre">Containers:</span> <span class="pre">Rebuild</span> <span class="pre">and</span> <span class="pre">Reopen</span> <span class="pre">in</span> <span class="pre">Container</span></code> via the command
 palette (⇧⌘P in Mac or <code class="docutils literal notranslate"><span class="pre">Ctrl+Shift+P</span></code> in Windows). The database will be started
@@ -422,7 +418,23 @@ available to run the analyzer.</p>
 development container.</p>
 <p>Close the container and return to your local environment by running the command
 <code class="docutils literal notranslate"><span class="pre">Dev</span> <span class="pre">Containers:</span> <span class="pre">Reopen</span> <span class="pre">Folder</span> <span class="pre">Locally</span></code> via the command palette (⇧⌘P in Mac or
-<code class="docutils literal notranslate"><span class="pre">Ctrl+Shift+P</span></code> in Windows). The database will be stopped.</p>
+<code class="docutils literal notranslate"><span class="pre">Ctrl+Shift+P</span></code> in Windows). The container running the database will be stopped.</p>
+<section id="debugging">
+<h3>Debugging<a class="headerlink" href="#debugging" title="Link to this heading">¶</a></h3>
+<p>You can make changes to the source code of <code class="docutils literal notranslate"><span class="pre">brokenspoke-analyzer</span></code> and run the
+debugger to see the effect of your changes. But since the <code class="docutils literal notranslate"><span class="pre">brokenspoke-analyzer</span></code>
+package is already installed in the dev container, running the system <code class="docutils literal notranslate"><span class="pre">python</span></code>
+interpreter in <code class="docutils literal notranslate"><span class="pre">/usr/local/bin/python/</span></code> will run the <code class="docutils literal notranslate"><span class="pre">brokenspoke-analyzer</span></code>
+installed in <code class="docutils literal notranslate"><span class="pre">usr/local/lib/python3.13/site-packages</span></code>. What we need to do is run
+the debugger using the source <code class="docutils literal notranslate"><span class="pre">brokenspoke-analyzer</span></code> in <code class="docutils literal notranslate"><span class="pre">/usr/src/app</span></code> so we
+create a virtual environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>sync
+</pre></div>
+</div>
+<p>Then we open the the command palette (⇧⌘P in Mac or <code class="docutils literal notranslate"><span class="pre">Ctrl+Shift+P</span></code> in Windows)
+and choose <code class="docutils literal notranslate"><span class="pre">Python:</span> <span class="pre">Select</span> <span class="pre">Interpreter</span></code>, <code class="docutils literal notranslate"><span class="pre">./.venv/bin/python</span></code>. Once we are set
+up, we can place breakpoints, and the debugger will pause at breakpoints.</p>
+</section>
 </section>
 </section>
 
@@ -503,7 +515,10 @@ development container.</p>
 <li><a class="reference internal" href="#running-the-bna-using-brokenspoke-analyzer">Running the BNA using Brokenspoke-analyzer</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#development-container">Development Container</a></li>
+<li><a class="reference internal" href="#development-container">Development Container</a><ul>
+<li><a class="reference internal" href="#debugging">Debugging</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -515,7 +530,7 @@ development container.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=99c1414e"></script>
+</div><script src="_static/documentation_options.js?v=5248d183"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

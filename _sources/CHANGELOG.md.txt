@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [2.6.4] - 2025-09-05
+
+### Fixed
+
+- Fixed PostgreSQL healthcheck command. [#914]
+
+### Changed
+
+- Improved osmnx query to be more specific. [#913]
+- Improved DEV container user experience. [#925]
+
+[#913]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/913
+[#914]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/914
+[#925]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/925
+[2.6.4]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.6.4
+
 ## [2.6.3] - 2025-08-06
 
 ### Fixed
