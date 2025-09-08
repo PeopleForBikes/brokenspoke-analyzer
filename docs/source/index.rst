@@ -15,12 +15,20 @@
    :caption: GENERAL:
 
    about
+   workflow
+   resources
+
+.. toctree::
+   :maxdepth: 1
+   :caption: HOW-TO GUIDES:
+
+.. toctree::
+   :maxdepth: 1
+   :caption: REFERENCE:
+
    caching
    commands
    regions
-   workflow
-   resources
-   CHANGELOG
 
 .. toctree::
    :maxdepth: 1
@@ -28,7 +36,7 @@
 
    code-of-conduct
    CONTRIBUTING
-   api/brokenspoke_analyzer
+   CHANGELOG
 
 
 
