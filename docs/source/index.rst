@@ -35,6 +35,7 @@
 
    commands
    regions
+   shapefile-data-dictionary
 
 .. toctree::
    :maxdepth: 1
