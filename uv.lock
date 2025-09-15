@@ -281,7 +281,7 @@ wheels = [
 
 [[package]]
 name = "brokenspoke-analyzer"
-version = "2.6.3"
+version = "2.6.4"
 source = { editable = "." }
 dependencies = [
     { name = "aiohttp" },
