@@ -16,3 +16,4 @@ class ComputePart(str, Enum):
 
 
 COMPUTE_PARTS_ALL = list(ComputePart)
+GDF_CLASS_BOUNDARY = "boundary"
