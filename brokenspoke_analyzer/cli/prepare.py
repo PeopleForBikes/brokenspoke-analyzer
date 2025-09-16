@@ -99,7 +99,7 @@ async def prepare_(
 ) -> None:
     """Prepare and kicks off the analysis."""
     # Compute the city slug.
-    _, slug = analysis.osmnx_query(country, city, region)
+    _, _, slug = analysis.osmnx_query(country, city, region)
 
     # Prepare the output directory.
     output_dir /= slug

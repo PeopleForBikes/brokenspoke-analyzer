@@ -93,7 +93,7 @@ def main():
 
             # Prepare the data directory ahead of the analysis.
             data_dir = pathlib.Path("./data").resolve()
-            _, slug = analysis.osmnx_query(country, city, region)
+            _, _, slug = analysis.osmnx_query(country, city, region)
             data_dir /= slug
             data_dir.mkdir(parents=True, exist_ok=True)
 

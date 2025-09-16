@@ -531,7 +531,7 @@ def neighborhood_wrapper(
     engine = dbcore.create_psycopg_engine(database_url)
 
     # Prepare the files to import.
-    _, slug = analysis.osmnx_query(country, city, region)
+    _, _, slug = analysis.osmnx_query(country, city, region)
     boundary_file = input_dir / f"{slug}.shp"
     population_file = input_dir / "population.shp"
     water_blocks_file = input_dir / "censuswaterblocks.csv"
@@ -594,7 +594,7 @@ def osm_wrapper(
     country = utils.normalize_country_name(country)
 
     # Prepare the files to import.
-    _, slug = analysis.osmnx_query(country, city, region)
+    _, _, slug = analysis.osmnx_query(country, city, region)
     boundary_file = input_dir / f"{slug}.shp"
     osm_file = input_dir / f"{slug}.osm"
     state_speed_limits_csv = input_dir / "state_fips_speed.csv"

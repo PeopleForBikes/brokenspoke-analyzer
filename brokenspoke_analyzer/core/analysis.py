@@ -19,6 +19,7 @@ from osmnx import (
 from slugify import slugify
 
 from brokenspoke_analyzer.core import (
+    constant,
     runner,
     utils,
 )
@@ -29,7 +30,7 @@ warnings.filterwarnings("ignore")
 
 def osmnx_query(
     country: str, city: str, state: typing.Optional[str] = None
-) -> typing.Tuple[typing.Dict[str, str], str]:
+) -> typing.Tuple[typing.Dict[str, str], str, str]:
     """
     Prepare the osmnx.
 
@@ -37,23 +38,24 @@ def osmnx_query(
 
     Example:
         >>> osmnx_query("united states", "santa rosa", "new mexico")
-        ({'city': 'santa rosa', 'country': 'united states', 'state': 'new mexico'}, 'santa-rosa-new-mexico-united-states')
+        ({'city': 'santa rosa', 'country': 'united states', 'state': 'new mexico'}, 'santa rosa, new mexico, united states', 'santa-rosa-new-mexico-united-states')
 
         >>> osmnx_query("malta", "valletta")
-        ({'city': 'valletta', 'country': 'malta'}, 'valletta-malta')
+        ({'city': 'valletta', 'country': 'malta'}, 'valletta, malta', 'valletta-malta')
     """
     if country == state:
         state = None
-    slug = slugify(", ".join(filter(None, [city, state, country])))
-    query = {
+    q = ", ".join(filter(None, [city, state, country]))
+    slug = slugify(q)
+    structured_query = {
         "city": city,
         "country": country,
     }
 
     if state:
-        query["state"] = state
+        structured_query["state"] = state
 
-    return (query, slug)
+    return (structured_query, q, slug)
 
 
 def prepare_city_file(
@@ -133,6 +135,13 @@ def derive_state_info(state: str | None) -> typing.Tuple[str, str, bool]:
     return (state_abbrev, state_fips, run_import_jobs)
 
 
+def ensure_gdf_class_boundary(gdf: gpd.GeoDataFrame) -> None:
+    """Ensure the GeoDataFrame class is "boundary"."""
+    gdf_class = gdf["class"].iloc[0]
+    if gdf_class != constant.GDF_CLASS_BOUNDARY:
+        raise TypeError("invalid result class: {gdf_class}")
+
+
 def retrieve_city_boundaries(
     output: pathlib.Path, country: str, city: str, state: typing.Optional[str] = None
 ) -> str:
@@ -142,12 +151,18 @@ def retrieve_city_boundaries(
     :return: the slugified query used to retrieve the city boundaries.
     """
     # Prepare the query.
-    query, slug = osmnx_query(country, city, state)
-    logger.debug(f"Query used to retrieve the boundaries: {query}")
+    structured_query, q, slug = osmnx_query(country, city, state)
+    logger.debug(f"Query used to retrieve the boundaries: {structured_query}")
 
     # Retrieve the geodataframe.
     settings.use_cache = os.getenv("BNA_OSMNX_CACHE", "1") == "1"
-    city_gdf = geocoder.geocode_to_gdf(query)
+    try:
+        city_gdf = geocoder.geocode_to_gdf(structured_query)
+        ensure_gdf_class_boundary(city_gdf)
+    except TypeError as e:
+        city_gdf = geocoder.geocode_to_gdf(q)
+        ensure_gdf_class_boundary(city_gdf)
+
     # Remove the display_name series to ensure there are no international
     # characters in the dataframe. The import will fail if the analyzer finds
     # non US characters.

@@ -131,7 +131,7 @@ def compute_cmd(
 
     # Prepare directories.
     country = utils.normalize_country_name(country)
-    _, slug = analysis.osmnx_query(country, city, region)
+    _, _, slug = analysis.osmnx_query(country, city, region)
     traversable = resources.files("brokenspoke_analyzer.scripts.sql")
     res = pathlib.Path(traversable._paths[0])  # type: ignore
     sql_script_dir = res.resolve(strict=True)
