@@ -15,18 +15,24 @@
    :caption: GENERAL:
 
    about
-   workflow
    resources
+
+.. toctree::
+   :maxdepth: 1
+   :caption: TUTORIALS:
+
+   workflow
 
 .. toctree::
    :maxdepth: 1
    :caption: HOW-TO GUIDES:
 
+   howto-placeholder
+
 .. toctree::
    :maxdepth: 1
    :caption: REFERENCE:
 
-   caching
    commands
    regions
 
