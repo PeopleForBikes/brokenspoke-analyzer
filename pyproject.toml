@@ -5,7 +5,7 @@ description = "Run a BNA analysis locally."
 authors = [
   { name = "Rémy Greinhofer", email = "remy.greinhofer@gmail.com" },
   { name = "Luis Alvergue", email = "lalver1@gmail.com" },
-  { name = "Grace Stonecipher", email = "grace@peopleforbikes.org" }
+  { name = "Grace Stonecipher", email = "grace@peopleforbikes.org" },
 ]
 requires-python = "~=3.13.0"
 license = "MIT"
