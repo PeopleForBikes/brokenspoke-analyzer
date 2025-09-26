@@ -50,11 +50,15 @@ configure the PostgreSQL instance.
 
 #### options
 
-- `--database-url` _database-url_
+- `--database-url` _database-url_ <<<<<<< HEAD
 
-  - Set the database URL
+=======
 
-    May also be set with the `DATABASE_URL` environment variable.
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Set the database URL
+
+  May also be set with the `DATABASE_URL` environment variable.
 
 ### configure custom
 
@@ -84,7 +88,6 @@ stop/remove the database associated with the previous analysis.
 #### options
 
 - `--database-url` _database-url_
-
   - Set the database URL
 
     May also be set with the `DATABASE_URL` environment variable.
@@ -99,11 +102,15 @@ bna configure system [OPTIONS] CORES MEMORY_MB
 
 #### options
 
-- `--database-url` _database-url_
+- `--database-url` _database-url_ <<<<<<< HEAD
 
-  - Set the database URL
+=======
 
-    May also be set with the `DATABASE_URL` environment variable.
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Set the database URL
+
+  May also be set with the `DATABASE_URL` environment variable.
 
 ### configure extensions
 
@@ -115,11 +122,15 @@ bna configure extensions [OPTIONS]
 
 #### options
 
-- `--database-url` _database-url_
+- `--database-url` _database-url_ <<<<<<< HEAD
 
-  - Set the database URL
+=======
 
-    May also be set with the `DATABASE_URL` environment variable.
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Set the database URL
+
+  May also be set with the `DATABASE_URL` environment variable.
 
 ### configure schemas
 
@@ -131,11 +142,15 @@ bna configure schemas [OPTIONS] PGUSER
 
 #### options
 
-- `--database-url` _database-url_
+- `--database-url` _database-url_ <<<<<<< HEAD
 
-  - Set the database URL
+=======
 
-    May also be set with the `DATABASE_URL` environment variable.
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Set the database URL
+
+  May also be set with the `DATABASE_URL` environment variable.
 
 ## Prepare
 
@@ -188,35 +203,73 @@ values in the options.
 
 ### options
 
-- `--block-population` _block-population_
+- `--block-population` _block-population_ <<<<<<< HEAD
 
-  - Population of a synthetic block for non-US cities.
+=======
 
-    Defaults to 100.
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-- `--block-size` _block-size_
+- Population of a synthetic block for non-US cities.
 
-  - Size of a synthetic block for non-US cities (in meters).
+  Defaults to 100.
 
-    Defaults to 500.
+- `--block-size` _block-size_ <<<<<<< HEAD
 
-- `--city-speed-limit` _city-speed-limit_
+=======
 
-  - Override the default speed limit (in mph).
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-    Defaults to 30.
+- Size of a synthetic block for non-US cities (in meters).
 
-- `--data-dir` _data-dir_
+  Defaults to 500.
 
-  - Directory where to store the files required for the analysis.
+- `--cache-dir` _cache-dir_
+  - Path to the custom cache directory.
 
-    Defaults to `./data`.
+    When sets, it replaces the default user cache directory (platform specific,
+    see [bna cache dir](#cache)).
 
-- `--lodes-year` _lodes-year_
+- `--city-speed-limit` _city-speed-limit_ <<<<<<< HEAD
 
-  - Year to use to retrieve US job data.
+=======
 
-    Defaults to 2022.
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Override the default speed limit (in mph).
+
+  Defaults to 30.
+
+- `--data-dir` _data-dir_ <<<<<<< HEAD
+
+=======
+
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Directory where to store the files required for the analysis.
+
+  Defaults to `./data`.
+
+- `--lodes-year` _lodes-year_ <<<<<<< HEAD
+
+=======
+
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Year to use to retrieve US job data.
+
+  Defaults to 2022.
+
+<<<<<<< HEAD
+
+- `--mirror` _mirror_
+  - Use a mirror to fetch the US census files.
+
+    Defaults to `None`, meaning it fetches the data from the US census sites.
+
+- `--no-cache`
+  - Disable the cache folder.
+
+    Defaults to `False`.
 
 - `--mirror` _mirror_
   - Use a mirror to fetch the US census files.
@@ -230,6 +283,11 @@ values in the options.
 
 - `--retries` _retries_
 
+=======
+
+- `--retries` _retries_
+
+  > > > > > > > 585a712 (Improve CLI and documentation (#899))
   - Number of times to retry downloading files.
 
     Defaults to 2.
@@ -267,29 +325,45 @@ bna import all "united states" "santa rosa" "new mexico" 3570670 --data-dir data
 
 #### options
 
-- `--buffer` _buffer_
+- `--buffer` _buffer_ <<<<<<< HEAD
 
-  - Define the buffer area
+=======
 
-    Defaults to 2680.
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-- `--data-dir` _data-dir_
+- Define the buffer area
 
-  - Directory where the files to import are located.
+  Defaults to 2680.
 
-    This is usually the output directory of the `prepare` command.
+- `--data-dir` _data-dir_ <<<<<<< HEAD
 
-- `--database-url` _database-url_
+=======
 
-  - Set the database URL
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-    May also be set with the `DATABASE_URL` environment variable.
+- Directory where the files to import are located.
 
-- `--lodes-year` _lodes-year_
+  This is usually the output directory of the `prepare` command.
 
-  - Year to use to retrieve US job data.
+- `--database-url` _database-url_ <<<<<<< HEAD
 
-    Defaults to 2022
+=======
+
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Set the database URL
+
+  May also be set with the `DATABASE_URL` environment variable.
+
+- `--lodes-year` _lodes-year_ <<<<<<< HEAD
+
+=======
+
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Year to use to retrieve US job data.
+
+  Defaults to 2022
 
 ### import neighborhood
 
@@ -309,23 +383,35 @@ bna import jobs [OPTIONS] STATE_ABBREVIATION
 
 #### options
 
-- `--buffer` _buffer_
+- `--buffer` _buffer_ <<<<<<< HEAD
 
-  - Define the buffer area
+=======
 
-    Defaults to 2680.
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-- `--data-dir` _data-dir_
+- Define the buffer area
 
-  - Directory where the files to import are located.
+  Defaults to 2680.
 
-    This is usually the output directory of the `prepare` command.
+- `--data-dir` _data-dir_ <<<<<<< HEAD
 
-- `--database-url` _database-url_
+=======
 
-  - Set the database URL
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-    May also be set with the `DATABASE_URL` environment variable.
+- Directory where the files to import are located.
+
+  This is usually the output directory of the `prepare` command.
+
+- `--database-url` _database-url_ <<<<<<< HEAD
+
+=======
+
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Set the database URL
+
+  May also be set with the `DATABASE_URL` environment variable.
 
 ### import osm
 
@@ -337,17 +423,25 @@ bna import osm [OPTIONS] COUNTRY CITY [REGION] [FIPS_CODE]
 
 #### options
 
-- `--data-dir` _data-dir_
+- `--data-dir` _data-dir_ <<<<<<< HEAD
 
-  - Directory where the files to import are located.
+=======
 
-    This is usually the output directory of the `prepare` command.
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-- `--database-url` _database-url_
+- Directory where the files to import are located.
 
-  - Set the database URL
+  This is usually the output directory of the `prepare` command.
 
-    May also be set with the `DATABASE_URL` environment variable.
+- `--database-url` _database-url_ <<<<<<< HEAD
+
+=======
+
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Set the database URL
+
+  May also be set with the `DATABASE_URL` environment variable.
 
 ## Compute
 
@@ -399,32 +493,48 @@ All the results will be stored in various tables in the database.
 
 ### options
 
-- `--buffer` _buffer_
+- `--buffer` _buffer_ <<<<<<< HEAD
 
-  - Define the buffer area
+=======
 
-    Defaults to 2680.
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-- `--data-dir` _data-dir_
+- Define the buffer area
 
-  - Directory where the files to import are located.
+  Defaults to 2680.
 
-    This is usually the output directory of the `prepare` command.
+- `--data-dir` _data-dir_ <<<<<<< HEAD
 
-- `--database-url` _database-url_
+=======
 
-  - Set the database URL
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-    May also be set with the `DATABASE_URL` environment variable.
+- Directory where the files to import are located.
 
-- `--with-parts` _parts_
+  This is usually the output directory of the `prepare` command.
 
-  - Parts of the analysis to compute.
+- `--database-url` _database-url_ <<<<<<< HEAD
 
-    Valid values are: `features`, `stress`, `connectivity`, and `measure`. This
-    option can be repeated if multiple parts are needed.
+=======
 
-    Defaults to all the parts (features, stress, connectivity, measure).
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Set the database URL
+
+  May also be set with the `DATABASE_URL` environment variable.
+
+- `--with-parts` _parts_ <<<<<<< HEAD
+
+=======
+
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Parts of the analysis to compute.
+
+  Valid values are: `features`, `stress`, `connectivity`, and `measure`. This
+  option can be repeated if multiple parts are needed.
+
+  Defaults to all the parts (features, stress, connectivity, measure).
 
 ## Export
 
@@ -498,17 +608,25 @@ if the analysis was run in June 2025 for the first time.
 
 #### options
 
-- `--database-url` _database-url_
+- `--database-url` _database-url_ <<<<<<< HEAD
 
-  - Set the database URL
+=======
 
-    May also be set with the `DATABASE_URL` environment variable.
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-- `--with-bundle`
+- Set the database URL
 
-  - Add a zip archive which bundles the result files altogether.
+  May also be set with the `DATABASE_URL` environment variable.
 
-    Defaults to no bundle.
+- `--with-bundle` <<<<<<< HEAD
+
+=======
+
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Add a zip archive which bundles the result files altogether.
+
+  Defaults to no bundle.
 
 ### export local-custom
 
@@ -520,17 +638,25 @@ bna export local-custom [OPTIONS] EXPORT_DIR
 
 #### options
 
-- `--database-url` _database-url_
+- `--database-url` _database-url_ <<<<<<< HEAD
 
-  - Set the database URL
+=======
 
-    May also be set with the `DATABASE_URL` environment variable.
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-- `--with-bundle`
+- Set the database URL
 
-  - Add a zip archive which bundles the result files altogether.
+  May also be set with the `DATABASE_URL` environment variable.
 
-    Defaults to no bundle.
+- `--with-bundle` <<<<<<< HEAD
+
+=======
+
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Add a zip archive which bundles the result files altogether.
+
+  Defaults to no bundle.
 
 ### S3
 
@@ -553,17 +679,25 @@ my_s3_bucket
 
 #### options
 
-- `--database-url` _database-url_
+- `--database-url` _database-url_ <<<<<<< HEAD
 
-  - Set the database URL
+=======
 
-    May also be set with the `DATABASE_URL` environment variable.
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-- `--with-bundle`
+- Set the database URL
 
-  - Add a zip archive which bundles the result files altogether.
+  May also be set with the `DATABASE_URL` environment variable.
 
-    Defaults to no bundle.
+- `--with-bundle` <<<<<<< HEAD
+
+=======
+
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Add a zip archive which bundles the result files altogether.
+
+  Defaults to no bundle.
 
 ### S3 Custom
 
@@ -583,23 +717,35 @@ my_s3_bucket
 
 #### options
 
-- `--database-url` _database-url_
+- `--database-url` _database-url_ <<<<<<< HEAD
 
-  - Set the database URL
+=======
 
-    May also be set with the `DATABASE_URL` environment variable.
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-- `--s3-dir` _s3-dir_
+- Set the database URL
 
-  - Directory where to store the results within the S3 bucket.
+  May also be set with the `DATABASE_URL` environment variable.
 
-    Defaults to the root of the bucket.
+- `--s3-dir` _s3-dir_ <<<<<<< HEAD
 
-- `--with-bundle`
+=======
 
-  - Add a zip archive which bundles the result files altogether.
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-    Defaults to no bundle.
+- Directory where to store the results within the S3 bucket.
+
+  Defaults to the root of the bucket.
+
+- `--with-bundle` <<<<<<< HEAD
+
+=======
+
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Add a zip archive which bundles the result files altogether.
+
+  Defaults to no bundle.
 
 ## Run
 
@@ -620,53 +766,103 @@ bna run "united states" "santa rosa" "new mexico" 3570670
 
 ### options
 
-- `--block-population` _block-population_
+- `--block-population` _block-population_ <<<<<<< HEAD
 
-  - Population of a synthetic block for non-US cities.
+=======
 
-    Defaults to 100.
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-- `--block-size` _block-size_
+- Population of a synthetic block for non-US cities.
 
-  - Size of a synthetic block for non-US cities (in meters).
+  Defaults to 100.
 
-    Defaults to 500.
+- `--block-size` _block-size_ <<<<<<< HEAD
 
-- `--buffer` _buffer_
+=======
 
-  - Define the buffer area
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-    Defaults to 2680.
+- Size of a synthetic block for non-US cities (in meters).
 
-- `--city-speed-limit` _city-speed-limit_
+  Defaults to 500.
 
-  - Override the default speed limit (in mph).
+- `--buffer` _buffer_ <<<<<<< HEAD
 
-    Defaults to 30.
+=======
 
-- `--data-dir` _data-dir_
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-  - Directory where to store the files required for the analysis.
+- Define the buffer area
 
-    Defaults to `./data`.
+  Defaults to 2680.
 
-- `--database-url` _database-url_
+- `--cache-dir` _cache-dir_
+  - Path to the custom cache directory.
 
-  - Set the database URL
+    When sets, it replaces the default user cache directory (platform specific,
+    see [bna cache dir](#cache)).
 
-    May also be set with the `DATABASE_URL` environment variable.
+- `--city-speed-limit` _city-speed-limit_ <<<<<<< HEAD
 
-- `--lodes-year` _lodes-year_
+=======
 
-  - Year to use to retrieve US job data.
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-    Defaults to 2022.
+- Override the default speed limit (in mph).
 
-- `--max-trip-distance` _max-trip-distance_
+  Defaults to 30.
 
-  - Distance maximal of a trip.
+- `--data-dir` _data-dir_ <<<<<<< HEAD
 
-    Defaults to 2680.
+=======
+
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Directory where to store the files required for the analysis.
+
+  Defaults to `./data`.
+
+- `--database-url` _database-url_ <<<<<<< HEAD
+
+=======
+
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Set the database URL
+
+  May also be set with the `DATABASE_URL` environment variable.
+
+- `--lodes-year` _lodes-year_ <<<<<<< HEAD
+
+=======
+
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Year to use to retrieve US job data.
+
+  Defaults to 2022.
+
+- `--max-trip-distance` _max-trip-distance_ <<<<<<< HEAD
+
+=======
+
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Distance maximal of a trip.
+
+  Defaults to 2680.
+
+<<<<<<< HEAD
+
+- `--mirror` _mirror_
+  - Use a mirror to fetch the US census files.
+
+    Defaults to `None`, meaning it fetches the data from the US census sites.
+
+- `--no-cache`
+  - Disable the cache folder.
+
+    Defaults to `False`.
 
 - `--mirror` _mirror_
   - Use a mirror to fetch the US census files.
@@ -680,42 +876,65 @@ bna run "united states" "santa rosa" "new mexico" 3570670
 
 - `--retries` _retries_
 
+=======
+
+- `--retries` _retries_
+
+  > > > > > > > 585a712 (Improve CLI and documentation (#899))
   - Number of times to retry downloading files.
 
     Defaults to 2.
 
-- `--s3-bucket` _s3-bucket_
-
+- `--s3-bucket` _s3-bucket_ <<<<<<< HEAD
   - S3 bucket to use to store the result files.
 
 - `--s3-dir` _s3-dir_
 
+=======
+
+- S3 bucket to use to store the result files.
+
+- `--s3-dir` _s3-dir_
+
+  > > > > > > > 585a712 (Improve CLI and documentation (#899))
   - Directory where to store the results within the S3 bucket.
 
     Defaults to the root of the bucket.
 
-- `--with-bundle`
+- `--with-bundle` <<<<<<< HEAD
 
-  - Add a zip archive which bundles the result files altogether.
+=======
 
-    Defaults to no bundle.
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-- `--with-export` _with-export_
+- Add a zip archive which bundles the result files altogether.
 
-  - Export strategy
+  Defaults to no bundle.
 
-    Valid values are: `none` `local` `s3` `s3_custom`.
+- `--with-export` _with-export_ <<<<<<< HEAD
 
-    Defaults to `local`.
+=======
 
-- `--with-parts` _parts_
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
 
-  - Parts of the analysis to compute.
+- Export strategy
 
-    Valid values are: `features`, `stress`, `connectivity`, and `measure`. This
-    option can be repeated if multiple parts are needed.
+  Valid values are: `none` `local` `s3` `s3_custom`.
 
-    Defaults to all the parts (features, stress, connectivity, measure).
+  Defaults to `local`.
+
+- `--with-parts` _parts_ <<<<<<< HEAD
+
+=======
+
+> > > > > > > 585a712 (Improve CLI and documentation (#899))
+
+- Parts of the analysis to compute.
+
+  Valid values are: `features`, `stress`, `connectivity`, and `measure`. This
+  option can be repeated if multiple parts are needed.
+
+  Defaults to all the parts (features, stress, connectivity, measure).
 
 ## Run-with
 
@@ -735,56 +954,53 @@ environment.
 
 #### options
 
-- `--block-population` _block-population_
-
+- `--block-population` _block-population_ <<<<<<< HEAD
   - Population of a synthetic block for non-US cities.
 
     Defaults to 100.
 
 - `--block-size` _block-size_
-
   - Size of a synthetic block for non-US cities (in meters).
 
     Defaults to 500.
 
 - `--buffer` _buffer_
-
   - Define the buffer area
 
     Defaults to 2680.
 
-- `--city-speed-limit` _city-speed-limit_
+- `--cache-dir` _cache-dir_
+  - Path to the custom cache directory.
 
+    When sets, it replaces the default user cache directory (platform specific,
+    see [bna cache dir](#cache)).
+
+- `--city-speed-limit` _city-speed-limit_
   - Override the default speed limit (in mph).
 
     Defaults to 30.
 
 - `--data-dir` _data-dir_
-
   - Directory where to store the files required for the analysis.
 
     Defaults to `./data`.
 
 - `--database-url` _database-url_
-
   - Set the database URL
 
     May also be set with the `DATABASE_URL` environment variable.
 
 - `--export-dir` _export-dir_
-
   - Directory where to export the results.
 
     Defaults to `./results`
 
 - `--lodes-year` _lodes-year_
-
   - Year to use to retrieve US job data.
 
     Defaults to 2022.
 
 - `--max-trip-distance` _max-trip-distance_
-
   - Distance maximal of a trip.
 
     Defaults to 2680.
@@ -800,29 +1016,24 @@ environment.
     Defaults to `False`.
 
 - `--retries` _retries_
-
   - Number of times to retry downloading files.
 
     Defaults to 2.
 
 - `--s3-bucket` _s3-bucket_
-
   - S3 bucket to use to store the result files.
 
 - `--s3-dir` _s3-dir_
-
   - Directory where to store the results within the S3 bucket.
 
     Defaults to the root of the bucket.
 
 - `--with-bundle`
-
   - Add a zip archive which bundles the result files altogether.
 
     Defaults to no bundle.
 
 - `--with-export` _with-export_
-
   - Export strategy
 
     Valid values are: `none` `local` `s3` `s3_custom`.
@@ -830,7 +1041,6 @@ environment.
     Defaults to `local`.
 
 - `--with-parts` _parts_
-
   - Parts of the analysis to compute.
 
     Valid values are: `features`, `stress`, `connectivity`, and `measure`. This
