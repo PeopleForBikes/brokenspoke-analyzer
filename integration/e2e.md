@@ -114,7 +114,7 @@ docker run --rm --network brokenspoke-analyzer_default -u $(id -u):$(id -g) -v .
   {
     "country": "australia",
     "city": "orange",
-    "region": "new south wales"
+    "region": "australia"
   }
 ]
 ```
@@ -163,7 +163,7 @@ docker run --rm --network brokenspoke-analyzer_default -u $(id -u):$(id -g) -v .
   {
     "country": "france",
     "city": "chambéry",
-    "region": "savoie"
+    "region": "rhone-alpes"
   },
   {
     "country": "united states",

@@ -229,7 +229,7 @@ def create_synthetic_population(
         {
             "geometry": cells,
             "POP20": population,
-            "BLOCKID20": [
+            "GEOID20": [
                 "".join(
                     random.choice(string.ascii_lowercase) for x in range(BLOCKID_LEN)
                 )
