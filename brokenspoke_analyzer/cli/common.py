@@ -33,6 +33,18 @@ BlockSize = Annotated[
     typer.Option(help="size of a synthetic block for non-US cities (in meters)"),
 ]
 Buffer = Annotated[typing.Optional[int], typer.Option(help="define the buffer area")]
+CacheDir = Annotated[
+    typing.Optional[pathlib.Path],
+    typer.Option(
+        file_okay=False,
+        dir_okay=True,
+        exists=True,
+        resolve_path=True,
+        readable=True,
+        writable=True,
+        help="path to the cache directory",
+    ),
+]
 City = Annotated[str, typer.Argument()]
 ComputeParts = Annotated[
     typing.Optional[typing.List[constant.ComputePart]],
