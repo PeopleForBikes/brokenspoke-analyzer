@@ -958,7 +958,6 @@ class Europe:
         "faroe_islands",
         "finland",
         "france",
-        "georgia",
         "germany",
         "great_britain",
         "greece",
