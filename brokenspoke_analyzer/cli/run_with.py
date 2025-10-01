@@ -182,7 +182,7 @@ def compare(
         raise ValueError("the export must be specified")
 
     logger.info("Run with original BNA")
-    _, slug = analysis.osmnx_query(country, city, region)
+    _, _, slug = analysis.osmnx_query(country, city, region)
     city_shp = output_dir / f"{slug}.shp"
     pfb_osm_file = city_shp.with_suffix(".osm")
     original_export_dir = original_bna(
@@ -277,7 +277,7 @@ def run_(
     # Import.
     console.log("[green]Importing input files into the database...")
     with console.status("Importing..."):
-        _, slug = analysis.osmnx_query(country, city, region)
+        _, _, slug = analysis.osmnx_query(country, city, region)
         input_dir = output_dir / slug
         importer.all(
             database_url=database_url,
