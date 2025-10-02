@@ -77,7 +77,8 @@ def load_csv_file(
 
 def export_to_csv(engine: Engine, csvfile: pathlib.Path, table: str) -> None:
     """Dump the table content into a CSV file."""
-    psql_cmd = f"\\copy {table} TO '{csvfile.resolve()}' WITH (FORMAT CSV, HEADER);"
+    csvfile_str = sanitize_sql_filename(str(csvfile.resolve()))
+    psql_cmd = f"\\copy {table} TO '{csvfile_str}' WITH (FORMAT CSV, HEADER);"
     database_url = engine.engine.url.set(drivername="postgresql").render_as_string(
         hide_password=False
     )
@@ -203,3 +204,37 @@ def reset_tables(engine: Engine) -> None:
         f"CREATE SCHEMA scratch AUTHORIZATION {pguser};",
     ]
     execute_with_autocommit(engine, statements)
+
+
+def sanitize_sql_filename(filename: str) -> str:
+    r"""
+    Sanitize a filename for use in PostgreSQL commands by escaping special characters.
+
+    This function replaces characters that may cause issues in SQL commands,
+    ensuring that the filename is safe for use in a COPY command. The following
+    characters are handled:
+    - Single quotes (') are escaped as two single quotes ('').
+    - Double quotes (") are escaped as two double quotes ("").
+
+    Parameters:
+    filename (str): The original filename to be sanitized.
+
+    Returns:
+    str: The sanitized filename, safe for use in PostgreSQL commands.
+
+    Examples:
+    >>> sanitize_sql_filename("o'fallon.csv")
+    "o''fallon.csv"
+    >>> sanitize_sql_filename('file "name".csv')
+    'file ""name"".csv'
+    """
+    escape_chars: dict[str, str] = {
+        "'": "''",  # Escape single quotes
+        '"': '""',  # Escape double quotes
+    }
+
+    # Replace special characters
+    for char, replacement in escape_chars.items():
+        filename = filename.replace(char, replacement)
+
+    return filename
