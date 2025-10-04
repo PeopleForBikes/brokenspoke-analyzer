@@ -8,9 +8,20 @@ from sqlalchemy import (
     create_engine,
     text,
 )
-from sqlalchemy.engine import Engine
+from sqlalchemy.engine import (
+    Engine,
+    Row,
+)
 
 from brokenspoke_analyzer.core import runner
+
+
+def execute_query_with_result(
+    engine: Engine, query: str
+) -> typing.Sequence[Row[typing.Any]]:
+    """Execute a query and commit it."""
+    with engine.begin() as conn:
+        return conn.execute(text(query)).all()
 
 
 def execute_query(engine: Engine, query: str) -> None:
@@ -112,7 +123,9 @@ def configure_docker_db(engine: Engine) -> None:
 
 def create_psycopg_engine(database_url: str) -> Engine:
     """Create a SQLAlchemy engine with the psycopg3 driver."""
-    return create_engine(database_url.replace("postgresql://", "postgresql+psycopg://"))
+    return create_engine(
+        database_url.replace("postgresql://", "postgresql+psycopg://"), pool_size=20
+    )
 
 
 def execute_with_autocommit(engine: Engine, statements: typing.Sequence[str]) -> None:
@@ -140,7 +153,7 @@ def configure_system(engine: Engine, cores: int, memory_mb: int) -> None:
         "ALTER SYSTEM SET listen_addresses TO '*';",
         "ALTER SYSTEM SET max_connections TO '100';",
         "ALTER SYSTEM SET random_page_cost TO '1.1';",
-        "ALTER SYSTEM SET effective_io_concurrency TO '200';",
+        # "ALTER SYSTEM SET effective_io_concurrency TO '200';",
         f"ALTER SYSTEM SET max_worker_processes TO '{cores}';",
         f"ALTER SYSTEM SET max_parallel_workers TO '{cores}';",
         f"ALTER SYSTEM SET max_parallel_workers_per_gather TO '{cores // 2}';",
