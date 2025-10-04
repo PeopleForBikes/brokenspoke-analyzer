@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [2.6.5] - 2025-10-04
+
+### Fixed
+
+- Fixed logic to retrieve city boundaries. [#947]
+- Removed the country of Georgia from the Geofabrik client. [#948]
+- Escaped special characters in SQL command to export files. [#949]
+
+[#947]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/947
+[#948]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/948
+[#949]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/949
+[2.6.5]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.6.5
+
 ## [2.6.4] - 2025-09-05
 
 ### Fixed
