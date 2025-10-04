@@ -1,14 +1,14 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="author" title="About these documents" href="../about.html" /><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="brokenspoke_analyzer.core.database package" href="brokenspoke_analyzer.core.database.html" />
+<link rel="author" title="About these documents" href="../about.html"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="prev" title="brokenspoke_analyzer.core.database package" href="brokenspoke_analyzer.core.database.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
-        <title>brokenspoke_analyzer.core.database.dbcore package - Brokenspoke Analyzer 2.6.4 documentation</title>
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
+        <title>brokenspoke_analyzer.core.database.dbcore package - Brokenspoke Analyzer 2.6.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -37,8 +37,8 @@
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   --color-foreground-primary: #8B8A8D;
   --color-foreground-secondary: #009EDB;
   --color-foreground-muted: #D71920;
@@ -56,8 +56,8 @@
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   --color-foreground-primary: #8B8A8D;
   --color-foreground-secondary: #009EDB;
   --color-foreground-muted: #D71920;
@@ -185,14 +185,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -202,17 +198,15 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Brokenspoke Analyzer 2.6.4 documentation</div></a>
+      <a href="../index.html"><div class="brand">Brokenspoke Analyzer 2.6.5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -220,8 +214,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -230,7 +223,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.6.4 documentation</span>
+  <span class="sidebar-brand-text">Brokenspoke Analyzer 2.6.5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -252,8 +245,8 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../code-of-conduct.html">Community Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING.html">Contributing</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="brokenspoke_analyzer.html">brokenspoke_analyzer package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of brokenspoke_analyzer package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 has-children"><a class="reference internal" href="brokenspoke_analyzer.core.html">brokenspoke_analyzer.core package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of brokenspoke_analyzer.core package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="brokenspoke_analyzer.html">brokenspoke_analyzer package</a><input aria-label="Toggle navigation of brokenspoke_analyzer package" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="brokenspoke_analyzer.core.html">brokenspoke_analyzer.core package</a><input aria-label="Toggle navigation of brokenspoke_analyzer.core package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="brokenspoke_analyzer.core.analysis.html">brokenspoke_analyzer.core.analysis module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="brokenspoke_analyzer.core.compute.html">brokenspoke_analyzer.core.compute module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="brokenspoke_analyzer.core.downloader.html">brokenspoke_analyzer.core.downloader module</a></li>
@@ -263,7 +256,7 @@
 <li class="toctree-l3"><a class="reference internal" href="brokenspoke_analyzer.core.utils.html">brokenspoke_analyzer.core.utils module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="brokenspoke_analyzer.core.database.html">brokenspoke_analyzer.core.database package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of brokenspoke_analyzer.core.database package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="brokenspoke_analyzer.core.database.html">brokenspoke_analyzer.core.database package</a><input aria-label="Toggle navigation of brokenspoke_analyzer.core.database package" checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">brokenspoke_analyzer.core.database.dbcore package</a></li>
 </ul>
 </li>
@@ -295,8 +288,7 @@
   </a>
 </div>
 <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -304,8 +296,7 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
@@ -465,6 +456,31 @@ not work. Therefore we used <cite>psql</cite> as fallback.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="brokenspoke_analyzer.core.database.dbcore.sanitize_sql_filename">
+<span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.database.dbcore.</span></span><span class="sig-name descname"><span class="pre">sanitize_sql_filename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.database.dbcore.sanitize_sql_filename" title="Link to this definition">¶</a></dt>
+<dd><p>Sanitize a filename for use in PostgreSQL commands by escaping special characters.</p>
+<p>This function replaces characters that may cause issues in SQL commands,
+ensuring that the filename is safe for use in a COPY command. The following
+characters are handled:
+- Single quotes (’) are escaped as two single quotes (‘’).
+- Double quotes (”) are escaped as two double quotes (“”).</p>
+<p>Parameters:
+filename (str): The original filename to be sanitized.</p>
+<p>Returns:
+str: The sanitized filename, safe for use in PostgreSQL commands.</p>
+<p>Examples:
+&gt;&gt;&gt; sanitize_sql_filename(“o’fallon.csv”)
+“o’’fallon.csv”
+&gt;&gt;&gt; sanitize_sql_filename(‘file “name”.csv’)
+‘file “”name””.csv’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="brokenspoke_analyzer.core.database.dbcore.table_exists">
 <span class="sig-prename descclassname"><span class="pre">brokenspoke_analyzer.core.database.dbcore.</span></span><span class="sig-name descname"><span class="pre">table_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#brokenspoke_analyzer.core.database.dbcore.table_exists" title="Link to this definition">¶</a></dt>
 <dd><p>Check whether a table exists or not.</p>
@@ -545,6 +561,7 @@ not work. Therefore we used <cite>psql</cite> as fallback.</p>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.database.dbcore.import_csv_file_with_header"><code class="docutils literal notranslate"><span class="pre">import_csv_file_with_header()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.database.dbcore.load_csv_file"><code class="docutils literal notranslate"><span class="pre">load_csv_file()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.database.dbcore.reset_tables"><code class="docutils literal notranslate"><span class="pre">reset_tables()</span></code></a></li>
+<li><a class="reference internal" href="#brokenspoke_analyzer.core.database.dbcore.sanitize_sql_filename"><code class="docutils literal notranslate"><span class="pre">sanitize_sql_filename()</span></code></a></li>
 <li><a class="reference internal" href="#brokenspoke_analyzer.core.database.dbcore.table_exists"><code class="docutils literal notranslate"><span class="pre">table_exists()</span></code></a></li>
 </ul>
 </li>
@@ -557,7 +574,7 @@ not work. Therefore we used <cite>psql</cite> as fallback.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=5248d183"></script>
+</div><script src="../_static/documentation_options.js?v=f630559a"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
