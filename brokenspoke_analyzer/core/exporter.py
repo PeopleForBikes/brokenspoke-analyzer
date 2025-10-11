@@ -21,6 +21,7 @@ TABLE_CATALOG = {
         "neighborhood_ways",
     ],
     "geojson": [
+        "neighborhood_boundary",
         "neighborhood_census_blocks",
         "neighborhood_colleges",
         "neighborhood_community_centers",
