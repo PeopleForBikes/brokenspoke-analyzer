@@ -103,6 +103,8 @@ way        cycleway:width       text   linear
 way        cycleway:left:width  text linear
 way        cycleway:right:width text linear
 way        cycleway:both:width  text linear
+way        cycleway:left:oneway  text linear
+way        cycleway:right:oneway text linear
 node,way   flashing_lights      text linear
 node,way   foot         text         linear
 way        footway      text         linear
