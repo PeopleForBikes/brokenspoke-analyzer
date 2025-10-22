@@ -477,6 +477,10 @@ def connectivity(
     }
     execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
 
+    # Block-level category scores.
+    sql_script = sql_connectivity_script_dir / "category_scores.sql"
+    dbcore.execute_sql_file(engine, sql_script)
+
 
 def measure(
     engine: Engine,
