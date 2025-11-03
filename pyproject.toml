@@ -31,7 +31,7 @@ bna = "brokenspoke_analyzer.cli.root:app"
 
 [dependency-groups]
 dev = [
-  "bpython>=0.25,<0.26",
+  "bpython>=0.25,<0.27",
   "furo>=2025.9.25,<2026",
   "isort>=6.1.0,<8",
   "jupyterlab>=4.4.9,<5",
