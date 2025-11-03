@@ -3,7 +3,6 @@
 import gzip
 import hashlib
 import pathlib
-import re
 import shutil
 import typing
 import zipfile
@@ -11,11 +10,8 @@ from enum import Enum
 
 import geopandas as gpd
 import pandas as pd
-from bs4 import BeautifulSoup
 from loguru import logger
 from slugify import slugify
-
-from brokenspoke_analyzer.core import constant
 
 # WGS 84 / Pseudo-Mercator -- Spherical Mercator.
 # https://epsg.io/3857
@@ -273,50 +269,3 @@ def is_usa(country: str) -> bool:
 
     """
     return country.upper() in ["US", "USA", "UNITED STATES"]
-
-
-def autodetect_latest_lodes_year(html: str, state: str, part: str, type_: str) -> int:
-    """
-    Autodetect the latest year of lodes data available for a specific state.
-
-    Parses an Apache/Nginx-style directory listing and return the latest year
-    from filenames that contain the given pattern matching the state, the part,
-    the type type and end with ".csv.gz".
-
-    Example:
-        >>> html = '''
-        >>> <table>
-        >>>   <tr><th>Name</th><th>Last modified</th><th>Size</th><th>Description</th></tr>
-        >>>   <tr><td><a href="ak_od_aux_JT00_2022.csv.gz">ak_od_aux_JT00_2022.csv.gz</a></td>
-        >>>       <td>2023-04-03 12:23</td><td>161K</td><td></td></tr>
-        >>>   <tr><td><a href="ak_od_aux_JT00_2023.csv.gz">ak_od_aux_JT00_2023.csv.gz</a></td>
-        >>>       <td>2024-05-10 08:00</td><td>165K</td><td></td></tr>
-        >>>   <tr><td><a href="ak_od_aux_JT01_2023.csv.gz">ak_od_aux_JT01_2023.csv.gz</a></td>
-        >>>       <td>2024-05-11 08:00</td><td>170K</td><td></td></tr>
-        >>> </table>
-        >>> '''
-        >>> autodetect_latest_lodes_year(html, "ak", "aux", "JT00")
-        2023
-    """
-    soup = BeautifulSoup(html, "html.parser")
-    years = []
-
-    for row in soup.find_all("tr"):
-        cols = row.find_all("td")
-        if not cols:
-            continue
-
-        link = cols[0].find("a")
-        if not link:
-            continue
-
-        name = link.text.strip()
-        parts = f"{state}_od_{part}_{type_}_"
-        match = re.search(parts + r"(\d{4})\.csv\.gz$", name)
-        if match:
-            years.append(int(match.group(1)))
-
-    if not years:
-        raise ValueError(f"cannot identify the lastest LODES year for `{parts}`")
-
-    return max(years)

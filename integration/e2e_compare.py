@@ -175,7 +175,7 @@ def test_compare(city: str, state: str, country: str, city_fips: str):
         city=city,
         region=state,
         fips_code=city_fips,
-        lodes_year=common.DEFAULT_LODES_YEAR,
+        lodes_year=None,
         retries=common.DEFAULT_RETRIES,
     )
 

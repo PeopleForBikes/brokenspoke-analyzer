@@ -1,9 +1,11 @@
 """Define functions used to download files."""
 
 import pathlib
+import re
 import typing
 
 import aiohttp
+from bs4 import BeautifulSoup
 from loguru import logger
 
 from brokenspoke_analyzer.core import utils
@@ -11,6 +13,7 @@ from brokenspoke_analyzer.core import utils
 PFB_PUBLIC_DOCUMENTS_URL = "https://s3.amazonaws.com/pfb-public-documents"
 TIGER_URL = "https://www2.census.gov/geo/tiger"
 CHUNK_SIZE = 65536
+LODES_URL = "https://lehd.ces.census.gov/data/lodes/LODES8"
 
 
 async def download_file(
@@ -94,7 +97,7 @@ async def download_lodes_data(
     More information about the formast can be found on the website:
     https://lehd.ces.census.gov/data/#lodes.
     """
-    lehd_url = f"http://lehd.ces.census.gov/data/lodes/LODES8/{state.lower()}/od"
+    lehd_url = f"{LODES_URL}/{state.lower()}/od"
     lehd_filename = f"{state.lower()}_od_{part.lower()}_JT00_{year}.csv.gz"
     gzipped_lehd_file = output_dir / lehd_filename
     decompressed_lefh_file = output_dir / gzipped_lehd_file.stem
@@ -161,3 +164,74 @@ async def download_city_speed_limits(
 
     # Download the file.
     await download_file(session, city_speed_url, city_speed_file)
+
+
+def parse_latest_lodes_year(html: str, state: str, part: str, type_: str) -> int:
+    """
+    Parse the latest year of lodes data available for a specific state.
+
+    Parses an Apache/Nginx-style directory listing and return the latest year
+    from filenames that contain the given pattern matching the state, the part,
+    the type type and end with ".csv.gz".
+
+    Example:
+        >>> html = '''
+        >>> <table>
+        >>>     <tr>
+        >>>         <th valign="top"><img src="/icons/blank.gif" alt="[ICO]" /></th>
+        >>>         <th><a href="?C=N;O=D">Name</a></th>
+        >>>         <th><a href="?C=M;O=A">Last modified</a></th>
+        >>>         <th><a href="?C=S;O=A">Size</a></th>
+        >>>         <th><a href="?C=D;O=A">Description</a></th>
+        >>>     </tr>
+        >>>     <tr>
+        >>>         <td valign="top"><img src="/icons/compressed.gif" alt="[ ]" /></td>
+        >>>         <td><a href="tx_od_aux_JT00_2002.csv.gz">tx_od_aux_JT00_2002.csv.gz</a></td>
+        >>>         <td align="right">2023-04-03 12:30 </td>
+        >>>         <td align="right">544K</td>
+        >>>         <td>&nbsp;</td>
+        >>>     </tr>
+        >>>     <tr>
+        >>>         <td valign="top"><img src="/icons/compressed.gif" alt="[ ]" /></td>
+        >>>         <td><a href="tx_od_aux_JT00_2003.csv.gz">tx_od_aux_JT00_2003.csv.gz</a></td>
+        >>>         <td align="right">2023-04-03 12:30 </td>
+        >>>         <td align="right">527K</td>
+        >>>         <td>&nbsp;</td>
+        >>>     </tr>
+        >>> </table>
+        >>> '''
+        >>> parse_latest_lodes_year(html, "tx", "aux", "JT00")
+        2003
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    parts = f"{state.lower()}_od_{part.lower()}_{type_}_"
+    years = []
+
+    for row in soup.find_all("tr"):
+        link = row.find("a")
+        if not link:
+            continue
+
+        name = link.text.strip()
+        match = re.search(parts + r"(\d{4})\.csv\.gz$", name)
+        if match:
+            years.append(int(match.group(1)))
+
+    if not years:
+        raise ValueError(f"cannot identify the lastest LODES year for `{parts}`")
+
+    return max(years)
+
+
+async def autodetect_latest_lodes_year(
+    session: aiohttp.ClientSession, state: str
+) -> int:
+    """."""
+    PART = "aux"
+    TYPE = "JT00"
+    lehd_url = f"{LODES_URL}/{state.lower()}/od"
+    logger.debug(f"Looking up latest LODES year for {state} {PART} {TYPE}")
+    html_dir = await fetch_text(session=session, url=lehd_url)
+    latest_year = parse_latest_lodes_year(html_dir, state, PART, TYPE)
+    logger.debug(f"Found year: {latest_year}")
+    return latest_year

@@ -1,5 +1,6 @@
 """Define the run-with sub-command."""
 
+import asyncio
 import pathlib
 import subprocess
 import typing
@@ -45,7 +46,7 @@ def compose(
     city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
     data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
     export_dir: common.ExportDirOpt = common.DEFAULT_EXPORT_DIR,
-    lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
+    lodes_year: common.LODESYear = None,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
     mirror: common.Mirror = None,
     no_cache: common.NoCache = False,
@@ -87,6 +88,7 @@ def compose(
             with_export=with_export,
             with_parts=with_parts,
         )
+
     finally:
         subprocess.run(
             ["docker", "compose", "rm", "-sfv"], check=True, capture_output=True
@@ -111,7 +113,7 @@ def run_(
     data_dir: typing.Optional[pathlib.Path] = common.DEFAULT_DATA_DIR,
     export_dir: typing.Optional[pathlib.Path] = common.DEFAULT_EXPORT_DIR,
     fips_code: typing.Optional[str] = common.DEFAULT_CITY_FIPS_CODE,
-    lodes_year: typing.Optional[int] = common.DEFAULT_LODES_YEAR,
+    lodes_year: typing.Optional[int] = None,
     max_trip_distance: typing.Optional[int] = common.DEFAULT_MAX_TRIP_DISTANCE,
     mirror: common.Mirror = None,
     no_cache: common.NoCache = False,

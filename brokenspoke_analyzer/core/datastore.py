@@ -15,6 +15,7 @@ from obstore.store import (
 )
 
 from brokenspoke_analyzer.core import (
+    downloader,
     file_utils,
     utils,
 )
@@ -166,7 +167,7 @@ class BNADataStore:
         self,
         session: aiohttp.ClientSession,
         state_abbrev: str,
-        year: int,
+        lodes_year: int | None,
     ) -> None:
         """
         Download employment data from the US census website: https://lehd.ces.census.gov/.
@@ -208,9 +209,15 @@ class BNADataStore:
         lodes_url = f"{LODES_202x_URL}/{state_abbrev}/od"
         root_url = self.mirror if self.mirror else lodes_url
 
+        # Autodetect latest LODES year if not specified.
+        if not lodes_year:
+            lodes_year = await downloader.autodetect_latest_lodes_year(
+                session, state_abbrev
+            )
+
         for part in ["main", "aux"]:
-            lodes_gz = f"{state_abbrev.lower()}_od_{part.lower()}_JT00_{year}.csv.gz"
-            lodes_csv = f"{state_abbrev.lower()}_od_{part.lower()}_JT00_{year}.csv"
+            lodes_gz = f"{state_abbrev}_od_{part.lower()}_JT00_{lodes_year}.csv.gz"
+            lodes_csv = f"{state_abbrev}_od_{part.lower()}_JT00_{lodes_year}.csv"
             url = f"{root_url}/{lodes_gz}"
             await self.fetch(session, url, lodes_gz)
 
