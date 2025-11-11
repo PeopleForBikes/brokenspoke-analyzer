@@ -104,7 +104,7 @@ def delete_block_outside_buffer(engine: Engine, buffer: int) -> None:
     query = (
         "DELETE FROM neighborhood_census_blocks AS blocks "
         "USING neighborhood_boundary AS boundary "
-        f"WHERE NOT ST_DWithin(blocks.geom, boundary.geom, {buffer})"
+        f"WHERE (NOT ST_Intersects(blocks.geom, boundary.geom)) OR (ST_AREA(ST_INTERSECTION(blocks.geom, boundary.geom)) / ST_AREA(blocks.geom)) < .50"
     )
     dbcore.execute_query(engine, query)
 
