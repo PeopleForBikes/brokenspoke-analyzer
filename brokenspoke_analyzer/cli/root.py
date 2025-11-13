@@ -48,6 +48,8 @@ def _verbose_callback(value: int) -> None:
             rich_tracebacks=True,
             tracebacks_show_locals=True,
             log_time_format="[%X]",
+            locals_max_string=0,
+            locals_max_length=0,
         ),
         format="{message}",
         level=log_level,
