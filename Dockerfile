@@ -36,6 +36,7 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 ENV BNA_OSMNX_CACHE=0
+ENV BNA_PYGRIS_CACHE=0
 WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/deps ./pkg/deps
 COPY --from=builder /usr/src/app/dist ./pkg/dist
