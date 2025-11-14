@@ -10,6 +10,7 @@ import zipfile
 
 import geopandas as gpd
 import numpy as np
+import pygris  # type: ignore
 import shapely
 from loguru import logger
 from osmnx import (
@@ -18,6 +19,7 @@ from osmnx import (
 )
 from slugify import slugify
 
+from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core import (
     constant,
     runner,
@@ -139,35 +141,46 @@ def ensure_gdf_class_boundary(gdf: gpd.GeoDataFrame) -> None:
     """Ensure the GeoDataFrame class is "boundary"."""
     gdf_class = gdf["class"].iloc[0]
     if gdf_class != constant.GDF_CLASS_BOUNDARY:
-        raise TypeError("invalid result class: {gdf_class}")
+        raise TypeError(f"invalid result class: {gdf_class}")
 
 
 def retrieve_city_boundaries(
-    output: pathlib.Path, country: str, city: str, state: typing.Optional[str] = None
+    output: pathlib.Path,
+    country: str,
+    city: str,
+    state: typing.Optional[str] = None,
+    fips_code: typing.Optional[str] = None,
 ) -> str:
     """
     Retrieve the city boundaries and save them as Shapefile and GeoJSON.
 
     :return: the slugified query used to retrieve the city boundaries.
     """
-    # Prepare the query.
-    structured_query, q, slug = osmnx_query(country, city, state)
-    logger.debug(f"Query used to retrieve the boundaries: {structured_query}")
-
     # Retrieve the geodataframe.
-    settings.use_cache = os.getenv("BNA_OSMNX_CACHE", "1") == "1"
-    try:
-        city_gdf = geocoder.geocode_to_gdf(structured_query)
-        ensure_gdf_class_boundary(city_gdf)
-    except TypeError as e:
-        city_gdf = geocoder.geocode_to_gdf(q)
-        ensure_gdf_class_boundary(city_gdf)
+    structured_query, q, slug = osmnx_query(country, city, state)
+    # Download boundaries from Census Bureau for US places with FIPS Code
+    # with OSM as a fallback for other places.
+    if fips_code is not None and fips_code != common.DEFAULT_CITY_FIPS_CODE:
+        cache_enabled = os.getenv("BNA_PYGRIS_CACHE", "1") == "1"
+        places = pygris.places(state=fips_code[:2], cache=cache_enabled)
+        city_gdf = places[places["PLACEFP"] == fips_code[2:]]
+    else:
+        settings.use_cache = os.getenv("BNA_OSMNX_CACHE", "1") == "1"
+        # Prepare the query.
+        logger.debug(f"Query used to retrieve the boundaries: {structured_query}")
 
-    # Remove the display_name series to ensure there are no international
-    # characters in the dataframe. The import will fail if the analyzer finds
-    # non US characters.
-    # https://github.com/PeopleForBikes/brokenspoke-analyzer/issues/24
-    city_gdf.drop("display_name", axis=1)
+        try:
+            city_gdf = geocoder.geocode_to_gdf(structured_query)
+            ensure_gdf_class_boundary(city_gdf)
+        except TypeError as e:
+            city_gdf = geocoder.geocode_to_gdf(q)
+            ensure_gdf_class_boundary(city_gdf)
+
+        # Remove the display_name series to ensure there are no international
+        # characters in the dataframe. The import will fail if the analyzer finds
+        # non US characters.
+        # https://github.com/PeopleForBikes/brokenspoke-analyzer/issues/24
+        city_gdf.drop("display_name", axis=1)
 
     # Export the boundaries.
     city_gdf.to_file(output / f"{slug}.shp", encoding="utf-8")

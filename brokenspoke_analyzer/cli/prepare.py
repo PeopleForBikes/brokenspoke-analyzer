@@ -86,6 +86,7 @@ def prepare_cmd(
             city_speed_limit=city_speed_limit,
             city=city,
             country=country,
+            fips_code=fips_code,
             data_dir=data_dir,
             lodes_year=lodes_year,
             mirror=mirror or None,
@@ -104,6 +105,7 @@ async def prepare_(
     city_speed_limit: int,
     city: str,
     country: str,
+    fips_code: typing.Optional[str],
     data_dir: pathlib.Path,
     lodes_year: int,
     retries: int,
@@ -134,7 +136,9 @@ async def prepare_(
     console.log(
         f"[green]Querying OSM to retrieve {city} boundaries...",
     )
-    slug = retryer(analysis.retrieve_city_boundaries, data_dir, country, city, region)
+    slug = retryer(
+        analysis.retrieve_city_boundaries, data_dir, country, city, region, fips_code
+    )
     boundary_file = data_dir / f"{slug}.shp"
 
     # Download the OSM region file.
