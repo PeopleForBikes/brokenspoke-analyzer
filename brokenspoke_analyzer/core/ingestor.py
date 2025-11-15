@@ -185,9 +185,7 @@ class LODESPart(Enum):
     AUX = "aux"
 
 
-def load_jobs(
-    engine: Engine, state: str, lodes_part: LODESPart, csvfile: pathlib.Path
-) -> None:
+def load_jobs(engine: Engine, lodes_part: LODESPart, csvfile: pathlib.Path) -> None:
     """Load employment data from the US census website."""
     # Create table.
     table = f"state_od_{lodes_part.value}_JT00"
@@ -233,28 +231,26 @@ def retrieve_boundary_box(engine: Engine) -> tuple[float, float, float, float]:
 
 
 def import_jobs(
-    engine: Engine, state: str, lodes_year: int, input_dir: pathlib.Path
+    engine: Engine, state_abbrev: str, lodes_year: int, input_dir: pathlib.Path
 ) -> None:
     """
     Import all jobs from US census data.
 
     This function is idempotent. The data will be recreated every time.
     """
-    state = state.lower()
+    # Puerto Rico is part of the US but the US Census Bureau never collected
+    # employment data. As a result we are just skipping it.
+    if state_abbrev in {"pr"}:
+        logger.warning(f"There is no LODES data for the state of '{state_abbrev}'")
+        return
+    state_abbrev = state_abbrev.lower()
     for part in LODESPart:
-        csvfile = input_dir / f"{state}_od_{part.value}_JT00_{lodes_year}.csv"
+        csvfile = input_dir / f"{state_abbrev}_od_{part.value}_JT00_{lodes_year}.csv"
         csvfile = csvfile.resolve(strict=True)
         logger.debug(f"Importing job file: {csvfile}")
         if not csvfile.exists():
             raise ValueError(f"the job data file {csvfile} was not found")
-        load_jobs(engine, state, part, csvfile)
-
-
-# Compare the boundary box computed by PostGIS Vs GeoPandas.
-# Santa Rosa, NM
-# BBOX:
-#   w/ SQL: -104.87012000000001,34.851831,-104.506362,35.051820000000006
-#   w/ gpd: array([-104.714757,   34.905372, -104.629528,   34.955892])
+        load_jobs(engine, part, csvfile)
 
 
 def retrieve_state_speed_limit(engine: Engine, state_fips: str) -> str | None:
