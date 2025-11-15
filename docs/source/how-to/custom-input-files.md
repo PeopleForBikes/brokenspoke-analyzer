@@ -103,7 +103,7 @@ The checksum file, `.md5`, is required to verify the integrity of the data.
 
 ### Clipped city file
 
-This is sn extract of the region file, matching the boudaries of the city to
+This is an extract of the region file, matching the boundaries of the city to
 analyze.
 
 It has the same name as the directory, with the `.clipped.osm` extension.
