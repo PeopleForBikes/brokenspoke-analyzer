@@ -12,16 +12,17 @@ from brokenspoke_analyzer.core import constant
 DEFAULT_BLOCK_POPULATION = 100
 DEFAULT_BLOCK_SIZE = 500
 DEFAULT_BUFFER = 2680
-DEFAULT_LODES_YEAR = 2022
 DEFAULT_CITY_FIPS_CODE = "0"  # "0" means an non-US city.
 DEFAULT_CITY_SPEED_LIMIT = 30
-DEFAULT_CONTAINER_NAME = "brokenspoke-analyzer"
-DEFAULT_DOCKER_IMAGE = "azavea/pfb-network-connectivity:0.19.0"
-DEFAULT_DATA_DIR = pathlib.Path("./data").resolve()
-DEFAULT_EXPORT_DIR = pathlib.Path("./results").resolve()
-DEFAULT_RETRIES = 2
-DEFAULT_MAX_TRIP_DISTANCE = 2680
 DEFAULT_COMPUTE_PARTS = constant.COMPUTE_PARTS_ALL
+DEFAULT_CONTAINER_NAME = "brokenspoke-analyzer"
+DEFAULT_DATA_DIR = pathlib.Path("./data").resolve()
+DEFAULT_DOCKER_IMAGE = "azavea/pfb-network-connectivity:0.19.0"
+DEFAULT_EXPORT_DIR = pathlib.Path("./results").resolve()
+DEFAULT_LODES_YEAR = 2022
+DEFAULT_MAX_TRIP_DISTANCE = 2680
+DEFAULT_PYGRIS_YEAR = 2024
+DEFAULT_RETRIES = 2
 
 # Default Typer Arguments/Options.
 BlockPopulation = Annotated[
