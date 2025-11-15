@@ -162,7 +162,9 @@ def retrieve_city_boundaries(
     # with OSM as a fallback for other places.
     if fips_code is not None and fips_code != common.DEFAULT_CITY_FIPS_CODE:
         cache_enabled = os.getenv("BNA_PYGRIS_CACHE", "1") == "1"
-        places = pygris.places(state=fips_code[:2], cache=cache_enabled)
+        places = pygris.places(
+            state=fips_code[:2], cache=cache_enabled, year=common.DEFAULT_PYGRIS_YEAR
+        )
         city_gdf = places[places["PLACEFP"] == fips_code[2:]]
     else:
         settings.use_cache = os.getenv("BNA_OSMNX_CACHE", "1") == "1"
