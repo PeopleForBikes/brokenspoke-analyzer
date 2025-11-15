@@ -165,7 +165,7 @@ class BNADataStore:
     async def download_lodes_data(
         self,
         session: aiohttp.ClientSession,
-        state: str,
+        state_abbrev: str,
         year: int,
     ) -> None:
         """
@@ -197,12 +197,20 @@ class BNADataStore:
         More information about the formast can be found on the website:
         https://lehd.ces.census.gov/data/#lodes.
         """
-        lodes_url = f"{LODES_202x_URL}/{state.lower()}/od"
+        state_abbrev = state_abbrev.lower()
+        # Puerto Rico is part of the US but the US Census Bureau never collected
+        # employment data. As a result we are just skipping it.
+
+        if state_abbrev in {"pr"}:
+            logger.warning(f"There is no LODES data for the state of '{state_abbrev}'")
+            return
+
+        lodes_url = f"{LODES_202x_URL}/{state_abbrev}/od"
         root_url = self.mirror if self.mirror else lodes_url
 
         for part in ["main", "aux"]:
-            lodes_gz = f"{state.lower()}_od_{part.lower()}_JT00_{year}.csv.gz"
-            lodes_csv = f"{state.lower()}_od_{part.lower()}_JT00_{year}.csv"
+            lodes_gz = f"{state_abbrev.lower()}_od_{part.lower()}_JT00_{year}.csv.gz"
+            lodes_csv = f"{state_abbrev.lower()}_od_{part.lower()}_JT00_{year}.csv"
             url = f"{root_url}/{lodes_gz}"
             await self.fetch(session, url, lodes_gz)
 
