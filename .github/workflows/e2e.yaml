@@ -15,8 +15,40 @@ env:
   TEST_FIPS: "3570670"
 
 jobs:
+  osm2pgrouting3:
+    runs-on: ubuntu-latest
+    steps:
+      - name: install dependencies
+        run: |
+          sudo apt-get update
+          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends \
+          build-essential \
+          cmake \
+          expat \
+          git \
+          libboost-dev \
+          libboost-program-options-dev \
+          libexpat1-dev \
+          libpqxx-dev
+      - name: build osm2pgrouting 3
+        run: |
+          git clone https://github.com/pgRouting/osm2pgrouting.git
+          cd osm2pgrouting
+          cmake -H. -Bbuild
+          cd build
+          make
+          pwd
+          ls -lh
+          echo $PATH
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 #v5.0.0
+        with:
+          name: osm2pgrouting3
+          path: osm2pgrouting/build/osm2pgrouting
+          if-no-files-found: error
+
   integration:
     runs-on: ubuntu-latest
+    needs: osm2pgrouting3
 
     env:
       DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -29,9 +61,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_DB: postgres
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
           --health-retries 5
         ports:
           - 5432:5432
@@ -48,7 +78,19 @@ jobs:
         run: |
           sudo apt-get update
           DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends \
-            osm2pgrouting osm2pgsql osmctools osmium-tool postgresql-client postgis
+          osm2pgsql osmctools osmium-tool postgresql-client postgis libpqxx-7.8t64
+
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          name: osm2pgrouting3
+          path: /home/runner/.local/bin/
+      - name: Set osm2pgrouting permissions
+        run: chmod 755 /home/runner/.local/bin/osm2pgrouting
+      - name: Verify osm2pgrouting installation
+        run: |
+          ls -lh /home/runner/.local/bin/
+          which osm2pgrouting
+          osm2pgrouting --version
       - name: Setup the project
         run: uv sync --all-extras --dev
 
@@ -91,9 +133,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_DB: postgres
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
           --health-retries 5
         ports:
           - 5432:5432
@@ -117,30 +157,18 @@ jobs:
           tags: ${{ env.TEST_TAG }}
       - name: Configure PostgreSQL
         run: >
-          docker run
-          --rm
-          --network ${{ job.services.postgres.network }}
-          -e DATABASE_URL
-          ${{ env.TEST_TAG }}
-          -vv configure custom 4 4096 postgres
+          docker run --rm --network ${{ job.services.postgres.network }} -e DATABASE_URL
+          ${{ env.TEST_TAG }} -vv configure custom 4 4096 postgres
       - name: Run full analysis
         run: >
-          docker run
-          --rm
-          --network ${{ job.services.postgres.network }}
-          -e DATABASE_URL
-          ${{ env.TEST_TAG }}
-          -vv run --no-cache "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
+          docker run --rm --network ${{ job.services.postgres.network }} -e DATABASE_URL
+          ${{ env.TEST_TAG }} -vv run --no-cache "${{ env.TEST_COUNTRY }}" "${{
+          env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
       - name: Export the results
         run: >
-          docker run
-          --rm
-          --network ${{ job.services.postgres.network }}
-          -u $(id -u):$(id -g)
-          -v ${PWD}:/usr/src/app/results
-          -e DATABASE_URL
-          ${{ env.TEST_TAG }}
-          -vv export local-custom .
+          docker run --rm --network ${{ job.services.postgres.network }} -u $(id
+          -u):$(id -g) -v ${PWD}:/usr/src/app/results -e DATABASE_URL ${{ env.TEST_TAG
+          }} -vv export local-custom .
       # - name: Asserts
       #   run: |
       #     ls

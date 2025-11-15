@@ -28,31 +28,27 @@ ALTER TABLE neighborhood_ways DROP COLUMN target_osm;
 ALTER TABLE neighborhood_ways DROP COLUMN priority;
 ALTER TABLE neighborhood_ways DROP COLUMN one_way;
 
-ALTER TABLE neighborhood_ways_intersections DROP COLUMN cnt;
-ALTER TABLE neighborhood_ways_intersections DROP COLUMN chk;
-ALTER TABLE neighborhood_ways_intersections DROP COLUMN ein;
-ALTER TABLE neighborhood_ways_intersections DROP COLUMN eout;
-ALTER TABLE neighborhood_ways_intersections DROP COLUMN lon;
-ALTER TABLE neighborhood_ways_intersections DROP COLUMN lat;
+ALTER TABLE neighborhood_ways_intersections DROP COLUMN in_edges;
+ALTER TABLE neighborhood_ways_intersections DROP COLUMN out_edges;
+ALTER TABLE neighborhood_ways_intersections DROP COLUMN x;
+ALTER TABLE neighborhood_ways_intersections DROP COLUMN y;
 
 -- change column names
-ALTER TABLE neighborhood_ways RENAME COLUMN gid TO road_id;
-ALTER TABLE neighborhood_ways RENAME COLUMN the_geom TO geom;
+ALTER TABLE neighborhood_ways RENAME COLUMN id TO road_id;
 ALTER TABLE neighborhood_ways RENAME COLUMN source TO intersection_from;
 ALTER TABLE neighborhood_ways RENAME COLUMN target TO intersection_to;
 
 ALTER TABLE neighborhood_ways_intersections RENAME COLUMN id TO int_id;
-ALTER TABLE neighborhood_ways_intersections RENAME COLUMN the_geom TO geom;
 
 -- reproject
 ALTER TABLE neighborhood_ways ALTER COLUMN geom TYPE GEOMETRY (
     LINESTRING, :nb_output_srid
 )
 USING ST_Transform(geom, :nb_output_srid);
-ALTER TABLE neighborhood_cycwys_ways ALTER COLUMN the_geom TYPE GEOMETRY (
+ALTER TABLE neighborhood_cycwys_ways ALTER COLUMN geom TYPE GEOMETRY (
     LINESTRING, :nb_output_srid
 )
-USING ST_Transform(the_geom, :nb_output_srid);
+USING ST_Transform(geom, :nb_output_srid);
 ALTER TABLE neighborhood_ways_intersections ALTER COLUMN geom TYPE GEOMETRY (
     POINT, :nb_output_srid
 )
@@ -98,7 +94,7 @@ CREATE INDEX idx_neighborhood_fullpoints ON neighborhood_osm_full_point (
     osm_id
 );
 ANALYZE neighborhood_ways (osm_id, geom);
-ANALYZE neighborhood_cycwys_ways (the_geom);
+ANALYZE neighborhood_cycwys_ways (geom);
 ANALYZE neighborhood_ways_intersections (osm_id);
 ANALYZE neighborhood_osm_full_line (osm_id);
 ANALYZE neighborhood_osm_full_point (osm_id);
@@ -112,25 +108,25 @@ SELECT
     (
         SELECT i.int_id
         FROM neighborhood_ways_intersections AS i
-        WHERE i.geom <#> neighborhood_cycwys_ways.the_geom < 20 -- noqa: PRS
+        WHERE i.geom <#> neighborhood_cycwys_ways.geom < 20 -- noqa: PRS
         ORDER BY
             ST_Distance(
-                ST_StartPoint(neighborhood_cycwys_ways.the_geom), i.geom
+                ST_StartPoint(neighborhood_cycwys_ways.geom), i.geom
             ) ASC
         LIMIT 1
     ) AS intersections_0,
     (
         SELECT i.int_id
         FROM neighborhood_ways_intersections AS i
-        WHERE i.geom <#> neighborhood_cycwys_ways.the_geom < 20 -- noqa: PRS
+        WHERE i.geom <#> neighborhood_cycwys_ways.geom < 20 -- noqa: PRS
         ORDER BY
             ST_Distance(
-                ST_EndPoint(neighborhood_cycwys_ways.the_geom), i.geom
+                ST_EndPoint(neighborhood_cycwys_ways.geom), i.geom
             ) ASC
         LIMIT 1
     ) AS intersections_1,
     osm_id,
-    the_geom
+    geom
 FROM neighborhood_cycwys_ways
 WHERE NOT EXISTS (
     SELECT 1
