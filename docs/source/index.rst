@@ -27,7 +27,7 @@
    :maxdepth: 1
    :caption: HOW-TO GUIDES:
 
-   howto-placeholder
+   how-to/custom-input-files.md
 
 .. toctree::
    :maxdepth: 1
