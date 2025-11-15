@@ -20,7 +20,7 @@ the Brokenspoke Analyzer as described under Quickstart.
 - **docker**: [official page](https://www.docker.com/get-started/)
 - **docker compose plugin V2**:
   [official page](https://docs.docker.com/compose/install/linux/)
-- **osm2pgrouting**:
+- **osm2pgrouting 3**:
   [official page](https://pgrouting.org/docs/tools/osm2pgrouting.html#)
 - **osm2pgsql**: [official page](https://osm2pgsql.org/doc/install.html)
 - **osmconvert**: [OSM wiki](https://wiki.openstreetmap.org/wiki/Osmconvert)
@@ -85,7 +85,7 @@ docker run \
   --network brokenspoke-analyzer_default \
   -e DATABASE_URL \
   ghcr.io/peopleforbikes/brokenspoke-analyzer:2.6.5 \
-  -vv run "united states" "santa rosa" "new mexico" 3570670
+  -vv run --no-cache "united states" "santa rosa" "new mexico" 3570670
 ```
 
 Export the results:
