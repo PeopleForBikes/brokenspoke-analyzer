@@ -1,5 +1,6 @@
 """Define the run command."""
 
+import asyncio
 import pathlib
 import typing
 
@@ -33,7 +34,7 @@ def run(
     cache_dir: common.CacheDir = None,
     city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
     data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
-    lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
+    lodes_year: common.LODESYear = None,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
     mirror: common.Mirror = None,
     no_cache: common.NoCache = False,

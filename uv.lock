@@ -294,6 +294,7 @@ version = "2.6.5"
 source = { editable = "." }
 dependencies = [
     { name = "aiohttp" },
+    { name = "beautifulsoup4" },
     { name = "boto3" },
     { name = "geopandas" },
     { name = "loguru" },
@@ -331,6 +332,7 @@ dev = [
     { name = "sphinx-autodoc-typehints" },
     { name = "sphinx-copybutton" },
     { name = "sqlfluff" },
+    { name = "types-beautifulsoup4" },
     { name = "types-colorama" },
     { name = "types-decorator" },
     { name = "types-jsonschema" },
@@ -343,6 +345,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "aiohttp", specifier = ">=3.12.15,<4" },
+    { name = "beautifulsoup4", specifier = ">=4.13.4" },
     { name = "boto3", specifier = ">=1.40.42,<2" },
     { name = "geopandas", specifier = ">=1.1.1,<2" },
     { name = "loguru", specifier = ">=0.7.3,<0.8" },
@@ -380,6 +383,7 @@ dev = [
     { name = "sphinx-autodoc-typehints", specifier = ">=3.2.0,<4" },
     { name = "sphinx-copybutton", specifier = ">=0.5.2,<0.6" },
     { name = "sqlfluff", specifier = ">=3.4.2,<4" },
+    { name = "types-beautifulsoup4", specifier = ">=4.12.0.20250516" },
     { name = "types-colorama", specifier = ">=0.4.15.20250801,<0.5" },
     { name = "types-decorator", specifier = ">=5.2.0.20250324,<6" },
     { name = "types-jsonschema", specifier = ">=4.25.1.20250822,<5" },
@@ -2598,6 +2602,18 @@ wheels = [
 ]
 
 [[package]]
+name = "types-beautifulsoup4"
+version = "4.12.0.20250516"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "types-html5lib" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6d/d1/32b410f6d65eda94d3dfb0b3d0ca151f12cb1dc4cef731dcf7cbfd8716ff/types_beautifulsoup4-4.12.0.20250516.tar.gz", hash = "sha256:aa19dd73b33b70d6296adf92da8ab8a0c945c507e6fb7d5db553415cc77b417e", size = 16628, upload-time = "2025-05-16T03:09:09.93Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7c/79/d84de200a80085b32f12c5820d4fd0addcbe7ba6dce8c1c9d8605e833c8e/types_beautifulsoup4-4.12.0.20250516-py3-none-any.whl", hash = "sha256:5923399d4a1ba9cc8f0096fe334cc732e130269541d66261bb42ab039c0376ee", size = 16879, upload-time = "2025-05-16T03:09:09.051Z" },
+]
+
+[[package]]
 name = "types-colorama"
 version = "0.4.15.20250801"
 source = { registry = "https://pypi.org/simple" }
@@ -2622,6 +2638,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/37/d4/12d7f102fb76207f9003c46f69b91d009f75c64a6db73dd6fcdcc3bd51b2/types_docutils-0.22.0.20250814.tar.gz", hash = "sha256:84c645863419b38f949a93e77d31420fe4b5cacf95757b3104278318a95fc158", size = 56376, upload-time = "2025-08-14T03:13:55.63Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/27/3e/61a5354f8a1b7e2815cf17efa9c6cf6be6f66a12df248313bdff57765c79/types_docutils-0.22.0.20250814-py3-none-any.whl", hash = "sha256:22ff141b85be203cb57999ca5fc94d7cf574a7065e19446920e3f11c7181700a", size = 91736, upload-time = "2025-08-14T03:13:53.614Z" },
+]
+
+[[package]]
+name = "types-html5lib"
+version = "1.1.11.20251014"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/8a/b8/0ce98d9b20a4e8bdac4f4914054acadf5b3a36a7a832e11e0d1938e4c3ce/types_html5lib-1.1.11.20251014.tar.gz", hash = "sha256:cc628d626e0111a2426a64f5f061ecfd113958b69ff6b3dc0eaaed2347ba9455", size = 16895, upload-time = "2025-10-14T02:54:50.003Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c9/cb/df12640506b8dbd2f2bd0643c5ef4a72fa6285ec4cd7f4b20457842e7fd5/types_html5lib-1.1.11.20251014-py3-none-any.whl", hash = "sha256:4ff2cf18dfc547009ab6fa4190fc3de464ba815c9090c3dd4a5b65f664bfa76c", size = 22916, upload-time = "2025-10-14T02:54:48.686Z" },
 ]
 
 [[package]]
