@@ -88,7 +88,7 @@ OSM_CACHE_FILE_SUFFIX = ".pbf.md5"
 
 def main(
     batch_file: BatchFile = "cities.csv",
-    lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
+    lodes_year: common.LODESYear = 2022,
     parts: common.ComputeParts = [constant.ComputePart.MEASURE],
 ):
     """Process a batch of cities."""

@@ -21,6 +21,7 @@ from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core import (
     analysis,
     datastore,
+    downloader,
     runner,
     utils,
 )
@@ -42,7 +43,7 @@ def prepare_cmd(
     city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
     data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
-    lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
+    lodes_year: common.LODESYear = None,
     mirror: common.Mirror = None,
     no_cache: common.NoCache = False,
     retries: common.Retries = common.DEFAULT_RETRIES,
@@ -59,12 +60,6 @@ def prepare_cmd(
         raise ValueError("`block_population` must be set")
     if not retries:
         raise ValueError("`retries` must be set")
-    if not lodes_year:
-        raise ValueError("`lodes_year` must be set")
-
-    # Ensure lodes_year match the census decade.
-    if 2020 > lodes_year > 2029:
-        raise ValueError("`lodes_year` value must be set between 2020 and 2029")
 
     # Handles us/usa as the same country.
     country = utils.normalize_country_name(country)
@@ -107,9 +102,9 @@ async def prepare_(
     country: str,
     fips_code: typing.Optional[str],
     data_dir: pathlib.Path,
-    lodes_year: int,
     retries: int,
     no_cache: bool,
+    lodes_year: typing.Optional[int],
     mirror: typing.Optional[str],
     region: typing.Optional[str],
 ) -> None:
@@ -206,6 +201,19 @@ async def prepare_(
             console.log("[green]Fetching US city speed limits...")
             with console.status("Downloading..."):
                 await bna_store.download_city_speed_limits(session)
+
+            if not lodes_year:
+                console.log(f"[green]Autodetecting latest LODES year...")
+                try:
+                    lodes_year = await downloader.autodetect_latest_lodes_year(
+                        session, state_abbrev
+                    )
+                except ValueError as e:
+                    lehd_url = f"{downloader.LODES_URL}/{state_abbrev.lower()}/od"
+                    console.log(f"[red]Autodetection failed: {e}.")
+                    console.log(f"[red]Check {lehd_url} manually.")
+                    raise
+                console.log(f"[green]LODES year found: {lodes_year}")
 
             console.log(f"[green]Fetching US employment data ({lodes_year})...")
             with console.status("Downloading..."):

@@ -13,8 +13,6 @@ import pandas as pd
 from loguru import logger
 from slugify import slugify
 
-from brokenspoke_analyzer.core import constant
-
 # WGS 84 / Pseudo-Mercator -- Spherical Mercator.
 # https://epsg.io/3857
 PSEUDO_MERCATOR_CRS = "EPSG:3857"
