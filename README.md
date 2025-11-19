@@ -21,7 +21,7 @@ the Brokenspoke Analyzer as described under Quickstart.
 - **docker compose plugin V2**:
   [official page](https://docs.docker.com/compose/install/linux/)
 - **osm2pgrouting 3**:
-  [official page](https://docs.docker.com/compose/install)
+  [official page](https://pgrouting.org/docs/tools/osm2pgrouting.html#)
 - **just**:
   [official page](https://github.com/casey/just?tab=readme-ov-file#installation)
 - **osm2pgsql**: [official page](https://osm2pgsql.org/doc/install.html)
