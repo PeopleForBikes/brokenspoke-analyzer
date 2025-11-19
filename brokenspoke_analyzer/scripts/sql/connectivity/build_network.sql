@@ -439,7 +439,7 @@ WHERE
 
 UPDATE received.neighborhood_ways_net_link
 SET int_stress = 1
-WHERE NOT int_crossing;;
+WHERE NOT int_crossing;
 
 --target_stress
 UPDATE received.neighborhood_ways_net_link
