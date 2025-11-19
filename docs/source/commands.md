@@ -50,7 +50,7 @@ configure the PostgreSQL instance.
 
 #### options
 
-- `--database-url` _database-url_ <<<<<<< HEAD
+- `--database-url` _database-url_
   - Set the database URL
 
     May also be set with the `DATABASE_URL` environment variable.

@@ -7,6 +7,67 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [3.0.0] - 2025-11-27
+
+We are thrilled to announce the release of version 3.0.0, our latest milestone
+and the result of months of steady work over the past year.
+
+This update brings a number of improvements that make the analyzer more
+reliable, easier to use, and better aligned with current data sources. We’ve
+updated core dependencies, added support for new OSM tagging conventions,
+improved boundary handling, refreshed population and employment data, and fixed
+several long-standing issues. Together, these changes should make analyses more
+accurate and reduce the amount of troubleshooting needed when running cities in
+different regions.
+
+We want to highlight the contribution of
+[Mitchell Henke](mitchell@mitchellhenke.com), who has consistently helped move
+the project forward through thoughtful PRs and careful reviews. His work has
+directly shaped several of the improvements included in this release.
+
+We also want to recognize the broader ecosystem, from OSM mappers to data tool
+maintainers, which plays a major role in making tools like this possible.
+
+Finally, thank you to everyone who reported bugs, proposed fixes, or contributed
+ideas along the way. Your feedback directly improves the tool, and we’re
+grateful for every contribution, no matter the size.
+
+### Fixed
+
+- Implement an exception for Puerto Rico. [#978]
+
+### Changed
+
+- Autodetect latest LODES year. [#967]
+- Upgrade to `osm2pgrouting` 3. [#977]
+- Use Census Bureau boundaries for US cities. [#956]
+- Exclude calculating census blocks that are outside of boundary. [#896]
+- Use 2020 Census Population and Employment Data. [#850]
+
+### Added
+
+- Export city boundaries. [#953]
+- Support new contraflow bike lane tagging. [#890]
+- Remove redundant LODES table updates. [#888]
+- Support new pedestrian island tagging when setting island column. [#900]
+- Implement a caching mechanism. [#894]
+- Add missing block-level category scores. [#961]
+- Better documentation. [multiple PRs]
+
+[#850]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/850
+[#888]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/888
+[#890]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/890
+[#894]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/894
+[#896]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/896
+[#900]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/900
+[#953]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/953
+[#956]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/956
+[#961]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/961
+[#967]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/967
+[#977]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/977
+[3.0.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/2.6.5
+
 ## [2.6.5] - 2025-10-04
 
 ### Fixed
