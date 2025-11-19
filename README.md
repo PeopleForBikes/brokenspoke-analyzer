@@ -17,18 +17,29 @@ Analysis locally.
 Install the software below only if using the native Python method for running
 the Brokenspoke Analyzer as described under Quickstart.
 
-- **docker**: [official page](https://www.docker.com/get-started/)
+- **docker**: [official page](https://docs.docker.com/desktop/)
 - **docker compose plugin V2**:
   [official page](https://docs.docker.com/compose/install/linux/)
 - **osm2pgrouting 3**:
   [official page](https://pgrouting.org/docs/tools/osm2pgrouting.html#)
+- **just**:
+  [official page](https://github.com/casey/just?tab=readme-ov-file#installation)
 - **osm2pgsql**: [official page](https://osm2pgsql.org/doc/install.html)
 - **osmconvert**: [OSM wiki](https://wiki.openstreetmap.org/wiki/Osmconvert)
 - **osmium-tool**: [official page](https://osmcode.org/osmium-tool/)
-- **psql**:
-  [official page](https://www.postgresql.org/docs/current/app-psql.html)
+- **psql**: [official page](https://www.postgresql.org/download/)
 - **postgis**:
   [official page](https://postgis.net/documentation/getting_started/#installing-postgis)
+- **uv**:
+  [official page](https://docs.astral.sh/uv/getting-started/installation/#installation-methods)
+
+### Homebrew
+
+OSX users can use `homebrew` to install all the requirements:
+
+```bash
+brew install docker docker-compose just osmium-tool osm2pgrouting postgresql@17 uv
+```
 
 ## Quickstart
 
@@ -166,7 +177,7 @@ docker info --format json | jq .MemTotal | numfmt --to-unit=1M
 And then run the command to configure the database with custom values:
 
 ```bash
-uv run bna configure custom 4 4096 postgres
+uv run bna configure custom 1 4096 postgres
 ```
 
 [uv]: https://docs.astral.sh/uv

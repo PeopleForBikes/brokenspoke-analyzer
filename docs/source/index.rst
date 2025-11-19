@@ -15,12 +15,27 @@
    :caption: GENERAL:
 
    about
-   caching
+   resources
+
+.. toctree::
+   :maxdepth: 1
+   :caption: TUTORIALS:
+
+   workflow
+
+.. toctree::
+   :maxdepth: 1
+   :caption: HOW-TO GUIDES:
+
+   how-to/custom-input-files.md
+
+.. toctree::
+   :maxdepth: 1
+   :caption: REFERENCE:
+
    commands
    regions
-   workflow
-   resources
-   CHANGELOG
+   shapefile-data-dictionary
 
 .. toctree::
    :maxdepth: 1
@@ -28,7 +43,7 @@
 
    code-of-conduct
    CONTRIBUTING
-   api/brokenspoke_analyzer
+   CHANGELOG
 
 
 
