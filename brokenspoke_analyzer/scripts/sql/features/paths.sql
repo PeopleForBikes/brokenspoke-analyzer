@@ -59,6 +59,7 @@ SET
         WHERE
             ST_Intersects(neighborhood_ways.geom, paths.geom)
             AND ST_CoveredBy(neighborhood_ways.geom, paths.geom)
+        ORDER BY paths.path_id
         LIMIT 1
     )
 WHERE functional_class = 'path';
