@@ -1,5 +1,7 @@
 """Define the import sub-command."""
 
+import asyncio
+
 import typer
 from typing_extensions import Annotated
 
@@ -20,14 +22,12 @@ def all(
     region: common.Region = None,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
-    lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
+    lodes_year: common.LODESYear = None,
 ) -> None:
     """Import all files into database."""
     # Make MyPy happy.
     if not fips_code:
         raise ValueError("`fips_code` must be set")
-    if not lodes_year:
-        raise ValueError("`lodes_year` must be set")
     if not buffer:
         raise ValueError("`buffer` must be set")
 
@@ -35,15 +35,17 @@ def all(
     if not region:
         region = country
 
-    ingestor.all_wrapper(
-        buffer=buffer,
-        city=city,
-        country=country,
-        data_dir=data_dir,
-        database_url=database_url,
-        fips_code=fips_code,
-        lodes_year=lodes_year,
-        region=region,
+    asyncio.run(
+        ingestor.all_wrapper(
+            buffer=buffer,
+            city=city,
+            country=country,
+            data_dir=data_dir,
+            database_url=database_url,
+            fips_code=fips_code,
+            lodes_year=lodes_year,
+            region=region,
+        )
     )
 
 
@@ -78,18 +80,16 @@ def jobs(
     data_dir: common.DataDir,
     database_url: common.DatabaseURL,
     state_abbreviation: StateAbbreviation,
-    lodes_year: common.LODESYear = common.DEFAULT_LODES_YEAR,
+    lodes_year: common.LODESYear = None,
 ) -> None:
     """Import US census job data."""
-    # Make mypy happy.
-    if not lodes_year:
-        raise ValueError("`lodes_year` must be set")
-
-    ingestor.jobs_wrapper(
-        data_dir=data_dir,
-        database_url=database_url,
-        lodes_year=lodes_year,
-        state_abbreviation=state_abbreviation,
+    asyncio.run(
+        ingestor.jobs_wrapper(
+            data_dir=data_dir,
+            database_url=database_url,
+            lodes_year=lodes_year,
+            state_abbreviation=state_abbreviation,
+        )
     )
 
 

@@ -6,6 +6,7 @@ import typing
 from enum import Enum
 from importlib import resources
 
+import aiohttp
 from loguru import logger
 from sqlalchemy import text
 from sqlalchemy.engine import Engine
@@ -13,6 +14,7 @@ from sqlalchemy.engine import Engine
 from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core import (
     analysis,
+    downloader,
     runner,
     utils,
 )
@@ -230,20 +232,28 @@ def retrieve_boundary_box(engine: Engine) -> tuple[float, float, float, float]:
         )
 
 
-def import_jobs(
-    engine: Engine, state_abbrev: str, lodes_year: int, input_dir: pathlib.Path
+async def import_jobs(
+    engine: Engine, state_abbrev: str, lodes_year: int | None, input_dir: pathlib.Path
 ) -> None:
     """
     Import all jobs from US census data.
 
     This function is idempotent. The data will be recreated every time.
     """
+    state_abbrev = state_abbrev.lower()
     # Puerto Rico is part of the US but the US Census Bureau never collected
     # employment data. As a result we are just skipping it.
     if state_abbrev in {"pr"}:
         logger.warning(f"There is no LODES data for the state of '{state_abbrev}'")
         return
-    state_abbrev = state_abbrev.lower()
+
+    # Autodetect latest LODES year if not specified.
+    if not lodes_year:
+        async with aiohttp.ClientSession() as session:
+            lodes_year = await downloader.autodetect_latest_lodes_year(
+                session, state_abbrev
+            )
+
     for part in LODESPart:
         csvfile = input_dir / f"{state_abbrev}_od_{part.value}_JT00_{lodes_year}.csv"
         csvfile = csvfile.resolve(strict=True)
@@ -445,7 +455,7 @@ def import_osm_data(
     )
 
 
-def import_all(
+async def import_all(
     engine: Engine,
     country: str,
     output_srid: int,
@@ -473,9 +483,7 @@ def import_all(
     state_abbrev, state_fips, run_import_jobs = analysis.derive_state_info(state)
     logger.debug(f"{run_import_jobs=}")
     if run_import_jobs:
-        if not lodes_year:
-            raise ValueError("'lodes_year' is required when importing job data")
-        import_jobs(engine, state_abbrev, lodes_year, input_dir)
+        await import_jobs(engine, state_abbrev, lodes_year, input_dir)
     import_osm_data(
         engine,
         osm_file,
@@ -533,11 +541,11 @@ def neighborhood_wrapper(
     )
 
 
-def jobs_wrapper(
+async def jobs_wrapper(
     *,
     data_dir: pathlib.Path,
     database_url: str,
-    lodes_year: int,
+    lodes_year: int | None,
     state_abbreviation: str,
 ) -> None:
     """
@@ -555,7 +563,7 @@ def jobs_wrapper(
     engine = dbcore.create_psycopg_engine(database_url)
 
     # Import the jobs.
-    import_jobs(engine, state_abbreviation, lodes_year, data_dir)
+    await import_jobs(engine, state_abbreviation, lodes_year, data_dir)
 
 
 def osm_wrapper(
@@ -605,7 +613,7 @@ def osm_wrapper(
     )
 
 
-def all_wrapper(
+async def all_wrapper(
     *,
     buffer: int = common.DEFAULT_BUFFER,
     city: str,
@@ -613,8 +621,8 @@ def all_wrapper(
     data_dir: pathlib.Path,
     database_url: str,
     fips_code: str = common.DEFAULT_CITY_FIPS_CODE,
-    lodes_year: int = common.DEFAULT_LODES_YEAR,
     region: str,
+    lodes_year: typing.Optional[int] = None,
 ) -> None:
     """
     Wrap the all the `import_*` functions.
@@ -635,7 +643,7 @@ def all_wrapper(
     # Import job data.
     state_abbreviation, _, import_jobs = analysis.derive_state_info(region)
     if import_jobs:
-        jobs_wrapper(
+        await jobs_wrapper(
             data_dir=data_dir,
             database_url=database_url,
             lodes_year=lodes_year,
