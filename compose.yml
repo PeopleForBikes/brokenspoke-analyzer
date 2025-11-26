@@ -2,7 +2,7 @@ name: brokenspoke-analyzer
 
 services:
   postgres:
-    image: ghcr.io/peopleforbikes/docker-postgis-bna:17-3.4-1
+    image: ghcr.io/gui/pgrouting:18.1-trixie-postgis-3.6.1-pgrouting-4.0.0
     shm_size: 1g
     environment:
       POSTGRES_PASSWORD: postgres
@@ -19,7 +19,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql
     networks:
       - default
 

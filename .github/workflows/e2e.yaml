@@ -55,7 +55,7 @@ jobs:
 
     services:
       postgres:
-        image: ghcr.io/peopleforbikes/docker-postgis-bna:17-3.4-1
+        image: ghcr.io/gui/pgrouting:18.1-trixie-postgis-3.6.1-pgrouting-4.0.0
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
@@ -127,7 +127,7 @@ jobs:
 
     services:
       postgres:
-        image: ghcr.io/peopleforbikes/docker-postgis-bna:17-3.4-1
+        image: ghcr.io/gui/pgrouting:18.1-trixie-postgis-3.6.1-pgrouting-4.0.0
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
