@@ -166,6 +166,18 @@ def retrieve_city_boundaries(
             state=fips_code[:2], cache=cache_enabled, year=common.DEFAULT_PYGRIS_YEAR
         )
         city_gdf = places[places["PLACEFP"] == fips_code[2:]]
+        if city_gdf.empty:
+            logger.debug(
+                f"Cannot find Place with FIPS code: {fips_code}, trying the County Subdivisions table"
+            )
+            county_subdivisions = pygris.county_subdivisions(
+                state=fips_code[:2],
+                cache=cache_enabled,
+                year=common.DEFAULT_PYGRIS_YEAR,
+            )
+            city_gdf = county_subdivisions[
+                county_subdivisions["COUSUBFP"] == fips_code[2:]
+            ]
     else:
         settings.use_cache = os.getenv("BNA_OSMNX_CACHE", "1") == "1"
         # Prepare the query.
