@@ -53,3 +53,6 @@ sdist/
 target/
 var/
 venv/
+
+# Exceptions
+!integration/e2e-cities*.csv

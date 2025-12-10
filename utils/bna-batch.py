@@ -22,7 +22,7 @@ bna-batch.py [OPTIONS] [BATCH_FILE]
 - `--lodes-year` _lodes-year_
     - Year to use to retrieve US job data.
 
-      Defaults to 2022.
+      Defaults to auto-detect.
 
 - `--with-parts` _parts_
   - Parts of the analysis to compute.
@@ -38,7 +38,7 @@ bna-batch.py [OPTIONS] [BATCH_FILE]
 ```csv
 country,region,city,fips_code
 "united states","new mexico","santa rosa",3570670
-"united states",massachusetts,provincetown,555535
+"united states",massachusetts,provincetown,2555535
 ```
 """
 
@@ -88,7 +88,7 @@ OSM_CACHE_FILE_SUFFIX = ".pbf.md5"
 
 def main(
     batch_file: BatchFile = "cities.csv",
-    lodes_year: common.LODESYear = 2022,
+    lodes_year: common.LODESYear = None,
     parts: common.ComputeParts = [constant.ComputePart.MEASURE],
 ):
     """Process a batch of cities."""

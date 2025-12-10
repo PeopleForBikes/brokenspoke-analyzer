@@ -51,7 +51,6 @@ configure the PostgreSQL instance.
 #### options
 
 - `--database-url` _database-url_
-
   - Set the database URL
 
     May also be set with the `DATABASE_URL` environment variable.
@@ -84,7 +83,6 @@ stop/remove the database associated with the previous analysis.
 #### options
 
 - `--database-url` _database-url_
-
   - Set the database URL
 
     May also be set with the `DATABASE_URL` environment variable.
@@ -100,7 +98,6 @@ bna configure system [OPTIONS] CORES MEMORY_MB
 #### options
 
 - `--database-url` _database-url_
-
   - Set the database URL
 
     May also be set with the `DATABASE_URL` environment variable.
@@ -116,7 +113,6 @@ bna configure extensions [OPTIONS]
 #### options
 
 - `--database-url` _database-url_
-
   - Set the database URL
 
     May also be set with the `DATABASE_URL` environment variable.
@@ -132,7 +128,6 @@ bna configure schemas [OPTIONS] PGUSER
 #### options
 
 - `--database-url` _database-url_
-
   - Set the database URL
 
     May also be set with the `DATABASE_URL` environment variable.
@@ -189,19 +184,16 @@ values in the options.
 ### options
 
 - `--block-population` _block-population_
-
   - Population of a synthetic block for non-US cities.
 
     Defaults to 100.
 
 - `--block-size` _block-size_
-
   - Size of a synthetic block for non-US cities (in meters).
 
     Defaults to 500.
 
 - `--cache-dir` _cache-dir_
-
   - Path to the custom cache directory.
 
     Defaults to `./data`.
@@ -216,67 +208,56 @@ values in the options.
   Defaults to 30.
 
 - `--data-dir` _data-dir_ <<<<<<< HEAD
-
   - Directory where to store the files required for the analysis.
 
     Defaults to `./data`.
 
 - `--lodes-year` _lodes-year_ <<<<<<< HEAD
-
   - Year to use to retrieve US job data.
 
     Defaults to 2022.
 
 - `--mirror` _mirror_
-
   - Use a mirror to fetch the US census files.
 
     Defaults to `None`, meaning it fetches the data from the US census sites.
 
 - `--no-cache`
-
   - Disable the cache folder.
 
     Defaults to `False`.
 
 - `--mirror` _mirror_
-
   - Use a mirror to fetch the US census files.
 
     Defaults to `None`, meaning it fetches the data from the US census sites.
 
 - `--no-cache`
-
   - Disable the cache folder.
 
     Defaults to `False`.
 
 - `--mirror` _mirror_
-
   - Use a mirror to fetch the US census files.
 
     Defaults to `None`, meaning it fetches the data from the US census sites.
 
 - `--no-cache`
-
   - Disable the cache folder.
 
     Defaults to `False`.
 
 - `--mirror` _mirror_
-
   - Use a mirror to fetch the US census files.
 
     Defaults to `None`, meaning it fetches the data from the US census sites.
 
 - `--no-cache`
-
   - Disable the cache folder.
 
     Defaults to `False`.
 
 - `--retries` _retries_
-
   - Number of times to retry downloading files.
 
     Defaults to 2.
@@ -315,25 +296,21 @@ bna import all "united states" "santa rosa" "new mexico" 3570670 --data-dir data
 #### options
 
 - `--buffer` _buffer_
-
   - Define the buffer area
 
     Defaults to 2680.
 
 - `--data-dir` _data-dir_
-
   - Directory where the files to import are located.
 
   This is usually the output directory of the `prepare` command.
 
 - `--database-url` _database-url_
-
   - Set the database URL
 
   May also be set with the `DATABASE_URL` environment variable.
 
 - `--lodes-year` _lodes-year_
-
   - Year to use to retrieve US job data.
 
     Defaults to 2022
@@ -357,19 +334,16 @@ bna import jobs [OPTIONS] STATE_ABBREVIATION
 #### options
 
 - `--buffer` _buffer_
-
   - Define the buffer area
 
     Defaults to 2680.
 
 - `--data-dir` _data-dir_
-
   - Directory where the files to import are located.
 
     This is usually the output directory of the `prepare` command.
 
 - `--database-url` _database-url_
-
   - Set the database URL
 
     May also be set with the `DATABASE_URL` environment variable.
@@ -385,13 +359,11 @@ bna import osm [OPTIONS] COUNTRY CITY [REGION] [FIPS_CODE]
 #### options
 
 - `--data-dir` _data-dir_
-
   - Directory where the files to import are located.
 
     This is usually the output directory of the `prepare` command.
 
 - `--database-url` _database-url_
-
   - Set the database URL
 
     May also be set with the `DATABASE_URL` environment variable.
@@ -447,25 +419,21 @@ All the results will be stored in various tables in the database.
 ### options
 
 - `--buffer` _buffer_
-
   - Define the buffer area
 
     Defaults to 2680.
 
 - `--data-dir` _data-dir_
-
   - Directory where the files to import are located.
 
     This is usually the output directory of the `prepare` command.
 
 - `--database-url` _database-url_
-
   - Set the database URL
 
     May also be set with the `DATABASE_URL` environment variable.
 
 - `--with-parts` _parts_
-
   - Parts of the analysis to compute.
 
     Valid values are: `features`, `stress`, `connectivity`, and `measure`. This
@@ -546,13 +514,11 @@ if the analysis was run in June 2025 for the first time.
 #### options
 
 - `--database-url` _database-url_
-
   - Set the database URL
 
     May also be set with the `DATABASE_URL` environment variable.
 
 - `--with-bundle`
-
   - Add a zip archive which bundles the result files altogether.
 
     Defaults to no bundle.
@@ -568,13 +534,11 @@ bna export local-custom [OPTIONS] EXPORT_DIR
 #### options
 
 - `--database-url` _database-url_
-
   - Set the database URL
 
     May also be set with the `DATABASE_URL` environment variable.
 
 - `--with-bundle`
-
   - Add a zip archive which bundles the result files altogether.
 
     Defaults to no bundle.
@@ -601,13 +565,11 @@ my_s3_bucket
 #### options
 
 - `--database-url` _database-url_
-
   - Set the database URL
 
     May also be set with the `DATABASE_URL` environment variable.
 
 - `--with-bundle`
-
   - Add a zip archive which bundles the result files altogether.
 
     Defaults to no bundle.
@@ -631,19 +593,16 @@ my_s3_bucket
 #### options
 
 - `--database-url` _database-url_
-
   - Set the database URL
 
   May also be set with the `DATABASE_URL` environment variable.
 
 - `--s3-dir` _s3-dir_
-
   - Directory where to store the results within the S3 bucket.
 
     Defaults to the root of the bucket.
 
 - `--with-bundle`
-
   - Add a zip archive which bundles the result files altogether.
 
     Defaults to no bundle.
@@ -668,96 +627,80 @@ bna run "united states" "santa rosa" "new mexico" 3570670
 ### options
 
 - `--block-population` _block-population_
-
   - Population of a synthetic block for non-US cities.
 
     Defaults to 100.
 
 - `--block-size` _block-size_
-
   - Size of a synthetic block for non-US cities (in meters).
 
     Defaults to 500.
 
 - `--buffer` _buffer_
-
   - Define the buffer area
 
     Defaults to 2680.
 
 - `--cache-dir` _cache-dir_
-
   - Path to the custom cache directory.
 
     When sets, it replaces the default user cache directory (platform specific,
     see [bna cache dir](#cache)).
 
 - `--city-speed-limit` _city-speed-limit_ <
-
   - Override the default speed limit (in mph).
 
     Defaults to 30.
 
 - `--data-dir` _data-dir_
-
   - Directory where to store the files required for the analysis.
 
     Defaults to `./data`.
 
 - `--database-url` _database-url_
-
   - Set the database URL
 
     May also be set with the `DATABASE_URL` environment variable.
 
 - `--lodes-year` _lodes-year_ <
-
   - Year to use to retrieve US job data.
 
     Defaults to 2022.
 
 - `--max-trip-distance` _max-trip-distance_
-
   - Distance maximal of a trip.
 
     Defaults to 2680.
 
 - `--mirror` _mirror_
-
   - Use a mirror to fetch the US census files.
 
     Defaults to `None`, meaning it fetches the data from the US census sites.
 
 - `--no-cache`
-
   - Disable the cache folder.
 
     Defaults to `False`.
 
 - `--retries` _retries_
-
   - Number of times to retry downloading files.
 
     Defaults to 2.
 
 - `--s3-bucket` _s3-bucket_ <<<<<<< HEAD
-
   - S3 bucket to use to store the result files.
 
 - `--s3-dir` _s3-dir_
-
   - Directory where to store the results within the S3 bucket.
 
     Defaults to the root of the bucket.
 
 - `--with-bundle`
-
   - Add a zip archive which bundles the result files altogether.
 
     Defaults to no bundle.
 
 - `--with-export` _with-export_
-
   - Export strategy
 
     Valid values are: `none` `local` `s3` `s3_custom`.
@@ -765,7 +708,6 @@ bna run "united states" "santa rosa" "new mexico" 3570670
     Defaults to `local`.
 
 - `--with-parts` _parts_
-
   - Parts of the analysis to compute.
 
     Valid values are: `features`, `stress`, `connectivity`, and `measure`. This
@@ -792,102 +734,85 @@ environment.
 #### options
 
 - `--block-population` _block-population_ <<<<<<< HEAD
-
   - Population of a synthetic block for non-US cities.
 
     Defaults to 100.
 
 - `--block-size` _block-size_
-
   - Size of a synthetic block for non-US cities (in meters).
 
     Defaults to 500.
 
 - `--buffer` _buffer_
-
   - Define the buffer area
 
     Defaults to 2680.
 
 - `--cache-dir` _cache-dir_
-
   - Path to the custom cache directory.
 
     When sets, it replaces the default user cache directory (platform specific,
     see [bna cache dir](#cache)).
 
 - `--city-speed-limit` _city-speed-limit_
-
   - Override the default speed limit (in mph).
 
     Defaults to 30.
 
 - `--data-dir` _data-dir_
-
   - Directory where to store the files required for the analysis.
 
     Defaults to `./data`.
 
 - `--database-url` _database-url_
-
   - Set the database URL
 
     May also be set with the `DATABASE_URL` environment variable.
 
 - `--export-dir` _export-dir_
-
   - Directory where to export the results.
 
     Defaults to `./results`
 
 - `--lodes-year` _lodes-year_
-
   - Year to use to retrieve US job data.
 
     Defaults to 2022.
 
 - `--max-trip-distance` _max-trip-distance_
-
   - Distance maximal of a trip.
 
     Defaults to 2680.
 
 - `--mirror` _mirror_
-
   - Use a mirror to fetch the US census files.
 
     Defaults to `None`, meaning it fetches the data from the US census sites.
 
 - `--no-cache`
-
   - Disable the cache folder.
 
     Defaults to `False`.
 
 - `--retries` _retries_
-
   - Number of times to retry downloading files.
 
     Defaults to 2.
 
 - `--s3-bucket` _s3-bucket_
-
   - S3 bucket to use to store the result files.
 
 - `--s3-dir` _s3-dir_
-
   - Directory where to store the results within the S3 bucket.
 
     Defaults to the root of the bucket.
 
 - `--with-bundle`
-
   - Add a zip archive which bundles the result files altogether.
 
     Defaults to no bundle.
 
 - `--with-export` _with-export_
-
   - Export strategy
 
     Valid values are: `none` `local` `s3` `s3_custom`.
@@ -895,7 +820,6 @@ environment.
     Defaults to `local`.
 
 - `--with-parts` _parts_
-
   - Parts of the analysis to compute.
 
     Valid values are: `features`, `stress`, `connectivity`, and `measure`. This
@@ -918,13 +842,11 @@ bna cache clean [OPTIONS]
 #### options
 
 - `--dry-run`, `-n`
-
   - Dry run.
 
     Does not actually perform any action, but show the simulated results.
 
 - `--quiet`, `-q`
-
   - Quiet mode.
 
     Does not display any information on the output.

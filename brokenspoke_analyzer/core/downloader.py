@@ -218,20 +218,22 @@ def parse_latest_lodes_year(html: str, state: str, part: str, type_: str) -> int
             years.append(int(match.group(1)))
 
     if not years:
-        raise ValueError(f"cannot identify the lastest LODES year for `{parts}`")
+        raise ValueError(f"cannot identify the latest LODES year for `{parts}`")
 
     return max(years)
 
 
 async def autodetect_latest_lodes_year(
-    session: aiohttp.ClientSession, state: str
+    session: aiohttp.ClientSession, state_abbrev: str
 ) -> int:
-    """."""
+    """Return the latest year of LODES data available for a specific US state."""
+    # Puerto Rico is part of the US but the US Census Bureau never collected
+    # employment data. As a result we are just skipping it.
     PART = "aux"
     TYPE = "JT00"
-    lehd_url = f"{LODES_URL}/{state.lower()}/od"
-    logger.debug(f"Looking up latest LODES year for {state} {PART} {TYPE}")
+    lehd_url = f"{LODES_URL}/{state_abbrev.lower()}/od"
+    logger.debug(f"Looking up latest LODES year for {state_abbrev} {PART} {TYPE}")
     html_dir = await fetch_text(session=session, url=lehd_url)
-    latest_year = parse_latest_lodes_year(html_dir, state, PART, TYPE)
+    latest_year = parse_latest_lodes_year(html_dir, state_abbrev, PART, TYPE)
     logger.debug(f"Found year: {latest_year}")
     return latest_year
