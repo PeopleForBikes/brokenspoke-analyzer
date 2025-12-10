@@ -1,0 +1,172 @@
+[
+  {
+    "test_size": "XS",
+    "country": "australia",
+    "region": "australia",
+    "city": "orange",
+    "fips_code": 0,
+    "issues": "",
+    "prs": "",
+    "reason": "Australia has unusual ways of defining city boundaries, so alignment w/ OpenStreetMap named areas could be a challenge."
+  },
+  {
+    "test_size": "XS",
+    "country": "canada",
+    "region": "québec",
+    "city": "ancienne-lorette",
+    "fips_code": 0,
+    "issues": "",
+    "prs": "",
+    "reason": "Apostrophe, dash, accent in name."
+  },
+  {
+    "test_size": "M",
+    "country": "france",
+    "region": "rhone-alpes",
+    "city": "chambéry",
+    "fips_code": 0,
+    "issues": "",
+    "prs": "",
+    "reason": "Accented letter."
+  },
+  {
+    "test_size": "XL",
+    "country": "spain",
+    "region": "valencia",
+    "city": "valencia",
+    "fips_code": 0,
+    "issues": "",
+    "prs": "",
+    "reason": "A non-US city with a fantastic bike network."
+  },
+  {
+    "test_size": "M",
+    "country": "united states",
+    "region": "arizona",
+    "city": "flagstaff",
+    "fips_code": 423620,
+    "issues": "",
+    "prs": "",
+    "reason": "It was part of our initial test suite. Small enough, but quite complete."
+  },
+  {
+    "test_size": "M",
+    "country": "united states",
+    "region": "california",
+    "city": "arcata",
+    "fips_code": 602476,
+    "issues": "",
+    "prs": "",
+    "reason": "Has two disconnected polygons for city boundary."
+  },
+  {
+    "test_size": "S",
+    "country": "united states",
+    "region": "colorado",
+    "city": "cañon city",
+    "fips_code": 811810,
+    "issues": "",
+    "prs": "",
+    "reason": "Letter w/ tilde."
+  },
+  {
+    "test_size": "XS",
+    "country": "united states",
+    "region": "colorado",
+    "city": "crested butte",
+    "fips_code": 818310,
+    "issues": "",
+    "prs": "",
+    "reason": "The city has a space in its name."
+  },
+  {
+    "test_size": "XS",
+    "country": "united states",
+    "region": "delaware",
+    "city": "rehoboth beach",
+    "fips_code": 1060290,
+    "issues": "",
+    "prs": "",
+    "reason": "Contains ocean within city boundary so would interact with water blocks census file."
+  },
+  {
+    "test_size": "XXL",
+    "country": "united states",
+    "region": "district of columbia",
+    "city": "washington",
+    "fips_code": 1150000,
+    "issues": "",
+    "prs": 956,
+    "reason": "A very multi-modal city which is often recommended in PostGIS tutorials due to its completeness. Also it is not a 'true' US state, therefore it is another edge case."
+  },
+  {
+    "test_size": "XS",
+    "country": "united states",
+    "region": "massachusetts",
+    "city": "provincetown",
+    "fips_code": 2555535,
+    "issues": 983,
+    "prs": "",
+    "reason": "This is the US city with the highest score in the city rating. It is also small enough to run the tests in a few minutes."
+  },
+  {
+    "test_size": "S",
+    "country": "united states",
+    "region": "michigan",
+    "city": "ypsilanti",
+    "fips_code": 2689140,
+    "issues": 943,
+    "prs": "",
+    "reason": "The OSM data could not get imported due to invalid characters."
+  },
+  {
+    "test_size": "M",
+    "country": "united states",
+    "region": "minnesota",
+    "city": "st. louis park",
+    "fips_code": 2757220,
+    "issues": "",
+    "prs": "",
+    "reason": "Punctuation in name."
+  },
+  {
+    "test_size": "XS",
+    "country": "united states",
+    "region": "new mexico",
+    "city": "santa rosa",
+    "fips_code": 3570670,
+    "issues": "",
+    "prs": "",
+    "reason": "The city and the state have a space in their names."
+  },
+  {
+    "test_size": "S",
+    "country": "united states",
+    "region": "puerto rico",
+    "city": "san juan",
+    "fips_code": 7276770,
+    "issues": "",
+    "prs": 978,
+    "reason": "Puerto Rico is part of the US but the Census Bureau does not collect LODES data for it."
+  },
+  {
+    "test_size": "S",
+    "country": "united states",
+    "region": "texas",
+    "city": "alvarado",
+    "fips_code": 4802260,
+    "issues": "",
+    "prs": "",
+    "reason": "Two distinct polygons forming the city boundary."
+  },
+  {
+    "test_size": "S",
+    "country": "united states",
+    "region": "wyoming",
+    "city": "jackson",
+    "fips_code": 5640120,
+    "issues": "",
+    "prs": "",
+    "reason": "Local speed default of 25 mph that is different from the state's (30 mph)."
+  }
+]

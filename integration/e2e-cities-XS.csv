@@ -1,0 +1,7 @@
+test_size,country,region,city,fips_code,issues,prs,reason
+XS,australia,australia,orange,0,,,"Australia has unusual ways of defining city boundaries, so alignment w/ OpenStreetMap named areas could be a challenge."
+XS,canada,québec,ancienne-lorette,0,,,"Apostrophe, dash, accent in name."
+XS,united states,colorado,crested butte,0818310,,,The city has a space in its name.
+XS,united states,delaware,rehoboth beach,1060290,,,Contains ocean within city boundary so would interact with water blocks census file.
+XS,united states,massachusetts,provincetown,2555535,983,,This is the US city with the highest score in the city rating. It is also small enough to run the tests in a few minutes.
+XS,united states,new mexico,santa rosa,3570670,,,The city and the state have a space in their names.

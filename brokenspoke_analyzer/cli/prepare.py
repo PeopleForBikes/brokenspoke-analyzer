@@ -202,7 +202,11 @@ async def prepare_(
             with console.status("Downloading..."):
                 await bna_store.download_city_speed_limits(session)
 
-            if not lodes_year:
+            if state_abbrev.lower() in {"pr"}:
+                logger.warning(
+                    f"There is no LODES data for the state of '{state_abbrev}'"
+                )
+            elif not lodes_year:
                 console.log(f"[green]Autodetecting latest LODES year...")
                 try:
                     lodes_year = await downloader.autodetect_latest_lodes_year(
@@ -215,9 +219,11 @@ async def prepare_(
                     raise
                 console.log(f"[green]LODES year found: {lodes_year}")
 
-            console.log(f"[green]Fetching US employment data ({lodes_year})...")
-            with console.status("Downloading..."):
-                await bna_store.download_lodes_data(session, state_abbrev, lodes_year)
+                console.log(f"[green]Fetching US employment data ({lodes_year})...")
+                with console.status("Downloading..."):
+                    await bna_store.download_lodes_data(
+                        session, state_abbrev, lodes_year
+                    )
 
             console.log("[green]Fetching US census blocks (2020)...")
             with console.status("Downloading..."):
