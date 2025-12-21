@@ -1,0 +1,18 @@
+test_size,country,region,city,fips_code,issues,prs,reason
+XS,australia,australia,orange,0,,,"Australia has unusual ways of defining city boundaries, so alignment w/ OpenStreetMap named areas could be a challenge."
+XS,canada,québec,ancienne-lorette,0,,,"Apostrophe, dash, accent in name."
+M,france,rhone-alpes,chambéry,0,,,Accented letter.
+XL,spain,valencia,valencia,0,,,A non-US city with a fantastic bike network.
+M,united states,arizona,flagstaff,0423620,,,"It was part of our initial test suite. Small enough, but quite complete."
+M,united states,california,arcata,0602476,,,Has two disconnected polygons for city boundary.
+S,united states,colorado,cañon city,0811810,,,Letter w/ tilde.
+XS,united states,colorado,crested butte,0818310,,,The city has a space in its name.
+XS,united states,delaware,rehoboth beach,1060290,,,Contains ocean within city boundary so would interact with water blocks census file.
+XXL,united states,district of columbia,washington,1150000,,956,"A very multi-modal city which is often recommended in PostGIS tutorials due to its completeness. Also it is not a 'true' US state, therefore it is another edge case."
+XS,united states,massachusetts,provincetown,2555535,983,,This is the US city with the highest score in the city rating. It is also small enough to run the tests in a few minutes.
+S,united states,michigan,ypsilanti,2689140,943,,The OSM data could not get imported due to invalid characters.
+M,united states,minnesota,st. louis park,2757220,,,Punctuation in name.
+XS,united states,new mexico,santa rosa,3570670,,,The city and the state have a space in their names.
+S,united states,puerto rico,san juan,7276770,,978,Puerto Rico is part of the US but the Census Bureau does not collect LODES data for it.
+S,united states,texas,alvarado,4802260,,,Two distinct polygons forming the city boundary.
+S,united states,wyoming,jackson,5640120,,,Local speed default of 25 mph that is different from the state's (30 mph).

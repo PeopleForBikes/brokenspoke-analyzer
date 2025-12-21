@@ -1,0 +1,2 @@
+test_size,country,region,city,fips_code,issues,prs,reason
+XXL,united states,district of columbia,washington,1150000,,956,"A very multi-modal city which is often recommended in PostGIS tutorials due to its completeness. Also it is not a 'true' US state, therefore it is another edge case."

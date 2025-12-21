@@ -1,0 +1,6 @@
+test_size,country,region,city,fips_code,issues,prs,reason
+S,united states,colorado,cañon city,0811810,,,Letter w/ tilde.
+S,united states,michigan,ypsilanti,2689140,943,,The OSM data could not get imported due to invalid characters.
+S,united states,puerto rico,san juan,7276770,,978,Puerto Rico is part of the US but the Census Bureau does not collect LODES data for it.
+S,united states,texas,alvarado,4802260,,,Two distinct polygons forming the city boundary.
+S,united states,wyoming,jackson,5640120,,,Local speed default of 25 mph that is different from the state's (30 mph).
