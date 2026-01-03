@@ -28,6 +28,7 @@
    :caption: HOW-TO GUIDES:
 
    how-to/custom-input-files.md
+   how-to/analyze-bike-infrastructure.md
 
 .. toctree::
    :maxdepth: 1
@@ -44,6 +45,3 @@
    code-of-conduct
    CONTRIBUTING
    CHANGELOG
-
-
-
