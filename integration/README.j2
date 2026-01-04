@@ -1,0 +1,79 @@
+# Test cities
+
+## Sizes
+
+The sizes represent the duration of the tests.
+
+- 🔵 XS: runs under 5 min
+- 🟢 S: runs under 15 min
+- 🟡 M: runs under 60 min
+- 🟠 L: runs under 180 min (1/8 day)
+- 🔴 XL: runs under 360 min (1/4 day)
+- 🟣 XXL: runs under 720 min (1/2 day)
+
+## Test suite
+
+| **Test Size** | **Country** | **Region** | **City** | **FIPS Code** | **Issue Links** | **PR Links** | **Reason** |
+|---------------|-------------|------------|----------|---------------|-----------------|--------------|------------|
+{% for key, row in data.items() -%}
+|{{ row.test_size }}|{{ row.country_flag }}|{{ row.region }}|{{ key }}|{{ row.fips_code }}|{{ row.issues }}|{{ row.prs }}|{{ row.reason }}|
+{% endfor %}
+## Runinng the tests
+
+### Batches
+
+The test suites can either be ran in full (although it would take days to
+complete...) or it can use the files partitioned by test sizes
+(e.g. `e2e-cities-xs.csv).
+
+```bash
+uv run python utils/bna-batch.py e2e-cities-xs.csv
+```
+
+Specifying the analysis part to only be `measure` significantly speeds up the
+tests while running through the full process:
+
+```bash
+uv run python utils/bna-batch.py --with-parts measure e2e-cities-xs.csv
+```
+
+### Individual
+
+To run tests individualy we recommend using the `run-with compose` command.
+
+Export the `DATABASE_URL`:
+
+```bash
+export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
+```
+
+Here is the list of commands for all the test cities:
+
+```bash
+{% for key, row in data.items() -%}
+uv run bna run-with compose "{{ row.country }}" "{{ key }}" {% if row.region %}"{{ row.region }}"{% endif %} {{ row.fips_code if row.fips_code|int > 0 }}
+{% endfor %}
+```
+
+## Updating the tests
+
+If tests need to be updated or added, the master file is `e2e-cities.csv`. This
+is the entrypoint used for generating this file and the batch test files.
+
+The `Justfile` contains tasks to do so easily. It requires the [xan] tool to be
+installed locally.
+
+[xan]: https://github.com/medialab/xan/
+
+## JSON input
+
+This is mostly used for validatin our AWS pipeline since the list of cities to
+get processed is sent to AWS SQS in JSON format.
+
+SQS requires the input to be passed as JSON. For this reason, the CSV test file
+is being exported to JSON as well. Look for the `e2e-cities.json` file in this
+folder.
+
+## Adding more tests
+
+Simply edit the `e2e-cities.csv` file and run the `just test-e2e-prepare` command.

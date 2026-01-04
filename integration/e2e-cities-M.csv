@@ -1,0 +1,5 @@
+test_size,country,region,city,fips_code,issues,prs,reason
+M,france,rhone-alpes,chambéry,0,,,Accented letter.
+M,united states,arizona,flagstaff,0423620,,,"It was part of our initial test suite. Small enough, but quite complete."
+M,united states,california,arcata,0602476,,,Has two disconnected polygons for city boundary.
+M,united states,minnesota,st. louis park,2757220,,,Punctuation in name.
