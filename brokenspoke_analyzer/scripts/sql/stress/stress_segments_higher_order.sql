@@ -25,105 +25,42 @@ SET
         WHEN ft_bike_infra = 'track' THEN 1
         WHEN ft_bike_infra = 'buffered_lane'
             THEN CASE
-                WHEN COALESCE(speed_limit, :default_speed) > 35 THEN 3
-                WHEN COALESCE(speed_limit, :default_speed) = 35
+                WHEN COALESCE(speed_limit, :default_speed) > 25 THEN 3
+                WHEN COALESCE(speed_limit, :default_speed) <= 25
                     THEN CASE
                         WHEN COALESCE(ft_lanes, :default_lanes) > 1 THEN 3
-                        ELSE CASE
-                            WHEN COALESCE(ft_park, :default_parking) = 1 THEN 2
-                            ELSE 1
+                        ELSE 1
                         END
                     END
-                WHEN COALESCE(speed_limit, :default_speed) = 30
-                    THEN CASE
-                        WHEN COALESCE(ft_lanes, :default_lanes) > 1
-                            THEN CASE
-                                WHEN
-                                    COALESCE(ft_park, :default_parking) = 1
-                                    THEN 2
-                                ELSE 1
-                            END
-                        ELSE 1
-                    END
-                WHEN COALESCE(speed_limit, :default_speed) < 30 THEN 1
-                ELSE 3
             END
         -- bike lane with no parking
         WHEN ft_bike_infra = 'lane' AND COALESCE(ft_park, :default_parking) = 0
             THEN CASE
-                WHEN COALESCE(speed_limit, :default_speed) > 30 THEN 3
-                WHEN COALESCE(speed_limit, :default_speed) = 30
-                    THEN CASE
-                        WHEN COALESCE(ft_lanes, :default_lanes) > 1 THEN 3
-                        ELSE 1
-                    END
-                WHEN COALESCE(speed_limit, :default_speed) = 25
-                    THEN CASE
-                        WHEN COALESCE(ft_lanes, :default_lanes) > 1 THEN 3
-                        ELSE 1
-                    END
+                WHEN COALESCE(speed_limit, :default_speed) > 20 THEN 3
                 WHEN COALESCE(speed_limit, :default_speed) <= 20
                     THEN CASE
-                        WHEN COALESCE(ft_lanes, :default_lanes) > 2 THEN 3
+                        WHEN COALESCE(ft_lanes, :default_lanes) > 1 THEN 3
                         ELSE 1
                     END
-                ELSE 3
             END
         WHEN ft_bike_infra = 'lane' AND COALESCE(ft_park, :default_parking) = 1
             THEN CASE
-                -- treat as buffered lane
+                -- treat as conventional lane
                 WHEN
                     COALESCE(ft_bike_infra_width, :default_facility_width)
                     + :default_parking_width
-                    >= 15
+                    >= 12
                     THEN CASE
-                        WHEN COALESCE(speed_limit, :default_speed) > 35 THEN 3
-                        WHEN COALESCE(speed_limit, :default_speed) = 35 THEN 3
-                        WHEN COALESCE(speed_limit, :default_speed) = 30
-                            THEN CASE
-                                WHEN
-                                    COALESCE(ft_lanes, :default_lanes) > 1
-                                    THEN 2
-                                ELSE 1
-                            END
-                        WHEN COALESCE(speed_limit, :default_speed) < 30 THEN 1
-                        ELSE 3
-                    END
-                -- treat as bike lane with no parking
-                WHEN
-                    COALESCE(ft_bike_infra_width, :default_facility_width)
-                    + :default_parking_width
-                    >= 12.9
-                    THEN CASE
-                        WHEN COALESCE(speed_limit, :default_speed) > 30 THEN 3
-                        WHEN COALESCE(speed_limit, :default_speed) = 30
-                            THEN CASE
-                                WHEN
-                                    COALESCE(ft_lanes, :default_lanes) > 1
-                                    THEN 3
-                                ELSE 1
-                            END
-                        WHEN COALESCE(speed_limit, :default_speed) = 25
-                            THEN CASE
-                                WHEN
-                                    COALESCE(ft_lanes, :default_lanes) > 1
-                                    THEN 3
-                                ELSE 1
-                            END
+                        WHEN COALESCE(speed_limit, :default_speed) > 20 THEN 3
                         WHEN COALESCE(speed_limit, :default_speed) <= 20
                             THEN CASE
-                                WHEN
-                                    COALESCE(ft_lanes, :default_lanes) > 2
-                                    THEN 3
+                                WHEN COALESCE(ft_lanes, :default_lanes) > 1 THEN 3
                                 ELSE 1
-                            END
-                        ELSE 3
-                    END
-                ELSE 3
+                    ELSE 3 -- less than 12 ft
             END
         ELSE                -- shared lane
             CASE
-                WHEN COALESCE(speed_limit, :default_speed) <= 20
+                WHEN COALESCE(speed_limit, :default_speed) <= 15
                     THEN CASE
                         WHEN COALESCE(ft_lanes, :default_lanes) = 1 THEN 1
                         ELSE 3
@@ -133,113 +70,51 @@ SET
     END,
     tf_seg_stress
     = CASE
+        = CASE
         WHEN tf_bike_infra = 'track' THEN 1
         WHEN tf_bike_infra = 'buffered_lane'
             THEN CASE
-                WHEN COALESCE(speed_limit, :default_speed) > 35 THEN 3
-                WHEN COALESCE(speed_limit, :default_speed) = 35
+                WHEN COALESCE(speed_limit, :default_speed) > 25 THEN 3
+                WHEN COALESCE(speed_limit, :default_speed) <= 25
                     THEN CASE
                         WHEN COALESCE(tf_lanes, :default_lanes) > 1 THEN 3
-                        ELSE CASE
-                            WHEN COALESCE(tf_park, :default_parking) = 1 THEN 2
-                            ELSE 1
+                        ELSE 1
                         END
                     END
-                WHEN COALESCE(speed_limit, :default_speed) = 30
-                    THEN CASE
-                        WHEN COALESCE(tf_lanes, :default_lanes) > 1
-                            THEN CASE
-                                WHEN
-                                    COALESCE(tf_park, :default_parking) = 1
-                                    THEN 2
-                                ELSE 1
-                            END
-                        ELSE 1
-                    END
-                WHEN COALESCE(speed_limit, :default_speed) < 30 THEN 1
-                ELSE 3
             END
         -- bike lane with no parking
         WHEN tf_bike_infra = 'lane' AND COALESCE(tf_park, :default_parking) = 0
             THEN CASE
-                WHEN COALESCE(speed_limit, :default_speed) > 30 THEN 3
-                WHEN COALESCE(speed_limit, :default_speed) = 30
-                    THEN CASE
-                        WHEN COALESCE(tf_lanes, :default_lanes) > 1 THEN 3
-                        ELSE 1
-                    END
-                WHEN COALESCE(speed_limit, :default_speed) = 25
-                    THEN CASE
-                        WHEN COALESCE(tf_lanes, :default_lanes) > 1 THEN 3
-                        ELSE 1
-                    END
+                WHEN COALESCE(speed_limit, :default_speed) > 20 THEN 3
                 WHEN COALESCE(speed_limit, :default_speed) <= 20
                     THEN CASE
-                        WHEN COALESCE(tf_lanes, :default_lanes) > 2 THEN 3
+                        WHEN COALESCE(tf_lanes, :default_lanes) > 1 THEN 3
                         ELSE 1
                     END
-                ELSE 3
             END
         WHEN tf_bike_infra = 'lane' AND COALESCE(tf_park, :default_parking) = 1
             THEN CASE
-                -- treat as buffered lane
+                -- treat as conventional lane
                 WHEN
                     COALESCE(tf_bike_infra_width, :default_facility_width)
                     + :default_parking_width
-                    >= 15
+                    >= 12
                     THEN CASE
-                        WHEN COALESCE(speed_limit, :default_speed) > 35 THEN 3
-                        WHEN COALESCE(speed_limit, :default_speed) = 35 THEN 3
-                        WHEN COALESCE(speed_limit, :default_speed) = 30
-                            THEN CASE
-                                WHEN
-                                    COALESCE(tf_lanes, :default_lanes) > 1
-                                    THEN 2
-                                ELSE 1
-                            END
-                        WHEN COALESCE(speed_limit, :default_speed) < 30 THEN 1
-                        ELSE 3
-                    END
-                -- treat as bike lane with no parking
-                WHEN
-                    COALESCE(tf_bike_infra_width, :default_facility_width)
-                    + :default_parking_width
-                    >= 12.9
-                    THEN CASE
-                        WHEN COALESCE(speed_limit, :default_speed) > 30 THEN 3
-                        WHEN COALESCE(speed_limit, :default_speed) = 30
-                            THEN CASE
-                                WHEN
-                                    COALESCE(tf_lanes, :default_lanes) > 1
-                                    THEN 3
-                                ELSE 1
-                            END
-                        WHEN COALESCE(speed_limit, :default_speed) = 25
-                            THEN CASE
-                                WHEN
-                                    COALESCE(tf_lanes, :default_lanes) > 1
-                                    THEN 3
-                                ELSE 1
-                            END
+                        WHEN COALESCE(speed_limit, :default_speed) > 20 THEN 3
                         WHEN COALESCE(speed_limit, :default_speed) <= 20
                             THEN CASE
-                                WHEN
-                                    COALESCE(tf_lanes, :default_lanes) > 2
-                                    THEN 3
+                                WHEN COALESCE(tf_lanes, :default_lanes) > 1 THEN 3
                                 ELSE 1
-                            END
-                        ELSE 3
-                    END
-                ELSE 3
+                    ELSE 3 -- less than 12 ft
             END
         ELSE                -- shared lane
             CASE
-                WHEN COALESCE(speed_limit, :default_speed) <= 20
+                WHEN COALESCE(speed_limit, :default_speed) <= 15
                     THEN CASE
                         WHEN COALESCE(tf_lanes, :default_lanes) = 1 THEN 1
                         ELSE 3
                     END
                 ELSE 3
             END
-    END
+    END,
 WHERE functional_class IN (':class', ':class' || '_link');
