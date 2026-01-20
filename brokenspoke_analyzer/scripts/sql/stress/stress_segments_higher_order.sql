@@ -136,5 +136,5 @@ SET
                     END
                 ELSE 3
             END
-    END,
+    END
 WHERE functional_class IN (':class', ':class' || '_link');
