@@ -89,7 +89,7 @@ OSM_CACHE_FILE_SUFFIX = ".pbf.md5"
 def main(
     batch_file: BatchFile = "cities.csv",
     lodes_year: common.LODESYear = None,
-    parts: common.ComputeParts = [constant.ComputePart.MEASURE],
+    parts: common.ComputeParts = [constant.ComputePart.STRESS],
 ):
     """Process a batch of cities."""
     # Disable logging.
