@@ -97,7 +97,10 @@ WHERE
         )
         OR osm.access NOT IN ('no', 'private')
     )
-    AND COALESCE(width_ft, 0) >= 8;
+    AND (
+        osm.bicycle = 'designated'
+        OR COALESCE(width_ft, 0) >= 8
+    );
 
 UPDATE neighborhood_ways
 SET functional_class = 'unclassified'
