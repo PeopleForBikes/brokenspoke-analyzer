@@ -15,10 +15,13 @@ from obstore.store import (
 )
 
 from brokenspoke_analyzer.core import (
+    constant,
     downloader,
     file_utils,
+    runner,
     utils,
 )
+from brokenspoke_analyzer.pyrosm import data
 
 if TYPE_CHECKING:
     from obstore.store import ObjectStore
@@ -237,3 +240,32 @@ class BNADataStore:
         utils.prepare_census_blocks(
             self.store.prefix / tabblk2020_zip, self.store.prefix
         )
+
+    async def download_osm_data(
+        self, session: aiohttp.ClientSession, region: str
+    ) -> typing.Any:
+        """Retrieve the region file from Geofabrik or BBike."""
+        # As per https://github.com/PeopleForBikes/brokenspoke-analyzer/issues/863
+        # we must define an exception for the countries of Malaysia, Singapore and
+        # Brunei as they have been grouped together in the Geofabrik dataset.
+        # import pdb; pdb.set_trace()
+        if region in {"malaysia", "singapore", "brunei"}:
+            region = "malaysia_singapore_brunei"
+        dataset = utils.normalize_unicode_name(region)
+        dataset_data = data.get_download_data(dataset)  # type: ignore
+
+        await self.fetch(session, dataset_data["url"], dataset_data["name"])
+
+        region_file_path = self.store.prefix / dataset_data["name"]
+        if not region_file_path.exists():
+            raise ValueError(f"the path `{region_file_path}` does not exist")
+
+        await self.fetch(
+            session, dataset_data["url"] + ".md5", dataset_data["name"] + ".md5"
+        )
+
+        region_file_path_md5 = self.store.prefix / (dataset_data["name"] + ".md5")
+        if not utils.file_checksum_ok(region_file_path, region_file_path_md5):
+            raise ValueError("Invalid OSM region file")
+
+        return dataset_data["name"]
