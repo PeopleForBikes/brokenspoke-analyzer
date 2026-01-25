@@ -21,7 +21,7 @@ SET
     END,
     tf_seg_stress
     = CASE
-        WHEN COALESCE(speed_limit, :default_speed) = 25 THEN 1
+        WHEN COALESCE(speed_limit, :default_speed) <= 25 THEN 1
         ELSE 3
     END
 WHERE functional_class = ':class';
