@@ -29,7 +29,7 @@ SELECT
     way
 FROM neighborhood_osm_full_polygon
 WHERE
-    amenity = 'bus_station'
+    amenity IN ('bus_station', 'ferry_terminal')
     OR railway = 'station'
     OR public_transport = 'station';
 
@@ -62,7 +62,7 @@ SELECT
     )
 FROM neighborhood_osm_full_point
 WHERE (
-    amenity = 'bus_station'
+    amenity IN ('bus_station', 'ferry_terminal')
     OR railway = 'station'
     OR public_transport = 'station'
 )
