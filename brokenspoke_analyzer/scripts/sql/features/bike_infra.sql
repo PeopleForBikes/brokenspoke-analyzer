@@ -32,20 +32,18 @@ SET
         WHEN
             (
                 osm."cycleway:right" = 'track'
-                AND osm."oneway:bicycle" = 'no'
                 AND (
-                    osm."cycleway:right:oneway" != '-1'
-                    OR osm."cycleway:right:oneway" IS NULL
+                    osm."oneway:bicycle" = 'no'
+                    OR osm."cycleway:right:oneway" = 'no'
                 )
             )
             THEN 'track'
         WHEN
             (
                 osm."cycleway:left" = 'track'
-                AND osm."oneway:bicycle" = 'no'
                 AND (
-                    osm."cycleway:left:oneway" != '-1'
-                    OR osm."cycleway:left:oneway" IS NULL
+                    osm."oneway:bicycle" = 'no'
+                    OR osm."cycleway:left:oneway" = 'no'
                 )
             )
             THEN 'track'
@@ -281,20 +279,18 @@ SET
         WHEN
             (
                 osm."cycleway:right" = 'track'
-                AND osm."oneway:bicycle" = 'no'
                 AND (
-                    osm."cycleway:right:oneway" != '-1'
-                    OR osm."cycleway:right:oneway" IS NULL
+                    osm."oneway:bicycle" = 'no'
+                    OR osm."cycleway:right:oneway" = 'no'
                 )
             )
             THEN 'track'
         WHEN
             (
                 osm."cycleway:left" = 'track'
-                AND osm."oneway:bicycle" = 'no'
                 AND (
-                    osm."cycleway:left:oneway" != '-1'
-                    OR osm."cycleway:left:oneway" IS NULL
+                    osm."oneway:bicycle" = 'no'
+                    OR osm."cycleway:left:oneway" = 'no'
                 )
             )
             THEN 'track'
