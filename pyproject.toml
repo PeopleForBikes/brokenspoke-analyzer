@@ -1,6 +1,6 @@
 [project]
 name = "brokenspoke-analyzer"
-version = "2.6.5"
+version = "3.0.0"
 description = "Run a BNA analysis locally."
 authors = [
   { name = "Rémy Greinhofer", email = "remy.greinhofer@gmail.com" },
