@@ -116,9 +116,6 @@ def stress(
         "class": "primary",
         "default_speed": 40,
         "default_lanes": 2,
-        "default_parking": 1,
-        "default_parking_width": 8,
-        "default_facility_width": 5,
     }
     execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
 
@@ -129,9 +126,6 @@ def stress(
         "class": "secondary",
         "default_speed": 40,
         "default_lanes": 2,
-        "default_parking": 1,
-        "default_parking_width": 8,
-        "default_facility_width": 5,
     }
     execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
 
@@ -142,9 +136,6 @@ def stress(
         "class": "tertiary",
         "default_speed": 30,
         "default_lanes": 1,
-        "default_parking": 1,
-        "default_parking_width": 8,
-        "default_facility_width": 5,
     }
     execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
 
@@ -154,8 +145,6 @@ def stress(
     bind_params = {
         "class": "residential",
         "default_lanes": 1,
-        "default_parking": 1,
-        "default_roadway_width": 27,
         "state_default": state_default_speed,
         "city_default": city_default_speed,
     }
@@ -168,8 +157,6 @@ def stress(
         "class": "unclassified",
         "default_speed": 25,
         "default_lanes": 1,
-        "default_parking": 1,
-        "default_roadway_width": 27,
     }
     execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
     sql_scripts = [
