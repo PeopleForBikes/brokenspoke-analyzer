@@ -117,7 +117,7 @@ jobs:
 
           echo "Ensure neighborhood_overall_scores table contains 23 records."
           ACTUAL=$(psql -t -c "SELECT COUNT(*) FROM neighborhood_overall_scores;" $DATABASE_URL)
-          test $ACTUAL -eq 23
+          test $ACTUAL -eq 24
 
   docker-integration:
     runs-on: ubuntu-latest

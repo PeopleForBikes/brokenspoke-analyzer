@@ -655,6 +655,31 @@ SELECT
     ),
     NULL; -- noqa: AL03
 
+INSERT INTO generated.neighborhood_overall_scores (
+    score_id, score_original, human_explanation
+)
+SELECT
+    'weighted_overall_score', -- noqa: AL03
+    ( -- noqa: AL03
+        SELECT
+            SUM(
+                weighted_score
+            ) AS weighted_overall_score
+        FROM (
+            SELECT
+                ncb.overall_score
+                / 100
+                * ncb.pop20
+                / (
+                    SELECT SUM(ncb2.pop20)
+                    FROM neighborhood_census_blocks AS ncb2
+                ) AS weighted_score
+            FROM neighborhood_census_blocks AS ncb
+            WHERE ncb.pop20 > 0
+        )
+    ),
+    NULL; -- noqa: AL03
+
 -- normalize
 UPDATE generated.neighborhood_overall_scores
 SET score_normalized = score_original * :total;
