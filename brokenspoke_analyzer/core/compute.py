@@ -74,6 +74,32 @@ def features(
         sql_script = sql_feature_script_dir / script
         dbcore.execute_sql_file(engine, sql_script)
     sql_script = sql_feature_script_dir / "paths.sql"
+
+    logger.info("Remove routable unpaved ways")
+    dbcore.execute_query(
+        engine,
+        """
+        DELETE FROM neighborhood_ways w
+        USING neighborhood_osm_full_line o
+        WHERE
+            w.osm_id = o.osm_id AND surface IN (
+                'dirt',
+                'unpaved',
+                'sand',
+                'compacted',
+                'ground',
+                'rock',
+                'soil',
+                'earth',
+                'gravel',
+                'woodchips',
+                'fine_gravel',
+                'mud',
+                'grass'
+            );
+        """,
+    )
+
     bind_params = {"nb_output_srid": output_srid}
     execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
     sql_scripts = [
