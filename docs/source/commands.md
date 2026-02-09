@@ -201,51 +201,21 @@ values in the options.
     When sets, it replaces the default user cache directory (platform specific,
     see [bna cache dir](#cache)).
 
-- `--city-speed-limit` _city-speed-limit_ <<<<<<< HEAD
+- `--city-speed-limit` _city-speed-limit_
 
 - Override the default speed limit (in mph).
 
   Defaults to 30.
 
-- `--data-dir` _data-dir_ <<<<<<< HEAD
+- `--data-dir` _data-dir_
   - Directory where to store the files required for the analysis.
 
     Defaults to `./data`.
 
-- `--lodes-year` _lodes-year_ <<<<<<< HEAD
+- `--lodes-year` _lodes-year_
   - Year to use to retrieve US job data.
 
     Defaults to 2022.
-
-- `--mirror` _mirror_
-  - Use a mirror to fetch the US census files.
-
-    Defaults to `None`, meaning it fetches the data from the US census sites.
-
-- `--no-cache`
-  - Disable the cache folder.
-
-    Defaults to `False`.
-
-- `--mirror` _mirror_
-  - Use a mirror to fetch the US census files.
-
-    Defaults to `None`, meaning it fetches the data from the US census sites.
-
-- `--no-cache`
-  - Disable the cache folder.
-
-    Defaults to `False`.
-
-- `--mirror` _mirror_
-  - Use a mirror to fetch the US census files.
-
-    Defaults to `None`, meaning it fetches the data from the US census sites.
-
-- `--no-cache`
-  - Disable the cache folder.
-
-    Defaults to `False`.
 
 - `--mirror` _mirror_
   - Use a mirror to fetch the US census files.
@@ -687,7 +657,7 @@ bna run "united states" "santa rosa" "new mexico" 3570670
 
     Defaults to 2.
 
-- `--s3-bucket` _s3-bucket_ <<<<<<< HEAD
+- `--s3-bucket` _s3-bucket_
   - S3 bucket to use to store the result files.
 
 - `--s3-dir` _s3-dir_
@@ -733,7 +703,7 @@ environment.
 
 #### options
 
-- `--block-population` _block-population_ <<<<<<< HEAD
+- `--block-population` _block-population_
   - Population of a synthetic block for non-US cities.
 
     Defaults to 100.
