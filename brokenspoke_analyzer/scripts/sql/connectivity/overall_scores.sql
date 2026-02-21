@@ -673,9 +673,10 @@ SELECT
                 / (
                     SELECT SUM(ncb2.pop20)
                     FROM neighborhood_census_blocks AS ncb2
+                    WHERE ncb2.reachable_blocks > 0
                 ) AS weighted_score
             FROM neighborhood_census_blocks AS ncb
-            WHERE ncb.pop20 > 0
+            WHERE ncb.pop20 > 0 AND ncb.reachable_blocks > 0
         )
     ),
     NULL; -- noqa: AL03
