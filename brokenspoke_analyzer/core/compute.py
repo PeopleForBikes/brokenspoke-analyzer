@@ -333,7 +333,9 @@ def connectivity(
             sql_connectivity_script_dir
             / f"reachable_roads_{stress_level}_stress_calc.sql"
         )
-        with concurrent.futures.ThreadPoolExecutor() as executor:
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=os.process_cpu_count()
+        ) as executor:
             future_to_road_id = {
                 executor.submit(
                     execute_sqlfile_with_substitutions,
@@ -370,7 +372,9 @@ def connectivity(
     census_block_ids = list(chain.from_iterable(result))
     census_block_ids.sort()
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
+    with concurrent.futures.ThreadPoolExecutor(
+        max_workers=os.process_cpu_count()
+    ) as executor:
         future_to_census_block_id = {
             executor.submit(
                 execute_sqlfile_with_substitutions,
