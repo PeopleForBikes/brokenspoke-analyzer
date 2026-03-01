@@ -267,10 +267,6 @@ WHERE
     AND roads1.road_id != roads2.road_id;
 
 -- index
-CREATE INDEX idx_neighborhood_ways_net_vert_road_id
-ON received.neighborhood_ways_net_vert (
-    road_id
-);
 CREATE INDEX idx_neighborhood_ways_net_link_int_id
 ON received.neighborhood_ways_net_link (
     int_id
