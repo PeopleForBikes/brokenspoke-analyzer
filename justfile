@@ -11,7 +11,7 @@ e2e_cities_json := e2e_test_dir / "e2e-cities.json"
 ci: lint docs test
 
 # Meta task running all the linters at once.
-lint: lint-md lint-python lint-sql
+lint: lint-md lint-python lint-sql lint-uv
 
 # Lint markown files.
 lint-md:
@@ -27,6 +27,10 @@ lint-python:
 # Lint SQL files.
 lint-sql:
     uv run sqlfluff lint brokenspoke_analyzer/scripts/sql/
+
+# Check uv.lock is synced
+lint-uv:
+    uv lock --check
 
 # Meta tasks running all formatters at once.
 fmt: fmt-md fmt-python fmt-just
