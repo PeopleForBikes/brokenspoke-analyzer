@@ -2,7 +2,7 @@
 -- INPUTS
 -- location: neighborhood
 -- :nb_max_trip_distance psql var must be set before running this script,
---      e.g. psql -v nb_max_trip_distance=2680 -f reachable_roads_high_stress_calc.sql
+--      e.g. psql -v nb_max_trip_distance=2680 -v road_id=1 -f reachable_roads_high_stress_calc.sql
 ----------------------------------------
 INSERT INTO generated.neighborhood_reachable_roads_high_stress (
     base_road,
@@ -16,19 +16,20 @@ SELECT
 FROM neighborhood_ways AS r1,
     neighborhood_ways_net_vert AS v1,
     neighborhood_ways_net_vert AS v2,
+    -- WHERE clause for neighborhood_ways_net_link based on road_id?
     PGR_DRIVINGDISTANCE(
         '
             SELECT  link_id AS id,
                     source_vert AS source,
                     target_vert AS target,
                     link_cost AS cost
-            FROM    neighborhood_ways_net_link',
+            FROM    neighborhood_ways_net_link l WHERE ST_DWithin(l.geom, (select ST_Union(geom) from neighborhood_ways where road_id =' || :road_id || '), ' || :nb_max_trip_distance + 100 || ')',
         v1.vert_id,
         :nb_max_trip_distance,
         directed := true  -- noqa: RF02
     ) AS sheds
 WHERE
-    r1.road_id % :thread_num = :thread_no
+    r1.road_id = :road_id
     AND
     EXISTS (
         SELECT 1
