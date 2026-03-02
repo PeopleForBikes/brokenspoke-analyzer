@@ -6,8 +6,6 @@
 --      :class -> functional class to operate on
 --      :default_speed -> assumed speed limit
 --      :default_lanes -> assumed number of lanes
---      :default_parking -> assumed parking 1/0
---      :default_roadway_width -> assumed width of roadway
 ----------------------------------------
 UPDATE received.neighborhood_ways SET ft_seg_stress = NULL, tf_seg_stress = NULL
 WHERE functional_class = ':class';
