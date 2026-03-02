@@ -30,8 +30,11 @@ SELECT
 FROM neighborhood_osm_full_polygon
 WHERE
     amenity = 'bus_station'
-    OR railway = 'station'
-    OR public_transport = 'station';
+    OR (railway = 'station' AND (station IS NULL OR station != 'miniature'))
+    OR (
+        public_transport = 'station'
+        AND NOT (railway = 'station' AND station = 'miniature')
+    );
 
 -- remove subareas
 DELETE FROM generated.neighborhood_transit
@@ -63,8 +66,14 @@ SELECT
 FROM neighborhood_osm_full_point
 WHERE (
     amenity = 'bus_station'
-    OR railway = 'station'
-    OR public_transport = 'station'
+    OR (
+        railway = 'station'
+        AND (station IS NULL OR station != 'miniature')
+    )
+    OR (
+        public_transport = 'station'
+        AND NOT (railway = 'station' AND station = 'miniature')
+    )
 )
 AND NOT EXISTS (
     SELECT 1
