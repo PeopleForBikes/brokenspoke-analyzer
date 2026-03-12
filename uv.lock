@@ -350,7 +350,7 @@ requires-dist = [
     { name = "rich", specifier = ">=14.3.1,<15" },
     { name = "sqlalchemy", extras = ["asyncio", "postgresql-psycopg"], specifier = ">=2.0.46,<3" },
     { name = "tenacity", specifier = ">=9.1.2,<10" },
-    { name = "typer", specifier = ">=0.21.1,<0.22" },
+    { name = "typer", specifier = ">=0.21.1,<0.25" },
     { name = "us", specifier = ">=3.2.0,<4" },
 ]
 
@@ -358,12 +358,12 @@ requires-dist = [
 dev = [
     { name = "bpython", specifier = ">=0.26,<0.27" },
     { name = "furo", specifier = ">=2025.12.19,<2026" },
-    { name = "isort", specifier = ">=7.0.0,<8" },
+    { name = "isort", specifier = ">=7.0.0,<9" },
     { name = "jupyterlab", specifier = ">=4.5.3,<5" },
     { name = "minijinja", specifier = ">=2.13.0" },
     { name = "mypy", specifier = ">=1.19.1,<2" },
     { name = "myst-parser", specifier = ">=5.0.0,<6" },
-    { name = "pandas-stubs", specifier = ">=2.3.3.260113,<3" },
+    { name = "pandas-stubs", specifier = ">=2.3.3.260113,<4" },
     { name = "pytest", specifier = ">=9.0.1,<10" },
     { name = "pytest-cov", specifier = ">=7.0.0,<8" },
     { name = "pytest-mock", specifier = ">=3.15.1,<4" },
