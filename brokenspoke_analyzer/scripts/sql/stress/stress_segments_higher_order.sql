@@ -59,9 +59,9 @@ SET
                     THEN CASE
                         -- speed limit > 25
                         WHEN
-                            COALESCE(speed_limit, :default_speed) > 25
+                            COALESCE(speed_limit, :default_speed) > 20
                             THEN 3
-                        WHEN COALESCE(speed_limit, :default_speed) <= 25
+                        WHEN COALESCE(speed_limit, :default_speed) <= 20
                             THEN CASE
                                 WHEN
                                     COALESCE(ft_lanes, :default_lanes) > 1
@@ -114,7 +114,7 @@ SET
                 ELSE 3
             END
 
-        WHEN tf_bike_infra = 'lane' AND COALESCE(ft_park, :default_parking) = 1
+        WHEN tf_bike_infra = 'lane' AND COALESCE(tf_park, :default_parking) = 1
             THEN CASE
                 -- treat as conventional lane
                 WHEN
@@ -123,9 +123,9 @@ SET
                     THEN CASE
                         -- speed limit > 25
                         WHEN
-                            COALESCE(speed_limit, :default_speed) > 25
+                            COALESCE(speed_limit, :default_speed) > 20
                             THEN 3
-                        WHEN COALESCE(speed_limit, :default_speed) <= 25
+                        WHEN COALESCE(speed_limit, :default_speed) <= 20
                             THEN CASE
                                 WHEN
                                     COALESCE(tf_lanes, :default_lanes) > 1
