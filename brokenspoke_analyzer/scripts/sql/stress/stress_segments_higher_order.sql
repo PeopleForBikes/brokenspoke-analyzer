@@ -114,7 +114,7 @@ SET
                 ELSE 3
             END
 
-        WHEN tf_bike_infra = 'lane' AND COALESCE(ft_park, :default_parking) = 1
+        WHEN tf_bike_infra = 'lane' AND COALESCE(tf_park, :default_parking) = 1
             THEN CASE
                 -- treat as conventional lane
                 WHEN
