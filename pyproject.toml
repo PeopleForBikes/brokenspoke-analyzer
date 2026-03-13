@@ -24,7 +24,7 @@ dependencies = [
   "rich>=14.3.1,<15",
   "sqlalchemy[asyncio, postgresql_psycopg]>=2.0.46,<3",
   "tenacity>=9.1.2,<10",
-  "typer>=0.21.1,<0.22",
+  "typer>=0.21.1,<0.25",
   "us>=3.2.0,<4",
 ]
 
@@ -35,7 +35,7 @@ bna = "brokenspoke_analyzer.cli.root:app"
 dev = [
   "bpython>=0.26,<0.27",
   "furo>=2025.12.19,<2026",
-  "isort>=7.0.0,<8",
+  "isort>=7.0.0,<9",
   "jupyterlab>=4.5.3,<5",
   "mypy>=1.19.1,<2",
   "myst-parser>=5.0.0,<6",
