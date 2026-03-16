@@ -45,7 +45,9 @@ SET
                         WHEN COALESCE(ft_lanes, :default_lanes) > 1 THEN 3
                         ELSE CASE -- lanes = 1
                             WHEN
-                                COALESCE(ft_bike_infra_width, :default_facility_width)
+                                COALESCE(
+                                    ft_bike_infra_width, :default_facility_width
+                                )
                                 >= 4 THEN 1
                             ELSE 3 -- less than 4 ft
                         END
@@ -92,7 +94,9 @@ SET
                         WHEN COALESCE(tf_lanes, :default_lanes) > 1 THEN 3
                         ELSE CASE -- lanes = 1
                             WHEN
-                                COALESCE(tf_bike_infra_width, :default_facility_width)
+                                COALESCE(
+                                    tf_bike_infra_width, :default_facility_width
+                                )
                                 >= 4 THEN 1
                             ELSE 3 -- less than 4 ft
                         END
