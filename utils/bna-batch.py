@@ -82,8 +82,6 @@ BatchFile = Annotated[
 ]
 DATA_DIR = pathlib.Path("./data").resolve()
 MAX_RETRIES = 2
-OSM_CACHE_DIR = pathlib.Path("./osm_cache").resolve()
-OSM_CACHE_FILE_SUFFIX = ".pbf.md5"
 
 
 def main(
@@ -100,10 +98,6 @@ def main(
 
     # Enable cache.
     os.environ["BNA_CACHING_STRATEGY"] = "USER_CACHE"
-
-    # Simulate a caching mechanism for OSM data.
-    osm_cache = OSM_CACHE_DIR
-    osm_cache.mkdir(parents=True, exist_ok=True)
 
     # Prepare the Rich output.
     console = rich.get_console()
@@ -125,31 +119,6 @@ def main(
             city = row["city"]
             region = row.get("region") if row.get("region") else country
             fips_code = row["fips_code"]
-
-            # Download the OSM data into the cache if necessary.
-            console.log(
-                f"[green]Caching the OSM region file for {region}...",
-            )
-            with console.status("Downloading..."):
-                try:
-                    cached_region_file = retryer(
-                        analysis.retrieve_region_file, region, osm_cache
-                    )
-                    cached_region_file_md5 = cached_region_file.with_suffix(
-                        OSM_CACHE_FILE_SUFFIX
-                    )
-                except Exception as e:
-                    print(e)
-                    return
-
-            # Prepare the data directory ahead of the analysis.
-            _, _, slug = analysis.osmnx_query(country, city, region)
-            data_dir = DATA_DIR / slug
-            data_dir.mkdir(parents=True, exist_ok=True)
-
-            # Copy the OSM data into the data directory.
-            shutil.copy(cached_region_file, data_dir)
-            shutil.copy(cached_region_file_md5, data_dir)
 
             # Run the analysis.
             run_with.compose(
