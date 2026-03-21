@@ -124,7 +124,7 @@ async def prepare_(
     retryer = Retrying(
         stop=stop_after_attempt(retries),
         reraise=True,
-        before=before_log(logger, logging.DEBUG),  # type: ignore
+        before=before_log(logger, logging.DEBUG),
     )
 
     # Retrieve city boundaries.
