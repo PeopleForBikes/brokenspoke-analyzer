@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [3.1.0] - 2026-04-01
+
+### Fixed
+
+### Changed
+
+### Added
+
+[3.1.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/3.1.0
+
 ## [3.0.0] - 2026-01-28
 
 We are thrilled to announce the release of version 3.0.0, our latest milestone
