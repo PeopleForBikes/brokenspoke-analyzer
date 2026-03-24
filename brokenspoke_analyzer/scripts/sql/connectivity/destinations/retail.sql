@@ -25,15 +25,38 @@ SELECT
     ST_Multi(
         ST_Buffer(
             ST_CollectionExtract(
-                unnest(ST_ClusterWithin(way, :cluster_tolerance)), 3
+                unnest(
+                    ST_ClusterWithin(
+                        (
+                            SELECT array_agg(geom)
+                            FROM (
+                                SELECT way AS geom
+                                FROM neighborhood_osm_full_polygon
+                                WHERE
+                                    landuse = 'retail'
+                                    OR building = 'retail'
+                                    OR (
+                                        shop IS NOT NULL
+                                        AND shop NOT IN ('no', 'supermarket')
+                                    )
+
+                                UNION ALL
+
+                                SELECT ST_Buffer(way, 10) AS geom
+                                FROM neighborhood_osm_full_point
+                                WHERE
+                                    shop IS NOT NULL
+                                    AND shop NOT IN ('no', 'supermarket')
+                            ) AS combined
+                        ),
+                        :cluster_tolerance
+                    )
+                ),
+                3
             ),
             0
         )
-    )
-FROM neighborhood_osm_full_polygon
-WHERE
-    landuse = 'retail'
-    OR building = 'retail';
+    );
 
 -- set points on polygons
 UPDATE generated.neighborhood_retail
