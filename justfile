@@ -106,10 +106,9 @@ list-outdated:
     uv pip list --outdated
 
 # Generate the e2e test files and documentation.
-
-# Uses https://github.com/medialab/xan.
 test-e2e-prepare:
     xan sort -s country,region,city {{ e2e_cities_csv }}  -o {{ e2e_cities_csv }}
     xan partition --filename e2e-cities-{}.csv test_size {{ e2e_cities_csv }} -O {{ e2e_test_dir }}
-    xan to json {{ e2e_cities_csv }} -o {{ e2e_cities_json }}
+    xan to json {{ e2e_cities_csv }} --strings fips_code -o {{ e2e_cities_json }}
     uv run integration/x.py {{ e2e_cities_csv }} {{ e2e_test_dir }}/README.j2
+    npx --yes prettier --write --prose-wrap always {{ e2e_test_dir }}/README.md
