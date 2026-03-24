@@ -110,7 +110,8 @@ ALTER TABLE neighborhood_census_blocks ADD COLUMN community_centers_score FLOAT;
 ALTER TABLE neighborhood_census_blocks ADD COLUMN transit_low_stress INT;
 ALTER TABLE neighborhood_census_blocks ADD COLUMN transit_high_stress INT;
 ALTER TABLE neighborhood_census_blocks ADD COLUMN transit_score FLOAT;
-ALTER TABLE neighborhood_census_blocks ADD COLUMN overall_score FLOAT; -- noqa: enable=all
+ALTER TABLE neighborhood_census_blocks ADD COLUMN overall_score FLOAT;
+ALTER TABLE neighborhood_census_blocks ADD COLUMN reachable_blocks INT; -- noqa: enable=all
 
 -- indexes
 CREATE INDEX IF NOT EXISTS idx_neighborhood_geoid20
