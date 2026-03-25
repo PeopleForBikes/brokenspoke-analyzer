@@ -24,7 +24,7 @@
   - Use type hints everywhere (`def foo(bar: int) -> List[str]: …`).
   - All functions/classes must have a doctring with **Parameters**, **Returns**,
     and **Raises** sections.
-  - All functions must use doctests when applicable. Ideally at the the happy
+  - All functions must use doctests when applicable. Ideally at least the happy
     path should be represented using a doctest.
   - Doctests must use the **xdoctest** syntax.
   - Sort imports using _isort_.
