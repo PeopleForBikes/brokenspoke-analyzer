@@ -76,8 +76,17 @@ CREATE UNIQUE INDEX idx_neighborhood_blockpairs
 ON neighborhood_connected_census_blocks (
     source_blockid20, target_blockid20
 );
+
 CREATE INDEX IF NOT EXISTS idx_neighborhood_blockpairs_lstress
 ON neighborhood_connected_census_blocks (
     source_blockid20, target_blockid20, low_stress
 );
+
 ANALYZE neighborhood_connected_census_blocks;
+
+UPDATE generated.neighborhood_census_blocks ccb
+SET reachable_blocks = (
+    SELECT COUNT(*)
+    FROM neighborhood_connected_census_blocks AS b
+    WHERE b.source_blockid20 = ccb.geoid20
+);
