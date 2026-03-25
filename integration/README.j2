@@ -51,7 +51,7 @@ Here is the list of commands for all the test cities:
 
 ```bash
 {% for key, row in data.items() -%}
-uv run bna run-with compose "{{ row.country }}" "{{ key }}" {% if row.region %}"{{ row.region }}"{% endif %} {{ row.fips_code if row.fips_code|int > 0 }}
+uv run bna run-with compose "{{ row.country }}" "{{ key }}"{% if row.region %} "{{ row.region }}"{% endif %}{{ ' ' ~ row.fips_code if row.fips_code|int > 0 }}
 {% endfor %}
 ```
 
