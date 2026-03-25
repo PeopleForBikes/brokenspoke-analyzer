@@ -87,7 +87,7 @@ OSM_CACHE_FILE_SUFFIX = ".pbf.md5"
 
 
 def main(
-    batch_file: BatchFile = "cities.csv",
+    batch_file: BatchFile = pathlib.Path("cities.csv"),
     lodes_year: common.LODESYear = None,
     parts: common.ComputeParts = [constant.ComputePart.MEASURE],
 ):

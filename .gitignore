@@ -25,11 +25,10 @@ __pycache__/
 *.py[cod]
 *.so
 *.spec
-/data-*/
-/data/
 build/
 cache/
 coverage.xml
+data/
 deps
 develop-eggs/
 dist/
