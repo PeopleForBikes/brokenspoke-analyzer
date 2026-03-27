@@ -136,30 +136,36 @@ async def prepare_(
     )
     boundary_file = data_dir / f"{slug}.shp"
 
-    # Download the OSM region file.
+    # Retrieve the state info if needed.
+    state_abbrev, state_fips, _ = analysis.derive_state_info(region)
     osm_region = region if region else country
-    console.log(
-        f"[green]Fetching the OSM region file for {osm_region}...",
+
+    region_file_name = None
+
+    # Prepare the caching strategy.
+    caching_strategy = datastore.CacheType.USER_CACHE
+    if no_cache:
+        caching_strategy = datastore.CacheType.NONE
+    elif cache_dir:
+        caching_strategy = datastore.CacheType.CUSTOM
+
+    bna_store = datastore.BNADataStore(
+        data_dir, caching_strategy, mirror=mirror, custom_dir=cache_dir
     )
-    with console.status("Downloading..."):
-        try:
-            if not region:
-                raise ValueError
-            region_file_path = retryer(analysis.retrieve_region_file, region, data_dir)
-        except ValueError:
-            region_file_path = retryer(analysis.retrieve_region_file, country, data_dir)
-    region_file_path_md5 = pathlib.Path(str(region_file_path) + ".md5")
-    if not utils.file_checksum_ok(region_file_path, region_file_path_md5):
-        raise ValueError("Invalid OSM region file")
+
+    async with aiohttp.ClientSession() as session:
+        console.log(
+            f"[green]Fetching the OSM region file for {osm_region}...",
+        )
+        with console.status("Downloading..."):
+            region_file_name = await bna_store.download_osm_data(session, osm_region)
 
     # Reduce the osm file with osmium.
     console.log(f"[green]Reducing the OSM file for {city} with osmium...")
     polygon_file = data_dir / f"{slug}.geojson"
+    region_file_path = data_dir / region_file_name
     pfb_osm_file = pathlib.Path(f"{slug}.osm")
     analysis.prepare_city_file(data_dir, region_file_path, polygon_file, pfb_osm_file)
-
-    # Retrieve the state info if needed.
-    state_abbrev, state_fips, _ = analysis.derive_state_info(region)
 
     # Perform some specific operations for non-US cities.
     if state_fips == runner.NON_US_STATE_FIPS:
@@ -181,17 +187,6 @@ async def prepare_(
         )
         analysis.change_speed_limit(data_dir, city, state_abbrev, city_speed_limit)
     else:
-        # Prepare the caching strategy.
-        caching_strategy = datastore.CacheType.USER_CACHE
-        if no_cache:
-            caching_strategy = datastore.CacheType.NONE
-        elif cache_dir:
-            caching_strategy = datastore.CacheType.CUSTOM
-
-        bna_store = datastore.BNADataStore(
-            data_dir, caching_strategy, mirror=mirror, custom_dir=cache_dir
-        )
-
         # Fetch the data.
         async with aiohttp.ClientSession() as session:
             console.log("[green]Fetching US state speed limits...")
