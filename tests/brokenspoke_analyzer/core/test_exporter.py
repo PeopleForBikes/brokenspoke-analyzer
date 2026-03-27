@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 
 import obstore
 import pytest
+from obstore.store import from_url
 
 from brokenspoke_analyzer.core import exporter
 
@@ -25,9 +26,16 @@ async def test_mkdir_calver_directory():
     calver = f"{today.strftime('%y.%m')}"
     store = obstore.store.MemoryStore()
 
+    export = await exporter.mkdir(store, pathlib.Path(f"usa/tx/austin/{calver}"))
+    export = await exporter.mkdir(store, pathlib.Path(f"usa/tx/austin/{calver}.3"))
+    export = await exporter.mkdir(store, pathlib.Path(f"usa/tx/austin/{calver}.5"))
+
+    items = store.list()
+    for item in items:
+        for meta in item:
+            print(meta)
+
     directory = await exporter.mkdir_calver_directory(store, "usa", "austin", "tx")
-    assert directory == pathlib.Path(f"usa/tx/austin/{calver}")
+    assert directory == pathlib.Path(f"usa/tx/austin/{calver}.6")
     directory = await exporter.mkdir_calver_directory(store, "usa", "austin", "tx")
-    assert directory == pathlib.Path(f"usa/tx/austin/{calver}.1")
-    directory = await exporter.mkdir_calver_directory(store, "usa", "austin", "tx")
-    assert directory == pathlib.Path(f"usa/tx/austin/{calver}.2")
+    assert directory == pathlib.Path(f"usa/tx/austin/{calver}.7")

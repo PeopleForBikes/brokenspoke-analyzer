@@ -306,8 +306,14 @@ def create_r2_store(bucket_name: str) -> ObjectStore:
 
 
 async def mkdir(store: ObjectStore, path: pathlib.Path) -> None:
-    """Create the directory if it does not exist."""
-    await store.put_async(f"{path}/", b"")
+    """
+    Create the directory if it does not exist.
+
+    Since object stores do not have a concept of directories, we create an empty
+    file with the name of the directory and a suffix to indicate that it is a
+    directory.
+    """
+    await store.put_async(f"{path}/.dir", b"")
 
 
 async def upload_file(store: ObjectStore, path: pathlib.Path) -> None:
@@ -330,10 +336,12 @@ async def mkdir_calver_directory(
 
     # Check for any existing matching directories.
     matches = [
-        pathlib.Path(meta["path"])
+        pathlib.Path(meta["path"][:-5])  # Remove "/.dir" suffix
         for item in items
         for meta in item
-        if meta["size"] == 0
+        if meta["path"].endswith("/.dir")
+        and str(calver_dir) in meta["path"]
+        and meta["size"] == 0
     ]
 
     # In case there is already a calver folder, we must increment the revision.
@@ -381,8 +389,6 @@ async def export_store(
 
             # Stream the file from the local store to the destination store.
             object_name = str(folder / file.name)
-            logger.debug(f"{file.name=}")
-            logger.debug(f"{object_name=}")
             logger.debug(f"Uploading file to store://{bucket_name}/{object_name}")
             resp = await local_store.get_async(file.name)
             await store.put_async(object_name, resp)
@@ -399,7 +405,6 @@ async def export_store_with_calver(
     """Export PostgreSQL/PostGIS tables to a directory following the calver convention."""
     # Create the calver directory in the store.
     folder = await mkdir_calver_directory(store, country, city, region)
-    logger.debug(f"{folder=}")
 
     # Export the files to the store.
     await export_store(store, database_url, folder, with_bundle)

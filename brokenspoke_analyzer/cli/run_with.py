@@ -9,7 +9,6 @@ from importlib import resources
 import pandas as pd
 import rich
 import typer
-from ipykernel.comm import Comm
 from loguru import logger
 from pygments.unistring import Co
 from rich.console import Console

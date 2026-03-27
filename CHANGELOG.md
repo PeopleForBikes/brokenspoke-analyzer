@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [3.1.0] - 2026-04-01
+
+### Fixed
+
+- Exclude blocks with null cost from connected census blocks. [#1031]
+- Remove parking and set widths for higher segment stress. [#1046]
+- Exclude miniature train stations. [#1055]
+- Fix two-way cycle tracks. [#1057]
+
+### Changed
+
+- Calculate overall score by weighted census blocks. [#1054]
+- Include shop=\* in retail destinations. [#1056]
+
+### Added
+
+- Improve mileage calculation speed. [#1053]
+
+[#1031]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1031
+[#1046]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1046
+[#1053]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1053
+[#1054]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1054
+[#1055]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1055
+[#1056]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1056
+[#1057]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1057
+[3.1.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/3.1.0
+
 ## [3.0.0] - 2026-01-28
 
 We are thrilled to announce the release of version 3.0.0, our latest milestone
