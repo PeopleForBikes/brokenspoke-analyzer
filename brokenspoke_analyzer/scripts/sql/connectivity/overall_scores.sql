@@ -494,164 +494,24 @@ INSERT INTO generated.neighborhood_overall_scores (
 )
 SELECT
     'overall_score', -- noqa: AL03
-    (
-        :people
-        * COALESCE(
-            (
-                SELECT score_original
-                FROM neighborhood_overall_scores
-                WHERE score_id = 'people'
-            ),
-            0
+    ( -- noqa: AL03
+        SELECT
+            SUM(
+                weighted_score
+            ) AS weighted_overall_score
+        FROM (
+            SELECT
+                ncb.overall_score
+                / 100
+                * ncb.pop20
+                / (
+                    SELECT SUM(ncb2.pop20)
+                    FROM neighborhood_census_blocks AS ncb2
+                    WHERE ncb2.reachable_blocks > 0
+                ) AS weighted_score
+            FROM neighborhood_census_blocks AS ncb
+            WHERE ncb.pop20 > 0 AND ncb.reachable_blocks > 0
         )
-        + :opportunity
-        * COALESCE(
-            (
-                SELECT score_original
-                FROM neighborhood_overall_scores
-                WHERE score_id = 'opportunity'
-            ),
-            0
-        )
-        + :core_services
-        * COALESCE(
-            (
-                SELECT score_original
-                FROM neighborhood_overall_scores
-                WHERE score_id = 'core_services'
-            ),
-            0
-        )
-        + :retail
-        * COALESCE(
-            (
-                SELECT score_original
-                FROM neighborhood_overall_scores
-                WHERE score_id = 'retail'
-            ),
-            0
-        )
-        + :recreation
-        * COALESCE(
-            (
-                SELECT score_original
-                FROM neighborhood_overall_scores
-                WHERE score_id = 'recreation'
-            ),
-            0
-        )
-        + :transit
-        * COALESCE(
-            (
-                SELECT score_original
-                FROM neighborhood_overall_scores
-                WHERE score_id = 'transit'
-            ),
-            0
-        )
-    )
-    / (
-        :people
-        + CASE
-            WHEN EXISTS (
-                SELECT 1 FROM neighborhood_census_blocks
-                WHERE
-                    emp_high_stress > 0
-                    OR schools_high_stress > 0
-                    OR colleges_high_stress > 0
-                    OR universities_high_stress > 0
-            ) THEN :opportunity
-            ELSE 0
-        END
-        + CASE
-            WHEN
-                EXISTS (
-                    SELECT 1
-                    FROM neighborhood_census_blocks
-                    WHERE doctors_high_stress > 0
-                )
-                THEN :core_services
-            WHEN
-                EXISTS (
-                    SELECT 1
-                    FROM neighborhood_census_blocks
-                    WHERE dentists_high_stress > 0
-                )
-                THEN :core_services
-            WHEN
-                EXISTS (
-                    SELECT 1
-                    FROM neighborhood_census_blocks
-                    WHERE hospitals_high_stress > 0
-                )
-                THEN :core_services
-            WHEN
-                EXISTS (
-                    SELECT 1
-                    FROM neighborhood_census_blocks
-                    WHERE pharmacies_high_stress > 0
-                )
-                THEN :core_services
-            WHEN
-                EXISTS (
-                    SELECT 1
-                    FROM neighborhood_census_blocks
-                    WHERE supermarkets_high_stress > 0
-                )
-                THEN :core_services
-            WHEN
-                EXISTS (
-                    SELECT 1
-                    FROM neighborhood_census_blocks
-                    WHERE social_services_high_stress > 0
-                )
-                THEN :core_services
-            ELSE 0
-        END
-        + CASE
-            WHEN
-                EXISTS (
-                    SELECT 1
-                    FROM neighborhood_census_blocks
-                    WHERE retail_high_stress > 0
-                )
-                THEN :retail
-            ELSE 0
-        END
-        + CASE
-            WHEN
-                EXISTS (
-                    SELECT 1
-                    FROM neighborhood_census_blocks
-                    WHERE parks_high_stress > 0
-                )
-                THEN :recreation
-            WHEN
-                EXISTS (
-                    SELECT 1
-                    FROM neighborhood_census_blocks
-                    WHERE trails_high_stress > 0
-                )
-                THEN :recreation
-            WHEN
-                EXISTS (
-                    SELECT 1
-                    FROM neighborhood_census_blocks
-                    WHERE community_centers_high_stress > 0
-                )
-                THEN :recreation
-            ELSE 0
-        END
-        + CASE
-            WHEN
-                EXISTS (
-                    SELECT 1
-                    FROM neighborhood_census_blocks
-                    WHERE transit_high_stress > 0
-                )
-                THEN :transit
-            ELSE 0
-        END
     ),
     NULL; -- noqa: AL03
 
@@ -687,15 +547,21 @@ SELECT
             (1 / 1609.34) * (
                 SUM(
                     ST_Length(ST_Intersection(w.geom, b.geom))
-                    * CASE w.ft_seg_stress WHEN 1 THEN 1 ELSE 0 END
-                )
-                + SUM(
-                    ST_Length(ST_Intersection(w.geom, b.geom))
-                    * CASE w.tf_seg_stress WHEN 1 THEN 1 ELSE 0 END
+                    * CASE (
+                        COALESCE(w.ft_seg_stress, 0)
+                        + COALESCE(w.tf_seg_stress, 0)
+                    )
+                        WHEN 2 THEN 2
+                        WHEN 4 THEN 1
+                        WHEN 1 THEN 1
+                        ELSE 0
+                    END
                 )
             ) AS dist
         FROM neighborhood_ways AS w, neighborhood_boundary AS b
-        WHERE ST_Intersects(w.geom, b.geom)
+        WHERE
+            ST_Intersects(w.geom, b.geom)
+            AND (w.ft_seg_stress = 1 OR w.tf_seg_stress = 1)
     ) AS distance,
     'Total low-stress miles'; -- noqa: AL03
 
@@ -709,15 +575,21 @@ SELECT
             (1 / 1609.34) * (
                 SUM(
                     ST_Length(ST_Intersection(w.geom, b.geom))
-                    * CASE w.ft_seg_stress WHEN 3 THEN 1 ELSE 0 END
-                )
-                + SUM(
-                    ST_Length(ST_Intersection(w.geom, b.geom))
-                    * CASE w.tf_seg_stress WHEN 3 THEN 1 ELSE 0 END
+                    * CASE (
+                        COALESCE(w.ft_seg_stress, 0)
+                        + COALESCE(w.tf_seg_stress, 0)
+                    )
+                        WHEN 6 THEN 2
+                        WHEN 4 THEN 1
+                        WHEN 3 THEN 1
+                        ELSE 0
+                    END
                 )
             ) AS dist
         FROM neighborhood_ways AS w, neighborhood_boundary AS b
-        WHERE ST_Intersects(w.geom, b.geom)
+        WHERE
+            ST_Intersects(w.geom, b.geom)
+            AND (w.ft_seg_stress = 3 OR w.tf_seg_stress = 3)
     ) AS distance,
     'Total high-stress miles'; -- noqa: AL03
 
