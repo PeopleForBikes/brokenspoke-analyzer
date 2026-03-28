@@ -1,18 +1,27 @@
 """Define functions to export the data to various destinations."""
 
+from __future__ import annotations
+
+import os
 import pathlib
 import shutil
 import tempfile
 import typing
 from datetime import date
 from enum import Enum
+from typing import TYPE_CHECKING
 
 import boto3
+import obstore
 from loguru import logger
+from obstore.store import from_url
 from sqlalchemy.engine import Engine
 
 from brokenspoke_analyzer.core import runner
 from brokenspoke_analyzer.core.database import dbcore
+
+if TYPE_CHECKING:
+    from obstore.store import ObjectStore
 
 # Catalog the tables and associate them to an export format.
 TABLE_CATALOG = {
@@ -56,6 +65,8 @@ class Exporter(str, Enum):
     local = "local"
     s3 = "s3"
     s3_custom = "s3_custom"
+    r2 = "r2"
+    r2_custom = "r2_custom"
 
 
 def export_to_csv(
@@ -130,11 +141,11 @@ def create_calver_directories(
     <country>/<egion>/<city>/YY.MM[.Micro]
     See https://calver.org/#scheme for more details.
 
-    Examples:
     * usa/tx/austin/23.08
     * usa/tx/austin/23.12.2
     * spain/valencia/valencia/23.08
 
+    Examples:
         >>> today = date.today()
         >>> calver = f"{today.strftime('%y.%m')}"
         >>> directory = create_calver_directories("usa", "austin", "tx")
@@ -160,7 +171,15 @@ def calver_base(
     date_override: typing.Optional[str] = None,
     base_dir: pathlib.Path = pathlib.Path(),
 ) -> pathlib.Path:
-    """Build the base part of the calver path."""
+    """
+    Build the base part of the calver path.
+
+    Examples:
+        >>> today = date.today()
+        >>> calver = f"{today.strftime('%y.%m')}"
+        >>> directory = calver_base("usa", "austin", "tx")
+        >>> assert directory == pathlib.Path(f"usa/tx/austin/{calver}")
+    """
     # Start with the base path.
     p = base_dir
 
@@ -204,7 +223,6 @@ def calver_revision(dirs: typing.Sequence[pathlib.Path]) -> int:
         >>> dirs.append(pathlib.Path('usa/new mexico/santa rosa/23.08.150'))
         >>> calver_revision(dirs)
         151
-
     """
     # Collect the directories with the suffixes.
     with_micro = [
@@ -220,87 +238,15 @@ def calver_revision(dirs: typing.Sequence[pathlib.Path]) -> int:
     return micro
 
 
-def create_calver_s3_directories(
-    bucket_name: str,
-    country: str,
-    city: str,
-    region: typing.Optional[str] = None,
-) -> pathlib.Path:
-    """Create the calver directory in the S3 bucket."""
-    # Initialize the S3 client.
-    s3 = boto3.resource("s3")
-    bucket = s3.Bucket(bucket_name)
-
-    # Create the calver directory.
-    s3_dir = calver_base(country, city, region)
-
-    # Check for any existing match.
-    matches = [
-        pathlib.Path(obj.key)
-        for obj in bucket.objects.filter(Prefix=str(s3_dir))
-        if str(s3_dir) in obj.key and obj.key.endswith("/")
-    ]
-
-    # In case there is already a calver folder, we must increment the revision.
-    if matches:
-        rev = calver_revision(matches)
-        s3_dir = pathlib.Path(f"{s3_dir}.{rev}/")
-
-    # Create the folder in the bucket.
-    bucket.put_object(Body="", Key=f"{s3_dir}/")
-
-    return s3_dir
-
-
-def s3_directories(
-    bucket_name: str, s3_dir: typing.Optional[pathlib.Path] = pathlib.Path()
-) -> pathlib.Path:
-    """Create a custom directory in the S3 bucket."""
-    # Make mypy happy.
-    if not s3_dir:
-        raise ValueError("`s3_dir` must be set")
-
-    # Initialize the S3 client.
-    s3 = boto3.resource("s3")
-    bucket = s3.Bucket(bucket_name)
-
-    # Create the folder in the bucket.
-    bucket.put_object(Body="", Key=f"{s3_dir}/")
-
-    return s3_dir
-
-
-def s3(
+async def s3(
     database_url: str,
     bucket_name: str,
-    folder: typing.Optional[pathlib.Path] = pathlib.Path(),
-    with_bundle: typing.Optional[bool] = False,
+    folder: pathlib.Path = pathlib.Path(),
+    with_bundle: bool = False,
 ) -> None:
     """Export PostgreSQL/PostGIS tables to an S3 Bucket."""
-    # Make mypy happy.
-    if not folder:
-        raise ValueError("`dest` must be set")
-
-    # Initialize the S3 client.
-    s3 = boto3.client("s3")
-
-    # Create a temporary directory to export the files.
-    with tempfile.TemporaryDirectory() as tmpdir_name:
-        tmpdir = pathlib.Path(tmpdir_name)
-        local_files(
-            database_url=database_url,
-            export_dir=tmpdir,
-            with_bundle=with_bundle,
-        )
-
-        # Upload each file one after the other.
-        for file in tmpdir.iterdir():
-            if not file.is_file():
-                continue
-
-            object_name = folder / file.name
-            logger.debug(f"Uploading file to s3://{bucket_name}/{object_name}")
-            s3.upload_file(file, bucket_name, str(object_name))
+    store = create_s3_store(bucket_name)
+    await export_store(store, database_url, folder, with_bundle)
 
 
 def bundle(src_dir: pathlib.Path) -> pathlib.Path:
@@ -315,7 +261,7 @@ def bundle(src_dir: pathlib.Path) -> pathlib.Path:
 def local_files(
     database_url: str,
     export_dir: pathlib.Path,
-    with_bundle: typing.Optional[bool] = False,
+    with_bundle: bool = False,
 ) -> None:
     """Export result files into a local directory."""
     # Prepare the output directory.
@@ -327,3 +273,154 @@ def local_files(
     # Bundle the result files into a zip file if needed.
     if with_bundle:
         bundle(export_dir)
+
+
+def create_s3_store(bucket_name: str) -> ObjectStore:
+    """
+    Create the S3 store.
+
+    Authentication is done via AWS environment viariables:
+    - AWS_ACCESS_KEY_ID
+    - AWS_SECRET_ACCESS_KEY
+    - AWS_SESSION_TOKEN (optional)
+    - AWS_REGION
+    """
+    return from_url(f"s3://{bucket_name}")
+
+
+def create_r2_store(bucket_name: str) -> ObjectStore:
+    """
+    Create the R2 store.
+
+    Authentication is done via environment viariables:
+    - AWS_ACCESS_KEY_ID
+    - AWS_SECRET_ACCESS_KEY
+    - CLOUDFLARE_ACCOUNT_ID
+
+    Since R2 is an S3 compatible storage, we must use the AWS environment variables.
+    """
+    account_id = os.environ["CLOUDFLARE_ACCOUNT_ID"]
+    return from_url(
+        f"https://{account_id}.r2.cloudflarestorage.com/{bucket_name}",
+    )
+
+
+async def mkdir(store: ObjectStore, path: pathlib.Path) -> None:
+    """
+    Create the directory if it does not exist.
+
+    Since object stores do not have a concept of directories, we create an empty
+    file with the name of the directory and a suffix to indicate that it is a
+    directory.
+    """
+    await store.put_async(f"{path}/.dir", b"")
+
+
+async def upload_file(store: ObjectStore, path: pathlib.Path) -> None:
+    """Upload a file to the store."""
+    await store.put_async(str(path), path)
+
+
+async def mkdir_calver_directory(
+    store: ObjectStore,
+    country: str,
+    city: str,
+    region: typing.Optional[str] = None,
+) -> pathlib.Path:
+    """Create the calver directory in the S3 bucket."""
+    # Create the calver directory.
+    calver_dir = calver_base(country, city, region)
+
+    # Get a stream of metadata objects:
+    items = store.list()
+
+    # Check for any existing matching directories.
+    matches = [
+        pathlib.Path(meta["path"][:-5])  # Remove "/.dir" suffix
+        for item in items
+        for meta in item
+        if meta["path"].endswith("/.dir")
+        and str(calver_dir) in meta["path"]
+        and meta["size"] == 0
+    ]
+
+    # In case there is already a calver folder, we must increment the revision.
+    if matches:
+        rev = calver_revision(matches)
+        calver_dir = pathlib.Path(f"{calver_dir}.{rev}/")
+
+    # Create the folder in the bucket.
+    await mkdir(store, calver_dir)
+
+    # Return the calver directory.
+    return calver_dir
+
+
+async def export_store(
+    store: ObjectStore,
+    database_url: str,
+    folder: pathlib.Path = pathlib.Path(),
+    with_bundle: bool = False,
+) -> None:
+    """Export PostgreSQL/PostGIS tables to a store."""
+    # Get bucket name.
+    # !!Remarks:
+    #   - HTTPStore, LocalStore and MemoryStore do not have a config attribute.
+    #   - AzureConfig has no key "bucket", uses "container_name" instead.
+    bucket_name = store.config["bucket"]  # type: ignore
+
+    # Create a temporary directory to export the files.
+    with tempfile.TemporaryDirectory() as tmpdir_name:
+        tmpdir = pathlib.Path(tmpdir_name)
+        local_files(
+            database_url=database_url,
+            export_dir=tmpdir,
+            with_bundle=with_bundle,
+        )
+
+        # Create a local store.
+        local_store = from_url(f"file://{tmpdir}")
+
+        # Upload each file sequentially.
+        for file in tmpdir.iterdir():
+            # Skip directories and non-files.
+            if not file.is_file():
+                continue
+
+            # Stream the file from the local store to the destination store.
+            object_name = str(folder / file.name)
+            logger.debug(f"Uploading file to store://{bucket_name}/{object_name}")
+            resp = await local_store.get_async(file.name)
+            await store.put_async(object_name, resp)
+
+
+async def export_store_with_calver(
+    store: ObjectStore,
+    database_url: str,
+    country: str,
+    city: str,
+    region: typing.Optional[str] = None,
+    with_bundle: bool = False,
+) -> pathlib.Path:
+    """Export PostgreSQL/PostGIS tables to a directory following the calver convention."""
+    # Create the calver directory in the store.
+    folder = await mkdir_calver_directory(store, country, city, region)
+
+    # Export the files to the store.
+    await export_store(store, database_url, folder, with_bundle)
+
+    return folder
+
+
+async def export_store_with_custom_dir(
+    store: ObjectStore,
+    database_url: str,
+    custom_dir: pathlib.Path,
+    with_bundle: bool = False,
+) -> None:
+    """Export PostgreSQL/PostGIS tables to a custom directory."""
+    # Create the custom directory in the store.
+    await mkdir(store, custom_dir)
+
+    # Export the files to the store.
+    await export_store(store, database_url, custom_dir, with_bundle)
