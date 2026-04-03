@@ -5,7 +5,7 @@
 -- :cluster_tolerance psql var must be set before running this script.
 --       e.g. psql -v nb_output_srid=2163 cluster_tolerance=50 -f retail.sql
 ----------------------------------------
-DROP TABLE IF EXISTS generated.neighborhood_retail;
+DROP TABLE IF EXISTS generated.neighborhood_retail; --noqa
 
 CREATE TABLE generated.neighborhood_retail (
     id SERIAL PRIMARY KEY,
