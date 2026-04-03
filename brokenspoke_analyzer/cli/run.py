@@ -43,8 +43,8 @@ def run(
         typing.Optional[str], typer.Option(help="S3 bucket name where to export")
     ] = None,
     s3_dir: typing.Optional[pathlib.Path] = None,
-    with_bundle: typing.Optional[bool] = False,
-    with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
+    with_bundle: bool = False,
+    with_export: exporter.Exporter = exporter.Exporter.local,
     with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
 ) -> None:
     """Run a full analysis."""

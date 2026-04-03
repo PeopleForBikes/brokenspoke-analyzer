@@ -273,8 +273,8 @@ def s3_directories(
 def s3(
     database_url: str,
     bucket_name: str,
-    folder: typing.Optional[pathlib.Path] = pathlib.Path(),
-    with_bundle: typing.Optional[bool] = False,
+    folder: pathlib.Path = pathlib.Path(),
+    with_bundle: bool = False,
 ) -> None:
     """Export PostgreSQL/PostGIS tables to an S3 Bucket."""
     # Make mypy happy.
@@ -315,7 +315,7 @@ def bundle(src_dir: pathlib.Path) -> pathlib.Path:
 def local_files(
     database_url: str,
     export_dir: pathlib.Path,
-    with_bundle: typing.Optional[bool] = False,
+    with_bundle: bool = False,
 ) -> None:
     """Export result files into a local directory."""
     # Prepare the output directory.

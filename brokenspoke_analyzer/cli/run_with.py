@@ -52,8 +52,8 @@ def compose(
     no_cache: common.NoCache = False,
     retries: common.Retries = common.DEFAULT_RETRIES,
     s3_bucket: typing.Optional[str] = None,
-    with_bundle: typing.Optional[bool] = False,
-    with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
+    with_bundle: bool = False,
+    with_export: exporter.Exporter = exporter.Exporter.local,
     with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
 ) -> typing.Optional[pathlib.Path]:
     """Manage Docker Compose when running the analysis."""
@@ -105,24 +105,24 @@ def run_(
     city: str,
     country: str,
     database_url: str,
-    block_population: typing.Optional[int] = common.DEFAULT_BLOCK_POPULATION,
-    block_size: typing.Optional[int] = common.DEFAULT_BLOCK_SIZE,
-    buffer: typing.Optional[int] = common.DEFAULT_BUFFER,
+    block_population: int = common.DEFAULT_BLOCK_POPULATION,
+    block_size: int = common.DEFAULT_BLOCK_SIZE,
+    buffer: int = common.DEFAULT_BUFFER,
     cache_dir: typing.Optional[pathlib.Path] = None,
-    city_speed_limit: typing.Optional[int] = common.DEFAULT_CITY_SPEED_LIMIT,
-    data_dir: typing.Optional[pathlib.Path] = common.DEFAULT_DATA_DIR,
-    export_dir: typing.Optional[pathlib.Path] = common.DEFAULT_EXPORT_DIR,
-    fips_code: typing.Optional[str] = common.DEFAULT_CITY_FIPS_CODE,
+    city_speed_limit: int = common.DEFAULT_CITY_SPEED_LIMIT,
+    data_dir: pathlib.Path = common.DEFAULT_DATA_DIR,
+    export_dir: pathlib.Path = common.DEFAULT_EXPORT_DIR,
+    fips_code: str = common.DEFAULT_CITY_FIPS_CODE,
     lodes_year: typing.Optional[int] = None,
-    max_trip_distance: typing.Optional[int] = common.DEFAULT_MAX_TRIP_DISTANCE,
+    max_trip_distance: int = common.DEFAULT_MAX_TRIP_DISTANCE,
     mirror: common.Mirror = None,
     no_cache: common.NoCache = False,
     region: typing.Optional[str] = None,
-    retries: typing.Optional[int] = common.DEFAULT_RETRIES,
+    retries: int = common.DEFAULT_RETRIES,
     s3_bucket: typing.Optional[str] = None,
     s3_dir: typing.Optional[pathlib.Path] = None,
-    with_bundle: typing.Optional[bool] = False,
-    with_export: typing.Optional[exporter.Exporter] = exporter.Exporter.local,
+    with_bundle: bool = False,
+    with_export: exporter.Exporter = exporter.Exporter.local,
     with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
 ) -> typing.Optional[pathlib.Path]:
     """Run an analysis."""
@@ -242,11 +242,13 @@ def run_(
             country=country,
             database_url=database_url,
             region=region,
+            with_bundle=with_bundle,
         )
     elif with_export == exporter.Exporter.s3_custom:
         export_dir = export.s3_custom(
             bucket_name=s3_bucket,  # type: ignore
             database_url=database_url,
             s3_dir=s3_dir,
+            with_bundle=with_bundle,
         )
     return export_dir
