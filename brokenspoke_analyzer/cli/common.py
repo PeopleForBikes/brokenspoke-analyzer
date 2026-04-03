@@ -26,14 +26,14 @@ DEFAULT_RETRIES = 2
 
 # Default Typer Arguments/Options.
 BlockPopulation = Annotated[
-    typing.Optional[int],
+    int,
     typer.Option(help="population of a synthetic block for non-US cities"),
 ]
 BlockSize = Annotated[
-    typing.Optional[int],
+    int,
     typer.Option(help="size of a synthetic block for non-US cities (in meters)"),
 ]
-Buffer = Annotated[typing.Optional[int], typer.Option(help="define the buffer area")]
+Buffer = Annotated[int, typer.Option(help="define the buffer area")]
 CacheDir = Annotated[
     typing.Optional[pathlib.Path],
     typer.Option(
@@ -78,11 +78,11 @@ export_dir_kwargs = dict(
 )
 ExportDirArg = Annotated[pathlib.Path, typer.Argument(**export_dir_kwargs)]
 ExportDirOpt = Annotated[pathlib.Path, typer.Option(**export_dir_kwargs)]
-FIPSCode = Annotated[typing.Optional[str], typer.Argument(help="US city FIPS code")]
+FIPSCode = Annotated[str, typer.Argument(help="US city FIPS code")]
 LODESYear = Annotated[
     typing.Optional[int], typer.Option(help="year to use to retrieve US job data")
 ]
-MaxTripDistance = Annotated[typing.Optional[int], typer.Option()]
+MaxTripDistance = Annotated[int, typer.Option()]
 Mirror = Annotated[
     typing.Optional[str],
     typer.Option(help="use a mirror to fetch the US census files"),
@@ -95,10 +95,11 @@ Region = Annotated[
     typer.Argument(help="world region (e.g., state, province, community, etc...)"),
 ]
 Retries = Annotated[
-    typing.Optional[int],
+    int,
     typer.Option(help="number of times to retry downloading files"),
 ]
 SpeedLimit = Annotated[
-    typing.Optional[int], typer.Option(help="override the default speed limit (in mph)")
+    int, typer.Option(help="override the default speed limit (in mph)")
 ]
 State = Annotated[typing.Optional[str], typer.Argument(help="US state")]
+WithBundle = Annotated[bool, typer.Option(help="bundle all the files in a zip archive")]
