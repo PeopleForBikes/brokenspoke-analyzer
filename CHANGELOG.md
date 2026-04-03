@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [3.1.1] - 2026-04-03
+
+### Fixed
+
+- Fixed bug where the `--with-bundle` flag was not honored for all exports.
+  [#1063]
+
+[#1063]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1063
+[3.1.1]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/3.1.1
+
 ## [3.1.0] - 2026-04-01
 
 ### Fixed
