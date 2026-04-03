@@ -14,10 +14,6 @@ from brokenspoke_analyzer.core import exporter
 app = typer.Typer()
 console = rich.get_console()
 
-WithBundle = Annotated[
-    typing.Optional[bool], typer.Argument(help="bundle all the files in a zip archive")
-]
-
 
 @app.command()
 def local(
@@ -26,7 +22,7 @@ def local(
     city: common.City,
     region: common.Region = None,
     export_dir: common.ExportDirArg = common.DEFAULT_EXPORT_DIR,
-    with_bundle: WithBundle = False,
+    with_bundle: common.WithBundle = False,
 ) -> pathlib.Path:
     """Export results to a directory following the PFB calver convention."""
     dir_ = exporter.create_calver_directories(
@@ -41,7 +37,7 @@ def local(
 def local_custom(
     database_url: common.DatabaseURL,
     export_dir: common.ExportDirArg,
-    with_bundle: typing.Optional[bool] = False,
+    with_bundle: common.WithBundle = False,
 ) -> None:
     """Export results to a custom directory."""
     _local(database_url=database_url, export_dir=export_dir, with_bundle=with_bundle)
@@ -54,7 +50,7 @@ def s3(
     country: common.Country,
     city: common.City,
     region: common.Region = None,
-    with_bundle: typing.Optional[bool] = False,
+    with_bundle: common.WithBundle = False,
 ) -> pathlib.Path:
     """Export results to a S3 bucket following the PFB calver convention."""
     with console.status("[green]Uploading results to AWS S3..."):
@@ -70,7 +66,7 @@ def s3_custom(
     database_url: common.DatabaseURL,
     bucket_name: str,
     s3_dir: typing.Optional[pathlib.Path] = pathlib.Path(),
-    with_bundle: typing.Optional[bool] = False,
+    with_bundle: common.WithBundle = False,
 ) -> pathlib.Path:
     """Export results to a custom S3 bucket."""
     with console.status("[green]Uploading results to AWS S3..."):
@@ -82,7 +78,7 @@ def s3_custom(
 def _local(
     database_url: str,
     export_dir: pathlib.Path,
-    with_bundle: typing.Optional[bool] = False,
+    with_bundle: bool = False,
 ) -> None:
     console.log(f"[green]Saving results to {export_dir}...")
     exporter.local_files(
