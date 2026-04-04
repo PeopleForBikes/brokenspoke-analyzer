@@ -6,7 +6,8 @@
   and PostGIS.
 - **Project Management**: `uv` is the primary tool for environment and package
   management, and running commands.
-- **Language**: Python 3.13 (or latest supported)
+- **Language**: Python 3.13 (or latest supported) — see `.python-version` or
+  `pyproject.toml` for the authoritative pin.
 - **Data layer**: PostgreSQL with PostGIS extensions
 - **SQL assets**: `.sql` files contain GIS queries that are executed via
   `psycopg2`
@@ -17,39 +18,48 @@
 
 - The conventions must be codified in the `pyproject.toml` file or the
   configuration files of the dedicated tool.
-- Tasks must be created in the `Justfile`.
+- Tasks must be created in the `Justfile`. Follow the naming convention
+  `verb-noun` (e.g. `run-analysis`, `lint-sql`, `test-unit`). Existing tasks:
+  `lint`, `test`, `db-migrate`. New tasks must follow the same style.
 
-- **Python**
-  - Follow the default _ruff_ formatter and linting rules.
-  - Use type hints everywhere (`def foo(bar: int) -> List[str]: …`).
-  - All functions/classes must have a doctring with **Parameters**, **Returns**,
-    and **Raises** sections.
-  - All functions must use doctests when applicable. Ideally at least the happy
-    path should be represented using a doctest.
-  - Doctests must use the **xdoctest** syntax.
-  - Sort imports using _isort_.
-    - Use `profile = "black"` and `force_grid_wrap = 2` settings.
-- **SQL**
-  - Use `sqlfluff` for linting and fixing the SQL files.
-- **EARS**
-  - Every functional requirement is expressed as an EARS sentence in
-    `docs/requirements/`.
-  - Patterns to Enforce:
-    - Ubiquitous: The `<system>` SHALL `<response>`.
-    - Event-Driven: WHEN `<trigger>`, the `<system>` SHALL `<response>`.
-    - State-Driven: WHILE `<precondition>`, the `<system>` SHALL `<response>`.
-    - Unwanted Behavior: IF `<event>`, THEN the `<system>` SHALL `<response>`.
-    - Optional Feature: WHERE `<feature>`, the `<system>` SHALL `<response>`.
+### Python
 
-  - Review Rule: Flag any requirement using "must", "should", or "will". Insist
-    on the keyword SHALL.
+- Follow the default _ruff_ formatter and linting rules.
+- Use type hints everywhere (`def foo(bar: int) -> List[str]: …`).
+- All functions/classes must have a doctring with **Parameters**, **Returns**,
+  and **Raises** sections.
+- All functions must use doctests when applicable. Ideally at least the happy
+  path should be represented using a doctest.
+- Doctests must use the **xdoctest** syntax.
+- Sort imports using _isort_.
+  - Use `profile = "black"` and `force_grid_wrap = 2` settings.
 
-- Example:
+### SQL
 
-  ```ears
-  WHEN a new bike‑trip record is inserted,
-  THE system SHALL compute the nearest road segment and store the result.
-  ```
+- Use `sqlfluff` for linting and fixing the SQL files.
+
+### EARS
+
+#### Patterns to enforce
+
+| Pattern           | Template                                                   |
+| ----------------- | ---------------------------------------------------------- |
+| Ubiquitous        | The `<system>` SHALL `<response>`.                         |
+| Event-Driven      | WHEN `<trigger>`, the `<system>` SHALL `<response>`.       |
+| State-Driven      | WHILE `<precondition>`, the `<system>` SHALL `<response>`. |
+| Unwanted Behavior | IF `<event>`, THEN the `<system>` SHALL `<response>`.      |
+| Optional Feature  | WHERE `<feature>`, the `<system>` SHALL `<response>`.      |
+
+**Review rule:** Flag any requirement using "must", "should", or "will". Insist
+on the keyword SHALL.
+
+**Example** (with the real system name filled in):
+
+```ears
+WHEN a new bike-trip record is inserted,
+the brokenspoke-analyzer SHALL compute the nearest road segment
+and store the result.
+```
 
 - Copilot should surface the corresponding SQL snippet when a developer asks for
   “the EARS clause for X”.
@@ -87,6 +97,8 @@ For every PR, prioritize (in order):
   - performance risks and whether EXPLAIN or indexes are needed
 - If Python code constructs SQL dynamically, require safe parameterization and
   reject unsafe string interpolation.
+- If a requirement is ambiguous, state your assumption explicitly and flag it —
+  do not silently pick one interpretation.
 
 ### Security & quality guards
 
@@ -100,17 +112,19 @@ For every PR, prioritize (in order):
 
 Provide review feedback using:
 
-- Scope
-- Risk assessment
-- Must-fix
-- Should-fix
-- Questions
-- Suggested verification commands\*\* (must be realistic for this repo)
+- **Scope** — files and components affected
+- **Risk assessment** — severity and blast radius
+- **Must-fix** — blocks merge
+- **Should-fix** — strong recommendation
+- **Questions** — ambiguities requiring clarification
+- **Suggested verification commands** — must be realistic for this repo
 
 ## Guidance boundaries
 
 - Prefer small, reviewable diffs.
 - Ask questions, do not guess.
+- Only add a Justfile task if the operation is repeatable and team-facing;
+  one-off commands belong in docs or comments, not recipes.
 
 ## How to invoke Copilot effectively
 
