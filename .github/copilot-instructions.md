@@ -106,6 +106,7 @@ Provide review feedback using:
 - Should-fix
 - Questions
 - Suggested verification commands\*\* (must be realistic for this repo)
+  - Run the verifications using the commands defined in our justfile
 
 ## Guidance boundaries
 

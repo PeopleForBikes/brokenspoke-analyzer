@@ -10,7 +10,7 @@ import zipfile
 
 import geopandas as gpd
 import numpy as np
-import pygris  # type: ignore
+import pygris
 import shapely
 from loguru import logger
 from osmnx import (
@@ -108,6 +108,8 @@ def state_info(state: str) -> tuple[str, str]:
     if not st:
         raise ValueError(f"cannot find state info for: {state}, {abbrev}")
     fips = st.fips
+    if not fips:
+        raise ValueError(f"cannot find FIPS code for: {state}, {abbrev}")
 
     return (abbrev, fips)
 
@@ -264,7 +266,7 @@ def create_synthetic_population(
             ],
         },
         crs=utils.PSEUDO_MERCATOR_CRS,
-    )
+    )  # ty:ignore[no-matching-overload]
 
     return grid.to_crs(area.crs)
 
