@@ -9,6 +9,11 @@ The cache will be populated with the following items:
     - US Water blocks
     - US State speed limits
     - US City speed limits
+
+From the root of this repository run:
+```bash
+uv run python utils/cache-warmer.py
+```
 """
 
 from __future__ import annotations
@@ -18,69 +23,75 @@ import os
 import pathlib
 
 import aiohttp
-import us
+import rich
 from loguru import logger
 
+from brokenspoke_analyzer.cli import root
 from brokenspoke_analyzer.core import (
     datastore,
     file_utils,
 )
+from brokenspoke_analyzer.pyrosm.data import geofabrik
+
+# Ensure DC is considered a US state.
+# https://github.com/unitedstates/python-us/issues/67
+os.environ["DC_STATEHOOD"] = "1"
+import us
 
 
 async def main():
     """Define the main function."""
+    # Disable logging.
+    root._verbose_callback(0)
+
+    # Prepare the Rich output.
+    console = rich.get_console()
+
+    CACHE_ONLY = True
     bna_store = datastore.BNADataStore(
         pathlib.Path(file_utils.get_user_cache_dir()),
-        # datastore.CacheType.USER_CACHE,
-        datastore.CacheType.AWS_S3,
-        s3_bucket=os.getenv("BNA_CACHE_AWS_S3_BUCKET"),
+        datastore.CacheType.USER_CACHE,
     )
 
+    # Start the downloads.
     async with aiohttp.ClientSession() as session:
-        await bna_store.download_state_speed_limits(session)
-        await bna_store.download_city_speed_limits(session)
-        for fips, abbr in us.states.mapping("fips", "abbr").items():
-            logger.info(f"Downloading LODES data for {abbr} ({fips})")
-            lehd_url = (
-                f"https://lehd.ces.census.gov/data/lodes/LODES7/{abbr.lower()}/od"
-            )
-            for part in ["main", "aux"]:
-                lehd_gz = f"{abbr.lower()}_od_{part.lower()}_JT00_2019.csv.gz"
-                url = f"{lehd_url}/{lehd_gz}"
-                await bna_store.fetch_to_cache(session, url, lehd_gz)
-            logger.info(f"Downloading census data for {abbr} ({fips})")
-            tabblk2010_zip = f"tabblock2010_{fips}_pophu.zip"
-            url = (
-                f"https://www2.census.gov/geo/tiger/TIGER2010BLKPOPHU/{tabblk2010_zip}"
-            )
-            await bna_store.fetch_to_cache(session, url, tabblk2010_zip)
+        # Download the single files first.
+        console.log("Downloading state speed limits")
+        await bna_store.download_state_speed_limits(session, cache_only=CACHE_ONLY)
+        console.log("Downloading city speed limits")
+        await bna_store.download_city_speed_limits(session, cache_only=CACHE_ONLY)
 
+        # Download the state-specific files.
+        for i, (fips, abbr) in enumerate(us.states.mapping("fips", "abbr").items()):
+            # Skip US territories.
+            # They are part of the US but we don't have any data for them.
+            if fips in {"60", "66", "69", "72", "78"}:
+                continue
+            with console.status(
+                f"[{i + 1}/{len(us.states.STATES)}] Processing {abbr} ({fips})"
+            ):
+                console.log(f"Downloading US Census data for {abbr} ({fips})")
+                await bna_store.download_2020_census_blocks(session, fips)
+                console.log(f"Downloading LODES data for {abbr} ({fips})")
+                await bna_store.download_lodes_data(
+                    session, abbr, cache_only=CACHE_ONLY
+                )
 
-async def main_2020():
-    """Define the main function for  caching the 2020 files."""
-    bna_store = datastore.BNADataStore(
-        pathlib.Path(file_utils.get_user_cache_dir()),
-        # datastore.CacheType.USER_CACHE,
-        datastore.CacheType.AWS_S3,
-        s3_bucket=os.getenv("BNA_CACHE_AWS_S3_BUCKET"),
-    )
+        # Download the OSM data for the specified regions.
+        osm_regions = []
+        # Add the US states.
+        osm_regions.extend(geofabrik.USA()._sources.keys())
 
-    async with aiohttp.ClientSession() as session:
-        for fips, abbr in us.states.mapping("fips", "abbr").items():
-            logger.info(f"Downloading LODES data for {abbr} ({fips})")
-            lehd_url = (
-                f"https://lehd.ces.census.gov/data/lodes/LODES8/{abbr.lower()}/od"
-            )
-            for part in ["main", "aux"]:
-                lehd_gz = f"{abbr.lower()}_od_{part.lower()}_JT00_2022.csv.gz"
-                url = f"{lehd_url}/{lehd_gz}"
-                await bna_store.fetch_to_cache(session, url, lehd_gz)
-
-            logger.info(f"Downloading census data for {abbr} ({fips})")
-            tabblk2020_zip = f"tl_2020_{fips}_tabblock20.zip"
-            url = f"https://www2.census.gov/geo/tiger/TIGER2020/TABBLOCK20/{tabblk2020_zip}"
-            await bna_store.fetch_to_cache(session, url, tabblk2020_zip)
+        # Start the downloads.
+        for i, region in enumerate(osm_regions):
+            with console.status(
+                f"[{i + 1}/{len(osm_regions)}] Processing OSM {region}"
+            ):
+                console.log(f"Downloading OSM data for {region}")
+                await bna_store.download_osm_data(
+                    session, region, cache_only=CACHE_ONLY
+                )
 
 
 if __name__ == "__main__":
-    asyncio.run(main_2020())
+    asyncio.run(main())

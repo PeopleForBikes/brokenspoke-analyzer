@@ -428,7 +428,7 @@ async def export_to_store(
     # !!Remarks:
     #   - HTTPStore, LocalStore and MemoryStore do not have a config attribute.
     #   - AzureConfig has no key "bucket", uses "container_name" instead.
-    bucket_name = store.config["bucket"]  # type: ignore
+    bucket_name = store.config["bucket"]
 
     # Create a temporary directory to export the files.
     with tempfile.TemporaryDirectory() as tmpdir_name:

@@ -5,7 +5,7 @@ import multiprocessing
 import pathlib
 import subprocess
 import typing
-import urllib
+import urllib.parse
 
 from loguru import logger
 
