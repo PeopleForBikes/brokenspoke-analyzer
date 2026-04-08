@@ -2,7 +2,6 @@
 
 import pathlib
 import subprocess
-import typing
 from enum import Enum
 from importlib import resources
 
@@ -40,12 +39,12 @@ def import_and_transform_shapefile(
     output_srid: int,
     shapefile: pathlib.Path,
     table: str,
-    input_srid: typing.Optional[int] = ESPG_4326,
+    input_srid: int | None = ESPG_4326,
 ) -> None:
     """Import a shapefile into PostGIS with shp2pgsql."""
     logger.info(f"Importing {shapefile} into {table} with SRID {input_srid}")
     database_url = engine.engine.url.set(drivername="postgresql").render_as_string(
-        hide_password=False
+        hide_password=False,
     )
 
     # Note(rgreinho): I was not able to validate that this is truly needed, but
@@ -65,7 +64,10 @@ def import_and_transform_shapefile(
     ]
     logger.debug(f"{' '.join(shp2pgsql_cmd)}")
     shp2pgsql = subprocess.run(
-        shp2pgsql_cmd, capture_output=True, encoding="utf-8", check=True
+        shp2pgsql_cmd,
+        capture_output=True,
+        encoding="utf-8",
+        check=True,
     )
     subprocess.run(
         ["psql", database_url],
@@ -80,7 +82,10 @@ def import_and_transform_shapefile(
     shp2pgsql_cmd.insert(1, "-d")
     logger.debug(f"{' '.join(shp2pgsql_cmd)}")
     shp2pgsql = subprocess.run(
-        shp2pgsql_cmd, capture_output=True, encoding="utf-8", check=True
+        shp2pgsql_cmd,
+        capture_output=True,
+        encoding="utf-8",
+        check=True,
     )
     # TODO(rgreinho): capture_output should be False in debug mode in order to
     # display the output on the screen.
@@ -101,12 +106,14 @@ def import_and_transform_shapefile(
     dbcore.execute_query(engine, transform_query)
 
 
-def delete_block_outside_buffer(engine: Engine, buffer: int) -> None:
+def delete_block_outside_buffer(engine: Engine) -> None:
     """Delete the blocks which are outside the boundaries+buffer."""
     query = (
         "DELETE FROM neighborhood_census_blocks AS blocks "
         "USING neighborhood_boundary AS boundary "
-        f"WHERE (NOT ST_Intersects(blocks.geom, boundary.geom)) OR (ST_AREA(ST_INTERSECTION(blocks.geom, boundary.geom)) / ST_AREA(blocks.geom)) < .50"
+        "WHERE (NOT ST_Intersects(blocks.geom, boundary.geom)) "
+        "OR (ST_AREA(ST_INTERSECTION(blocks.geom, boundary.geom)) / "
+        "ST_AREA(blocks.geom)) < .50"
     )
     dbcore.execute_query(engine, query)
 
@@ -127,7 +134,6 @@ def retrieve_population(engine: Engine) -> int:
 def import_neighborhood(
     *,
     boundary_file: pathlib.Path,
-    buffer: int,
     country: str,
     engine: Engine,
     output_srid: int,
@@ -140,7 +146,6 @@ def import_neighborhood(
     """
     logger.debug(f"{country=}")
     logger.debug(f"{output_srid=}")
-    logger.debug(f"{buffer=}")
     logger.debug(f"{boundary_file=}")
     logger.debug(f"{population_file=}")
 
@@ -164,8 +169,8 @@ def import_neighborhood(
     )
 
     # Discard blocks outside of the boundary+buffer.
-    logger.info(f"Removing blocks outside buffer with size {buffer}m...")
-    delete_block_outside_buffer(engine, buffer)
+    logger.info("Removing blocks outside buffer...")
+    delete_block_outside_buffer(engine)
 
     # For US cities, remove the water blocks.
     if utils.is_usa(country):
@@ -222,7 +227,7 @@ def retrieve_boundary_box(engine: Engine) -> tuple[float, float, float, float]:
     with engine.connect() as conn:
         result = conn.execute(text(query))
         row = result.first()
-        res = ", ".join(row[0][4:-1].split())  # type: ignore
+        res = ", ".join(row[0][4:-1].split())  # ty:ignore[not-subscriptable]
         split_res = res.split(",")
         return (
             float(split_res[0]),
@@ -233,7 +238,10 @@ def retrieve_boundary_box(engine: Engine) -> tuple[float, float, float, float]:
 
 
 async def import_jobs(
-    engine: Engine, state_abbrev: str, lodes_year: int | None, input_dir: pathlib.Path
+    engine: Engine,
+    state_abbrev: str,
+    lodes_year: int | None,
+    input_dir: pathlib.Path,
 ) -> None:
     """
     Import all jobs from US census data.
@@ -243,7 +251,7 @@ async def import_jobs(
     state_abbrev = state_abbrev.lower()
     # Puerto Rico is part of the US but the US Census Bureau never collected
     # employment data. As a result we are just skipping it.
-    if state_abbrev in {"pr"}:
+    if state_abbrev == "pr":
         logger.warning(f"There is no LODES data for the state of '{state_abbrev}'")
         return
 
@@ -251,7 +259,8 @@ async def import_jobs(
     if not lodes_year:
         async with aiohttp.ClientSession() as session:
             lodes_year = await downloader.autodetect_latest_lodes_year(
-                session, state_abbrev
+                session,
+                state_abbrev,
             )
 
     for part in LODESPart:
@@ -289,11 +298,11 @@ def manage_speed_limits(
     city_fips: str,
     state_speed_limits_csv: pathlib.Path,
     city_speed_limits_csv: pathlib.Path,
-    city_speed_limit_override: typing.Optional[str] = None,
+    city_speed_limit_override: str | None = None,
 ) -> None:
     """Manage the state and city speed limits.."""
     # Prepare speed tables.
-    sql_script_dir = pathlib.Path(script_dir._paths[0]) / "sql"  # type: ignore
+    sql_script_dir = pathlib.Path(script_dir._paths[0]) / "sql"  # ty:ignore[unresolved-attribute]
     speed_table_script = sql_script_dir / "speed_tables.sql"
     dbcore.execute_sql_file(engine, speed_table_script)
 
@@ -302,11 +311,13 @@ def manage_speed_limits(
     state_default_speed_limit = None
     if state_fips != runner.NON_US_STATE_FIPS:
         dbcore.import_csv_file_with_header(
-            engine, state_speed_limits_csv, STATE_SPEED_TABLE
+            engine,
+            state_speed_limits_csv,
+            STATE_SPEED_TABLE,
         )
         state_default_speed_limit = retrieve_state_speed_limit(engine, state_fips)
     logger.debug(
-        f'The speed limit for the state "{state_fips}" is {state_default_speed_limit}.'
+        f'The speed limit for the state "{state_fips}" is {state_default_speed_limit}.',
     )
 
     # Manage city speed limit.
@@ -316,11 +327,13 @@ def manage_speed_limits(
         city_default_speed_limit = city_speed_limit_override
     else:
         dbcore.import_csv_file_with_header(
-            engine, city_speed_limits_csv, CITY_SPEED_TABLE
+            engine,
+            city_speed_limits_csv,
+            CITY_SPEED_TABLE,
         )
         city_default_speed_limit = retrieve_city_speed_limit(engine, city_fips)
     logger.debug(
-        f'The speed limit for the city "{city_fips}" is {city_default_speed_limit}.'
+        f'The speed limit for the city "{city_fips}" is {city_default_speed_limit}.',
     )
 
     # Save default values.
@@ -388,7 +401,7 @@ def import_osm_data(
     city_fips: str,
     state_speed_limits_csv: pathlib.Path,
     city_speed_limits_csv: pathlib.Path,
-    city_speed_limit_override: typing.Optional[str] = None,
+    city_speed_limit_override: str | None = None,
 ) -> None:
     """
     Import data related to OSM.
@@ -397,7 +410,7 @@ def import_osm_data(
     exist to compute the boundary box.
     """
     database_url = engine.engine.url.set(drivername="postgresql").render_as_string(
-        hide_password=False
+        hide_password=False,
     )
 
     # Define the BBOX and clip the data.
@@ -412,7 +425,7 @@ def import_osm_data(
     # Note(rgreinho): do we still need this step too?
 
     # Import the osm with highways.
-    dir_ = pathlib.Path(script_dir._paths[0])  # type: ignore
+    dir_ = pathlib.Path(script_dir._paths[0])  # ty:ignore[unresolved-attribute]
     logger.info("Importing OSM data with highways...")
     runner.run_osm2pgrouting(
         database_url,
@@ -440,7 +453,10 @@ def import_osm_data(
     # Import full osm to fill out additional data needs not met by osm2pgrouting.
     logger.info("Importing all OSM data...")
     runner.run_osm2pgsql(
-        database_url, output_srid, dir_ / "pfb.style", clipped_osm_file
+        database_url,
+        output_srid,
+        dir_ / "pfb.style",
+        clipped_osm_file,
     )
 
     # Manage speed limits.
@@ -459,7 +475,6 @@ async def import_all(
     engine: Engine,
     country: str,
     output_srid: int,
-    buffer: int,
     boundary_file: pathlib.Path,
     population_file: pathlib.Path,
     input_dir: pathlib.Path,
@@ -467,14 +482,13 @@ async def import_all(
     state_speed_limits_csv: pathlib.Path,
     city_speed_limits_csv: pathlib.Path,
     city_fips: str,
-    state: typing.Optional[str] = None,
-    lodes_year: typing.Optional[int] = None,
-    city_speed_limit_override: typing.Optional[str] = None,
+    state: str | None = None,
+    lodes_year: int | None = None,
+    city_speed_limit_override: str | None = None,
 ) -> None:
     """Import all the data."""
     import_neighborhood(
         boundary_file=boundary_file,
-        buffer=buffer,
         country=country,
         engine=engine,
         output_srid=output_srid,
@@ -498,7 +512,6 @@ async def import_all(
 
 def neighborhood_wrapper(
     *,
-    buffer: int,
     city: str,
     country: str,
     data_dir: pathlib.Path,
@@ -533,7 +546,6 @@ def neighborhood_wrapper(
     # Import the neighborhood data.
     import_neighborhood(
         boundary_file=boundary_file.resolve(),
-        buffer=buffer,
         country=country,
         engine=engine,
         output_srid=output_srid,
@@ -555,8 +567,9 @@ async def jobs_wrapper(
     be computed.
     """
     # validate the US state.
+    state_abbreviation_len = 2
     state_abbreviation = state_abbreviation.lower()
-    if len(state_abbreviation) != 2:
+    if len(state_abbreviation) != state_abbreviation_len:
         raise ValueError("a state abbreviation must be 2 letter long")
 
     # Prepare the database connection.
@@ -615,14 +628,13 @@ def osm_wrapper(
 
 async def all_wrapper(
     *,
-    buffer: int = common.DEFAULT_BUFFER,
     city: str,
     country: str,
     data_dir: pathlib.Path,
     database_url: str,
     fips_code: str = common.DEFAULT_CITY_FIPS_CODE,
     region: str,
-    lodes_year: typing.Optional[int] = None,
+    lodes_year: int | None = None,
 ) -> None:
     """
     Wrap the all the `import_*` functions.
@@ -632,7 +644,6 @@ async def all_wrapper(
     """
     # Import neighborhood data.
     neighborhood_wrapper(
-        buffer=buffer,
         city=city,
         country=country,
         data_dir=data_dir,

@@ -1,10 +1,9 @@
 """Defines the values shared amongst the CLI modules."""
 
 import pathlib
-import typing
+from typing import Annotated
 
 import typer
-from typing_extensions import Annotated
 
 from brokenspoke_analyzer.core import constant
 
@@ -35,7 +34,7 @@ BlockSize = Annotated[
 ]
 Buffer = Annotated[int, typer.Option(help="define the buffer area")]
 CacheDir = Annotated[
-    typing.Optional[pathlib.Path],
+    pathlib.Path | None,
     typer.Option(
         file_okay=False,
         dir_okay=True,
@@ -48,11 +47,11 @@ CacheDir = Annotated[
 ]
 City = Annotated[str, typer.Argument()]
 ComputeParts = Annotated[
-    typing.Optional[typing.List[constant.ComputePart]],
+    list[constant.ComputePart] | None,
     typer.Option(help="parts of the analysis to compute"),
 ]
 ContainerName = Annotated[
-    typing.Optional[str],
+    str | None,
     typer.Option(help="give a specific name to the container running the BNA"),
 ]
 Country = Annotated[str, typer.Argument()]
@@ -67,31 +66,34 @@ DataDir = Annotated[
     ),
 ]
 DockerImage = Annotated[
-    typing.Optional[str], typer.Option(help="override the BNA Docker image")
+    str | None,
+    typer.Option(help="override the BNA Docker image"),
 ]
-export_dir_kwargs = dict(
-    file_okay=False,
-    dir_okay=True,
-    writable=True,
-    readable=True,
-    help="directory where to export the results",
-)
+export_dir_kwargs = {
+    "file_okay": False,
+    "dir_okay": True,
+    "writable": True,
+    "readable": True,
+    "help": "directory where to export the results",
+}
 ExportDirArg = Annotated[pathlib.Path, typer.Argument(**export_dir_kwargs)]  # ty:ignore[no-matching-overload]
 ExportDirOpt = Annotated[pathlib.Path, typer.Option(**export_dir_kwargs)]  # ty:ignore[no-matching-overload]
 FIPSCode = Annotated[str, typer.Argument(help="US city FIPS code")]
 LODESYear = Annotated[
-    typing.Optional[int], typer.Option(help="year to use to retrieve US job data")
+    int | None,
+    typer.Option(help="year to use to retrieve US job data"),
 ]
 MaxTripDistance = Annotated[int, typer.Option()]
 Mirror = Annotated[
-    typing.Optional[str],
+    str | None,
     typer.Option(help="use a mirror to fetch the US census files"),
 ]
 NoCache = Annotated[
-    typing.Optional[bool], typer.Option("--no-cache", help="disable the cache folder")
+    bool | None,
+    typer.Option("--no-cache", help="disable the cache folder"),
 ]
 Region = Annotated[
-    typing.Optional[str],
+    str | None,
     typer.Argument(help="world region (e.g., state, province, community, etc...)"),
 ]
 Retries = Annotated[
@@ -99,7 +101,8 @@ Retries = Annotated[
     typer.Option(help="number of times to retry downloading files"),
 ]
 SpeedLimit = Annotated[
-    int, typer.Option(help="override the default speed limit (in mph)")
+    int,
+    typer.Option(help="override the default speed limit (in mph)"),
 ]
-State = Annotated[typing.Optional[str], typer.Argument(help="US state")]
+State = Annotated[str | None, typer.Argument(help="US state")]
 WithBundle = Annotated[bool, typer.Option(help="bundle all the files in a zip archive")]

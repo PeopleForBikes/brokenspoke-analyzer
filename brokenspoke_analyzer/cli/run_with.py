@@ -3,13 +3,11 @@
 import asyncio
 import pathlib
 import subprocess
-import typing
 from importlib import resources
 
 import rich
 import typer
 from loguru import logger
-from rich.console import Console
 
 from brokenspoke_analyzer.cli import (
     common,
@@ -46,13 +44,14 @@ def compose(
     lodes_year: common.LODESYear = None,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
     mirror: common.Mirror = None,
-    no_cache: common.NoCache = False,
     retries: common.Retries = common.DEFAULT_RETRIES,
-    s3_bucket: typing.Optional[str] = None,
-    with_bundle: bool = False,
+    s3_bucket: str | None = None,
     with_export: exporter.Exporter = exporter.Exporter.local,
     with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
-) -> typing.Optional[pathlib.Path]:
+    *,
+    no_cache: common.NoCache = False,
+    with_bundle: bool = False,
+) -> pathlib.Path | None:
     """Manage Docker Compose when running the analysis."""
     database_url = "postgresql://postgres:postgres@localhost:5432/postgres"
     try:
@@ -62,7 +61,7 @@ def compose(
             capture_output=not verbose,
         )
         configure.docker(database_url)
-        export_dir_: typing.Optional[pathlib.Path] = asyncio.run(
+        export_dir_: pathlib.Path | None = asyncio.run(
             run_(
                 block_population=block_population,
                 block_size=block_size,
@@ -85,20 +84,23 @@ def compose(
                 with_bundle=with_bundle,
                 with_export=with_export,
                 with_parts=with_parts,
-            )
+            ),
         )
     finally:
         subprocess.run(
-            ["docker", "compose", "rm", "-sfv"], check=True, capture_output=True
+            ["docker", "compose", "rm", "-sfv"],
+            check=True,
+            capture_output=True,
         )
         subprocess.run(
             ["docker", "volume", "rm", "-f", "brokenspoke-analyzer_postgres"],
+            check=True,
             capture_output=True,
         )
     return export_dir_
 
 
-async def run_(
+async def run_(  # noqa: C901, PLR0912, PLR0915
     *,
     city: str,
     country: str,
@@ -106,23 +108,23 @@ async def run_(
     block_population: int = common.DEFAULT_BLOCK_POPULATION,
     block_size: int = common.DEFAULT_BLOCK_SIZE,
     buffer: int = common.DEFAULT_BUFFER,
-    cache_dir: typing.Optional[pathlib.Path] = None,
+    cache_dir: pathlib.Path | None = None,
     city_speed_limit: int = common.DEFAULT_CITY_SPEED_LIMIT,
     data_dir: pathlib.Path = common.DEFAULT_DATA_DIR,
     export_dir: pathlib.Path = common.DEFAULT_EXPORT_DIR,
     fips_code: str = common.DEFAULT_CITY_FIPS_CODE,
-    lodes_year: typing.Optional[int] = None,
+    lodes_year: int | None = None,
     max_trip_distance: int = common.DEFAULT_MAX_TRIP_DISTANCE,
     mirror: common.Mirror = None,
     no_cache: common.NoCache = False,
-    region: typing.Optional[str] = None,
+    region: str | None = None,
     retries: int = common.DEFAULT_RETRIES,
-    s3_bucket: typing.Optional[str] = None,
-    s3_dir: typing.Optional[pathlib.Path] = None,
+    s3_bucket: str | None = None,
+    s3_dir: pathlib.Path | None = None,
     with_bundle: bool = False,
     with_export: exporter.Exporter = exporter.Exporter.local,
     with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
-) -> typing.Optional[pathlib.Path]:
+) -> pathlib.Path | None:
     """Run an analysis."""
     # Make mypy happy.
     if not data_dir:
@@ -182,7 +184,6 @@ async def run_(
         _, _, slug = analysis.osmnx_query(country, city, region)
         input_dir = data_dir / slug
         await ingestor.all_wrapper(
-            buffer=buffer,
             city=city,
             country=country,
             data_dir=input_dir,
@@ -195,12 +196,12 @@ async def run_(
     # Compute.
     console.log("[green]Computing the data...")
     traversable = resources.files("brokenspoke_analyzer.scripts.sql")
-    res = pathlib.Path(traversable._paths[0])  # type: ignore
-    sql_script_dir = res.resolve(strict=True)
+    res = pathlib.Path(traversable._paths[0])  # ty:ignore[unresolved-attribute]
+    sql_script_dir = res.resolve(strict=True)  # noqa: ASYNC240
     boundary_file = input_dir / f"{slug}.shp"
     output_srid = utils.get_srid(boundary_file.resolve(strict=True))
     state_default_speed, city_default_speed = ingestor.retrieve_default_speed_limits(
-        engine
+        engine,
     )
     logger.debug(f"{state_default_speed=}")
     logger.debug(f"{city_default_speed=}")
@@ -224,7 +225,7 @@ async def run_(
     console.log("[green]Exporting the results...")
     if with_export == exporter.Exporter.none:
         return None
-    elif with_export == exporter.Exporter.local:
+    if with_export == exporter.Exporter.local:
         export_dir = export.local(
             city=city,
             country=country,
@@ -236,7 +237,7 @@ async def run_(
     elif with_export == exporter.Exporter.s3:
         if not s3_bucket:
             raise ValueError(
-                "`s3_bucket` must be specified when using custom S3 export"
+                "`s3_bucket` must be specified when using custom S3 export",
             )
         export_dir = await export.s3_(
             bucket_name=s3_bucket,
@@ -249,7 +250,7 @@ async def run_(
     elif with_export == exporter.Exporter.s3_custom:
         if not s3_bucket:
             raise ValueError(
-                "`s3_bucket` must be specified when using custom S3 export"
+                "`s3_bucket` must be specified when using custom S3 export",
             )
         if not s3_dir:
             raise ValueError("`s3_dir` must be specified when using custom S3 export")
@@ -262,7 +263,7 @@ async def run_(
     elif with_export == exporter.Exporter.r2:
         if not s3_bucket:
             raise ValueError(
-                "`s3_bucket` must be specified when using custom R2 export"
+                "`s3_bucket` must be specified when using custom R2 export",
             )
         export_dir = await export.r2_(
             database_url=database_url,
@@ -275,7 +276,7 @@ async def run_(
     elif with_export == exporter.Exporter.r2_custom:
         if not s3_bucket:
             raise ValueError(
-                "`s3_bucket` must be specified when using custom R2 export"
+                "`s3_bucket` must be specified when using custom R2 export",
             )
         if not s3_dir:
             raise ValueError("`s3_dir` must be specified when using custom R2 export")

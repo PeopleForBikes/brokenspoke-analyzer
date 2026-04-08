@@ -2,22 +2,16 @@
 
 import pathlib
 import typing
-import zipfile
 from abc import (
     ABC,
     abstractmethod,
 )
 from collections import abc
 
-import aiohttp
 import yarl
 from loguru import logger
-from obstore.store import ObjectStore
 
-from brokenspoke_analyzer import pyrosm
 from brokenspoke_analyzer.core import (
-    downloader,
-    file_utils,
     utils,
 )
 from brokenspoke_analyzer.core.utils import unzip
@@ -28,9 +22,9 @@ class SourceAdapter(ABC):
     """Abstract base class for data source adapters."""
 
     # Define the URL of the source.
-    SOURCE_URL: typing.Optional[yarl.URL] = None
+    SOURCE_URL: yarl.URL | None = None
 
-    def __init__(self, mirror: typing.Optional[str] = None):
+    def __init__(self, mirror: str | None = None) -> None:
         """Initialize the SourceAdapter.
 
         Example:
@@ -50,7 +44,6 @@ class SourceAdapter(ABC):
             >>> adapter.name
             'city_speed_limits'
         """
-        pass
 
     @property
     @abstractmethod
@@ -62,7 +55,6 @@ class SourceAdapter(ABC):
             >>> len(adapter.files)
             1
         """
-        pass
 
     @property
     def source_url(self) -> yarl.URL:
@@ -81,7 +73,7 @@ class SourceAdapter(ABC):
         """Return the sub-directory for the source data."""
         return pathlib.Path(self.name)
 
-    def prepare(self, datastore: pathlib.Path) -> None:
+    def prepare(self, datastore: pathlib.Path) -> None:  # noqa: ARG002
         """Prepare the data files.
 
         Example:
@@ -90,7 +82,7 @@ class SourceAdapter(ABC):
             >>> with tempfile.TemporaryDirectory() as tmpdir:
             >>>     adapter.prepare(pathlib.Path(tmpdir))
         """
-        pass
+        return
 
     def validate(self, datastore: pathlib.Path) -> None:
         """Validate downloaded data.
@@ -123,8 +115,8 @@ class CensusAdapter(SourceAdapter):
     def __init__(
         self,
         fips: str,
-        mirror: typing.Optional[str] = None,
-    ):
+        mirror: str | None = None,
+    ) -> None:
         """Initialize the CensusAdapter."""
         super().__init__(mirror)
         self.fips = fips
@@ -150,13 +142,13 @@ class CensusAdapter(SourceAdapter):
         """Prepare the data files."""
         if len(self.files) != 1:
             raise ValueError(
-                f"only 1 file was expected, {len(self.files)} found: {self.files}"
+                f"only 1 file was expected, {len(self.files)} found: {self.files}",
             )
         tabblk_file = datastore / self.files[0]
         output_dir = datastore.resolve()
 
         # Unzip it.
-        unzip(tabblk_file.resolve(strict=True), output_dir, False)
+        unzip(tabblk_file.resolve(strict=True), output_dir, delete_after=False)
 
         # Rename the tabulation block files to "population".
         # But keep the original file.
@@ -166,7 +158,7 @@ class CensusAdapter(SourceAdapter):
 
     def validate(self, datastore: pathlib.Path) -> None:
         """Validate downloaded data."""
-        for f in datastore.glob(f"population.*"):
+        for f in datastore.glob("population.*"):
             if not f.exists():
                 raise ValueError(f"{f} does not exist")
             if f.stat().st_size < 1:
@@ -202,8 +194,8 @@ class OSMAdapter(SourceAdapter):
     def __init__(
         self,
         region: str,
-        mirror: typing.Optional[str] = None,
-    ):
+        mirror: str | None = None,
+    ) -> None:
         """Initialize the CensusAdapter."""
         super().__init__(mirror)
         self.region = region
@@ -303,8 +295,8 @@ class LodesAdapter(SourceAdapter):
         self,
         state_abbrev: str,
         lodes_year: int,
-        mirror: typing.Optional[str] = None,
-    ):
+        mirror: str | None = None,
+    ) -> None:
         """Initialize the CensusAdapter."""
         super().__init__(mirror)
         self.state_abbrev = state_abbrev
@@ -327,7 +319,7 @@ class LodesAdapter(SourceAdapter):
         """
         return [
             pathlib.Path(
-                f"{self.state_abbrev.lower()}_od_{part}_JT00_{self.lodes_year}.csv.gz"
+                f"{self.state_abbrev.lower()}_od_{part}_JT00_{self.lodes_year}.csv.gz",
             )
             for part in ["main", "aux"]
         ]

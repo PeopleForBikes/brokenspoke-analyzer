@@ -24,7 +24,6 @@ import pathlib
 
 import aiohttp
 import rich
-from loguru import logger
 
 from brokenspoke_analyzer.cli import root
 from brokenspoke_analyzer.core import (
@@ -39,7 +38,7 @@ os.environ["DC_STATEHOOD"] = "1"
 import us
 
 
-async def main():
+async def main() -> None:
     """Define the main function."""
     # Disable logging.
     root._verbose_callback(0)
@@ -47,7 +46,7 @@ async def main():
     # Prepare the Rich output.
     console = rich.get_console()
 
-    CACHE_ONLY = True
+    cache_only = True
     bna_store = datastore.BNADataStore(
         pathlib.Path(file_utils.get_user_cache_dir()),
         datastore.CacheType.USER_CACHE,
@@ -57,9 +56,9 @@ async def main():
     async with aiohttp.ClientSession() as session:
         # Download the single files first.
         console.log("Downloading state speed limits")
-        await bna_store.download_state_speed_limits(session, cache_only=CACHE_ONLY)
+        await bna_store.download_state_speed_limits(session, cache_only=cache_only)
         console.log("Downloading city speed limits")
-        await bna_store.download_city_speed_limits(session, cache_only=CACHE_ONLY)
+        await bna_store.download_city_speed_limits(session, cache_only=cache_only)
 
         # Download the state-specific files.
         for i, (fips, abbr) in enumerate(us.states.mapping("fips", "abbr").items()):
@@ -68,13 +67,15 @@ async def main():
             if fips in {"60", "66", "69", "72", "78"}:
                 continue
             with console.status(
-                f"[{i + 1}/{len(us.states.STATES)}] Processing {abbr} ({fips})"
+                f"[{i + 1}/{len(us.states.STATES)}] Processing {abbr} ({fips})",
             ):
                 console.log(f"Downloading US Census data for {abbr} ({fips})")
                 await bna_store.download_2020_census_blocks(session, fips)
                 console.log(f"Downloading LODES data for {abbr} ({fips})")
                 await bna_store.download_lodes_data(
-                    session, abbr, cache_only=CACHE_ONLY
+                    session,
+                    abbr,
+                    cache_only=cache_only,
                 )
 
         # Download the OSM data for the specified regions.
@@ -85,11 +86,13 @@ async def main():
         # Start the downloads.
         for i, region in enumerate(osm_regions):
             with console.status(
-                f"[{i + 1}/{len(osm_regions)}] Processing OSM {region}"
+                f"[{i + 1}/{len(osm_regions)}] Processing OSM {region}",
             ):
                 console.log(f"Downloading OSM data for {region}")
                 await bna_store.download_osm_data(
-                    session, region, cache_only=CACHE_ONLY
+                    session,
+                    region,
+                    cache_only=cache_only,
                 )
 
 

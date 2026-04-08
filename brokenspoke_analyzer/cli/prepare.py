@@ -2,9 +2,7 @@
 
 import asyncio
 import logging
-import os
 import pathlib
-import typing
 
 import aiohttp
 import geopandas as gpd
@@ -45,8 +43,9 @@ def prepare_cmd(
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
     lodes_year: common.LODESYear = None,
     mirror: common.Mirror = None,
-    no_cache: common.NoCache = False,
     retries: common.Retries = common.DEFAULT_RETRIES,
+    *,
+    no_cache: common.NoCache = False,
 ) -> None:
     """Prepare all the files required for an analysis."""
     # Make MyPy happy.
@@ -88,25 +87,25 @@ def prepare_cmd(
             no_cache=bool(no_cache),
             region=region or None,
             retries=retries,
-        )
+        ),
     )
 
 
-async def prepare_(
+async def prepare_(  # noqa: PLR0915
     *,
     block_population: int,
     block_size: int,
-    cache_dir: typing.Optional[pathlib.Path],
+    cache_dir: pathlib.Path | None,
     city_speed_limit: int,
     city: str,
     country: str,
-    fips_code: typing.Optional[str],
+    fips_code: str | None,
     data_dir: pathlib.Path,
     retries: int,
     no_cache: bool,
-    lodes_year: typing.Optional[int],
-    mirror: typing.Optional[str],
-    region: typing.Optional[str],
+    lodes_year: int | None,
+    mirror: str | None,
+    region: str | None,
 ) -> None:
     """Prepare and kicks off the analysis."""
     # Compute the city slug.
@@ -132,13 +131,18 @@ async def prepare_(
         f"[green]Querying OSM to retrieve {city} boundaries...",
     )
     slug = retryer(
-        analysis.retrieve_city_boundaries, data_dir, country, city, region, fips_code
+        analysis.retrieve_city_boundaries,
+        data_dir,
+        country,
+        city,
+        region,
+        fips_code,
     )
     boundary_file = data_dir / f"{slug}.shp"
 
     # Download the OSM region file.
     state_abbrev, state_fips, _ = analysis.derive_state_info(region)
-    osm_region = region if region else country
+    osm_region = region or country
 
     # Prepare the caching strategy.
     caching_strategy = datastore.CacheType.USER_CACHE
@@ -148,7 +152,10 @@ async def prepare_(
         caching_strategy = datastore.CacheType.CUSTOM
 
     bna_store = datastore.BNADataStore(
-        data_dir, caching_strategy, mirror=mirror, custom_dir=cache_dir
+        data_dir,
+        caching_strategy,
+        mirror=mirror,
+        custom_dir=cache_dir,
     )
 
     async with aiohttp.ClientSession() as session:
@@ -170,10 +177,12 @@ async def prepare_(
     if state_fips == runner.NON_US_STATE_FIPS:
         # Create synthetic population.
         console.log("[green]Preparing synthetic population...")
-        CELL_SIZE = (block_size, block_size)
+        cell_size = (block_size, block_size)
         city_boundaries_gdf = gpd.read_file(boundary_file)
         synthetic_population = analysis.create_synthetic_population(
-            city_boundaries_gdf, *CELL_SIZE, population=block_population
+            city_boundaries_gdf,
+            *cell_size,
+            population=block_population,
         )
 
         # Simulate the census blocks.
@@ -182,7 +191,7 @@ async def prepare_(
 
         # Change the speed limit.
         console.log(
-            f"[green]Adjusting default city speed limit to {city_speed_limit} km/h..."
+            f"[green]Adjusting default city speed limit to {city_speed_limit} km/h...",
         )
         analysis.change_speed_limit(data_dir, city, state_abbrev, city_speed_limit)
     else:
@@ -196,15 +205,16 @@ async def prepare_(
             with console.status("Downloading..."):
                 await bna_store.download_city_speed_limits(session)
 
-            if state_abbrev.lower() in {"pr"}:
+            if state_abbrev.lower() == "pr":
                 logger.warning(
-                    f"There is no LODES data for the state of '{state_abbrev}'"
+                    f"There is no LODES data for the state of '{state_abbrev}'",
                 )
             elif not lodes_year:
-                console.log(f"[green]Autodetecting latest LODES year...")
+                console.log("[green]Autodetecting latest LODES year...")
                 try:
                     lodes_year = await downloader.autodetect_latest_lodes_year(
-                        session, state_abbrev
+                        session,
+                        state_abbrev,
                     )
                 except ValueError as e:
                     lehd_url = f"{downloader.LODES_URL}/{state_abbrev.lower()}/od"
@@ -216,7 +226,9 @@ async def prepare_(
                 console.log(f"[green]Fetching US employment data ({lodes_year})...")
                 with console.status("Downloading..."):
                     await bna_store.download_lodes_data(
-                        session, state_abbrev, lodes_year
+                        session,
+                        state_abbrev,
+                        lodes_year,
                     )
 
             console.log("[green]Fetching US census blocks (2020)...")

@@ -1,9 +1,7 @@
 """Provides utility functions for file and directory operations."""
 
-import os
 import pathlib
 import shutil
-import typing
 from dataclasses import dataclass
 
 from platformdirs import PlatformDirs
@@ -20,7 +18,7 @@ class BaseResult:
     total_item_count: int
     space_bytes: int
     space_gb: float
-    errors: typing.List[str]
+    errors: list[str]
     folder_path: str
 
 
@@ -33,8 +31,8 @@ class DeletionResult(BaseResult):
 class DryRunResult(BaseResult):
     """Result of a dry run deletion preview."""
 
-    files_list: typing.List[str]
-    directories_list: typing.List[str]
+    files_list: list[str]
+    directories_list: list[str]
     dry_run: bool = True
 
 
@@ -89,11 +87,12 @@ def bytes_to_gb(bytes_size: int) -> float:
     return round(bytes_size / (1024**3), 3)
 
 
-def delete_folder_contents_safe(
+def delete_folder_contents_safe(  # noqa: C901, PLR0912, PLR0915
     folder_path: pathlib.Path,
+    *,
     include_hidden: bool = False,
     dry_run: bool = False,
-) -> typing.Union[DryRunResult, DeletionResult]:
+) -> DryRunResult | DeletionResult:
     """
     Safe version of delete_folder_contents with dry run option.
 
@@ -103,7 +102,8 @@ def delete_folder_contents_safe(
         dry_run: If True, only show what would be deleted without actually deleting
 
     Returns:
-        Summary with counts of items to be deleted/deleted, space to be reclaimed, and any errors
+        Summary with counts of items to be deleted/deleted, space to be
+        reclaimed, and any errors
     """
     folder_path_obj = pathlib.Path(folder_path)
 
@@ -114,10 +114,10 @@ def delete_folder_contents_safe(
     if not folder_path_obj.is_dir():
         raise ValueError(f"'{folder_path_obj}' is not a directory")
 
-    files_to_delete: typing.List[typing.Tuple[pathlib.Path, int]] = []
-    dirs_to_delete: typing.List[typing.Tuple[pathlib.Path, int]] = []
+    files_to_delete: list[tuple[pathlib.Path, int]] = []
+    dirs_to_delete: list[tuple[pathlib.Path, int]] = []
     total_size_to_reclaim: int = 0
-    errors: typing.List[str] = []
+    errors: list[str] = []
 
     try:
         # First, collect all items to be deleted and calculate total size
@@ -169,7 +169,7 @@ def delete_folder_contents_safe(
             except PermissionError as e:
                 error_msg: str = f"Permission denied: {file_path} - {e}"
                 errors.append(error_msg)
-            except Exception as e:
+            except OSError as e:
                 error_msg = f"Failed to delete {file_path}: {e}"
                 errors.append(error_msg)
 
@@ -182,7 +182,7 @@ def delete_folder_contents_safe(
             except PermissionError as e:
                 error_msg = f"Permission denied: {dir_path} - {e}"
                 errors.append(error_msg)
-            except Exception as e:
+            except OSError as e:
                 error_msg = f"Failed to delete {dir_path}: {e}"
                 errors.append(error_msg)
 
@@ -200,13 +200,15 @@ def delete_folder_contents_safe(
 
     except PermissionError as e:
         raise PermissionError(
-            f"Permission denied accessing folder '{folder_path_obj}': {e}"
-        )
+            f"Permission denied accessing folder '{folder_path_obj}': {e}",
+        ) from e
 
 
-def get_user_cache_dir(ensure_exists: bool = True) -> pathlib.Path:
+def get_user_cache_dir(*, ensure_exists: bool = True) -> pathlib.Path:
     """Return the user cache directory."""
     dirs = PlatformDirs(
-        constant.APPNAME, constant.APPAUTHOR, ensure_exists=ensure_exists
+        constant.APPNAME,
+        constant.APPAUTHOR,
+        ensure_exists=ensure_exists,
     )
     return pathlib.Path(dirs.user_cache_dir)
