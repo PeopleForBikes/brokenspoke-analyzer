@@ -50,16 +50,19 @@ def gunzip(
     """Gunzip a file into a specific target."""
     # Decompress it.
     gzip_file = gzip_file.resolve(strict=True)
+    logger.debug(f"Decompressing {gzip_file} to {target}")
     with gzip.open(gzip_file, "rb") as f:
         try:
             content = f.read()
         except gzip.BadGzipFile as e:
             delete_after = True
-            raise RuntimeError("Bad Gzip file. Try downloading the file again.") from e
+            raise RuntimeError(
+                f"Bad Gzip file: {gzip_file}. Try downloading it again."
+            ) from e
         except EOFError as e:
             delete_after = True
             raise RuntimeError(
-                "End of file error.  Try downloading the file again."
+                f"End of file error: {gzip_file}. Try downloading it again."
             ) from e
         else:
             target.resolve().write_bytes(content)

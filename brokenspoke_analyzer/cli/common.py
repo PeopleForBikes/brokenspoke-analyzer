@@ -76,8 +76,8 @@ export_dir_kwargs = dict(
     readable=True,
     help="directory where to export the results",
 )
-ExportDirArg = Annotated[pathlib.Path, typer.Argument(**export_dir_kwargs)]
-ExportDirOpt = Annotated[pathlib.Path, typer.Option(**export_dir_kwargs)]
+ExportDirArg = Annotated[pathlib.Path, typer.Argument(**export_dir_kwargs)]  # ty:ignore[no-matching-overload]
+ExportDirOpt = Annotated[pathlib.Path, typer.Option(**export_dir_kwargs)]  # ty:ignore[no-matching-overload]
 FIPSCode = Annotated[str, typer.Argument(help="US city FIPS code")]
 LODESYear = Annotated[
     typing.Optional[int], typer.Option(help="year to use to retrieve US job data")
