@@ -65,30 +65,31 @@ def compose(
             capture_output=not verbose,
         )
         configure.docker(database_url)
-        export_dir_: typing.Optional[pathlib.Path] = run_(
-            block_population=block_population,
-            block_size=block_size,
-            buffer=buffer,
-            cache_dir=cache_dir,
-            city_speed_limit=city_speed_limit,
-            city=city,
-            country=country,
-            data_dir=data_dir,
-            database_url=database_url,
-            export_dir=export_dir,
-            fips_code=fips_code,
-            lodes_year=lodes_year,
-            max_trip_distance=max_trip_distance,
-            mirror=mirror,
-            no_cache=no_cache,
-            region=region,
-            retries=retries,
-            s3_bucket=s3_bucket,
-            with_bundle=with_bundle,
-            with_export=with_export,
-            with_parts=with_parts,
+        export_dir_: typing.Optional[pathlib.Path] = asyncio.run(
+            run_(
+                block_population=block_population,
+                block_size=block_size,
+                buffer=buffer,
+                cache_dir=cache_dir,
+                city_speed_limit=city_speed_limit,
+                city=city,
+                country=country,
+                data_dir=data_dir,
+                database_url=database_url,
+                export_dir=export_dir,
+                fips_code=fips_code,
+                lodes_year=lodes_year,
+                max_trip_distance=max_trip_distance,
+                mirror=mirror,
+                no_cache=no_cache,
+                region=region,
+                retries=retries,
+                s3_bucket=s3_bucket,
+                with_bundle=with_bundle,
+                with_export=with_export,
+                with_parts=with_parts,
+            )
         )
-
     finally:
         subprocess.run(
             ["docker", "compose", "rm", "-sfv"], check=True, capture_output=True
@@ -100,7 +101,7 @@ def compose(
     return export_dir_
 
 
-def run_(
+async def run_(
     *,
     city: str,
     country: str,
@@ -162,7 +163,7 @@ def run_(
 
     # Prepare.
     logger.debug(f"{data_dir=}")
-    prepare.prepare_cmd(
+    await prepare.prepare_(
         block_population=block_population,
         block_size=block_size,
         cache_dir=cache_dir,
@@ -173,7 +174,7 @@ def run_(
         fips_code=fips_code,
         lodes_year=lodes_year,
         mirror=mirror,
-        no_cache=no_cache,
+        no_cache=bool(no_cache),
         region=region,
         retries=retries,
     )
@@ -183,7 +184,7 @@ def run_(
     with console.status("Importing..."):
         _, _, slug = analysis.osmnx_query(country, city, region)
         input_dir = data_dir / slug
-        importer.all(
+        await ingestor.all_wrapper(
             buffer=buffer,
             city=city,
             country=country,
@@ -191,7 +192,7 @@ def run_(
             database_url=database_url,
             fips_code=fips_code,
             lodes_year=lodes_year,
-            region=region,
+            region=region or country,
         )
 
     # Compute.
@@ -236,8 +237,12 @@ def run_(
             with_bundle=with_bundle,
         )
     elif with_export == exporter.Exporter.s3:
-        export_dir = export.s3(
-            bucket_name=s3_bucket,  # type: ignore
+        if not s3_bucket:
+            raise ValueError(
+                "`s3_bucket` must be specified when using custom S3 export"
+            )
+        export_dir = await export.s3_(
+            bucket_name=s3_bucket,
             city=city,
             country=country,
             database_url=database_url,
@@ -245,10 +250,43 @@ def run_(
             with_bundle=with_bundle,
         )
     elif with_export == exporter.Exporter.s3_custom:
-        export_dir = export.s3_custom(
-            bucket_name=s3_bucket,  # type: ignore
+        if not s3_bucket:
+            raise ValueError(
+                "`s3_bucket` must be specified when using custom S3 export"
+            )
+        if not s3_dir:
+            raise ValueError("`s3_dir` must be specified when using custom S3 export")
+        export_dir = await export.s3_custom_(
+            bucket_name=s3_bucket,
             database_url=database_url,
             s3_dir=s3_dir,
             with_bundle=with_bundle,
         )
+    elif with_export == exporter.Exporter.r2:
+        if not s3_bucket:
+            raise ValueError(
+                "`s3_bucket` must be specified when using custom R2 export"
+            )
+        export_dir = await export.r2_(
+            database_url=database_url,
+            bucket_name=s3_bucket,
+            country=country,
+            city=city,
+            region=region,
+            with_bundle=with_bundle,
+        )
+    elif with_export == exporter.Exporter.r2_custom:
+        if not s3_bucket:
+            raise ValueError(
+                "`s3_bucket` must be specified when using custom R2 export"
+            )
+        if not s3_dir:
+            raise ValueError("`s3_dir` must be specified when using custom R2 export")
+        await export.r2_custom_(
+            database_url=database_url,
+            bucket_name=s3_bucket,
+            r2_dir=s3_dir,
+            with_bundle=with_bundle,
+        )
+        export_dir = s3_dir
     return export_dir
