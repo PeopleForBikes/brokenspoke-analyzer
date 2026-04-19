@@ -5,3 +5,6 @@ line-length:
   tables: false
   code_blocks: false
 single-h1: false
+
+# Prevent Prettier from causing failures with the MD030 rule
+MD030: false
