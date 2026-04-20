@@ -5,6 +5,7 @@ import re
 import typing
 
 import aiohttp
+import yarl
 from bs4 import BeautifulSoup
 from loguru import logger
 
@@ -231,9 +232,9 @@ async def autodetect_latest_lodes_year(
     # employment data. As a result we are just skipping it.
     PART = "aux"
     TYPE = "JT00"
-    lehd_url = f"{LODES_URL}/{state_abbrev.lower()}/od"
+    lehd_url = yarl.URL(LODES_URL) / state_abbrev.lower() / "od"
     logger.debug(f"Looking up latest LODES year for {state_abbrev} {PART} {TYPE}")
-    html_dir = await fetch_text(session=session, url=lehd_url)
+    html_dir = await fetch_text(session=session, url=str(lehd_url))
     latest_year = parse_latest_lodes_year(html_dir, state_abbrev, PART, TYPE)
-    logger.debug(f"Found year: {latest_year}")
+    logger.debug(f"Found latest LODES year: {latest_year}")
     return latest_year
