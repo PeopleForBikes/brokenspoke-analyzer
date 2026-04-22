@@ -22,7 +22,7 @@ lint-python:
     uv run isort --check .
     uv run ruff format --check {{ src_dir }} {{ utils_dir }}
     uv run ruff check {{ src_dir }} {{ utils_dir }}
-    uv run mypy {{ src_dir }}
+    uv run ty check {{ src_dir }}
 
 # Lint SQL files.
 lint-sql:

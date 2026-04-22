@@ -32,7 +32,7 @@ def execute_sqlfile_with_substitutions(
     if bind_params:
         binding_names = sorted(bind_params.keys(), key=len, reverse=True)
         for binding_name in binding_names:
-            param = bind_params[binding_name]
+            param = bind_params[binding_name]  # ty:ignore[invalid-argument-type]
             substitute = param if param is not None else "NULL"
             statements = statements.replace(f":{binding_name}", f"{substitute}")
     dbcore.execute_query(engine, statements)
@@ -351,7 +351,7 @@ def connectivity(
     # Access: population
     logger.info("METRICS: Access: population")
     sql_script = sql_connectivity_script_dir / "access_population.sql"
-    bind_params: typing.Mapping[str, float] = {  # type: ignore
+    bind_params: typing.Mapping[str, float] = {
         "max_score": 1,
         "step1": 0.03,
         "score1": 0.1,
@@ -369,7 +369,7 @@ def connectivity(
         dbcore.execute_sql_file(engine, sql_script)
 
         sql_script = sql_connectivity_script_dir / "access_jobs.sql"
-        bind_params: typing.Mapping[str, float] = {  # type: ignore
+        bind_params: typing.Mapping[str, float] = {
             "max_score": 1,
             "step1": 0.03,
             "score1": 0.1,
@@ -402,7 +402,7 @@ def connectivity(
             "nb_output_srid": output_srid,
         }
         execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
-    destinations = ["schools", "social_services", "supermarkets"]  # type: ignore
+    destinations = ["schools", "social_services", "supermarkets"]
     for destination in destinations:
         sql_script = sql_destination_script_dir / f"{destination}.sql"
         bind_params = {"nb_output_srid": output_srid}
@@ -428,9 +428,9 @@ def connectivity(
     for access in accesses:
         sql_script = sql_connectivity_script_dir / f"access_{access.name}.sql"
         bind_params = {
-            "first": access.first,  # type: ignore
-            "second": access.second,  # type: ignore
-            "third": access.third,  # type: ignore
+            "first": access.first,
+            "second": access.second,
+            "third": access.third,
             "max_score": access.max_score,
         }
         execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
@@ -438,8 +438,8 @@ def connectivity(
     # Access_trails.
     sql_script = sql_connectivity_script_dir / "access_trails.sql"
     bind_params = {
-        "first": 0.7,  # type: ignore
-        "second": 0.2,  # type: ignore
+        "first": 0.7,
+        "second": 0.2,
         "third": 0,
         "max_score": 1,
         "min_path_length": path_constraint.min_length,

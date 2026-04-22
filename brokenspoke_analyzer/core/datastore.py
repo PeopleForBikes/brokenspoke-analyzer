@@ -15,6 +15,7 @@ from obstore.store import (
 )
 
 from brokenspoke_analyzer.core import (
+    datasource,
     downloader,
     file_utils,
     utils,
@@ -25,9 +26,6 @@ if TYPE_CHECKING:
 
 
 CHUNK_SIZE = 5 * 1024 * 1024  # 5MB
-PFB_PUBLIC_DOCUMENTS_URL = "https://s3.amazonaws.com/pfb-public-documents"
-LODES_202x_URL = "https://lehd.ces.census.gov/data/lodes/LODES8/"
-TIGER_2020_URL = "https://www2.census.gov/geo/tiger/TIGER2020/TABBLOCK20"
 
 
 def exists(store: ObjectStore, path: str) -> bool:
@@ -121,14 +119,21 @@ class BNADataStore:
         """Check whether a file already exists in the data store."""
         return exists(self.store, path)
 
-    async def copy_to_store(self, path: str) -> None:
+    async def copy_to_store(
+        self, path: str, destination: typing.Optional[str] = None
+    ) -> None:
         """Copy a file from the cache to the store."""
         if not exists(self.cache, path):
             raise FileNotFoundError(f"{path} was not found in the cache")
-        if exists(self.store, path):
+
+        # Change the destination path if we do not want it to match the source path.
+        destination_path = destination if destination else path
+
+        # Copy the file if it does not already exist in the store.
+        if exists(self.store, destination_path):
             return
         res = await self.cache.get_async(path)
-        await self.store.put_async(path, res)
+        await self.store.put_async(destination_path, res)
 
     async def fetch_to_cache(
         self, session: aiohttp.ClientSession, url: str, path: str
@@ -144,96 +149,84 @@ class BNADataStore:
         async with session.get(url) as resp:
             await self.cache.put_async(path, resp.content.iter_chunked(CHUNK_SIZE))
 
-    async def fetch(self, session: aiohttp.ClientSession, url: str, path: str) -> None:
+    async def fetch(
+        self,
+        session: aiohttp.ClientSession,
+        url: str,
+        path: str,
+        cache_only: bool = False,
+    ) -> None:
         """Fetch a file from a URL."""
         await self.fetch_to_cache(session, url, path)
-        await self.copy_to_store(path)
+        if not cache_only:
+            await self.copy_to_store(path)
 
-    async def download_state_speed_limits(self, session: aiohttp.ClientSession) -> None:
+    async def fetch_from_source(
+        self,
+        session: aiohttp.ClientSession,
+        source: datasource.SourceAdapter,
+        cache_only: bool = False,
+    ) -> None:
+        """Fetch file(s) from a SourceAdapter."""
+        for url in source.urls:
+            path = str(source.subpath / url.name)
+            await self.fetch_to_cache(session, str(url), path)
+            if not cache_only:
+                await self.copy_to_store(path, url.name)
+        if not cache_only:
+            datastore = self.store.prefix
+            source.prepare(datastore)
+            source.validate(datastore)
+
+    async def download_state_speed_limits(
+        self, session: aiohttp.ClientSession, cache_only: bool = False
+    ) -> None:
         """Download the state speed limits."""
-        state_speed_csv = "state_fips_speed.csv"
-        root_url = self.mirror if self.mirror else PFB_PUBLIC_DOCUMENTS_URL
-        url = f"{root_url}/{state_speed_csv}"
-        await self.fetch(session, url, state_speed_csv)
+        s = datasource.StateSpeedLimitAdapter()
+        await self.fetch_from_source(session, s, cache_only=cache_only)
 
-    async def download_city_speed_limits(self, session: aiohttp.ClientSession) -> None:
+    async def download_city_speed_limits(
+        self, session: aiohttp.ClientSession, cache_only: bool = False
+    ) -> None:
         """Download the city speed limits."""
-        city_speed_csv = "city_fips_speed.csv"
-        root_url = self.mirror if self.mirror else PFB_PUBLIC_DOCUMENTS_URL
-        url = f"{root_url}/{city_speed_csv}"
-        await self.fetch(session, url, city_speed_csv)
+        s = datasource.CitySpeedLimitAdapter()
+        await self.fetch_from_source(session, s)
 
     async def download_lodes_data(
         self,
         session: aiohttp.ClientSession,
         state_abbrev: str,
-        lodes_year: int | None,
+        lodes_year: typing.Optional[int] = None,
+        cache_only: bool = False,
     ) -> None:
-        """
-        Download employment data from the US census website: https://lehd.ces.census.gov/.
-
-        LODES stands for LEHD Origin-Destination Employment Statistics.
-
-        OD means Origin-Data, which represents the jobs that are associated with
-        both a home census block and a work census block.
-
-        The filename is composed of the following parts:
-        ``[ST]_od_[PART]_[TYPE]_[YEAR].csv.gz``.
-
-        * [ST] = lowercase, 2-letter postal code for a chosen state
-        * [PART] = Part of the state file, can have a value of either "main" or
-            "aux".
-            Complimentary parts of the state file, the main part includes jobs with
-            both workplace and residence in the state and the aux part includes jobs
-            with the workplace in the state and the residence outside of the state.
-        * [TYPE] = Job Type, can have a value of "JT00 for All Jobs, "JT01" for
-            Primary Jobs, "JT02" for All Private Jobs, "JT03" for Private Primary
-            Jobs, "JT04" for All Federal Jobs, or "JT05" for Federal Primary Jobs.
-        * [YEAR] = Year of job data. Can have the value of 2002-2020 for most
-            states.
-
-        As an example, the main OD file of Primary Jobs in 2007 for California would
-        be the file: ``ca_od_main_JTO1_2007.csv.gz``.
-
-        More information about the formast can be found on the website:
-        https://lehd.ces.census.gov/data/#lodes.
-        """
+        """Download employment data from the US census website."""
         state_abbrev = state_abbrev.lower()
+
         # Puerto Rico is part of the US but the US Census Bureau never collected
         # employment data. As a result we are just skipping it.
-
         if state_abbrev in {"pr"}:
             logger.warning(f"There is no LODES data for the state of '{state_abbrev}'")
             return
-
-        lodes_url = f"{LODES_202x_URL}/{state_abbrev}/od"
-        root_url = self.mirror if self.mirror else lodes_url
 
         # Autodetect latest LODES year if not specified.
         if not lodes_year:
             lodes_year = await downloader.autodetect_latest_lodes_year(
                 session, state_abbrev
             )
-
-        for part in ["main", "aux"]:
-            lodes_gz = f"{state_abbrev}_od_{part.lower()}_JT00_{lodes_year}.csv.gz"
-            lodes_csv = f"{state_abbrev}_od_{part.lower()}_JT00_{lodes_year}.csv"
-            url = f"{root_url}/{lodes_gz}"
-            await self.fetch(session, url, lodes_gz)
-
-            # Gunzip it in the store and delete the gz file.
-            utils.gunzip(self.store.prefix / lodes_gz, self.store.prefix / lodes_csv)
+        s = datasource.LodesAdapter(state_abbrev, lodes_year, self.mirror)
+        await self.fetch_from_source(session, s, cache_only=cache_only)
 
     async def download_2020_census_blocks(
-        self, session: aiohttp.ClientSession, fips: str
+        self, session: aiohttp.ClientSession, fips: str, cache_only: bool = False
     ) -> None:
         """Download a 2020 census tabulation block code for a specific state."""
-        tabblk2020_zip = f"tl_2020_{fips}_tabblock20.zip"
-        root_url = self.mirror if self.mirror else TIGER_2020_URL
-        url = f"{root_url}/{tabblk2020_zip}"
-        await self.fetch(session, url, tabblk2020_zip)
+        s = datasource.CensusAdapter(fips, self.mirror)
+        await self.fetch_from_source(session, s, cache_only=cache_only)
 
-        # Unzip and rename the tabulation block files to "population".
-        utils.prepare_census_blocks(
-            self.store.prefix / tabblk2020_zip, self.store.prefix
-        )
+    async def download_osm_data(
+        self, session: aiohttp.ClientSession, region: str, cache_only: bool = False
+    ) -> pathlib.Path:
+        """Retrieve the region file from Geofabrik or BBike."""
+        s = datasource.OSMAdapter(region, self.mirror)
+        await self.fetch_from_source(session, s, cache_only=cache_only)
+        return pathlib.Path(s.urls[0].name)
