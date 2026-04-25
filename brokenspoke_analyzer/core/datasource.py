@@ -1,6 +1,7 @@
 """Represent the source adapter module."""
 
 import pathlib
+import string
 import typing
 from abc import (
     ABC,
@@ -8,8 +9,13 @@ from abc import (
 )
 from collections import abc
 
+import geopandas as gpd
+import numpy as np
+import rasterio
+import rasterio.features
 import yarl
 from loguru import logger
+from shapely.geometry import shape
 
 from brokenspoke_analyzer.core import (
     utils,
@@ -163,6 +169,118 @@ class CensusAdapter(SourceAdapter):
                 raise ValueError(f"{f} does not exist")
             if f.stat().st_size < 1:
                 raise ValueError(f"{f} is empty")
+
+
+class WorldPopAdapter(SourceAdapter):
+    """Adapter for WorldPop 1km resolution data."""
+
+    SOURCE_URL = yarl.URL(
+        "https://data.worldpop.org/GIS/Population/Global_2015_2030/R2025A/"
+    )
+
+    def __init__(
+        self,
+        country: str,
+        year: str,
+        mirror: str | None = None,
+    ) -> None:
+        """
+        Initialize the WorldPopAdapter.
+
+        country must conform to using an ISO_3166 country code
+        https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes
+        """
+        super().__init__(mirror)
+        self.country = country
+        self.year = year
+
+    @property
+    def name(self) -> str:
+        """Return the source name."""
+        return "worldpop"
+
+    @property
+    def files(self) -> abc.Sequence[pathlib.Path]:
+        """
+        Return the source data files.
+
+        Example:
+            >>> adapter = WorldPopAdapter("can", "2021")
+            >>> adapter.files[0].name
+            can_pop_2021_CN_1km_R2025A_UA_v1.tif
+        """
+        return [
+            pathlib.Path(
+                f"{self.country.lower()}_pop_{self.year}_CN_1km_R2025A_UA_v1.tif"
+            )
+        ]
+
+    @property
+    def urls(self) -> abc.Sequence[yarl.URL]:
+        """Return the source data URLs."""
+        return [
+            yarl.URL(
+                self.source_url
+                / self.year
+                / self.country
+                / "v1/1km_ua/constrained"
+                / str(f)
+            )
+            for f in self.files
+        ]
+
+    def prepare(self, datastore: pathlib.Path) -> None:
+        """Prepare the data files."""
+        if len(self.files) != 1:
+            raise ValueError(
+                f"only 1 file was expected, {len(self.files)} found: {self.files}"
+            )
+        file_geotiff = datastore / self.files[0]
+        output_dir = datastore.resolve()
+        file_shp = output_dir / "population.shp"
+
+        if not file_shp.is_file():
+            logger.debug(f"{file_shp} doesn't exist, creating shapefile")
+            with rasterio.open(file_geotiff) as src:
+                # Read the population count as a numpy array
+                band_data = src.read(1)
+
+                # Get spatial metadata
+                transform = src.transform
+                crs = src.crs
+                nodata_val = src.nodata
+
+                # Mask to ignore NoData values
+                if nodata_val is not None:
+                    mask = band_data != nodata_val
+                else:
+                    mask = band_data > 0  # Fallback: ignore 0 population pixels
+
+                # Generate shapes from the raster pixels
+                shapes_generator = rasterio.features.shapes(
+                    band_data, mask=mask, transform=transform
+                )
+
+                # Convert the extracted shapes into Shapely geometries
+                records = [
+                    {"geometry": shape(geom), "POP20": val}
+                    for geom, val in shapes_generator
+                ]
+
+            # Load into a GeoDataFrame
+            gdf = gpd.GeoDataFrame(records)
+            gdf.set_crs(crs, inplace=True)
+
+            # Generate GEOID20 column, with random 15 character lowercase ACII string,
+            # to simulate US census data.
+            n_rows = len(gdf)
+            rng = np.random.default_rng()
+            random_array = rng.choice(list(string.ascii_lowercase), size=(n_rows, 15))
+            gdf["GEOID20"] = ["".join(row) for row in random_array]
+
+            # Export to Shapefile
+            gdf.to_file(file_shp)
+            logger.debug(f"Shapefile successfully saved to {file_shp}")
 
 
 class CitySpeedLimitAdapter(SourceAdapter):
