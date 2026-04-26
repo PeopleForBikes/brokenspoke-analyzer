@@ -4,7 +4,6 @@ import os
 import pathlib
 import random
 import string
-import typing
 import warnings
 import zipfile
 
@@ -31,8 +30,10 @@ warnings.filterwarnings("ignore")
 
 
 def osmnx_query(
-    country: str, city: str, state: typing.Optional[str] = None
-) -> typing.Tuple[typing.Dict[str, str], str, str]:
+    country: str,
+    city: str,
+    state: str | None = None,
+) -> tuple[dict[str, str], str, str]:
     """
     Prepare the osmnx.
 
@@ -44,7 +45,7 @@ def osmnx_query(
 
         >>> osmnx_query("malta", "valletta")
         ({'city': 'valletta', 'country': 'malta'}, 'valletta, malta', 'valletta-malta')
-    """
+    """  # noqa: E501
     if country == state:
         state = None
     q = ", ".join(filter(None, [city, state, country]))
@@ -93,7 +94,7 @@ def state_info(state: str) -> tuple[str, str]:
     # Ensure DC is considered a US state.
     # https://github.com/unitedstates/python-us/issues/67
     os.environ["DC_STATEHOOD"] = "1"
-    from us import states
+    from us import states  # noqa: PLC0415
 
     # Lookup for the state name.
     if not state:
@@ -114,7 +115,7 @@ def state_info(state: str) -> tuple[str, str]:
     return (abbrev, fips)
 
 
-def derive_state_info(state: str | None) -> typing.Tuple[str, str, bool]:
+def derive_state_info(state: str | None) -> tuple[str, str, bool]:
     """
     Derive state information.
 
@@ -127,7 +128,7 @@ def derive_state_info(state: str | None) -> typing.Tuple[str, str, bool]:
     """
     try:
         if not state:
-            raise ValueError("no 'state' was provided")
+            raise ValueError("no 'state' was provided")  # noqa: TRY301
         run_import_jobs = True
         state_abbrev, state_fips = state_info(state)
     except ValueError:
@@ -150,8 +151,8 @@ def retrieve_city_boundaries(
     output: pathlib.Path,
     country: str,
     city: str,
-    state: typing.Optional[str] = None,
-    fips_code: typing.Optional[str] = None,
+    state: str | None = None,
+    fips_code: str | None = None,
 ) -> str:
     """
     Retrieve the city boundaries and save them as Shapefile and GeoJSON.
@@ -165,12 +166,15 @@ def retrieve_city_boundaries(
     if fips_code is not None and fips_code != common.DEFAULT_CITY_FIPS_CODE:
         cache_enabled = os.getenv("BNA_PYGRIS_CACHE", "1") == "1"
         places = pygris.places(
-            state=fips_code[:2], cache=cache_enabled, year=common.DEFAULT_PYGRIS_YEAR
+            state=fips_code[:2],
+            cache=cache_enabled,
+            year=common.DEFAULT_PYGRIS_YEAR,
         )
         city_gdf = places[places["PLACEFP"] == fips_code[2:]]
         if city_gdf.empty:
             logger.debug(
-                f"Cannot find Place with FIPS code: {fips_code}, trying the County Subdivisions table"
+                f"Cannot find Place with FIPS code: {fips_code}, "
+                f"trying the County Subdivisions table",
             )
             county_subdivisions = pygris.county_subdivisions(
                 state=fips_code[:2],
@@ -188,7 +192,7 @@ def retrieve_city_boundaries(
         try:
             city_gdf = geocoder.geocode_to_gdf(structured_query)
             ensure_gdf_class_boundary(city_gdf)
-        except TypeError as e:
+        except TypeError:
             city_gdf = geocoder.geocode_to_gdf(q)
             ensure_gdf_class_boundary(city_gdf)
 
@@ -210,7 +214,7 @@ def create_synthetic_population(
     area: gpd.GeoDataFrame,
     length: int,
     width: int,
-    population: typing.Optional[int] = 100,
+    population: int | None = 100,
 ) -> gpd.GeoDataFrame:
     """
     Create a grid representing the synthetic population.
@@ -244,7 +248,7 @@ def create_synthetic_population(
                     (col + width, row),
                     (col + width, row + length),
                     (col, row + length),
-                ]
+                ],
             )
 
             # Append it if it intersects with the biggest region.
@@ -253,14 +257,15 @@ def create_synthetic_population(
 
     # Create a geodataframe made of the cells overlapping with the area.
     # Add new columns to simulate US census data.
-    BLOCKID_LEN = 15
+    blockid_len = 15
     grid = gpd.GeoDataFrame(
         {
             "geometry": cells,
             "POP20": population,
             "GEOID20": [
                 "".join(
-                    random.choice(string.ascii_lowercase) for x in range(BLOCKID_LEN)
+                    random.choice(string.ascii_lowercase)  # noqa: S311
+                    for x in range(blockid_len)
                 )
                 for _ in range(len(cells))
             ],
@@ -272,17 +277,21 @@ def create_synthetic_population(
 
 
 def change_speed_limit(
-    output: pathlib.Path, city: str, state_abbrev: str, speed: int
+    output: pathlib.Path,
+    city: str,
+    state_abbrev: str,
+    speed: int,
 ) -> None:
     """Change the speed limit."""
     speedlimit_csv = output / "city_fips_speed.csv"
     speedlimit_csv.write_text(
-        f"city,state,fips_code_city,speed\n{city},{state_abbrev.lower()},{0:07},{speed}\n"
+        f"city,state,fips_code_city,speed\n{city},{state_abbrev.lower()},{0:07},{speed}\n",
     )
 
 
 def simulate_census_blocks(
-    output: pathlib.Path, synthetic_population: gpd.GeoDataFrame
+    output: pathlib.Path,
+    synthetic_population: gpd.GeoDataFrame,
 ) -> None:
     """Simulate census blocks."""
     tabblock = "population"
@@ -308,7 +317,7 @@ def retrieve_region_file(region: str, output_dir: pathlib.Path) -> pathlib.Path:
     if region in {"malaysia", "singapore", "brunei"}:
         region = "malaysia_singapore_brunei"
     dataset = utils.normalize_unicode_name(region)
-    dataset_file = data.get_data(dataset, directory=output_dir)  # type: ignore
+    dataset_file = data.get_data(dataset, directory=output_dir)  # ty:ignore[unresolved-attribute]
     region_file_path: pathlib.Path = pathlib.Path(dataset_file)
     region_file_path = region_file_path.resolve(strict=True)
     if not region_file_path.exists():

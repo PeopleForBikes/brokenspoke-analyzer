@@ -47,13 +47,13 @@ def compute_cmd(
     country = utils.normalize_country_name(country)
     _, _, slug = analysis.osmnx_query(country, city, region)
     traversable = resources.files("brokenspoke_analyzer.scripts.sql")
-    res = pathlib.Path(traversable._paths[0])  # type: ignore
+    res = pathlib.Path(traversable._paths[0])  # ty:ignore[unresolved-attribute]
     sql_script_dir = res.resolve(strict=True)
     boundary_file = data_dir / f"{slug}.shp"
 
     # Prepare compute params.
     state_default_speed, city_default_speed = ingestor.retrieve_default_speed_limits(
-        engine
+        engine,
     )
     import_jobs = utils.is_usa(country)
 

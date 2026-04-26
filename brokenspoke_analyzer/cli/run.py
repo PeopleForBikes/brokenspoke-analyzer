@@ -2,10 +2,9 @@
 
 import asyncio
 import pathlib
-import typing
+from typing import Annotated
 
 import typer
-from typing_extensions import Annotated
 
 from brokenspoke_analyzer.cli import (
     common,
@@ -36,15 +35,17 @@ def run(
     lodes_year: common.LODESYear = None,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
     mirror: common.Mirror = None,
-    no_cache: common.NoCache = False,
     retries: common.Retries = common.DEFAULT_RETRIES,
     s3_bucket: Annotated[
-        typing.Optional[str], typer.Option(help="S3 bucket name where to export")
+        str | None,
+        typer.Option(help="S3 bucket name where to export"),
     ] = None,
-    s3_dir: typing.Optional[pathlib.Path] = None,
-    with_bundle: bool = False,
+    s3_dir: pathlib.Path | None = None,
     with_export: exporter.Exporter = exporter.Exporter.local,
     with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
+    *,
+    no_cache: common.NoCache = False,
+    with_bundle: bool = False,
 ) -> None:
     """Run a full analysis."""
     asyncio.run(
@@ -70,5 +71,5 @@ def run(
             with_bundle=with_bundle,
             with_export=with_export,
             with_parts=with_parts,
-        )
+        ),
     )

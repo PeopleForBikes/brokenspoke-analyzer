@@ -21,26 +21,27 @@ References:
 
 from __future__ import annotations
 
+import datetime
+import enum
 import os
 import pathlib
 import shutil
 import tempfile
 import typing
-from datetime import date
-from enum import Enum
 from typing import TYPE_CHECKING
 
 import boto3
+import trio
 import yarl
 from loguru import logger
 from obstore.store import from_url
-from sqlalchemy.engine import Engine
 
 from brokenspoke_analyzer.core import runner
 from brokenspoke_analyzer.core.database import dbcore
 
 if TYPE_CHECKING:
     from obstore.store import ObjectStore
+    from sqlalchemy.engine import Engine
 
 # Catalog the tables and associate them to an export format.
 TABLE_CATALOG = {
@@ -77,7 +78,7 @@ TABLE_CATALOG = {
 }
 
 
-class Exporter(str, Enum):
+class Exporter(enum.StrEnum):
     """Define the available exporters."""
 
     none = "none"
@@ -89,7 +90,9 @@ class Exporter(str, Enum):
 
 
 def export_to_csv(
-    export_dir: pathlib.Path, tables: typing.Sequence[str], engine: Engine
+    export_dir: pathlib.Path,
+    tables: typing.Sequence[str],
+    engine: Engine,
 ) -> None:
     """Export a list of PostgreSQL tables to CSV files."""
     for table in tables:
@@ -101,7 +104,9 @@ def export_to_csv(
 
 
 def export_to_geojson(
-    export_dir: pathlib.Path, tables: typing.Sequence[str], database_url: str
+    export_dir: pathlib.Path,
+    tables: typing.Sequence[str],
+    database_url: str,
 ) -> None:
     """Export a list of PostGIS tables to GeoJSON files."""
     engine = dbcore.create_psycopg_engine(database_url)
@@ -114,7 +119,9 @@ def export_to_geojson(
 
 
 def export_to_shp(
-    export_dir: pathlib.Path, tables: typing.Sequence[str], database_url: str
+    export_dir: pathlib.Path,
+    tables: typing.Sequence[str],
+    database_url: str,
 ) -> None:
     """Export a list of PostGIS tables to Shapefiles."""
     engine = dbcore.create_psycopg_engine(database_url)
@@ -149,8 +156,8 @@ def auto_export(
 def create_calver_directories(
     country: str,
     city: str,
-    region: typing.Optional[str],
-    date_override: typing.Optional[str] = None,
+    region: str | None,
+    date_override: str | None = None,
     base_dir: pathlib.Path = pathlib.Path(),
 ) -> pathlib.Path:
     """
@@ -165,7 +172,7 @@ def create_calver_directories(
     * spain/valencia/valencia/23.08
 
     Examples:
-        >>> today = date.today()
+        >>> today = datetime.datetime.now(tz=datetime.UTC).date()
         >>> calver = f"{today.strftime('%y.%m')}"
         >>> directory = create_calver_directories("usa", "austin", "tx")
         >>> assert directory == pathlib.Path(f"usa/tx/austin/{calver}")
@@ -186,15 +193,15 @@ def create_calver_directories(
 def calver_base(
     country: str,
     city: str,
-    region: typing.Optional[str] = None,
-    date_override: typing.Optional[str] = None,
+    region: str | None = None,
+    date_override: str | None = None,
     base_dir: pathlib.Path = pathlib.Path(),
 ) -> pathlib.Path:
     """
     Build the base part of the calver path.
 
     Examples:
-        >>> today = date.today()
+        >>> today = datetime.datetime.now(tz=datetime.UTC).date()
         >>> calver = f"{today.strftime('%y.%m')}"
         >>> directory = calver_base("usa", "austin", "tx")
         >>> assert directory == pathlib.Path(f"usa/tx/austin/{calver}")
@@ -219,7 +226,7 @@ def calver_base(
         return p / date_override
 
     # Otherwise use the appropriate calver.
-    today = date.today()
+    today = datetime.datetime.now(tz=datetime.UTC).date()
     p /= f"{today.strftime('%y.%m')}"
 
     return p
@@ -244,8 +251,11 @@ def calver_revision(dirs: typing.Sequence[pathlib.Path]) -> int:
         151
     """
     # Collect the directories with the suffixes.
+    suffix_count = 2
     with_micro = [
-        int(d.suffixes[-1].replace(".", "")) for d in dirs if len(d.suffixes) == 2
+        int(d.suffixes[-1].replace(".", ""))
+        for d in dirs
+        if len(d.suffixes) == suffix_count
     ]
 
     # If there is no directory with a micro part, create the first one.
@@ -253,8 +263,7 @@ def calver_revision(dirs: typing.Sequence[pathlib.Path]) -> int:
         return 1
 
     # Otherwise get the highest micro and increment it.
-    micro = max(with_micro) + 1
-    return micro
+    return max(with_micro) + 1
 
 
 def bundle(src_dir: pathlib.Path) -> pathlib.Path:
@@ -269,6 +278,7 @@ def bundle(src_dir: pathlib.Path) -> pathlib.Path:
 def local_files(
     database_url: str,
     export_dir: pathlib.Path,
+    *,
     with_bundle: bool = False,
 ) -> None:
     """Export result files into a local directory."""
@@ -295,8 +305,7 @@ def get_s3_bucket(bucket_name: str) -> typing.Any:
     """
     # Initialize the S3 client.
     s3 = boto3.resource(service_name="s3")
-    bucket = s3.Bucket(bucket_name)
-    return bucket
+    return s3.Bucket(bucket_name)
 
 
 def get_r2_bucket(bucket_name: str) -> typing.Any:
@@ -325,7 +334,7 @@ def calver_directory_s3(
     bucket: typing.Any,
     country: str,
     city: str,
-    region: typing.Optional[str] = None,
+    region: str | None = None,
 ) -> pathlib.Path:
     """Create the calver directory in the S3 bucket."""
     # Create the calver directory.
@@ -351,7 +360,7 @@ def mkdir_calver_directory_s3(
     bucket: typing.Any,
     country: str,
     city: str,
-    region: typing.Optional[str] = None,
+    region: str | None = None,
 ) -> pathlib.Path:
     """Create the calver directory in the S3 bucket."""
     # Create the calver directory.
@@ -370,7 +379,8 @@ def mkdir_s3(bucket: typing.Any, s3_dir: pathlib.Path = pathlib.Path()) -> pathl
 # ------------------------------------------------------------------------------
 # Below we are using `obstore` to implement store functions.
 def create_s3_store(
-    bucket_name: str, prefix: typing.Optional[pathlib.Path] = None
+    bucket_name: str,
+    prefix: pathlib.Path | None = None,
 ) -> ObjectStore:
     """
     Create the S3 store.
@@ -389,7 +399,8 @@ def create_s3_store(
 
 
 def create_r2_store(
-    bucket_name: str, prefix: typing.Optional[pathlib.Path] = None
+    bucket_name: str,
+    prefix: pathlib.Path | None = None,
 ) -> ObjectStore:
     """
     Create the R2 store.
@@ -421,21 +432,16 @@ async def upload_file(store: ObjectStore, path: pathlib.Path) -> None:
 async def export_to_store(
     store: ObjectStore,
     database_url: str,
+    *,
     with_bundle: bool = False,
 ) -> None:
     """Export PostgreSQL/PostGIS tables to a store."""
-    # Get bucket name.
-    # !!Remarks:
-    #   - HTTPStore, LocalStore and MemoryStore do not have a config attribute.
-    #   - AzureConfig has no key "bucket", uses "container_name" instead.
-    bucket_name = store.config["bucket"]
-
     # Create a temporary directory to export the files.
     with tempfile.TemporaryDirectory() as tmpdir_name:
-        tmpdir = pathlib.Path(tmpdir_name)
+        tmpdir = trio.Path(tmpdir_name)
         local_files(
             database_url=database_url,
-            export_dir=tmpdir,
+            export_dir=pathlib.Path(tmpdir),
             with_bundle=with_bundle,
         )
 
@@ -443,9 +449,9 @@ async def export_to_store(
         local_store = from_url(f"file://{tmpdir}")
 
         # Upload each file sequentially.
-        for file in tmpdir.iterdir():
+        for file in await tmpdir.iterdir():  # ty:ignore[missing-argument]
             # Skip directories and non-files.
-            if not file.is_file():
+            if not await file.is_file():
                 continue
 
             # Stream the file from the local store to the destination store.
@@ -459,10 +465,11 @@ async def export_to_s3_with_calver(
     database_url: str,
     country: str,
     city: str,
-    region: typing.Optional[str] = None,
+    region: str | None = None,
+    *,
     with_bundle: bool = False,
 ) -> pathlib.Path:
-    """Export PostgreSQL/PostGIS tables to a directory following the calver convention."""
+    """Export PostgreSQL/PostGIS tables to a folder following the calver convention."""
     # Get the S3 bucket.
     bucket = get_s3_bucket(bucket_name)
 
@@ -483,6 +490,7 @@ async def export_to_s3_with_custom_dir(
     bucket_name: str,
     database_url: str,
     custom_dir: pathlib.Path,
+    *,
     with_bundle: bool = False,
 ) -> pathlib.Path:
     """Export PostgreSQL/PostGIS tables to a custom directory."""
@@ -505,12 +513,13 @@ async def export_to_s3(
     bucket_name: str,
     folder: pathlib.Path,
     database_url: str,
+    *,
     with_bundle: bool = False,
 ) -> pathlib.Path:
     """Export PostgreSQL/PostGIS tables to a S3 directory."""
     # Export the files to the store.
     store = create_s3_store(bucket_name, folder)
-    await export_to_store(store, database_url, with_bundle)
+    await export_to_store(store, database_url, with_bundle=with_bundle)
     return folder
 
 
@@ -519,10 +528,11 @@ async def export_to_r2_with_calver(
     database_url: str,
     country: str,
     city: str,
-    region: typing.Optional[str] = None,
+    region: str | None = None,
+    *,
     with_bundle: bool = False,
 ) -> pathlib.Path:
-    """Export PostgreSQL/PostGIS tables to a directory following the calver convention."""
+    """Export PostgreSQL/PostGIS tables to a folder following the calver convention."""
     # Get the R2 bucket.
     bucket = get_r2_bucket(bucket_name)
 
@@ -542,6 +552,7 @@ async def export_to_r2_with_custom_dir(
     bucket_name: str,
     database_url: str,
     custom_dir: pathlib.Path,
+    *,
     with_bundle: bool = False,
 ) -> pathlib.Path:
     """Export PostgreSQL/PostGIS tables to a custom directory."""
@@ -564,10 +575,11 @@ async def export_to_r2(
     bucket_name: str,
     folder: pathlib.Path,
     database_url: str,
+    *,
     with_bundle: bool = False,
 ) -> pathlib.Path:
     """Export PostgreSQL/PostGIS tables to a R2 directory."""
     # Export the files to the store.
     store = create_r2_store(bucket_name, folder)
-    await export_to_store(store, database_url, with_bundle)
+    await export_to_store(store, database_url, with_bundle=with_bundle)
     return folder

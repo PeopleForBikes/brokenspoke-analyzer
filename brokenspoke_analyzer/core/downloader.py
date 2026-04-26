@@ -2,9 +2,9 @@
 
 import pathlib
 import re
-import typing
 
 import aiohttp
+import trio
 import yarl
 from bs4 import BeautifulSoup
 from loguru import logger
@@ -21,6 +21,7 @@ async def download_file(
     session: aiohttp.ClientSession,
     url: str,
     output: pathlib.Path,
+    *,
     skip_existing: bool = True,
 ) -> None:
     """
@@ -31,13 +32,13 @@ async def download_file(
     :param output: path where to write the file
     :param skip_existing: skip the download if the output file already exists
     """
-    output = output.resolve()
+    output = await trio.Path(output).resolve()  # ty:ignore[missing-argument]
     if skip_existing and output.exists():
         logger.debug(f"the file {output} already exists, skipping...")
         return
     logger.debug(f"Downloading file from {url} to {output}...")
     async with session.get(url) as resp:
-        with open(output, "wb") as fd:
+        with output.open("wb") as fd:
             async for chunk in resp.content.iter_chunked(CHUNK_SIZE):
                 fd.write(chunk)
 
@@ -45,7 +46,7 @@ async def download_file(
 async def fetch_text(
     session: aiohttp.ClientSession,
     url: str,
-    params: typing.Optional[dict[str, str]] = None,
+    params: dict[str, str] | None = None,
 ) -> str:
     """
     Fetch the data from a URL as text.
@@ -113,11 +114,13 @@ async def download_lodes_data(
     await download_file(session, f"{lehd_url}/{lehd_filename}", gzipped_lehd_file)
 
     # Decompress it.
-    utils.gunzip(gzipped_lehd_file, decompressed_lefh_file, False)
+    utils.gunzip(gzipped_lehd_file, decompressed_lefh_file, delete_after=False)
 
 
 async def download_2020_census_blocks(
-    session: aiohttp.ClientSession, output_dir: pathlib.Path, state_fips: str
+    session: aiohttp.ClientSession,
+    output_dir: pathlib.Path,
+    state_fips: str,
 ) -> None:
     """Download a 2021 census tabulation block code for a specific state."""
     tiger_url = f"{TIGER_URL}/TIGER2020/TABBLOCK20/tl_2020_{state_fips}_tabblock20.zip"
@@ -138,11 +141,13 @@ async def download_2020_census_blocks(
     await download_file(session, tiger_url, tabblk_file)
 
     # Unzip and rename the tabulation block files to "population".
-    utils.prepare_census_blocks(tabblk_file, output_dir.resolve(strict=True))
+    output_dir = await trio.Path(output_dir).resolve(strict=True)  # ty:ignore[missing-argument]
+    utils.prepare_census_blocks(tabblk_file, output_dir=pathlib.Path(output_dir))
 
 
 async def download_state_speed_limits(
-    session: aiohttp.ClientSession, output_dir: pathlib.Path
+    session: aiohttp.ClientSession,
+    output_dir: pathlib.Path,
 ) -> None:
     """Download the state speed limits."""
     state_speed_filename = "state_fips_speed.csv"
@@ -155,7 +160,8 @@ async def download_state_speed_limits(
 
 
 async def download_city_speed_limits(
-    session: aiohttp.ClientSession, output_dir: pathlib.Path
+    session: aiohttp.ClientSession,
+    output_dir: pathlib.Path,
 ) -> None:
     """Download the city speed limits."""
     city_speed_filename = "city_fips_speed.csv"
@@ -187,14 +193,22 @@ def parse_latest_lodes_year(html: str, state: str, part: str, type_: str) -> int
         >>>     </tr>
         >>>     <tr>
         >>>         <td valign="top"><img src="/icons/compressed.gif" alt="[ ]" /></td>
-        >>>         <td><a href="tx_od_aux_JT00_2002.csv.gz">tx_od_aux_JT00_2002.csv.gz</a></td>
+        >>>         <td>
+        >>>             <a href="tx_od_aux_JT00_2002.csv.gz">
+        >>>                 tx_od_aux_JT00_2002.csv.gz
+        >>>             </a>
+        >>>         </td>
         >>>         <td align="right">2023-04-03 12:30 </td>
         >>>         <td align="right">544K</td>
         >>>         <td>&nbsp;</td>
         >>>     </tr>
         >>>     <tr>
         >>>         <td valign="top"><img src="/icons/compressed.gif" alt="[ ]" /></td>
-        >>>         <td><a href="tx_od_aux_JT00_2003.csv.gz">tx_od_aux_JT00_2003.csv.gz</a></td>
+        >>>         <td>
+        >>>             <a href="tx_od_aux_JT00_2003.csv.gz">
+        >>>                 tx_od_aux_JT00_2003.csv.gz
+        >>>             </a>
+        >>>         </td>
         >>>         <td align="right">2023-04-03 12:30 </td>
         >>>         <td align="right">527K</td>
         >>>         <td>&nbsp;</td>
@@ -225,16 +239,17 @@ def parse_latest_lodes_year(html: str, state: str, part: str, type_: str) -> int
 
 
 async def autodetect_latest_lodes_year(
-    session: aiohttp.ClientSession, state_abbrev: str
+    session: aiohttp.ClientSession,
+    state_abbrev: str,
 ) -> int:
     """Return the latest year of LODES data available for a specific US state."""
     # Puerto Rico is part of the US but the US Census Bureau never collected
     # employment data. As a result we are just skipping it.
-    PART = "aux"
-    TYPE = "JT00"
+    part = "aux"
+    type_ = "JT00"
     lehd_url = yarl.URL(LODES_URL) / state_abbrev.lower() / "od"
-    logger.debug(f"Looking up latest LODES year for {state_abbrev} {PART} {TYPE}")
+    logger.debug(f"Looking up latest LODES year for {state_abbrev} {part} {type_}")
     html_dir = await fetch_text(session=session, url=str(lehd_url))
-    latest_year = parse_latest_lodes_year(html_dir, state_abbrev, PART, TYPE)
+    latest_year = parse_latest_lodes_year(html_dir, state_abbrev, part, type_)
     logger.debug(f"Found latest LODES year: {latest_year}")
     return latest_year

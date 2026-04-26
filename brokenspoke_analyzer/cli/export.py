@@ -2,26 +2,24 @@
 
 import asyncio
 import pathlib
+from typing import Annotated
 
 import rich
 import typer
 from click.core import ParameterSource
 from loguru import logger
-from obstore import store
-from typing_extensions import Annotated
 
 from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core import exporter
-
-# import typing
-
 
 app = typer.Typer()
 console = rich.get_console()
 
 
 def allow_only_env_var(
-    ctx: typer.Context, param: typer.CallbackParam, value: str
+    ctx: typer.Context,
+    param: typer.CallbackParam,
+    value: str,
 ) -> str:
     """Allow only environment variables for a parameter."""
     if param.name is None:
@@ -56,7 +54,8 @@ R2SecretAccessKey = Annotated[
     ),
 ]
 WithBundle = Annotated[
-    bool, typer.Argument(help="bundle all the files in a zip archive")
+    bool,
+    typer.Argument(help="bundle all the files in a zip archive"),
 ]
 
 
@@ -67,11 +66,15 @@ def local(
     city: common.City,
     region: common.Region = None,
     export_dir: common.ExportDirArg = common.DEFAULT_EXPORT_DIR,
+    *,
     with_bundle: common.WithBundle = False,
 ) -> pathlib.Path:
     """Export results to a directory following the PFB calver convention."""
     dir_ = exporter.create_calver_directories(
-        country, city, region, base_dir=export_dir
+        country,
+        city,
+        region,
+        base_dir=export_dir,
     )
     logger.debug(f"{dir_=}")
     _local(database_url=database_url, export_dir=dir_, with_bundle=with_bundle)
@@ -82,6 +85,7 @@ def local(
 def local_custom(
     database_url: common.DatabaseURL,
     export_dir: common.ExportDirArg,
+    *,
     with_bundle: common.WithBundle = False,
 ) -> None:
     """Export results to a custom directory."""
@@ -95,12 +99,20 @@ def s3(
     country: common.Country,
     city: common.City,
     region: common.Region = None,
+    *,
     with_bundle: common.WithBundle = False,
 ) -> pathlib.Path:
     """Export results to a S3 bucket following the PFB calver convention."""
     with console.status("[green]Uploading results to AWS S3..."):
         return asyncio.run(
-            s3_(database_url, bucket_name, country, city, region, with_bundle)
+            s3_(
+                database_url,
+                bucket_name,
+                country,
+                city,
+                region,
+                with_bundle=with_bundle,
+            ),
         )
 
 
@@ -109,23 +121,27 @@ def s3_custom(
     database_url: common.DatabaseURL,
     bucket_name: str,
     s3_dir: pathlib.Path = pathlib.Path(),
+    *,
     with_bundle: common.WithBundle = False,
 ) -> pathlib.Path:
     """Export results to a custom S3 bucket."""
     with console.status("[green]Uploading results to AWS S3..."):
-        return asyncio.run(s3_custom_(database_url, bucket_name, s3_dir, with_bundle))
+        return asyncio.run(
+            s3_custom_(database_url, bucket_name, s3_dir, with_bundle=with_bundle)
+        )
 
 
 @app.command()
 def r2(
     database_url: common.DatabaseURL,
-    account_id: CloudflareAccountID,
-    access_key_id: R2AccessKeyID,
-    secret_access_key: R2SecretAccessKey,
+    account_id: CloudflareAccountID,  # noqa: ARG001
+    access_key_id: R2AccessKeyID,  # noqa: ARG001
+    secret_access_key: R2SecretAccessKey,  # noqa: ARG001
     bucket_name: str,
     country: common.Country,
     city: common.City,
     region: common.Region = None,
+    *,
     with_bundle: bool = False,
 ) -> None:
     """
@@ -137,17 +153,27 @@ def r2(
     - R2_SECRET_ACCESS_KEY
     """
     with console.status("[green]Uploading results to Cloudflare R2..."):
-        asyncio.run(r2_(database_url, bucket_name, country, city, region, with_bundle))
+        asyncio.run(
+            r2_(
+                database_url,
+                bucket_name,
+                country,
+                city,
+                region,
+                with_bundle=with_bundle,
+            )
+        )
 
 
 @app.command()
 def r2_custom(
     database_url: common.DatabaseURL,
-    account_id: CloudflareAccountID,
-    access_key_id: R2AccessKeyID,
-    secret_access_key: R2SecretAccessKey,
+    account_id: CloudflareAccountID,  # noqa: ARG001
+    access_key_id: R2AccessKeyID,  # noqa: ARG001
+    secret_access_key: R2SecretAccessKey,  # noqa: ARG001
     bucket_name: str,
     s3_dir: pathlib.Path = pathlib.Path(),
+    *,
     with_bundle: bool = False,
 ) -> None:
     """
@@ -159,17 +185,22 @@ def r2_custom(
     - R2_SECRET_ACCESS_KEY
     """
     with console.status("[green]Uploading results to Cloudflare R2..."):
-        asyncio.run(r2_custom_(database_url, bucket_name, s3_dir, with_bundle))
+        asyncio.run(
+            r2_custom_(database_url, bucket_name, s3_dir, with_bundle=with_bundle)
+        )
 
 
 def _local(
     database_url: str,
     export_dir: pathlib.Path,
+    *,
     with_bundle: bool = False,
 ) -> None:
     console.log(f"[green]Saving results to {export_dir}...")
     exporter.local_files(
-        database_url=database_url, export_dir=export_dir, with_bundle=with_bundle
+        database_url=database_url,
+        export_dir=export_dir,
+        with_bundle=with_bundle,
     )
 
 
@@ -179,11 +210,17 @@ async def s3_(
     country: common.Country,
     city: common.City,
     region: common.Region = None,
+    *,
     with_bundle: bool = False,
 ) -> pathlib.Path:
     """Export results to a S3 bucket following the PFB calver convention."""
     return await exporter.export_to_s3_with_calver(
-        bucket_name, database_url, country, city, region, with_bundle
+        bucket_name,
+        database_url,
+        country,
+        city,
+        region,
+        with_bundle=with_bundle,
     )
 
 
@@ -191,11 +228,15 @@ async def s3_custom_(
     database_url: common.DatabaseURL,
     bucket_name: str,
     s3_dir: pathlib.Path = pathlib.Path(),
+    *,
     with_bundle: bool = False,
 ) -> pathlib.Path:
     """Export results to a custom directory in a S3 bucket."""
     return await exporter.export_to_s3_with_custom_dir(
-        bucket_name, database_url, s3_dir, with_bundle
+        bucket_name,
+        database_url,
+        s3_dir,
+        with_bundle=with_bundle,
     )
 
 
@@ -205,11 +246,17 @@ async def r2_(
     country: common.Country,
     city: common.City,
     region: common.Region = None,
+    *,
     with_bundle: bool = False,
 ) -> pathlib.Path:
     """Export results to a R2 bucket following the PFB calver convention."""
     return await exporter.export_to_r2_with_calver(
-        bucket_name, database_url, country, city, region, with_bundle
+        bucket_name,
+        database_url,
+        country,
+        city,
+        region,
+        with_bundle=with_bundle,
     )
 
 
@@ -217,9 +264,13 @@ async def r2_custom_(
     database_url: common.DatabaseURL,
     bucket_name: str,
     r2_dir: pathlib.Path = pathlib.Path(),
+    *,
     with_bundle: bool = False,
 ) -> pathlib.Path:
     """Export results to a custom R2 bucket."""
     return await exporter.export_to_r2_with_custom_dir(
-        bucket_name, database_url, r2_dir, with_bundle
+        bucket_name,
+        database_url,
+        r2_dir,
+        with_bundle=with_bundle,
     )

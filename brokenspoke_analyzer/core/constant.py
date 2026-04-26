@@ -1,12 +1,12 @@
 """Define the general constants."""
 
-from enum import Enum
+import enum
 
 APPNAME = "brokenspoke-analyzer"
 APPAUTHOR = "PeopleForBikes"
 
 
-class ComputePart(str, Enum):
+class ComputePart(enum.StrEnum):
     """Define the possible items to compute."""
 
     FEATURES = "features"

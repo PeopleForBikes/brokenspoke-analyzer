@@ -4,7 +4,6 @@ import pathlib
 import typing
 
 from sqlalchemy import (
-    CursorResult,
     create_engine,
     text,
 )
@@ -25,7 +24,9 @@ def execute_sql_file(engine: Engine, sqlfile: pathlib.Path) -> None:
 
 
 def import_csv_file_with_header(
-    engine: Engine, csvfile: pathlib.Path, table: str
+    engine: Engine,
+    csvfile: pathlib.Path,
+    table: str,
 ) -> None:
     """
     Import a CSV file into a table.
@@ -37,25 +38,8 @@ def import_csv_file_with_header(
     For some unknown and annoying reason, importing CSV data with a cursor does
     not work. Therefore we used `psql` as fallback.
     """
-    # with engine.connect() as conn:
-    #     cursor = conn.connection.cursor()
-    #     cursor_cmd = (
-    #         f"COPY {table} FROM STDIN WITH(FORMAT CSV, HEADER true, DELIMITER ',');"
-    #     )
-    #     logger.debug(cursor_cmd)
-    #     with csvfile.open() as f:
-    #         with cursor.copy(cursor_cmd) as copy:
-    #             # for line in f.readline():
-    #             #     copy.write_row(line)
-    #             copy.write(f.read())
-    #             # while data := f.readline():
-    #             #     copy.write(data)
-    #             # logger.debug(data)
-    #             # while data := f.read(8096):
-    #             #     copy.write(data)
-    #     conn.commit()
     database_url = engine.engine.url.set(drivername="postgresql").render_as_string(
-        hide_password=False
+        hide_password=False,
     )
     psql_cmd = (
         f"\\copy {table} FROM '{csvfile.resolve(strict=True)}' "
@@ -65,7 +49,10 @@ def import_csv_file_with_header(
 
 
 def load_csv_file(
-    engine: Engine, sqlfile: pathlib.Path, csvfile: pathlib.Path, table: str
+    engine: Engine,
+    sqlfile: pathlib.Path,
+    csvfile: pathlib.Path,
+    table: str,
 ) -> None:
     """Create a table and load the data from the CSV file."""
     # Run the script to create the table.
@@ -80,7 +67,7 @@ def export_to_csv(engine: Engine, csvfile: pathlib.Path, table: str) -> None:
     csvfile_str = sanitize_sql_filename(str(csvfile.resolve()))
     psql_cmd = f"\\copy {table} TO '{csvfile_str}' WITH (FORMAT CSV, HEADER);"
     database_url = engine.engine.url.set(drivername="postgresql").render_as_string(
-        hide_password=False
+        hide_password=False,
     )
     runner.run_psql_command_string(database_url, psql_cmd)
 
