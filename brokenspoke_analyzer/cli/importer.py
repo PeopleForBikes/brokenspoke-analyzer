@@ -1,9 +1,9 @@
 """Define the import sub-command."""
 
 import asyncio
+from typing import Annotated
 
 import typer
-from typing_extensions import Annotated
 
 from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core import ingestor
@@ -13,23 +13,20 @@ StateAbbreviation = Annotated[str, typer.Argument(help="two-letter US state name
 app = typer.Typer()
 
 
-@app.command()
-def all(
+@app.command(name="all")
+def all_(
     data_dir: common.DataDir,
     database_url: common.DatabaseURL,
     country: common.Country,
     city: common.City,
     region: common.Region = None,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
-    buffer: common.Buffer = common.DEFAULT_BUFFER,
     lodes_year: common.LODESYear = None,
 ) -> None:
     """Import all files into database."""
     # Make MyPy happy.
     if not fips_code:
         raise ValueError("`fips_code` must be set")
-    if not buffer:
-        raise ValueError("`buffer` must be set")
 
     # Set the region as the country if it was not provided.
     if not region:
@@ -37,7 +34,6 @@ def all(
 
     asyncio.run(
         ingestor.all_wrapper(
-            buffer=buffer,
             city=city,
             country=country,
             data_dir=data_dir,
@@ -45,7 +41,7 @@ def all(
             fips_code=fips_code,
             lodes_year=lodes_year,
             region=region,
-        )
+        ),
     )
 
 
@@ -66,7 +62,6 @@ def neighborhood(
         raise ValueError("`buffer` must be set")
 
     ingestor.neighborhood_wrapper(
-        buffer=buffer,
         city=city,
         country=country,
         data_dir=data_dir,
@@ -89,7 +84,7 @@ def jobs(
             database_url=database_url,
             lodes_year=lodes_year,
             state_abbreviation=state_abbreviation,
-        )
+        ),
     )
 
 

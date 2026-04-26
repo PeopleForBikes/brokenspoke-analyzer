@@ -6,7 +6,6 @@ compute the BNA scores.
 """
 
 import dataclasses
-import os
 import pathlib
 import typing
 
@@ -23,7 +22,7 @@ NB_SIGCTL_SEARCH_DIST = 25
 def execute_sqlfile_with_substitutions(
     engine: Engine,
     sqlfile: pathlib.Path,
-    bind_params: typing.Optional[typing.Mapping[str, typing.Any]] = None,
+    bind_params: typing.Mapping[str, typing.Any] | None = None,
 ) -> None:
     """Execute SQL statements with substitutions."""
     logger.debug(f"Execute {sqlfile}")
@@ -270,16 +269,18 @@ class Access:
     max_score: int = 1
 
 
-def connectivity(
+def connectivity(  # noqa: PLR0915
     engine: Engine,
     sql_script_dir: pathlib.Path,
     output_srid: int,
+    max_trip_distance: int | None = common.DEFAULT_MAX_TRIP_DISTANCE,
+    *,
     import_jobs: bool,
-    max_trip_distance: typing.Optional[int] = common.DEFAULT_MAX_TRIP_DISTANCE,
 ) -> None:
     """Compute BNA connectivity scores."""
     # Makes MyPy happy.
-    assert max_trip_distance
+    if not max_trip_distance:
+        raise ValueError("`max_trip_distance` must be set")
 
     # Prepare computation variables.
     tolerance = Tolerance()
@@ -323,7 +324,7 @@ def connectivity(
             sql_connectivity_script_dir
             / f"reachable_roads_{stress_level}_stress_calc.sql"
         )
-        for i in range(0, 8):
+        for i in range(8):
             bind_params = {
                 "thread_num": 8,
                 "thread_no": i,
@@ -348,7 +349,7 @@ def connectivity(
     }
     execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
 
-    # Access: population
+    # Access population
     logger.info("METRICS: Access: population")
     sql_script = sql_connectivity_script_dir / "access_population.sql"
     bind_params: typing.Mapping[str, float] = {
@@ -497,15 +498,16 @@ def measure(
     execute_sqlfile_with_substitutions(engine, sql_script)
 
 
-def all(
+def all_(
     database_url: common.DatabaseURL,
     sql_script_dir: pathlib.Path,
     output_srid: int,
     state_default_speed: int | None,
     city_default_speed: int | None,
-    import_jobs: bool,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
+    *,
+    import_jobs: bool,
 ) -> None:
     """Compute all features."""
     parts(
@@ -569,8 +571,8 @@ def parts(
             engine,
             sql_script_dir,
             output_srid,
-            import_jobs,
             max_trip_distance,
+            import_jobs=import_jobs,
         )
 
     # Compute mileage.

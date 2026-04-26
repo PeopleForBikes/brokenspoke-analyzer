@@ -1,19 +1,17 @@
 """Define the top-level commands."""
 
 import logging
-import typing
 from importlib import (
     metadata,
 )
+from typing import Annotated
 
 import typer
 from loguru import logger
 from rich.logging import RichHandler
-from typing_extensions import Annotated
 
 from brokenspoke_analyzer.cli import (
     cache,
-    common,
     compute,
     configure,
     export,
@@ -30,6 +28,7 @@ verbose = False
 
 def _verbose_callback(value: int) -> None:
     """Configure the logger."""
+    global verbose  # noqa: PLW0603
     # Remove any predefined logger.
     logger.remove()
 
@@ -59,26 +58,26 @@ def _verbose_callback(value: int) -> None:
     verbose = value > 0
 
 
-def _version_callback(value: bool) -> None:
+def _version_callback(*, value: bool) -> None:
     """Get the package's version."""
     package_version = metadata.version("brokenspoke-analyzer")
     if value:
         typer.echo(f"brokenspoke-analyzer version: {package_version}")
-        raise typer.Exit()
+        raise typer.Exit
 
 
 @app.callback()
 def callback(
-    version: Annotated[
-        typing.Optional[bool],
+    version: Annotated[  # noqa: ARG001
+        bool | None,
         typer.Option(
             "--version",
             help="Show the application's version and exit.",
             callback=_version_callback,
         ),
     ] = None,
-    verbose: Annotated[
-        typing.Optional[int],
+    verbose: Annotated[  # noqa: ARG001
+        int | None,
         typer.Option(
             "--verbose",
             "-v",
@@ -96,7 +95,9 @@ def callback(
 app.add_typer(cache.app, name="cache", help="Manage bna's cache.")
 app.add_typer(compute.app, help="Compute the analysis results.")
 app.add_typer(
-    configure.app, name="configure", help="Configure a database for an analysis."
+    configure.app,
+    name="configure",
+    help="Configure a database for an analysis.",
 )
 app.add_typer(export.app, name="export", help="Export tables from database.")
 app.add_typer(importer.app, name="import", help="Import files into database.")

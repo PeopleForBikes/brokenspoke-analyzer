@@ -1,4 +1,4 @@
-set positional-arguments := true
+set positional-arguments
 
 src_dir := "brokenspoke_analyzer"
 utils_dir := "utils"

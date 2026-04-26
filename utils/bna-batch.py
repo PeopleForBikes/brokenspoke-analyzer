@@ -43,21 +43,11 @@ country,region,city,fips_code
 """
 
 import csv
-import logging
 import os
 import pathlib
-import shutil
-import subprocess
+from typing import Annotated
 
-import rich
 import typer
-from loguru import logger
-from tenacity import (
-    Retrying,
-    before_log,
-    stop_after_attempt,
-)
-from typing_extensions import Annotated
 
 from brokenspoke_analyzer.cli import (
     common,
@@ -65,7 +55,6 @@ from brokenspoke_analyzer.cli import (
     run_with,
 )
 from brokenspoke_analyzer.core import (
-    analysis,
     constant,
 )
 
@@ -80,17 +69,13 @@ BatchFile = Annotated[
         resolve_path=True,
     ),
 ]
-DATA_DIR = pathlib.Path("./data").resolve()
-MAX_RETRIES = 2
-OSM_CACHE_DIR = pathlib.Path("./osm_cache").resolve()
-OSM_CACHE_FILE_SUFFIX = ".pbf.md5"
 
 
 def main(
     batch_file: BatchFile = pathlib.Path("cities.csv"),
     lodes_year: common.LODESYear = None,
-    parts: common.ComputeParts = [constant.ComputePart.MEASURE],
-):
+    parts: common.ComputeParts = None,
+) -> None:
     """Process a batch of cities."""
     # Disable logging.
     root._verbose_callback(0)
@@ -101,15 +86,8 @@ def main(
     # Enable cache.
     os.environ["BNA_CACHING_STRATEGY"] = "USER_CACHE"
 
-    # Prepare the Rich output.
-    console = rich.get_console()
-
-    # Create retrier instance to use for all downloads.
-    retryer = Retrying(
-        stop=stop_after_attempt(MAX_RETRIES),
-        reraise=True,
-        before=before_log(logger, logging.DEBUG),
-    )
+    if not parts:
+        parts = [constant.ComputePart.MEASURE]
 
     # Read the CSV file.
     with batch_file.open() as f:
@@ -119,7 +97,7 @@ def main(
         for row in reader:
             country = row["country"]
             city = row["city"]
-            region = row.get("region") if row.get("region") else country
+            region = row.get("region") or country
             fips_code = row["fips_code"]
 
             # Run the analysis.
@@ -131,91 +109,6 @@ def main(
                 region=region,
                 with_parts=parts,
             )
-
-
-def run_with_docker(
-    country: str,
-    city: str,
-    region: str,
-    fips_code: str,
-):
-    """
-    Run with Docker.
-
-    VERY EXPERIMENTAL ONLY. USED FOR TESTING.
-    """
-    try:
-        os.environ["DATABASE_URL"] = (
-            "postgresql://postgres:postgres@postgres:5432/postgres"
-        )
-        uid = os.getuid()
-        gid = os.getgid()
-        subprocess.run(
-            ["docker", "compose", "up", "-d", "--wait"],
-            check=True,
-            capture_output=True,
-        )
-        docker_run_cmd = [
-            "docker",
-            "run",
-            "--rm",
-            "--network",
-            "brokenspoke-analyzer_default",
-            "-e",
-            "DATABASE_URL",
-        ]
-        docker_image = [
-            "ghcr.io/peopleforbikes/brokenspoke-analyzer:2.6.3",
-            "-vv",
-        ]
-        subprocess.run(
-            docker_run_cmd
-            + docker_image
-            + [
-                "configure",
-                "custom",
-                "4",
-                "4096",
-                "postgres",
-            ]
-        )
-        subprocess.run(
-            docker_run_cmd
-            + docker_image
-            + [
-                "run",
-                country,
-                city,
-                region,
-                fips_code,
-            ]
-        )
-        subprocess.run(
-            docker_run_cmd
-            + [
-                "-u",
-                f"{uid}:{gid}",
-                "-v",
-                "./results:/usr/src/app/results",
-            ]
-            + docker_image
-            + [
-                "export",
-                "local",
-                country,
-                city,
-                region,
-            ]
-        )
-
-    finally:
-        subprocess.run(
-            ["docker", "compose", "rm", "-sfv"], check=True, capture_output=True
-        )
-        subprocess.run(
-            ["docker", "volume", "rm", "-f", "brokenspoke-analyzer_postgres"],
-            capture_output=True,
-        )
 
 
 if __name__ == "__main__":

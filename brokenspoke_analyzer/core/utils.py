@@ -3,13 +3,11 @@
 import gzip
 import hashlib
 import pathlib
-import shutil
 import typing
 import zipfile
 from enum import Enum
 
 import geopandas as gpd
-import pandas as pd
 from loguru import logger
 from slugify import slugify
 
@@ -29,7 +27,8 @@ class PolygonFormat(Enum):
 def unzip(
     zip_file: pathlib.Path,
     output_dir: pathlib.Path,
-    delete_after: typing.Optional[bool] = True,
+    *,
+    delete_after: bool | None = True,
 ) -> None:
     """Unzip an archive into a specific directory."""
     # Decompress it.
@@ -45,7 +44,8 @@ def unzip(
 def gunzip(
     gzip_file: pathlib.Path,
     target: pathlib.Path,
-    delete_after: typing.Optional[bool] = True,
+    *,
+    delete_after: bool | None = True,
 ) -> None:
     """Gunzip a file into a specific target."""
     # Decompress it.
@@ -57,12 +57,12 @@ def gunzip(
         except gzip.BadGzipFile as e:
             delete_after = True
             raise RuntimeError(
-                f"Bad Gzip file: {gzip_file}. Try downloading it again."
+                f"Bad Gzip file: {gzip_file}. Try downloading it again.",
             ) from e
         except EOFError as e:
             delete_after = True
             raise RuntimeError(
-                f"End of file error: {gzip_file}. Try downloading it again."
+                f"End of file error: {gzip_file}. Try downloading it again.",
             ) from e
         else:
             target.resolve().write_bytes(content)
@@ -73,15 +73,15 @@ def gunzip(
 
 def file_checksum_ok(osm_file: pathlib.Path, osm_file_md5: pathlib.Path) -> bool:
     """Validate a file checksum."""
-    BUF_SIZE = 65536
-    HASH_SIZE = 32  # 128 bit MD5 hash
-    md5 = hashlib.md5()
+    buf_size = 65536
+    hash_size = 32  # 128 bit MD5 hash
+    md5 = hashlib.md5(usedforsecurity=False)
 
     with osm_file.open("rb") as f:
-        while data := f.read(BUF_SIZE):
+        while data := f.read(buf_size):
             md5.update(data)
 
-    checksum = osm_file_md5.read_text()[:HASH_SIZE]
+    checksum = osm_file_md5.read_text()[:hash_size]
 
     return md5.hexdigest() == checksum
 
@@ -90,7 +90,7 @@ def prepare_census_blocks(tabblk_file: pathlib.Path, output_dir: pathlib.Path) -
     """Prepare the census block files to match our naming convention."""
     # Unzip it.
     output_dir = output_dir.resolve()
-    unzip(tabblk_file.resolve(strict=True), output_dir, False)
+    unzip(tabblk_file.resolve(strict=True), output_dir, delete_after=False)
 
     # Rename the tabulation block files to "population".
     # But keep the original file.s
@@ -166,7 +166,10 @@ def prepare_environment(
 
 
 def prepare_city_inputs(
-    country: str, city: str, state: str, root: typing.Optional[pathlib.Path] = None
+    country: str,
+    city: str,
+    state: str,
+    root: pathlib.Path | None = None,
 ) -> tuple[pathlib.Path, pathlib.Path, pathlib.Path]:
     """
     Prepare the directories and files that will be used to perform the analysis.
@@ -196,37 +199,6 @@ def get_srid(shapefile: pathlib.Path) -> int:
     gdf = gpd.read_file(shapefile.resolve(strict=True))
     utm = gdf.estimate_utm_crs()
     return int(str(utm.to_string()[5:]))
-
-
-def compare_bna_results(
-    brokenspoke_scores: pathlib.Path,
-    original_scores: pathlib.Path,
-    output_csv: pathlib.Path,
-) -> pd.DataFrame:
-    """Compare the Brokenaspoke and the original BNA results."""
-    brokenspoke_df = pd.read_csv(
-        brokenspoke_scores, usecols=["score_id", "score_normalized"]
-    )
-    brokenspoke_df = brokenspoke_df.rename(columns={"score_normalized": "brokenspoke"})
-    original_df = pd.read_csv(original_scores, usecols=["score_id", "score_normalized"])
-    original_df = original_df.rename(columns={"score_normalized": "original"})
-
-    # Make some adjustments to the dataframes.
-    df = pd.concat([brokenspoke_df, original_df.original.to_frame()], axis=1)
-    # df = df.drop(df[df.score_id == "total_miles_low_stress"].index)
-    # df = df.drop(df[df.score_id == "total_miles_high_stress"].index)
-    df = df.dropna()
-
-    # Compute the deltas.
-    df["delta"] = (df["brokenspoke"] * 100).astype(int) - (df["original"] * 100).astype(
-        int
-    )
-
-    # Export for human consumption.
-    output_csv.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(output_csv)
-
-    return df
 
 
 def normalize_country_name(country: str) -> str:
