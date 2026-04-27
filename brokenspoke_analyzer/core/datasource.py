@@ -239,48 +239,46 @@ class WorldPopAdapter(SourceAdapter):
 
         if file_shp.exists():
             return
-        else:
-            logger.debug(f"{file_shp} doesn't exist, creating shapefile")
-            with rasterio.open(file_geotiff) as src:
-                # Read the population count as a numpy array
-                band_data = src.read(1)
+        logger.debug(f"{file_shp} doesn't exist, creating shapefile")
+        with rasterio.open(file_geotiff) as src:
+            # Read the population count as a numpy array
+            band_data = src.read(1)
 
-                # Get spatial metadata
-                transform = src.transform
-                crs = src.crs
-                nodata_val = src.nodata
+            # Get spatial metadata
+            transform = src.transform
+            crs = src.crs
+            nodata_val = src.nodata
 
-                # Mask to ignore NoData values
-                if nodata_val is not None:
-                    mask = band_data != nodata_val
-                else:
-                    mask = band_data > 0  # Fallback: ignore 0 population pixels
+            # Mask to ignore NoData values
+            mask = (
+                band_data != nodata_val if nodata_val is not None else band_data > 0
+            )  # Fallback: ignore 0 population pixels
 
-                # Generate shapes from the raster pixels
-                shapes_generator = rasterio.features.shapes(
-                    band_data, mask=mask, transform=transform
-                )
+            # Generate shapes from the raster pixels
+            shapes_generator = rasterio.features.shapes(
+                band_data, mask=mask, transform=transform
+            )
 
-                # Convert the extracted shapes into Shapely geometries
-                records = [
-                    {"geometry": shape(geom), "POP20": val}
-                    for geom, val in shapes_generator
-                ]
+            # Convert the extracted shapes into Shapely geometries
+            records = [
+                {"geometry": shape(geom), "POP20": val}
+                for geom, val in shapes_generator
+            ]
 
-            # Load into a GeoDataFrame
-            gdf = gpd.GeoDataFrame(records)
-            gdf.set_crs(crs, inplace=True)
+        # Load into a GeoDataFrame
+        gdf = gpd.GeoDataFrame(records)
+        gdf.set_crs(crs, inplace=True)
 
-            # Generate GEOID20 column, with random 15 character lowercase ACII string,
-            # to simulate US census data.
-            n_rows = len(gdf)
-            rng = np.random.default_rng()
-            random_array = rng.choice(list(string.ascii_lowercase), size=(n_rows, 15))
-            gdf["GEOID20"] = ["".join(row) for row in random_array]
+        # Generate GEOID20 column, with random 15 character lowercase ACII string,
+        # to simulate US census data.
+        n_rows = len(gdf)
+        rng = np.random.default_rng()
+        random_array = rng.choice(list(string.ascii_lowercase), size=(n_rows, 15))
+        gdf["GEOID20"] = ["".join(row) for row in random_array]
 
-            # Export to Shapefile
-            gdf.to_file(file_shp)
-            logger.debug(f"Shapefile successfully saved to {file_shp}")
+        # Export to Shapefile
+        gdf.to_file(file_shp)
+        logger.debug(f"Shapefile successfully saved to {file_shp}")
 
 
 class CitySpeedLimitAdapter(SourceAdapter):
