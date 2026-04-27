@@ -249,7 +249,11 @@ class BNADataStore:
         *,
         cache_only: bool = False,
     ) -> None:
-        """Download a WorldPop 1km resolution geoTIFF for a specific country."""
+        """
+        Download a WorldPop 1km resolution geoTIFF for a specific country.
+
+        Default year to 2021 to match latest (2021) Official Canadian census
+        """
         s = datasource.WorldPopAdapter(country, year, self.mirror)
         await self.fetch_from_source(session, s, cache_only=cache_only)
 
