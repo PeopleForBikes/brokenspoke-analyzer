@@ -237,7 +237,9 @@ class WorldPopAdapter(SourceAdapter):
         output_dir = datastore.resolve()
         file_shp = output_dir / "population.shp"
 
-        if not file_shp.is_file():
+        if file_shp.exists():
+            return
+        else:
             logger.debug(f"{file_shp} doesn't exist, creating shapefile")
             with rasterio.open(file_geotiff) as src:
                 # Read the population count as a numpy array
