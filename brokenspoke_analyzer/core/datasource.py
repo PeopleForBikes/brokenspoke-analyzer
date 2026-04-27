@@ -219,13 +219,11 @@ class WorldPopAdapter(SourceAdapter):
     def urls(self) -> abc.Sequence[yarl.URL]:
         """Return the source data URLs."""
         return [
-            yarl.URL(
-                self.source_url
-                / self.year
-                / self.country
-                / "v1/1km_ua/constrained"
-                / str(f)
-            )
+            self.source_url
+            / self.year
+            / self.country
+            / "v1/1km_ua/constrained"
+            / str(f)
             for f in self.files
         ]
 
