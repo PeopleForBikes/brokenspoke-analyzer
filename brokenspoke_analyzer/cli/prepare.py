@@ -175,19 +175,24 @@ async def prepare_(  # noqa: PLR0915
 
     # Perform some specific operations for non-US cities.
     if state_fips == runner.NON_US_STATE_FIPS:
-        # Create synthetic population.
-        console.log("[green]Preparing synthetic population...")
-        cell_size = (block_size, block_size)
-        city_boundaries_gdf = gpd.read_file(boundary_file)
-        synthetic_population = analysis.create_synthetic_population(
-            city_boundaries_gdf,
-            *cell_size,
-            population=block_population,
-        )
+        if country == "Canada":
+            country_iso = country[:3].upper()
+            async with aiohttp.ClientSession() as session:
+                console.log("[green]Fetching WorldPop (2021) data...")
+                with console.status("Downloading..."):
+                    await bna_store.download_worldpop(session, country_iso)
+        else:
+            # Create synthetic population.
+            console.log("[green]Preparing synthetic population...")
+            cell_size = (block_size, block_size)
+            city_boundaries_gdf = gpd.read_file(boundary_file)
+            synthetic_population = analysis.create_synthetic_population(
+                city_boundaries_gdf, *cell_size, population=block_population
+            )
 
-        # Simulate the census blocks.
-        console.log("[green]Simulating census blocks...")
-        analysis.simulate_census_blocks(data_dir, synthetic_population)
+            # Simulate the census blocks.
+            console.log("[green]Simulating census blocks...")
+            analysis.simulate_census_blocks(data_dir, synthetic_population)
 
         # Change the speed limit.
         console.log(

@@ -15,6 +15,15 @@ wheels = [
 ]
 
 [[package]]
+name = "affine"
+version = "2.4.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/69/98/d2f0bb06385069e799fc7d2870d9e078cfa0fa396dc8a2b81227d0da08b9/affine-2.4.0.tar.gz", hash = "sha256:a24d818d6a836c131976d22f8c27b8d3ca32d0af64c1d8d29deb7bafa4da1eea", size = 17132, upload-time = "2023-01-19T23:44:30.696Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0b/f7/85273299ab57117850cc0a936c64151171fac4da49bc6fba0dad984a7c5f/affine-2.4.0-py3-none-any.whl", hash = "sha256:8a3df80e2b2378aef598a83c1392efd47967afec4242021a0b06b4c7cbc61a92", size = 15662, upload-time = "2023-01-19T23:44:28.833Z" },
+]
+
+[[package]]
 name = "aiohappyeyeballs"
 version = "2.6.1"
 source = { registry = "https://pypi.org/simple" }
@@ -310,13 +319,16 @@ dependencies = [
     { name = "boto3" },
     { name = "geopandas" },
     { name = "loguru" },
+    { name = "numpy" },
     { name = "obstore" },
     { name = "osmnx" },
     { name = "platformdirs" },
     { name = "pygris" },
     { name = "python-dotenv" },
     { name = "python-slugify" },
+    { name = "rasterio" },
     { name = "rich" },
+    { name = "shapely" },
     { name = "sqlalchemy", extra = ["asyncio", "postgresql-psycopg"] },
     { name = "tenacity" },
     { name = "trio" },
@@ -366,13 +378,16 @@ requires-dist = [
     { name = "boto3", specifier = ">=1.42.96,<2" },
     { name = "geopandas", specifier = ">=1.1.3,<2" },
     { name = "loguru", specifier = ">=0.7.3,<0.8" },
+    { name = "numpy", specifier = ">=2.3.2" },
     { name = "obstore", specifier = ">=0.9.4" },
     { name = "osmnx", specifier = ">=2.1.0,<3" },
     { name = "platformdirs", specifier = ">=4.9.6" },
     { name = "pygris", specifier = ">=0.2.1" },
     { name = "python-dotenv", specifier = ">=1.2.2,<2" },
     { name = "python-slugify", specifier = ">=8.0.4,<9" },
+    { name = "rasterio", specifier = ">=1.5.0" },
     { name = "rich", specifier = ">=15.0.0,<16" },
+    { name = "shapely", specifier = ">=2.1.1" },
     { name = "sqlalchemy", extras = ["asyncio", "postgresql-psycopg"], specifier = ">=2.0.49,<3" },
     { name = "tenacity", specifier = ">=9.1.4,<10" },
     { name = "trio", specifier = ">=0.33.0" },
@@ -477,14 +492,26 @@ wheels = [
 
 [[package]]
 name = "click"
-version = "8.2.1"
+version = "8.3.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/60/6c/8ca2efa64cf75a977a0d7fac081354553ebe483345c734fb6b6515d96bbc/click-8.2.1.tar.gz", hash = "sha256:27c491cc05d968d271d5a1db13e3b5a184636d9d930f148c50b038f0d0646202", size = 286342, upload-time = "2025-05-20T23:19:49.832Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/bb/63/f9e1ea081ce35720d8b92acde70daaedace594dc93b693c869e0d5910718/click-8.3.3.tar.gz", hash = "sha256:398329ad4837b2ff7cbe1dd166a4c0f8900c3ca3a218de04466f38f6497f18a2", size = 328061, upload-time = "2026-04-22T15:11:27.506Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/85/32/10bb5764d90a8eee674e9dc6f4db6a0ab47c8c4d0d83c27f7c39ac415a4d/click-8.2.1-py3-none-any.whl", hash = "sha256:61a3265b914e850b85317d0b3109c7f8cd35a670f963866005d6ef1d5175a12b", size = 102215, upload-time = "2025-05-20T23:19:47.796Z" },
+    { url = "https://files.pythonhosted.org/packages/ae/44/c1221527f6a71a01ec6fbad7fa78f1d50dfa02217385cf0fa3eec7087d59/click-8.3.3-py3-none-any.whl", hash = "sha256:a2bf429bb3033c89fa4936ffb35d5cb471e3719e1f3c8a7c3fff0b8314305613", size = 110502, upload-time = "2026-04-22T15:11:25.044Z" },
+]
+
+[[package]]
+name = "cligj"
+version = "0.7.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "click" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ea/0d/837dbd5d8430fd0f01ed72c4cfb2f548180f4c68c635df84ce87956cff32/cligj-0.7.2.tar.gz", hash = "sha256:a4bc13d623356b373c2c27c53dbd9c68cae5d526270bfa71f6c6fa69669c6b27", size = 9803, upload-time = "2021-05-28T21:23:27.935Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/73/86/43fa9f15c5b9fb6e82620428827cd3c284aa933431405d1bcf5231ae3d3e/cligj-0.7.2-py3-none-any.whl", hash = "sha256:c1ca117dbce1fe20a5809dc96f01e1c2840f6dcc939b3ddbb1111bf330ba82df", size = 7069, upload-time = "2021-05-28T21:23:26.877Z" },
 ]
 
 [[package]]
@@ -1804,6 +1831,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pyparsing"
+version = "3.3.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f3/91/9c6ee907786a473bf81c5f53cf703ba0957b23ab84c264080fb5a450416f/pyparsing-3.3.2.tar.gz", hash = "sha256:c777f4d763f140633dcb6d8a3eda953bf7a214dc4eff598413c070bcdc117cbc", size = 6851574, upload-time = "2026-01-21T03:57:59.36Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/10/bd/c038d7cc38edc1aa5bf91ab8068b63d4308c66c4c8bb3cbba7dfbc049f9c/pyparsing-3.3.2-py3-none-any.whl", hash = "sha256:850ba148bd908d7e2411587e247a1e4f0327839c40e2e5e6d05a007ecc69911d", size = 122781, upload-time = "2026-01-21T03:57:55.912Z" },
+]
+
+[[package]]
 name = "pyproj"
 version = "3.7.2"
 source = { registry = "https://pypi.org/simple" }
@@ -2052,6 +2088,35 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/c8/91/87f74f98a487fbef0b115f6025e4a295129fd56b2b633a03ba7d5816ecc2/pyzmq-27.0.1-cp313-cp313t-win32.whl", hash = "sha256:6dcbcb34f5c9b0cefdfc71ff745459241b7d3cda5b27c7ad69d45afc0821d1e1", size = 574213, upload-time = "2025-08-03T05:04:05.905Z" },
     { url = "https://files.pythonhosted.org/packages/e6/d7/07f7d0d7f4c81e08be7b60e52ff2591c557377c017f96204d33d5fca1b07/pyzmq-27.0.1-cp313-cp313t-win_amd64.whl", hash = "sha256:b9fd0fda730461f510cfd9a40fafa5355d65f5e3dbdd8d6dfa342b5b3f5d1949", size = 640202, upload-time = "2025-08-03T05:04:07.439Z" },
     { url = "https://files.pythonhosted.org/packages/ab/83/21d66bcef6fb803647a223cbde95111b099e2176277c0cbc8b099c485510/pyzmq-27.0.1-cp313-cp313t-win_arm64.whl", hash = "sha256:56a3b1853f3954ec1f0e91085f1350cc57d18f11205e4ab6e83e4b7c414120e0", size = 561514, upload-time = "2025-08-03T05:04:09.071Z" },
+]
+
+[[package]]
+name = "rasterio"
+version = "1.5.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "affine" },
+    { name = "attrs" },
+    { name = "certifi" },
+    { name = "click" },
+    { name = "cligj" },
+    { name = "numpy" },
+    { name = "pyparsing" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f6/88/edb4b66b6cb2c13f123af5a3896bf70c0cbe73ab3cd4243cb4eb0212a0f6/rasterio-1.5.0.tar.gz", hash = "sha256:1e0ea56b02eea4989b36edf8e58a5a3ef40e1b7edcb04def2603accd5ab3ee7b", size = 452184, upload-time = "2026-01-05T16:06:47.169Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/42/87/42865a77cebf2e524d27b6afc71db48984799ecd1dbe6a213d4713f42f5f/rasterio-1.5.0-cp313-cp313-macosx_14_0_arm64.whl", hash = "sha256:e7b25b0a19975ccd511e507e6de45b0a2d8fb6802abe49bb726cf48588e34833", size = 22776107, upload-time = "2026-01-05T16:05:36.967Z" },
+    { url = "https://files.pythonhosted.org/packages/6a/53/e81683fbbfdf04e019e68b042d9cff8524b0571aa80e4f4d81c373c31a49/rasterio-1.5.0-cp313-cp313-macosx_15_0_x86_64.whl", hash = "sha256:1162c18eaece9f6d2aa1c2ff6b373b99651d93f113f24120a991eaebf28aa4f4", size = 24401477, upload-time = "2026-01-05T16:05:39.702Z" },
+    { url = "https://files.pythonhosted.org/packages/bc/3c/6aa6e0690b18eea02a61739cb362a47c5df66138f0a02cc69e1181b964e5/rasterio-1.5.0-cp313-cp313-manylinux_2_28_aarch64.whl", hash = "sha256:8eb87fd6f843eea109f3df9bef83f741b053b716b0465932276e2c0577dfb929", size = 36018214, upload-time = "2026-01-05T16:05:42.741Z" },
+    { url = "https://files.pythonhosted.org/packages/48/4a/1af9aa9810fb30668568f2c4dd3eec2412c8e9762b69201d971c509b295e/rasterio-1.5.0-cp313-cp313-manylinux_2_28_x86_64.whl", hash = "sha256:08a7580cbb9b3bd320bdf827e10c9b2424d0df066d8eef6f2feb37e154ce0c17", size = 37544972, upload-time = "2026-01-05T16:05:45.815Z" },
+    { url = "https://files.pythonhosted.org/packages/01/62/bfe3408743c9837919ff232474a09ece9eaa88d4ee8c040711fa3dff6dad/rasterio-1.5.0-cp313-cp313-win_amd64.whl", hash = "sha256:d7d6729c0739b5ec48c33686668a30e27f5bdb361093f180ee7818ff19665547", size = 30140141, upload-time = "2026-01-05T16:05:48.751Z" },
+    { url = "https://files.pythonhosted.org/packages/63/ca/e90e19a6d065a718cc3d468a12b9f015289ad17017656dea8c76f7318d1f/rasterio-1.5.0-cp313-cp313-win_arm64.whl", hash = "sha256:8af7c368c22f0a99d1259ccc5a5cd96c432c2bde6f132c1ac78508cd7445a745", size = 28498556, upload-time = "2026-01-05T16:05:51.334Z" },
+    { url = "https://files.pythonhosted.org/packages/a0/ba/e37462d8c33bbbd6c152a0390ec6911a3d9614ded3d2bc6f6a48e147e833/rasterio-1.5.0-cp313-cp313t-macosx_14_0_arm64.whl", hash = "sha256:b4ccfcc8ed9400e4f14efdf2005533fcf72048748b727f85ff89b9291ecdf98a", size = 22920107, upload-time = "2026-01-05T16:05:53.773Z" },
+    { url = "https://files.pythonhosted.org/packages/66/dc/7bfa9cf96ac39b451b2f94dfc584c223ec584c52c148df2e4bab60c3341b/rasterio-1.5.0-cp313-cp313t-macosx_15_0_x86_64.whl", hash = "sha256:2f57c36ca4d3c896f7024226bd71eeb5cd10c8183c2a94508534d78cc05ff9e7", size = 24508993, upload-time = "2026-01-05T16:05:57.062Z" },
+    { url = "https://files.pythonhosted.org/packages/e5/55/7293743f3b69de4b726c67b8dc9da01fc194070b6becc51add4ca8a20a27/rasterio-1.5.0-cp313-cp313t-manylinux_2_28_aarch64.whl", hash = "sha256:cc1395475e4bb7032cd81dda4d5558061c4c7d5a50b1b5e146bdf9716d0b9353", size = 36565784, upload-time = "2026-01-05T16:06:00.019Z" },
+    { url = "https://files.pythonhosted.org/packages/cf/ef/5354c47de16c6e289728c3a3d6961ffcf7a9ad6313aef7e8db5d6a40c46e/rasterio-1.5.0-cp313-cp313t-manylinux_2_28_x86_64.whl", hash = "sha256:592a485e2057b1aaeab4f843c9897628e60e3ff45e2509325c3e1479116599cb", size = 37686456, upload-time = "2026-01-05T16:06:02.772Z" },
+    { url = "https://files.pythonhosted.org/packages/b7/fc/fe1f034b1acd1900d9fbd616826d001a3d5811f1d0c97c785f88f525853e/rasterio-1.5.0-cp313-cp313t-win_amd64.whl", hash = "sha256:0c739e70a72fb080f039ee1570c5d02b974dde32ded1a3216e1f13fe38ac4844", size = 30355842, upload-time = "2026-01-05T16:06:06.359Z" },
+    { url = "https://files.pythonhosted.org/packages/e0/cb/4dee9697891c9c6474b240d00e27688e03ecd882d3c83cc97eb25c2266ff/rasterio-1.5.0-cp313-cp313t-win_arm64.whl", hash = "sha256:a3539a2f401a7b4b2e94ff2db334878c0e15a2d1c9fe90bb0879c52f89367ae5", size = 28589538, upload-time = "2026-01-05T16:06:09.662Z" },
 ]
 
 [[package]]
