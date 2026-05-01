@@ -205,9 +205,9 @@ class WorldPopAdapter(SourceAdapter):
         Return the source data files.
 
         Example:
-            >>> adapter = WorldPopAdapter("can", "2021")
+            >>> adapter = WorldPopAdapter("can", "2026")
             >>> adapter.files[0].name
-            can_pop_2021_CN_1km_R2025A_UA_v1.tif
+            can_pop_2026_CN_1km_R2025A_UA_v1.tif
         """
         return [
             pathlib.Path(
