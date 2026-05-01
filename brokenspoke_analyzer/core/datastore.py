@@ -245,14 +245,14 @@ class BNADataStore:
         self,
         session: aiohttp.ClientSession,
         country: str,
-        year: str = "2021",
+        year: str = "2026",
         *,
         cache_only: bool = False,
     ) -> None:
         """
         Download a WorldPop 1km resolution geoTIFF for a specific country.
 
-        Default year to 2021 to match latest (2021) Official Canadian census
+        Default year to 2026 to match current year
         """
         s = datasource.WorldPopAdapter(country, year, self.mirror)
         await self.fetch_from_source(session, s, cache_only=cache_only)
