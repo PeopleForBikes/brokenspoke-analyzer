@@ -6,7 +6,9 @@ import enum
 import pathlib
 from typing import TYPE_CHECKING
 
+import aiohttp
 from loguru import logger
+from obstore import exceptions as obstore_exceptions
 from obstore.store import (
     from_url,
 )
@@ -18,7 +20,6 @@ from brokenspoke_analyzer.core import (
 )
 
 if TYPE_CHECKING:
-    import aiohttp
     from obstore.store import ObjectStore
 
 
@@ -136,6 +137,41 @@ class BNADataStore:
         res = await self.cache.get_async(path)
         await self.store.put_async(destination_path, res)
 
+    async def _cleanup_partial_cache(self, path: str) -> None:
+        """Delete a partially written cache artifact if the cache store supports it."""
+        delete_async = getattr(self.cache, "delete_async", None)
+        if callable(delete_async):
+            try:
+                await delete_async(path)
+            except FileNotFoundError:
+                return
+            except (obstore_exceptions.BaseError, OSError) as exc:
+                logger.warning(
+                    "failed to delete partial cache object %s: %s",
+                    path,
+                    exc,
+                )
+            return
+
+        delete_sync = getattr(self.cache, "delete", None)
+        if callable(delete_sync):
+            try:
+                delete_sync(path)
+            except FileNotFoundError:
+                return
+            except (obstore_exceptions.BaseError, OSError) as exc:
+                logger.warning(
+                    "failed to delete partial cache object %s: %s",
+                    path,
+                    exc,
+                )
+            return
+
+        logger.warning(
+            "cache store does not support delete; partial artifact may remain: %s",
+            path,
+        )
+
     async def fetch_to_cache(
         self,
         session: aiohttp.ClientSession,
@@ -151,7 +187,17 @@ class BNADataStore:
 
         # If not, download it from the url and store it into the cache data store.
         async with session.get(url) as resp:
-            await self.cache.put_async(path, resp.content.iter_chunked(CHUNK_SIZE))
+            resp.raise_for_status()
+            try:
+                await self.cache.put_async(path, resp.content.iter_chunked(CHUNK_SIZE))
+            except (
+                aiohttp.ClientError,
+                obstore_exceptions.BaseError,
+                OSError,
+                RuntimeError,
+            ):
+                await self._cleanup_partial_cache(path)
+                raise
 
     async def fetch(
         self,
