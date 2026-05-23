@@ -422,7 +422,7 @@ dev = [
     { name = "types-beautifulsoup4", specifier = ">=4.12.0.20250516" },
     { name = "types-boto3", specifier = ">=1.43.9" },
     { name = "types-colorama", specifier = ">=0.4.15.20260508,<0.5" },
-    { name = "types-decorator", specifier = ">=5.2.0.20260408,<6" },
+    { name = "types-decorator", specifier = ">=5.2.0.20260508,<6" },
     { name = "types-jsonschema", specifier = ">=4.26.0.20260508,<5" },
     { name = "types-pygments", specifier = ">=2.20.0.20260508,<3" },
     { name = "types-python-slugify", specifier = ">=8.0.2.20240310,<9" },
@@ -2808,11 +2808,11 @@ wheels = [
 
 [[package]]
 name = "types-decorator"
-version = "5.2.0.20260408"
+version = "5.2.0.20260508"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/86/8f/b409aa8260c73ee91361ef66df80900da8d8f5151c807aa278b1bb558f1e/types_decorator-5.2.0.20260408.tar.gz", hash = "sha256:d1d4c10067545657b8046677d6e2b823147665bfd5f244395e681bdd1039c80e", size = 9183, upload-time = "2026-04-08T04:30:57.514Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e5/42/88861ae7467752fa2933cdccc562b63b29bbc000fe841c56c1f87958cf9b/types_decorator-5.2.0.20260508.tar.gz", hash = "sha256:83af4c212bdccf0cef593b210051beb451664a2ee304c96cae8eea25f98f04e6", size = 9212, upload-time = "2026-05-08T04:48:34.813Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a1/c0/9672e9c63085a2e20c045a535ce912942772d497b0fd0417dabe086ffe31/types_decorator-5.2.0.20260408-py3-none-any.whl", hash = "sha256:4b01272677fd627604fbb8fee048cff9c4df00583d1c071b4505304b5881a7ac", size = 8076, upload-time = "2026-04-08T04:30:56.531Z" },
+    { url = "https://files.pythonhosted.org/packages/eb/23/e975683499a548cd6e8522279e73e5ba501401fe417f2fe6babd52ab9b6a/types_decorator-5.2.0.20260508-py3-none-any.whl", hash = "sha256:7d5fb96ea6f959c1685c85fc76aaf186e4695a68e5cbd05dad9b10073e94be12", size = 8066, upload-time = "2026-05-08T04:48:34.011Z" },
 ]
 
 [[package]]
