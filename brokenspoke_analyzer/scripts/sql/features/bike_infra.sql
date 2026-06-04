@@ -203,17 +203,9 @@ SET
                     THEN 'lane'
                 WHEN osm.cycleway = 'opposite_track'
                     THEN 'track'
-                WHEN
-                    (
-                        one_way_car = 'tf'
-                        AND osm."cycleway:left" = 'opposite_track'
-                    )
+                WHEN osm."cycleway:left" = 'opposite_track'
                     THEN 'track'
-                WHEN
-                    (
-                        one_way_car = 'tf'
-                        AND osm."cycleway:right" = 'opposite_track'
-                    )
+                WHEN osm."cycleway:right" = 'opposite_track'
                     THEN 'track'
             END
 
@@ -450,17 +442,9 @@ SET
                     THEN 'lane'
                 WHEN osm.cycleway = 'opposite_track'
                     THEN 'track'
-                WHEN
-                    (
-                        one_way_car = 'tf'
-                        AND osm."cycleway:left" = 'opposite_track'
-                    )
+                WHEN osm."cycleway:left" = 'opposite_track'
                     THEN 'track'
-                WHEN
-                    (
-                        one_way_car = 'tf'
-                        AND osm."cycleway:right" = 'opposite_track'
-                    )
+                WHEN osm."cycleway:right" = 'opposite_track'
                     THEN 'track'
             END
 
