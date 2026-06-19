@@ -43,7 +43,8 @@ SET
                 WHEN COALESCE(speed_limit, :default_speed) <= 20
                     THEN CASE
                         WHEN COALESCE(ft_lanes, :default_lanes) > 1 THEN 3
-                        ELSE CASE -- lanes = 1
+                        -- lanes = 1
+                        ELSE CASE -- noqa: ST04
                             WHEN
                                 COALESCE(
                                     ft_bike_infra_width, :default_facility_width
@@ -57,7 +58,7 @@ SET
 
         -- shared lane
         ELSE
-            CASE
+            CASE -- noqa: ST04
                 WHEN COALESCE(speed_limit, :default_speed) <= 15
                     THEN CASE
                         WHEN COALESCE(ft_lanes, :default_lanes) = 1 THEN 1
@@ -92,7 +93,8 @@ SET
                 WHEN COALESCE(speed_limit, :default_speed) <= 20
                     THEN CASE
                         WHEN COALESCE(tf_lanes, :default_lanes) > 1 THEN 3
-                        ELSE CASE -- lanes = 1
+                        -- lanes = 1
+                        ELSE CASE -- noqa: ST04
                             WHEN
                                 COALESCE(
                                     tf_bike_infra_width, :default_facility_width
@@ -106,7 +108,7 @@ SET
 
         -- shared lane
         ELSE
-            CASE
+            CASE -- noqa: ST04
                 WHEN COALESCE(speed_limit, :default_speed) <= 15
                     THEN CASE
                         WHEN COALESCE(tf_lanes, :default_lanes) = 1 THEN 1

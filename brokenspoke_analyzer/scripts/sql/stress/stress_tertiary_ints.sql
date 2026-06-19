@@ -77,7 +77,7 @@ WHERE
                             END
 
                         -- without rrfb
-                        ELSE CASE
+                        ELSE CASE -- noqa: ST04
                             WHEN
                                 COALESCE(w.ft_lanes, :primary_lanes)
                                 + COALESCE(w.tf_lanes, :primary_lanes)
