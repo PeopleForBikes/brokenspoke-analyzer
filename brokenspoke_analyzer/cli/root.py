@@ -106,4 +106,4 @@ app.add_typer(run.app, help="Run a full analysis.")
 app.add_typer(run_with.app, name="run-with", help="Run an analysis in different ways.")
 
 # Make shared options accessible to appropriate subcommands.
-run_with.verbose = verbose
+run_with.verbose = verbose  # ty:ignore[invalid-assignment]

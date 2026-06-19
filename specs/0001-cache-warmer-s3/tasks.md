@@ -34,8 +34,8 @@ pipeline.
   - [ ] 2.1 — Add `app = typer.Typer()`.
   - [ ] 2.2 — Add `local` subcommand that constructs `BNADataStore` as today and
         calls `_run_downloads`.
-  - [ ] 2.3 — Configure the CLI so that `uv run python utils/cache-warmer.py` with
-        no subcommand displays the help screen and does not start warming.
+  - [ ] 2.3 — Configure the CLI so that `uv run python utils/cache-warmer.py`
+        with no subcommand displays the help screen and does not start warming.
   - [ ] 2.4 — Keep compatibility so the original behavior is preserved when a
         subcommand is explicitly provided.
 
