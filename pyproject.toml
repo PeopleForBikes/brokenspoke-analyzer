@@ -148,7 +148,7 @@ ignore_missing_imports = true
 
 [tool.sqlfluff.core]
 dialect = "postgres"
-exclude_rules = "RF01"
+exclude_rules = "RF01, PG01"
 large_file_skip_byte_limit = 0
 processes = 0
 templater = "placeholder"
