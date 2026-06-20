@@ -66,18 +66,16 @@ SET doctors_score = CASE
                 )
                 / (doctors_high_stress - 2)
         END
-    ELSE CASE
-        WHEN doctors_low_stress = 1 THEN :first
-        WHEN doctors_low_stress = 2 THEN :first + :second
-        WHEN doctors_low_stress = 3 THEN :first + :second + :third
-        ELSE
-            :first + :second + :third
-            + (
-                (:max_score - :first - :second - :third)
-                * (doctors_low_stress::FLOAT - 3)
-            )
-            / (doctors_high_stress - 3)
-    END
+    WHEN doctors_low_stress = 1 THEN :first
+    WHEN doctors_low_stress = 2 THEN :first + :second
+    WHEN doctors_low_stress = 3 THEN :first + :second + :third
+    ELSE
+        :first + :second + :third
+        + (
+            (:max_score - :first - :second - :third)
+            * (doctors_low_stress::FLOAT - 3)
+        )
+        / (doctors_high_stress - 3)
 END;
 
 -- set population shed for each doctors destination in the neighborhood

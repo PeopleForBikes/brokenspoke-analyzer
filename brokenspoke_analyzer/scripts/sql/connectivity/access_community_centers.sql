@@ -73,18 +73,16 @@ SET community_centers_score = CASE
                 )
                 / (community_centers_high_stress - 2)
         END
-    ELSE CASE
-        WHEN community_centers_low_stress = 1 THEN :first
-        WHEN community_centers_low_stress = 2 THEN :first + :second
-        WHEN community_centers_low_stress = 3 THEN :first + :second + :third
-        ELSE
-            :first + :second + :third
-            + (
-                (:max_score - :first - :second - :third)
-                * (community_centers_low_stress::FLOAT - 3)
-            )
-            / (community_centers_high_stress - 3)
-    END
+    WHEN community_centers_low_stress = 1 THEN :first
+    WHEN community_centers_low_stress = 2 THEN :first + :second
+    WHEN community_centers_low_stress = 3 THEN :first + :second + :third
+    ELSE
+        :first + :second + :third
+        + (
+            (:max_score - :first - :second - :third)
+            * (community_centers_low_stress::FLOAT - 3)
+        )
+        / (community_centers_high_stress - 3)
 END;
 
 -- set population shed for each community center in the neighborhood
