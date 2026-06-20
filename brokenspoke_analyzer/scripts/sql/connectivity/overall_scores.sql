@@ -511,7 +511,7 @@ SELECT
                 ) AS weighted_score
             FROM neighborhood_census_blocks AS ncb
             WHERE ncb.pop20 > 0 AND ncb.reachable_blocks > 0
-        )
+        ) AS weighted_scores
     ),
     NULL; -- noqa: AL03
 
