@@ -66,18 +66,16 @@ SET retail_score = CASE
                 )
                 / (retail_high_stress - 2)
         END
-    ELSE CASE
-        WHEN retail_low_stress = 1 THEN :first
-        WHEN retail_low_stress = 2 THEN :first + :second
-        WHEN retail_low_stress = 3 THEN :first + :second + :third
-        ELSE
-            :first + :second + :third
-            + (
-                (:max_score - :first - :second - :third)
-                * (retail_low_stress::FLOAT - 3)
-            )
-            / (retail_high_stress - 3)
-    END
+    WHEN retail_low_stress = 1 THEN :first
+    WHEN retail_low_stress = 2 THEN :first + :second
+    WHEN retail_low_stress = 3 THEN :first + :second + :third
+    ELSE
+        :first + :second + :third
+        + (
+            (:max_score - :first - :second - :third)
+            * (retail_low_stress::FLOAT - 3)
+        )
+        / (retail_high_stress - 3)
 END;
 
 -- set population shed for each retail destination in the neighborhood

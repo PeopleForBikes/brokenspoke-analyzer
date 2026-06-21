@@ -66,18 +66,16 @@ SET hospitals_score = CASE
                 )
                 / (hospitals_high_stress - 2)
         END
-    ELSE CASE
-        WHEN hospitals_low_stress = 1 THEN :first
-        WHEN hospitals_low_stress = 2 THEN :first + :second
-        WHEN hospitals_low_stress = 3 THEN :first + :second + :third
-        ELSE
-            :first + :second + :third
-            + (
-                (:max_score - :first - :second - :third)
-                * (hospitals_low_stress::FLOAT - 3)
-            )
-            / (hospitals_high_stress - 3)
-    END
+    WHEN hospitals_low_stress = 1 THEN :first
+    WHEN hospitals_low_stress = 2 THEN :first + :second
+    WHEN hospitals_low_stress = 3 THEN :first + :second + :third
+    ELSE
+        :first + :second + :third
+        + (
+            (:max_score - :first - :second - :third)
+            * (hospitals_low_stress::FLOAT - 3)
+        )
+        / (hospitals_high_stress - 3)
 END;
 
 -- set population shed for each hospitals destination in the neighborhood

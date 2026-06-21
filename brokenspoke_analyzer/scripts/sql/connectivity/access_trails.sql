@@ -69,16 +69,14 @@ SET trails_score = CASE
                 )
                 / (trails_high_stress - 2)
         END
-    ELSE CASE
-        WHEN trails_low_stress = 1 THEN :first
-        WHEN trails_low_stress = 2 THEN :first + :second
-        WHEN trails_low_stress = 3 THEN :first + :second + :third
-        ELSE
-            :first + :second + :third
-            + (
-                (:max_score - :first - :second - :third)
-                * (trails_low_stress::FLOAT - 3)
-            )
-            / (trails_high_stress - 3)
-    END
+    WHEN trails_low_stress = 1 THEN :first
+    WHEN trails_low_stress = 2 THEN :first + :second
+    WHEN trails_low_stress = 3 THEN :first + :second + :third
+    ELSE
+        :first + :second + :third
+        + (
+            (:max_score - :first - :second - :third)
+            * (trails_low_stress::FLOAT - 3)
+        )
+        / (trails_high_stress - 3)
 END;

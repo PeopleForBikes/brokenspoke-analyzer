@@ -66,18 +66,16 @@ SET pharmacies_score = CASE
                 )
                 / (pharmacies_high_stress - 2)
         END
-    ELSE CASE
-        WHEN pharmacies_low_stress = 1 THEN :first
-        WHEN pharmacies_low_stress = 2 THEN :first + :second
-        WHEN pharmacies_low_stress = 3 THEN :first + :second + :third
-        ELSE
-            :first + :second + :third
-            + (
-                (:max_score - :first - :second - :third)
-                * (pharmacies_low_stress::FLOAT - 3)
-            )
-            / (pharmacies_high_stress - 3)
-    END
+    WHEN pharmacies_low_stress = 1 THEN :first
+    WHEN pharmacies_low_stress = 2 THEN :first + :second
+    WHEN pharmacies_low_stress = 3 THEN :first + :second + :third
+    ELSE
+        :first + :second + :third
+        + (
+            (:max_score - :first - :second - :third)
+            * (pharmacies_low_stress::FLOAT - 3)
+        )
+        / (pharmacies_high_stress - 3)
 END;
 
 -- set population shed for each pharmacies destination in the neighborhood
