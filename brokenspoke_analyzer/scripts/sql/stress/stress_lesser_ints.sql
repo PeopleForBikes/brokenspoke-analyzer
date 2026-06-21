@@ -85,7 +85,7 @@ WHERE
                             END
 
                         -- without rrfb
-                        ELSE CASE
+                        ELSE CASE -- noqa: ST04
                             WHEN
                                 COALESCE(w.ft_lanes, :primary_lanes)
                                 + COALESCE(w.tf_lanes, :primary_lanes)
@@ -156,7 +156,7 @@ WHERE
                             END
                         -- noqa: ST02
                         -- without rrfb
-                        ELSE CASE
+                        ELSE CASE -- noqa: ST04
                             WHEN
                                 COALESCE(w.ft_lanes, w.tf_lanes, :primary_lanes)
                                 = 2
@@ -227,7 +227,7 @@ WHERE
                             END
 
                         -- without rrfb
-                        ELSE CASE
+                        ELSE CASE -- noqa: ST04
                             WHEN
                                 COALESCE(w.ft_lanes, :secondary_lanes)
                                 + COALESCE(w.tf_lanes, :secondary_lanes)
@@ -305,7 +305,7 @@ WHERE
                             END
 
                         -- without rrfb
-                        ELSE CASE
+                        ELSE CASE -- noqa: ST04
                             WHEN
                                 COALESCE(
                                     w.ft_lanes, w.tf_lanes, :secondary_lanes
@@ -384,7 +384,7 @@ WHERE
                             END
 
                         -- without rrfb
-                        ELSE CASE
+                        ELSE CASE -- noqa: ST04
                             WHEN
                                 COALESCE(w.ft_lanes, :tertiary_lanes)
                                 + COALESCE(w.tf_lanes, :tertiary_lanes)
@@ -456,7 +456,7 @@ WHERE
                             END
 
                         -- without rrfb
-                        ELSE CASE
+                        ELSE CASE -- noqa: ST04
                             WHEN
                                 COALESCE(
                                     w.ft_lanes, w.tf_lanes, :tertiary_lanes
@@ -554,7 +554,7 @@ WHERE
                             END
 
                         -- without rrfb
-                        ELSE CASE
+                        ELSE CASE -- noqa: ST04
                             WHEN
                                 COALESCE(w.ft_lanes, :primary_lanes)
                                 + COALESCE(w.tf_lanes, :primary_lanes)
@@ -625,7 +625,7 @@ WHERE
                             END
 
                         -- without rrfb
-                        ELSE CASE
+                        ELSE CASE -- noqa: ST04
                             WHEN
                                 COALESCE(w.ft_lanes, w.tf_lanes, :primary_lanes)
                                 = 2
@@ -696,7 +696,7 @@ WHERE
                             END
 
                         -- without rrfb
-                        ELSE CASE
+                        ELSE CASE -- noqa: ST04
                             WHEN
                                 COALESCE(w.ft_lanes, :secondary_lanes)
                                 + COALESCE(w.tf_lanes, :secondary_lanes)
@@ -774,7 +774,7 @@ WHERE
                             END
 
                         -- without rrfb
-                        ELSE CASE
+                        ELSE CASE -- noqa: ST04
                             WHEN
                                 COALESCE(
                                     w.ft_lanes, w.tf_lanes, :secondary_lanes
@@ -853,7 +853,7 @@ WHERE
                             END
 
                         -- without rrfb
-                        ELSE CASE
+                        ELSE CASE -- noqa: ST04
                             WHEN
                                 COALESCE(w.ft_lanes, :tertiary_lanes)
                                 + COALESCE(w.tf_lanes, :tertiary_lanes)
@@ -925,7 +925,7 @@ WHERE
                             END
 
                         -- without rrfb
-                        ELSE CASE
+                        ELSE CASE -- noqa: ST04
                             WHEN
                                 COALESCE(
                                     w.ft_lanes, w.tf_lanes, :tertiary_lanes
