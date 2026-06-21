@@ -66,18 +66,16 @@ SET parks_score = CASE
                 )
                 / (parks_high_stress - 2)
         END
-    ELSE CASE
-        WHEN parks_low_stress = 1 THEN :first
-        WHEN parks_low_stress = 2 THEN :first + :second
-        WHEN parks_low_stress = 3 THEN :first + :second + :third
-        ELSE
-            :first + :second + :third
-            + (
-                (:max_score - :first - :second - :third)
-                * (parks_low_stress::FLOAT - 3)
-            )
-            / (parks_high_stress - 3)
-    END
+    WHEN parks_low_stress = 1 THEN :first
+    WHEN parks_low_stress = 2 THEN :first + :second
+    WHEN parks_low_stress = 3 THEN :first + :second + :third
+    ELSE
+        :first + :second + :third
+        + (
+            (:max_score - :first - :second - :third)
+            * (parks_low_stress::FLOAT - 3)
+        )
+        / (parks_high_stress - 3)
 END;
 
 -- set population shed for each park in the neighborhood

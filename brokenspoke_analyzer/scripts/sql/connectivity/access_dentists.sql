@@ -66,18 +66,16 @@ SET dentists_score = CASE
                 )
                 / (dentists_high_stress - 2)
         END
-    ELSE CASE
-        WHEN dentists_low_stress = 1 THEN :first
-        WHEN dentists_low_stress = 2 THEN :first + :second
-        WHEN dentists_low_stress = 3 THEN :first + :second + :third
-        ELSE
-            :first + :second + :third
-            + (
-                (:max_score - :first - :second - :third)
-                * (dentists_low_stress::FLOAT - 3)
-            )
-            / (dentists_high_stress - 3)
-    END
+    WHEN dentists_low_stress = 1 THEN :first
+    WHEN dentists_low_stress = 2 THEN :first + :second
+    WHEN dentists_low_stress = 3 THEN :first + :second + :third
+    ELSE
+        :first + :second + :third
+        + (
+            (:max_score - :first - :second - :third)
+            * (dentists_low_stress::FLOAT - 3)
+        )
+        / (dentists_high_stress - 3)
 END;
 
 -- set population shed for each dentists destination in the neighborhood

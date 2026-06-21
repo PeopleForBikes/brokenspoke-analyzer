@@ -66,18 +66,16 @@ SET colleges_score = CASE
                 )
                 / (colleges_high_stress - 2)
         END
-    ELSE CASE
-        WHEN colleges_low_stress = 1 THEN :first
-        WHEN colleges_low_stress = 2 THEN :first + :second
-        WHEN colleges_low_stress = 3 THEN :first + :second + :third
-        ELSE
-            :first + :second + :third
-            + (
-                (:max_score - :first - :second - :third)
-                * (colleges_low_stress::FLOAT - 3)
-            )
-            / (colleges_high_stress - 3)
-    END
+    WHEN colleges_low_stress = 1 THEN :first
+    WHEN colleges_low_stress = 2 THEN :first + :second
+    WHEN colleges_low_stress = 3 THEN :first + :second + :third
+    ELSE
+        :first + :second + :third
+        + (
+            (:max_score - :first - :second - :third)
+            * (colleges_low_stress::FLOAT - 3)
+        )
+        / (colleges_high_stress - 3)
 END;
 
 -- set population shed for each college in the neighborhood

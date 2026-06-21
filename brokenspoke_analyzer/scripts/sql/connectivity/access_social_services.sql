@@ -70,18 +70,16 @@ SET social_services_score = CASE
                 )
                 / (social_services_high_stress - 2)
         END
-    ELSE CASE
-        WHEN social_services_low_stress = 1 THEN :first
-        WHEN social_services_low_stress = 2 THEN :first + :second
-        WHEN social_services_low_stress = 3 THEN :first + :second + :third
-        ELSE
-            :first + :second + :third
-            + (
-                (:max_score - :first - :second - :third)
-                * (social_services_low_stress::FLOAT - 3)
-            )
-            / (social_services_high_stress - 3)
-    END
+    WHEN social_services_low_stress = 1 THEN :first
+    WHEN social_services_low_stress = 2 THEN :first + :second
+    WHEN social_services_low_stress = 3 THEN :first + :second + :third
+    ELSE
+        :first + :second + :third
+        + (
+            (:max_score - :first - :second - :third)
+            * (social_services_low_stress::FLOAT - 3)
+        )
+        / (social_services_high_stress - 3)
 END;
 
 -- set population shed for each social service destination in the neighborhood

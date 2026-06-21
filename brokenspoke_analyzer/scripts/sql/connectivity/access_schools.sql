@@ -66,18 +66,16 @@ SET schools_score = CASE
                 )
                 / (schools_high_stress - 2)
         END
-    ELSE CASE
-        WHEN schools_low_stress = 1 THEN :first
-        WHEN schools_low_stress = 2 THEN :first + :second
-        WHEN schools_low_stress = 3 THEN :first + :second + :third
-        ELSE
-            :first + :second + :third
-            + (
-                (:max_score - :first - :second - :third)
-                * (schools_low_stress::FLOAT - 3)
-            )
-            / (schools_high_stress - 3)
-    END
+    WHEN schools_low_stress = 1 THEN :first
+    WHEN schools_low_stress = 2 THEN :first + :second
+    WHEN schools_low_stress = 3 THEN :first + :second + :third
+    ELSE
+        :first + :second + :third
+        + (
+            (:max_score - :first - :second - :third)
+            * (schools_low_stress::FLOAT - 3)
+        )
+        / (schools_high_stress - 3)
 END;
 
 -- set population shed for each school in the neighborhood

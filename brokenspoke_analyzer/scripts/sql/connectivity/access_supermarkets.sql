@@ -68,18 +68,16 @@ SET supermarkets_score = CASE
                 )
                 / (supermarkets_high_stress - 2)
         END
-    ELSE CASE
-        WHEN supermarkets_low_stress = 1 THEN :first
-        WHEN supermarkets_low_stress = 2 THEN :first + :second
-        WHEN supermarkets_low_stress = 3 THEN :first + :second + :third
-        ELSE
-            :first + :second + :third
-            + (
-                (:max_score - :first - :second - :third)
-                * (supermarkets_low_stress::FLOAT - 3)
-            )
-            / (supermarkets_high_stress - 3)
-    END
+    WHEN supermarkets_low_stress = 1 THEN :first
+    WHEN supermarkets_low_stress = 2 THEN :first + :second
+    WHEN supermarkets_low_stress = 3 THEN :first + :second + :third
+    ELSE
+        :first + :second + :third
+        + (
+            (:max_score - :first - :second - :third)
+            * (supermarkets_low_stress::FLOAT - 3)
+        )
+        / (supermarkets_high_stress - 3)
 END;
 
 -- set population shed for each supermarket in the neighborhood
