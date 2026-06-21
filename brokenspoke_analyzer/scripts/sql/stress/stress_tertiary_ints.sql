@@ -124,7 +124,7 @@ WHERE
                                     = 2
                                     THEN CASE
                                         WHEN
-                                            COALESCE(
+                                            COALESCE( -- noqa: ST02
                                                 w.speed_limit, :primary_speed
                                             )
                                             > 40
@@ -138,7 +138,7 @@ WHERE
                                     < 2
                                     THEN CASE
                                         WHEN
-                                            COALESCE(
+                                            COALESCE( -- noqa: ST02
                                                 w.speed_limit, :primary_speed
                                             )
                                             > 35
@@ -154,7 +154,7 @@ WHERE
                                 = 2
                                 THEN CASE
                                     WHEN
-                                        COALESCE(w.speed_limit, :primary_speed)
+                                        COALESCE(w.speed_limit, :primary_speed) -- noqa: ST02
                                         > 30
                                         THEN TRUE
                                     ELSE FALSE
@@ -164,7 +164,7 @@ WHERE
                                 < 2
                                 THEN CASE
                                     WHEN
-                                        COALESCE(w.speed_limit, :primary_speed)
+                                        COALESCE(w.speed_limit, :primary_speed) -- noqa: ST02
                                         > 30
                                         THEN TRUE
                                     ELSE FALSE
@@ -273,7 +273,7 @@ WHERE
                                     = 2
                                     THEN CASE
                                         WHEN
-                                            COALESCE(
+                                            COALESCE( -- noqa: ST02
                                                 w.speed_limit, :secondary_speed
                                             )
                                             > 40
@@ -287,7 +287,7 @@ WHERE
                                     < 2
                                     THEN CASE
                                         WHEN
-                                            COALESCE(
+                                            COALESCE( -- noqa: ST02
                                                 w.speed_limit, :secondary_speed
                                             )
                                             > 35
@@ -305,7 +305,7 @@ WHERE
                                 = 2
                                 THEN CASE
                                     WHEN
-                                        COALESCE(
+                                        COALESCE( -- noqa: ST02
                                             w.speed_limit, :secondary_speed
                                         )
                                         > 30
@@ -319,7 +319,7 @@ WHERE
                                 < 2
                                 THEN CASE
                                     WHEN
-                                        COALESCE(
+                                        COALESCE( -- noqa: ST02
                                             w.speed_limit, :secondary_speed
                                         )
                                         > 30
@@ -444,7 +444,7 @@ WHERE
                                     = 2
                                     THEN CASE
                                         WHEN
-                                            COALESCE(
+                                            COALESCE( -- noqa: ST02
                                                 w.speed_limit, :primary_speed
                                             )
                                             > 40
@@ -458,7 +458,7 @@ WHERE
                                     < 2
                                     THEN CASE
                                         WHEN
-                                            COALESCE(
+                                            COALESCE( -- noqa: ST02
                                                 w.speed_limit, :primary_speed
                                             )
                                             > 35
@@ -474,7 +474,7 @@ WHERE
                                 = 2
                                 THEN CASE
                                     WHEN
-                                        COALESCE(w.speed_limit, :primary_speed)
+                                        COALESCE(w.speed_limit, :primary_speed) -- noqa: ST02
                                         > 30
                                         THEN TRUE
                                     ELSE FALSE
@@ -484,7 +484,7 @@ WHERE
                                 < 2
                                 THEN CASE
                                     WHEN
-                                        COALESCE(w.speed_limit, :primary_speed)
+                                        COALESCE(w.speed_limit, :primary_speed) -- noqa: ST02
                                         > 30
                                         THEN TRUE
                                     ELSE FALSE
@@ -593,7 +593,7 @@ WHERE
                                     = 2
                                     THEN CASE
                                         WHEN
-                                            COALESCE(
+                                            COALESCE( -- noqa: ST02
                                                 w.speed_limit, :secondary_speed
                                             )
                                             > 40
@@ -607,7 +607,7 @@ WHERE
                                     < 2
                                     THEN CASE
                                         WHEN
-                                            COALESCE(
+                                            COALESCE( -- noqa: ST02
                                                 w.speed_limit, :secondary_speed
                                             )
                                             > 35
@@ -625,7 +625,7 @@ WHERE
                                 = 2
                                 THEN CASE
                                     WHEN
-                                        COALESCE(
+                                        COALESCE( -- noqa: ST02
                                             w.speed_limit, :secondary_speed
                                         )
                                         > 30
@@ -639,7 +639,7 @@ WHERE
                                 < 2
                                 THEN CASE
                                     WHEN
-                                        COALESCE(
+                                        COALESCE( -- noqa: ST02
                                             w.speed_limit, :secondary_speed
                                         )
                                         > 30
