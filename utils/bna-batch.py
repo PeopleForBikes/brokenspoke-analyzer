@@ -19,12 +19,20 @@ bna-batch.py [OPTIONS] [BATCH_FILE]
 
       Defaults to `./cities.csv`.
 
+- `--export-dir` _export_dir_
+
+    - Directory where to export the results
+
+      Defaults to `./results`.
+
 - `--lodes-year` _lodes-year_
+
     - Year to use to retrieve US job data.
 
       Defaults to auto-detect.
 
 - `--with-parts` _parts_
+
   - Parts of the analysis to compute.
 
     Valid values are: `features`, `stress`, `connectivity`, and `measure`. This
@@ -73,6 +81,7 @@ BatchFile = Annotated[
 
 def main(
     batch_file: BatchFile = pathlib.Path("cities.csv"),
+    export_dir: common.ExportDirOpt = common.DEFAULT_EXPORT_DIR,
     lodes_year: common.LODESYear = None,
     parts: common.ComputeParts = None,
 ) -> None:
@@ -104,6 +113,7 @@ def main(
             run_with.compose(
                 city=city,
                 country=country,
+                export_dir=export_dir,
                 fips_code=fips_code,
                 lodes_year=lodes_year,
                 region=region,
