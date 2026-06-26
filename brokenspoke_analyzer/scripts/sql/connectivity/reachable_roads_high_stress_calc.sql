@@ -36,7 +36,8 @@ FROM neighborhood_census_blocks AS cb,
         directed := true -- noqa: RF02
     ) AS sheds
 WHERE
-    cb.geoid20::BIGINT % :thread_num = :thread_no
+    ((HASHTEXT(cb.geoid20)::BIGINT % :thread_num) + :thread_num) % :thread_num
+    = :thread_no
     AND EXISTS (
         SELECT 1
         FROM neighborhood_boundary AS b
