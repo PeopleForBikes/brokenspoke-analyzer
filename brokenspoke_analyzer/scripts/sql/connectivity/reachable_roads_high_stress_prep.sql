@@ -9,3 +9,6 @@ CREATE TABLE generated.neighborhood_reachable_roads_high_stress (
     target_road INT,
     total_cost INT
 );
+
+CREATE INDEX IF NOT EXISTS tsidx_neighborhood_ways_net_link_geoms ON
+neighborhood_ways_net_link USING gist (geom);
