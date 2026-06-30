@@ -306,6 +306,10 @@ def connectivity(  # noqa: PLR0915
     }
     execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
 
+    # Build the temporary block verts for reachable roads calc
+    logger.info("CONNECTIVITY: Block verts")
+    dbcore.execute_sql_file(engine, sql_connectivity_script_dir / "block_verts.sql")
+
     # Reachable roads stress.
     for stress_level in ["high", "low"]:
         logger.info(f"CONNECTIVITY: Reachable roads {stress_level} stress")
@@ -339,6 +343,11 @@ def connectivity(  # noqa: PLR0915
             / f"reachable_roads_{stress_level}_stress_cleanup.sql"
         )
         dbcore.execute_sql_file(engine, sql_script)
+
+    # Drop the temporary block verts
+    dbcore.execute_query(
+        engine, "DROP TABLE IF EXISTS generated.neighborhood_block_verts;"
+    )
 
     # Connected census blocks.
     logger.info("CONNECTIVITY: Connected census blocks")
