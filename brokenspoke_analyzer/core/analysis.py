@@ -16,6 +16,7 @@ from osmnx import (
     geocoder,
     settings,
 )
+from pyrosm import data
 from slugify import slugify
 
 from brokenspoke_analyzer.cli import common
@@ -24,7 +25,6 @@ from brokenspoke_analyzer.core import (
     runner,
     utils,
 )
-from brokenspoke_analyzer.pyrosm import data
 
 warnings.filterwarnings("ignore")
 
@@ -317,7 +317,7 @@ def retrieve_region_file(region: str, output_dir: pathlib.Path) -> pathlib.Path:
     if region in {"malaysia", "singapore", "brunei"}:
         region = "malaysia_singapore_brunei"
     dataset = utils.normalize_unicode_name(region)
-    dataset_file = data.get_data(dataset, directory=output_dir)  # ty:ignore[unresolved-attribute]
+    dataset_file = data.get_data(dataset, directory=output_dir)
     region_file_path: pathlib.Path = pathlib.Path(dataset_file)
     region_file_path = region_file_path.resolve(strict=True)
     if not region_file_path.exists():

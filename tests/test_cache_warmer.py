@@ -25,7 +25,7 @@ class DummyResponse:
     def __init__(self) -> None:
         self.content = DummyContent()
 
-    async def __aenter__(self) -> "DummyResponse":
+    async def __aenter__(self) -> DummyResponse:
         return self
 
     async def __aexit__(self, *_: object) -> bool:
