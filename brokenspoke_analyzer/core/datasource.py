@@ -15,13 +15,13 @@ import rasterio
 import rasterio.features
 import yarl
 from loguru import logger
+from pyrosm import data
 from shapely.geometry import shape
 
 from brokenspoke_analyzer.core import (
     utils,
 )
 from brokenspoke_analyzer.core.utils import unzip
-from brokenspoke_analyzer.pyrosm import data
 
 
 class SourceAdapter(ABC):
@@ -345,7 +345,9 @@ class OSMAdapter(SourceAdapter):
 
         # Normalize and fetch the dataset metadata.
         dataset = utils.normalize_unicode_name(region)
-        return data.get_download_data(dataset)
+        # search_source() does not accept spaces in the dataset.
+        dataset = dataset.replace(" ", "_")
+        return data.search_source(dataset)
 
     def validate(self, datastore: pathlib.Path) -> None:
         """Validate downloaded data."""

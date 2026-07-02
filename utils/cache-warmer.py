@@ -26,6 +26,7 @@ from typing import Annotated
 import aiohttp
 import rich
 import typer
+from pyrosm import geofabrik
 
 from brokenspoke_analyzer.cli import root
 from brokenspoke_analyzer.core import (
@@ -33,7 +34,6 @@ from brokenspoke_analyzer.core import (
     exporter,
     file_utils,
 )
-from brokenspoke_analyzer.pyrosm.data import geofabrik
 
 # Ensure DC is considered a US state.
 # https://github.com/unitedstates/python-us/issues/67
