@@ -16,7 +16,7 @@ def test_osmnx_query_multipolygon():
     )
     try:
         city_gdf = geocoder.geocode_to_gdf(structured_query)
-    except TypeError as e:
+    except TypeError:
         city_gdf = geocoder.geocode_to_gdf(q)
     city_gdf_type = city_gdf["class"].iloc[0]
     print(city_gdf_type)
