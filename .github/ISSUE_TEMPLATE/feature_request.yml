@@ -1,0 +1,49 @@
+name: Feature request
+description: Suggest an idea or improvement for the project.
+title: "[Feature] "
+labels:
+  - kind/feature
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for proposing an improvement. Please describe the use case and the value it would add.
+
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: Provide a short summary of the requested feature.
+      placeholder: e.g. Add support for exporting results as CSV
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or need
+      description: What problem does this solve or what gap does it address?
+      placeholder: Describe the current limitation.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: Proposed solution
+      description: Describe how the feature could work.
+      placeholder: Share your idea or implementation approach.
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Are there other approaches you considered?
+      placeholder: Optional.
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Expected impact
+      description: Who would benefit and how?
+      placeholder: Optional.
