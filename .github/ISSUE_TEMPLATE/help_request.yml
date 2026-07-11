@@ -1,22 +1,12 @@
 name: Help request
 description: Ask for help with a problem or question.
-title: "[Help] "
 labels:
   - feedback/question
+type: "Question"
 body:
   - type: markdown
     attributes:
-      value: |
-        Tell us what you are trying to do and what help you need.
-
-  - type: input
-    id: summary
-    attributes:
-      label: Summary
-      description: Provide a short summary of your question or problem.
-      placeholder: e.g. How do I configure the database locally?
-    validations:
-      required: true
+      value: Provide a short summary of your question or remark.
 
   - type: textarea
     id: problem
