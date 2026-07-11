@@ -230,6 +230,17 @@ class BNADataStore:
             source.prepare(datastore)
             source.validate(datastore)
 
+    async def clear_source(
+        self,
+        source: datasource.SourceAdapter,
+        *,
+        cache_only: bool = False,
+    ) -> None:
+        """Clear file(s) from a SourceAdapter."""
+        await self.cache.delete_async(source.subpath)
+        if not cache_only:
+            await self.store.delete_async(source.subpath)
+
     async def download_state_speed_limits(
         self,
         session: aiohttp.ClientSession,
