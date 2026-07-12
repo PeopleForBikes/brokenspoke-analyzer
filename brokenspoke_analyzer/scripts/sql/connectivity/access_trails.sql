@@ -21,7 +21,7 @@ SET
                 FROM neighborhood_reachable_roads_low_stress AS ls
                 WHERE
                     ls.target_road = ANY(neighborhood_paths.road_ids)
-                    AND ls.base_road = ANY(neighborhood_census_blocks.road_ids)
+                    AND ls.source_block = neighborhood_census_blocks.geoid20
             )
     ),
     trails_high_stress = (
@@ -35,7 +35,7 @@ SET
                 FROM neighborhood_reachable_roads_high_stress AS hs
                 WHERE
                     hs.target_road = ANY(neighborhood_paths.road_ids)
-                    AND hs.base_road = ANY(neighborhood_census_blocks.road_ids)
+                    AND hs.source_block = neighborhood_census_blocks.geoid20
             )
     )
 WHERE EXISTS (

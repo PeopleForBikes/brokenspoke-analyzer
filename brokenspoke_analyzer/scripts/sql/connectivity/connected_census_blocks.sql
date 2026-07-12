@@ -28,7 +28,7 @@ WITH census_block_pairs AS (
             SELECT MIN(ls.total_cost)
             FROM neighborhood_reachable_roads_low_stress AS ls
             WHERE
-                ls.base_road = ANY(source.road_ids)
+                ls.source_block = source.geoid20
                 AND ls.target_road = ANY(target.road_ids)
         ) AS min_ls_total_cost,
         TRUE, -- noqa: AL03
@@ -36,7 +36,7 @@ WITH census_block_pairs AS (
             SELECT MIN(hs.total_cost)
             FROM neighborhood_reachable_roads_high_stress AS hs
             WHERE
-                hs.base_road = ANY(source.road_ids)
+                hs.source_block = source.geoid20
                 AND hs.target_road = ANY(target.road_ids)
         ) AS min_hs_total_cost
     FROM neighborhood_census_blocks AS source,

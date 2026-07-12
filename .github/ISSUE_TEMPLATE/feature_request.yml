@@ -1,0 +1,26 @@
+name: Feature request
+description: Suggest an idea or improvement for the project.
+labels:
+  - kind/feature
+type: Feature
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for proposing an improvement. Please describe the use case and the value it would add.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or need
+      description: What problem does this solve or what gap does it address?
+      placeholder: Describe the current limitation.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: Proposed solution
+      description: Describe how the feature could work.
+      placeholder: Share your idea or implementation approach. Optional.

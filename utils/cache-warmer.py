@@ -28,8 +28,12 @@ import rich
 import typer
 from pyrosm import geofabrik
 
-from brokenspoke_analyzer.cli import root
+from brokenspoke_analyzer.cli import (
+    common,
+    root,
+)
 from brokenspoke_analyzer.core import (
+    datasource,
     datastore,
     exporter,
     file_utils,
@@ -40,6 +44,8 @@ from brokenspoke_analyzer.core import (
 os.environ["DC_STATEHOOD"] = "1"
 import us
 
+ClearOsm = Annotated[bool, typer.Option(help="Delete OSM data before upload.")]
+
 app = typer.Typer(no_args_is_help=True)
 
 
@@ -47,6 +53,7 @@ async def _run_downloads(
     bna_store: datastore.BNADataStore,
     *,
     cache_only: bool = True,
+    clear_osm: bool = False,
 ) -> None:
     """Run the download pipeline using the provided BNADataStore."""
     console = rich.get_console()
@@ -76,7 +83,11 @@ async def _run_downloads(
 
         osm_regions = []
         osm_regions.extend(geofabrik.USA()._sources.keys())
-
+        if clear_osm:
+            console.log("Deleting existing OSM data from cache")
+            await bna_store.clear_source(
+                datasource.OSMAdapter("all"), cache_only=cache_only
+            )
         for i, region in enumerate(osm_regions):
             with console.status(
                 f"[{i + 1}/{len(osm_regions)}] Processing OSM {region}",
@@ -105,30 +116,27 @@ def _build_s3_store(bucket: str, mirror: str | None) -> datastore.BNADataStore:
 
 @app.command("local")
 def local(
-    mirror: Annotated[
-        str | None, typer.Option("--mirror", help="Optional mirror URL.")
-    ] = None,
+    mirror: common.Mirror = None,
+    *,
+    clear_osm: ClearOsm = False,
 ) -> None:
     """Warm the local user cache using the existing cache-warmer pipeline."""
     root._verbose_callback(0)
     bna_store = _build_store(mirror)
-    asyncio.run(_run_downloads(bna_store, cache_only=True))
+    asyncio.run(_run_downloads(bna_store, cache_only=True, clear_osm=clear_osm))
 
 
 @app.command("s3")
 def s3(
-    bucket: Annotated[
-        str,
-        typer.Option(..., "--bucket", help="Target S3 bucket name."),
-    ],
-    mirror: Annotated[
-        str | None, typer.Option("--mirror", help="Optional mirror URL.")
-    ] = None,
+    bucket: Annotated[str, typer.Option(help="Target S3 bucket name.")],
+    mirror: common.Mirror = None,
+    *,
+    clear_osm: ClearOsm = False,
 ) -> None:
     """Warm an S3 bucket directly from upstream artifact sources."""
     root._verbose_callback(0)
     bna_store = _build_s3_store(bucket, mirror)
-    asyncio.run(_run_downloads(bna_store, cache_only=True))
+    asyncio.run(_run_downloads(bna_store, cache_only=True, clear_osm=clear_osm))
 
 
 def main() -> None:

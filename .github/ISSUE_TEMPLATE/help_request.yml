@@ -1,0 +1,32 @@
+name: Help request
+description: Ask for help with a problem or question.
+labels:
+  - feedback/question
+type: "Question"
+body:
+  - type: markdown
+    attributes:
+      value: Provide a short summary of your question or remark.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or question
+      description: Describe the issue or ask your question clearly.
+      placeholder: Explain what you are seeing or trying to achieve.
+    validations:
+      required: true
+
+  - type: textarea
+    id: attempted_steps
+    attributes:
+      label: What you have tried
+      description: Share any steps you already attempted.
+      placeholder: Optional.
+
+  - type: textarea
+    id: expected_help
+    attributes:
+      label: What kind of help you need
+      description: Be specific about the support or guidance you need.
+      placeholder: Optional.
