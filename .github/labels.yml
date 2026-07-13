@@ -1,6 +1,9 @@
 ---
 labels:
   # Kinds.
+  # Color grouping is intentional: semantically related kinds share a hue
+  # (enhancement/optimization/feature = "improvements",
+  # infrastructure/automation = "process/tooling").
   - name: "kind/bug"
     color: "#D73A4A"
     description: "Something isn't working"
@@ -37,45 +40,57 @@ labels:
     color: "#D876E3"
     description: "Discuss a specific aspect of the project"
 
-  # T-Shirt sizes.
+  # T-shirt sizes.
+  # PR-only facet: applied to pull requests to reflect actual diff size,
+  # not to issues. Gradient color is a deliberate exception to the
+  # one-hue-per-semantic-cluster rule used elsewhere in this file.
   - name: "size/XS"
     color: "#00FF00"
     description: "Extra small (0-9 lines of changes)"
   - name: "size/S"
     color: "#CCFF66"
-    description: "Small  (10-29 lines of changes)"
+    description: "Small (10-29 lines of changes)"
   - name: "size/M"
     color: "#FFFF00"
-    description: "Medium  (30-99 lines of changes)"
+    description: "Medium (30-99 lines of changes)"
   - name: "size/L"
     color: "#FF9933"
-    description: "Large  (100-499 lines of changes)"
+    description: "Large (100-499 lines of changes)"
   - name: "size/XL"
     color: "#B60205"
-    description: "Extra large  (500-999 lines of changes)"
+    description: "Extra large (500-999 lines of changes)"
   - name: "size/XXL"
     color: "#8B0000"
-    description: "Extra Extra Large  (1000+ lines of changes)"
+    description: "Extra extra large (1000+ lines of changes)"
 
   # Experience.
+  # Estimated effort for a team member already familiar with the codebase.
   - name: "exp/beginner"
     color: "#CBE4CE"
-    description: "Good for newcomers"
+    description: "Solvable in an hour or less by someone familiar with the codebase"
   - name: "exp/intermediate"
     color: "#CBE4CE"
-    description: "Show off your skills"
+    description: "Solvable in half a day or less by someone familiar with the codebase"
   - name: "exp/expert"
     color: "#CBE4CE"
-    description: "I have nothing else to teach you"
+    description: "Takes longer than half a day, even for someone familiar with the codebase"
+
+  # GitHub default label, kept as its exact literal name (not namespaced)
+  # so it's picked up by GitHub's own "Contribute" panel and newcomer-issue
+  # finder. Apply alongside exp/beginner, not instead of it.
+  - name: "good first issue"
+    color: "#7057FF"
+    description: "Good for newcomers"
 
   # Statuses.
+  # Issues/PRs with no status label are assumed not yet triaged.
   - name: "status/claimed"
     color: "#FBCA04"
     description: "Assigned"
-  - name: "status/help wanted"
+  - name: "status/help-wanted"
     color: "#008672"
     description: "Could use an extra brain"
-  - name: "status/more info needed"
+  - name: "status/needs-info"
     color: "#008672"
     description: "Needs clarification"
   - name: "status/invalid"
@@ -87,22 +102,17 @@ labels:
   - name: "status/duplicate"
     color: "#D2DAE1"
     description: "This issue or pull request already exists"
-  - name: "status/review-carefully!"
+  - name: "status/needs-careful-review"
     color: "#B60205"
     description: "Requires extra attention during review"
-
-  # Environment.
-  - name: "environment/dev"
-    color: "#F7FBFF"
-    description: "Developer environment"
-  - name: "environment/prod"
-    color: "#F7FBFF"
-    description: "Production environment"
+  - name: "status/do-not-merge"
+    color: "#DC143C"
+    description: "Prevents PRs with this label from being merged"
 
   # Bots.
+  # Left unprefixed on purpose: Dependabot auto-creates and applies a label
+  # literally named "dependencies" by default. Renaming it would break that
+  # integration unless Dependabot's config is also updated to match.
   - name: "dependencies"
     color: "#0366d6"
     description: "Pull requests that update a dependency file"
-  - name: "do-not-merge"
-    color: "#DC143C"
-    description: "Prevents PRs with this label to be merged"
