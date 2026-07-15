@@ -1,20 +1,19 @@
 name: Bug report
 description: Report a bug or unexpected behavior.
-title: "[Bug] "
 labels:
   - kind/bug
+type: Bug
 body:
   - type: markdown
     attributes:
-      value: |
-        Thanks for taking the time to report a bug. Please include enough detail for us to reproduce or understand the issue.
+      value: Provide a short summary of your problem.
 
   - type: input
-    id: summary
+    id: version
     attributes:
-      label: Summary
-      description: Provide a short summary of the problem.
-      placeholder: e.g. Analysis fails for city X
+      label: Version
+      description: Provide the version of the software where the issue occurs.
+      placeholder: e.g. 3.1.1 ($ uv run bna --version) or 'main' if using the latest development version.
     validations:
       required: true
 
@@ -24,8 +23,6 @@ body:
       label: Current behavior
       description: What is happening right now?
       placeholder: Describe the unexpected behavior.
-    validations:
-      required: true
 
   - type: textarea
     id: expected_behavior
@@ -49,22 +46,13 @@ body:
       required: true
 
   - type: textarea
-    id: context
-    attributes:
-      label: Context
-      description: Why is this issue important? What are you trying to accomplish?
-      placeholder: Add any relevant context.
-
-  - type: textarea
     id: environment
     attributes:
       label: Environment
-      description: Include relevant version, OS, browser, or command details.
-      placeholder: e.g. Python 3.13, macOS 14, uv run bna ...
-
-  - type: input
-    id: related_issue
-    attributes:
-      label: Related issue or PR
-      description: Link an existing issue or pull request if relevant.
-      placeholder: e.g. #123 or owner/repo#123
+      description: Include relevant versions, OS, and commit details.
+      placeholder: |
+        - OS: e.g. macOS 13.4.1
+        - Python: e.g. 3.11.4 ($ python --version)
+        - Commit: e.g. 1234567 ($ git log -1 --pretty=format:"%h %s")
+    validations:
+      required: true
