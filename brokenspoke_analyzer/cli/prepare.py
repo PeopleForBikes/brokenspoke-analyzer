@@ -1,7 +1,6 @@
 """Define the prepare sub-command."""
 
 import asyncio
-import logging
 import pathlib
 
 import aiohttp
@@ -9,11 +8,6 @@ import geopandas as gpd
 import rich
 import typer
 from loguru import logger
-from tenacity import (
-    Retrying,
-    before_log,
-    stop_after_attempt,
-)
 
 from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core import (
@@ -108,41 +102,16 @@ async def prepare_(  # noqa: PLR0915
     region: str | None,
 ) -> None:
     """Prepare and kicks off the analysis."""
-    # Compute the city slug.
-    _, _, slug = analysis.osmnx_query(country, city, region)
-
-    # Prepare the data directory.
-    data_dir /= slug
-    data_dir.mkdir(parents=True, exist_ok=True)
-    logger.info(f"{data_dir=}")
-
     # Prepare the Rich output.
     console = rich.get_console()
 
-    # Create retrier instance to use for all downloads.
-    retryer = Retrying(
-        stop=stop_after_attempt(retries),
-        reraise=True,
-        before=before_log(logger, logging.DEBUG),
-    )
+    # Compute the OSM queries and city slug.
+    structured_query, text_query, slug = analysis.osmnx_query(country, city, region)
 
-    # Retrieve city boundaries.
-    console.log(
-        f"[green]Querying OSM to retrieve {city} boundaries...",
-    )
-    slug = retryer(
-        analysis.retrieve_city_boundaries,
-        data_dir,
-        country,
-        city,
-        region,
-        fips_code,
-    )
-    boundary_file = data_dir / f"{slug}.shp"
-
-    # Download the OSM region file.
-    state_abbrev, state_fips, _ = analysis.derive_state_info(region)
-    osm_region = region or country
+    # Prepare the data directory for custom downloads.
+    data_dir /= slug
+    data_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(f"{data_dir=}")
 
     # Prepare the caching strategy.
     caching_strategy = datastore.CacheType.USER_CACHE
@@ -151,12 +120,28 @@ async def prepare_(  # noqa: PLR0915
     elif cache_dir:
         caching_strategy = datastore.CacheType.CUSTOM
 
+    # Prepare the data store.
     bna_store = datastore.BNADataStore(
         data_dir,
         caching_strategy,
         mirror=mirror,
         custom_dir=cache_dir,
     )
+
+    # Download the city boundaries.
+    console.log(f"[green]Fetching city boundaries for {city}...")
+    with console.status("Downloading..."):
+        await bna_store.download_city_boundaries(
+            retries,
+            structured_query,
+            text_query,
+            slug,
+            fips_code=fips_code,
+        )
+
+    # Derive some information from the input.
+    state_abbrev, state_fips, _ = analysis.derive_state_info(region)
+    osm_region = region or country
 
     async with aiohttp.ClientSession() as session:
         console.log(
@@ -185,6 +170,7 @@ async def prepare_(  # noqa: PLR0915
             # Create synthetic population.
             console.log("[green]Preparing synthetic population...")
             cell_size = (block_size, block_size)
+            boundary_file = data_dir / f"{slug}.geojson"
             city_boundaries_gdf = gpd.read_file(boundary_file)
             synthetic_population = analysis.create_synthetic_population(
                 city_boundaries_gdf, *cell_size, population=block_population
