@@ -7,6 +7,7 @@ compute the BNA scores.
 
 import concurrent.futures
 import dataclasses
+import os
 import pathlib
 import typing
 from itertools import chain
@@ -331,7 +332,9 @@ def connectivity(  # noqa: PLR0915
             sql_connectivity_script_dir
             / f"reachable_roads_{stress_level}_stress_calc.sql"
         )
-        with concurrent.futures.ThreadPoolExecutor() as executor:
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=os.process_cpu_count()
+        ) as executor:
             future_to_thread_no = {
                 executor.submit(
                     execute_sqlfile_with_substitutions,
@@ -377,7 +380,9 @@ def connectivity(  # noqa: PLR0915
     census_block_ids = list(chain.from_iterable(result))
     census_block_ids.sort()
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
+    with concurrent.futures.ThreadPoolExecutor(
+        max_workers=os.process_cpu_count()
+    ) as executor:
         future_to_census_block_id = {
             executor.submit(
                 execute_sqlfile_with_substitutions,
