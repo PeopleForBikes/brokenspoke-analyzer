@@ -347,6 +347,16 @@ class OSMAdapter(SourceAdapter):
         dataset = utils.normalize_unicode_name(region)
         # search_source() does not accept spaces in the dataset.
         dataset = dataset.replace(" ", "_")
+
+        # Per https://github.com/pyrosm/pyrosm/pull/366
+        # pyrosm does not include California as a whole downloadable region,
+        # only northern_california and southern_california.
+        if dataset == "california":
+            return {
+                "name": "california-latest.osm.pbf",
+                "url": "https://download.geofabrik.de/north-america/us/california-latest.osm.pbf",
+            }
+
         return data.search_source(dataset)
 
     def validate(self, datastore: pathlib.Path) -> None:
