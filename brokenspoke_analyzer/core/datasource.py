@@ -218,14 +218,10 @@ class WorldPopAdapter(SourceAdapter):
     @property
     def urls(self) -> abc.Sequence[yarl.URL]:
         """Return the source data URLs."""
-        return [
-            self.source_url
-            / str(self.year)
-            / self.country
-            / "v1/1km_ua/constrained"
-            / str(f)
-            for f in self.files
-        ]
+        base_url = (
+            self.source_url / str(self.year) / self.country / "v1/1km_ua/constrained"
+        )
+        return [base_url / str(f) for f in self.files]
 
     def prepare(self, datastore: pathlib.Path) -> None:
         """Prepare the data files."""
