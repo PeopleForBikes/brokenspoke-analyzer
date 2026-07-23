@@ -10,6 +10,7 @@ only: pulls
 exemptLabels:
   - no-mergify
   - status/do-not-merge
+  - status/work-in-progress
 
 # Comment to post when marking an issue as stale. Set to `false` to disable.
 markComment: >
