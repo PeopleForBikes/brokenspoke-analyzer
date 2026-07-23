@@ -26,7 +26,8 @@ FROM neighborhood_census_blocks AS cb,
                    source_vert AS source,
                    target_vert AS target,
                    link_cost AS cost
-            FROM   neighborhood_ways_net_link
+            FROM   neighborhood_ways_net_link l
+            WHERE  ST_DWithin(l.geom, ''' || ST_AsEWKT(cb.geom) || ''', ' || :nb_max_trip_distance + 100 || ')
             UNION ALL
             SELECT -row_number() OVER () AS id, -1 AS source, vert_id AS target, 0 AS cost
             FROM   generated.neighborhood_block_verts
