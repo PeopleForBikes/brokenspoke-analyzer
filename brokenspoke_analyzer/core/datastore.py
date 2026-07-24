@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import enum
+import logging
 import pathlib
 from typing import TYPE_CHECKING
 
@@ -12,8 +13,14 @@ from obstore import exceptions as obstore_exceptions
 from obstore.store import (
     from_url,
 )
+from tenacity import (
+    Retrying,
+    before_log,
+    stop_after_attempt,
+)
 
 from brokenspoke_analyzer.core import (
+    analysis,
     datasource,
     downloader,
     file_utils,
@@ -125,14 +132,14 @@ class BNADataStore:
         destination: str | None = None,
     ) -> None:
         """Copy a file from the cache to the store."""
-        if not exists(self.cache, path):
+        if not self.is_cached(path):
             raise FileNotFoundError(f"{path} was not found in the cache")
 
         # Change the destination path if we do not want it to match the source path.
         destination_path = destination or path
 
         # Copy the file if it does not already exist in the store.
-        if exists(self.store, destination_path):
+        if self.is_stored(destination_path):
             return
         res = await self.cache.get_async(path)
         await self.store.put_async(destination_path, res)
@@ -241,6 +248,28 @@ class BNADataStore:
         if not cache_only:
             await self.store.delete_async(source.subpath)
 
+    async def put_file(
+        self,
+        path: str,
+        file: pathlib.Path,
+        *,
+        cache_only: bool = False,
+    ) -> None:
+        """Put a file into the store."""
+        logger.debug(f"Putting file {path} into the BNA store from {file}")
+
+        # Check whether the file already exists in the cache.
+        if not self.is_cached(path):
+            logger.debug(f"Putting file {file} into the cache at {path}")
+            await self.cache.put_async(path, file)
+        else:
+            logger.debug(f"{path} was cached")
+
+        # Put the file in the store if needed.
+        if not cache_only:
+            logger.debug(f"Putting file {file} into the store at {path}")
+            await self.copy_to_store(path)
+
     async def download_state_speed_limits(
         self,
         session: aiohttp.ClientSession,
@@ -325,3 +354,62 @@ class BNADataStore:
         s = datasource.OSMAdapter(region, self.mirror)
         await self.fetch_from_source(session, s, cache_only=cache_only)
         return pathlib.Path(s.urls[0].name)
+
+    async def download_city_boundaries(
+        self,
+        retries: int,
+        structured_query: dict[str, str],
+        text_query: str,
+        slug: str,
+        fips_code: str | None = None,
+    ) -> None:
+        """Retrieve the city boundaries file."""
+        # Create retrier instance to use for all direct downloads.
+        retryer = Retrying(
+            stop=stop_after_attempt(retries),
+            reraise=True,
+            before=before_log(logger, logging.DEBUG),
+        )
+
+        # Retrieve the boundary file.
+        extensions = {".geojson", ".cpg", ".dbf", ".prj", ".shp", ".shx"}
+        boundary_file_name_stem = pathlib.Path(slug)
+        if all(
+            self.is_cached(str(boundary_file_name_stem.with_suffix(ext)))
+            for ext in extensions
+        ):
+            logger.debug("Boundary files are cached. Copying them to the store...")
+            for ext in extensions:
+                await self.copy_to_store(str(boundary_file_name_stem.with_suffix(ext)))
+            return
+
+        # Retrieve the city boundaries.
+        boundary_gdf = retryer(
+            analysis.retrieve_city_boundaries,
+            structured_query=structured_query,
+            text_query=text_query,
+            fips_code=fips_code,
+        )
+
+        # Prepare the "boundaries" folder in the cache if needed.
+        prefix = self.cache.prefix / "boundaries"
+        prefix.mkdir(parents=True, exist_ok=True)
+        logger.debug(f"{prefix=}")
+
+        # Prepare the shapefile.
+        boundary_file = prefix / boundary_file_name_stem
+        boundary_shapefile = boundary_file.with_suffix(".shp")
+        logger.debug(f"Copying boundary file to {boundary_shapefile}")
+        boundary_gdf.to_file(boundary_shapefile, encoding="utf-8")
+
+        # Preparing the geojosn file.
+        boundary_geojson_file = boundary_file.with_suffix(".geojson")
+        logger.debug(f"Copying boundary geojson file to {boundary_geojson_file}")
+        boundary_gdf.to_file(boundary_geojson_file)
+
+        # Put the files into the store.
+        for ext in extensions:
+            await self.put_file(
+                str(boundary_file_name_stem.with_suffix(ext)),
+                prefix / boundary_file.with_suffix(ext),
+            )
