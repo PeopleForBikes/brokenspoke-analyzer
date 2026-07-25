@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import pathlib
+import pycountry
 
 import aiohttp
 import geopandas as gpd
@@ -175,13 +176,9 @@ async def prepare_(  # noqa: PLR0915
 
     # Perform some specific operations for non-US cities.
     if state_fips == runner.NON_US_STATE_FIPS:
-        if country == "Canada":
-            country_iso = country[:3].upper()
-            async with aiohttp.ClientSession() as session:
-                console.log("[green]Fetching WorldPop (2021) data...")
-                with console.status("Downloading..."):
-                    await bna_store.download_worldpop(session, country_iso)
-        else:
+        try:
+            country_iso = pycountry.countries.search_fuzzy('country')[0].alpha_3
+        except LookupError:
             # Create synthetic population.
             console.log("[green]Preparing synthetic population...")
             cell_size = (block_size, block_size)
@@ -189,11 +186,14 @@ async def prepare_(  # noqa: PLR0915
             synthetic_population = analysis.create_synthetic_population(
                 city_boundaries_gdf, *cell_size, population=block_population
             )
-
             # Simulate the census blocks.
             console.log("[green]Simulating census blocks...")
             analysis.simulate_census_blocks(data_dir, synthetic_population)
-
+        else:
+            async with aiohttp.ClientSession() as session:
+                console.log("[green]Fetching WorldPop (2021) data...")
+                with console.status("Downloading..."):
+                    await bna_store.download_worldpop(session, country_iso)
         # Change the speed limit.
         console.log(
             f"[green]Adjusting default city speed limit to {city_speed_limit} km/h...",

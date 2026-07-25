@@ -19,6 +19,7 @@ dependencies = [
   "obstore>=0.11.0",
   "osmnx>=2.1.0,<3",
   "platformdirs>=4.10.1",
+  "pycountry>=26.2.16",
   "pygris>=0.2.1",
   "pyrosm>=0.11.0",
   "python-dotenv>=1.2.2,<2",
