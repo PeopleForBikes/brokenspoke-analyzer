@@ -16,6 +16,7 @@ from osmnx import (
     geocoder,
     settings,
 )
+from osmnx._errors import InsufficientResponseError
 from slugify import slugify
 
 from brokenspoke_analyzer.cli import common
@@ -191,7 +192,7 @@ def retrieve_city_boundaries(
         try:
             city_gdf = geocoder.geocode_to_gdf(structured_query)
             ensure_gdf_class_boundary(city_gdf)
-        except TypeError:
+        except (TypeError, InsufficientResponseError):
             city_gdf = geocoder.geocode_to_gdf(q)
             ensure_gdf_class_boundary(city_gdf)
 
