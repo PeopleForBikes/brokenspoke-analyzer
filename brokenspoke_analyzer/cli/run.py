@@ -43,6 +43,7 @@ def run(
     s3_dir: pathlib.Path | None = None,
     with_export: exporter.Exporter = exporter.Exporter.local,
     with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
+    worldpop_year: common.WorldPopYear = common.DEFAULT_WORLDPOP_YEAR,
     *,
     no_cache: common.NoCache = False,
     with_bundle: bool = False,
@@ -71,5 +72,6 @@ def run(
             with_bundle=with_bundle,
             with_export=with_export,
             with_parts=with_parts,
+            worldpop_year=worldpop_year,
         ),
     )

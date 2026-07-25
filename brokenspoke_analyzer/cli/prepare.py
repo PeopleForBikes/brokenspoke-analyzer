@@ -3,10 +3,10 @@
 import asyncio
 import logging
 import pathlib
-import pycountry
 
 import aiohttp
 import geopandas as gpd
+import pycountry
 import rich
 import typer
 from loguru import logger
@@ -45,6 +45,7 @@ def prepare_cmd(
     lodes_year: common.LODESYear = None,
     mirror: common.Mirror = None,
     retries: common.Retries = common.DEFAULT_RETRIES,
+    worldpop_year: common.WorldPopYear = common.DEFAULT_WORLDPOP_YEAR,
     *,
     no_cache: common.NoCache = False,
 ) -> None:
@@ -88,6 +89,7 @@ def prepare_cmd(
             no_cache=bool(no_cache),
             region=region or None,
             retries=retries,
+            worldpop_year=worldpop_year,
         ),
     )
 
@@ -107,6 +109,7 @@ async def prepare_(  # noqa: PLR0915
     lodes_year: int | None,
     mirror: str | None,
     region: str | None,
+    worldpop_year: int,
 ) -> None:
     """Prepare and kicks off the analysis."""
     # Compute the city slug.
@@ -177,7 +180,7 @@ async def prepare_(  # noqa: PLR0915
     # Perform some specific operations for non-US cities.
     if state_fips == runner.NON_US_STATE_FIPS:
         try:
-            country_iso = pycountry.countries.search_fuzzy('country')[0].alpha_3
+            country_iso = pycountry.countries.search_fuzzy("country")[0].alpha_3
         except LookupError:
             # Create synthetic population.
             console.log("[green]Preparing synthetic population...")
@@ -191,9 +194,11 @@ async def prepare_(  # noqa: PLR0915
             analysis.simulate_census_blocks(data_dir, synthetic_population)
         else:
             async with aiohttp.ClientSession() as session:
-                console.log("[green]Fetching WorldPop (2021) data...")
+                console.log(f"[green]Fetching WorldPop ({worldpop_year}) data...")
                 with console.status("Downloading..."):
-                    await bna_store.download_worldpop(session, country_iso)
+                    await bna_store.download_worldpop(
+                        session, country_iso, worldpop_year
+                    )
         # Change the speed limit.
         console.log(
             f"[green]Adjusting default city speed limit to {city_speed_limit} km/h...",

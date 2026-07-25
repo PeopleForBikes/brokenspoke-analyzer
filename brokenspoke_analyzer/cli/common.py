@@ -1,6 +1,10 @@
 """Defines the values shared amongst the CLI modules."""
 
 import pathlib
+from datetime import (
+    UTC,
+    datetime,
+)
 from typing import Annotated
 
 import typer
@@ -22,6 +26,7 @@ DEFAULT_LODES_YEAR = 2022
 DEFAULT_MAX_TRIP_DISTANCE = 2680
 DEFAULT_PYGRIS_YEAR = 2024
 DEFAULT_RETRIES = 2
+DEFAULT_WORLDPOP_YEAR: int = datetime.now(tz=UTC).year
 
 # Default Typer Arguments/Options.
 BlockPopulation = Annotated[
@@ -106,3 +111,7 @@ SpeedLimit = Annotated[
 ]
 State = Annotated[str | None, typer.Argument(help="US state")]
 WithBundle = Annotated[bool, typer.Option(help="bundle all the files in a zip archive")]
+WorldPopYear = Annotated[
+    int,
+    typer.Option(help="year to use to retrieve WorldPop data"),
+]

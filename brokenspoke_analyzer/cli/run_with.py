@@ -48,6 +48,7 @@ def compose(
     s3_bucket: str | None = None,
     with_export: exporter.Exporter = exporter.Exporter.local,
     with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
+    worldpop_year: common.WorldPopYear = common.DEFAULT_WORLDPOP_YEAR,
     *,
     no_cache: common.NoCache = False,
     with_bundle: bool = False,
@@ -84,6 +85,7 @@ def compose(
                 with_bundle=with_bundle,
                 with_export=with_export,
                 with_parts=with_parts,
+                worldpop_year=worldpop_year,
             ),
         )
     finally:
@@ -124,6 +126,7 @@ async def run_(  # noqa: C901, PLR0912, PLR0915
     with_bundle: bool = False,
     with_export: exporter.Exporter = exporter.Exporter.local,
     with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
+    worldpop_year: common.WorldPopYear = common.DEFAULT_WORLDPOP_YEAR,
 ) -> pathlib.Path | None:
     """Run an analysis."""
     # Make mypy happy.
@@ -176,6 +179,7 @@ async def run_(  # noqa: C901, PLR0912, PLR0915
         no_cache=bool(no_cache),
         region=region,
         retries=retries,
+        worldpop_year=worldpop_year,
     )
 
     # Import.
