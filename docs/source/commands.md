@@ -232,6 +232,11 @@ values in the options.
 
     Defaults to 2.
 
+- `--worldpop-year` _worldpop-year_
+  - Year to use to retrieve WorldPop data for international cities.
+
+    Defaults to the current year.
+
 ## Import
 
 Import files from the `prepare` command into the database.
@@ -685,6 +690,11 @@ bna run "united states" "santa rosa" "new mexico" 3570670
 
     Defaults to all the parts (features, stress, connectivity, measure).
 
+- `--worldpop-year` _worldpop-year_
+  - Year to use to retrieve WorldPop data for international cities.
+
+    Defaults to the current year.
+
 ## Run-with
 
 Provide alternative ways to run the analysis.
@@ -796,6 +806,11 @@ environment.
     option can be repeated if multiple parts are needed.
 
     Defaults to all the parts (features, stress, connectivity, measure).
+
+- `--worldpop-year` _worldpop-year_
+  - Year to use to retrieve WorldPop data for international cities.
+
+    Defaults to the current year.
 
 ## Cache
 
