@@ -181,7 +181,7 @@ class WorldPopAdapter(SourceAdapter):
     def __init__(
         self,
         country: str,
-        year: str,
+        year: int,
         mirror: str | None = None,
     ) -> None:
         """
@@ -220,7 +220,7 @@ class WorldPopAdapter(SourceAdapter):
         """Return the source data URLs."""
         return [
             self.source_url
-            / self.year
+            / str(self.year)
             / self.country
             / "v1/1km_ua/constrained"
             / str(f)

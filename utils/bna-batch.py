@@ -84,6 +84,7 @@ def main(
     export_dir: common.ExportDirOpt = common.DEFAULT_EXPORT_DIR,
     lodes_year: common.LODESYear = None,
     parts: common.ComputeParts = None,
+    worldpop_year: common.WorldPopYear = common.DEFAULT_WORLDPOP_YEAR,
 ) -> None:
     """Process a batch of cities."""
     # Disable logging.
@@ -118,6 +119,7 @@ def main(
                 lodes_year=lodes_year,
                 region=region,
                 with_parts=parts,
+                worldpop_year=worldpop_year,
             )
 
 
