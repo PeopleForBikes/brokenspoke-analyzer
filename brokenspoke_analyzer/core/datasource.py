@@ -23,6 +23,9 @@ from brokenspoke_analyzer.core import (
 )
 from brokenspoke_analyzer.core.utils import unzip
 
+# TIGER base URL -- Topologically Integrated Geographic Encoding and Referencing.
+TIGER_URL = yarl.URL("https://www2.census.gov/geo/tiger/")
+
 
 class SourceAdapter(ABC):
     """Abstract base class for data source adapters."""
@@ -372,7 +375,7 @@ class StateSpeedLimitAdapter(SourceAdapter):
 
 class LodesAdapter(SourceAdapter):
     """
-    Adapter for LODES data.
+    Adapter for US LODES data.
 
     Download employment data from the US census website: https://lehd.ces.census.gov/.
 
@@ -411,7 +414,7 @@ class LodesAdapter(SourceAdapter):
         lodes_year: int,
         mirror: str | None = None,
     ) -> None:
-        """Initialize the CensusAdapter."""
+        """Initialize the LodesAdapter."""
         super().__init__(mirror)
         self.state_abbrev = state_abbrev
         self.lodes_year = lodes_year
@@ -441,10 +444,8 @@ class LodesAdapter(SourceAdapter):
     @property
     def urls(self) -> abc.Sequence[yarl.URL]:
         """Return the source data URLs."""
-        return [
-            yarl.URL(self.source_url / self.state_abbrev / "od" / str(f))
-            for f in self.files
-        ]
+        base_url = yarl.URL(self.source_url / self.state_abbrev / "od")
+        return [yarl.URL(base_url / str(f)) for f in self.files]
 
     def prepare(self, datastore: pathlib.Path) -> None:
         """Prepare the data files."""
@@ -464,3 +465,101 @@ class LodesAdapter(SourceAdapter):
                 raise ValueError(f"{target} does not exist")
             if target.stat().st_size < 1:
                 raise ValueError(f"{target} is empty")
+
+
+class PlaceAdapter(SourceAdapter):
+    """
+    Adapter for downloading US Census Places (TIGER).
+
+    TIGER places are defined by the U.S. Census Bureau as concentrations of
+    population that have a name, are locally recognized, and are not part of
+    any other place. They typically include residential areas with a closely
+    spaced street pattern and may also contain commercial properties and
+    urban land uses.
+
+    Census URL: f"https://www2.census.gov/geo/tiger/TIGER{year}/PLACE/tl_{year}_{state}_place.zip"
+    """
+
+    SOURCE_URL = TIGER_URL
+
+    def __init__(
+        self,
+        year: int,
+        fips: str,
+        mirror: str | None = None,
+    ) -> None:
+        """Initialize the PlaceAdapter."""
+        super().__init__(mirror)
+        self.year = year
+        self.fips = fips
+
+    @property
+    def name(self) -> str:
+        """Return the source name."""
+        return "place"
+
+    @property
+    def files(self) -> abc.Sequence[pathlib.Path]:
+        """
+        Return the source data files.
+
+        Example:
+            >>> adapter = PlaceAdapter(2024, "06")
+            >>> adapter.files[0].name
+            tl_2024_06_place.zip
+        """
+        return [pathlib.Path(f"tl_{self.year}_{self.fips}_place.zip")]
+
+    @property
+    def urls(self) -> abc.Sequence[yarl.URL]:
+        """Return the source data URLs."""
+        base_url = yarl.URL(self.source_url / f"TIGER{self.year}" / "PLACE")
+        return [yarl.URL(base_url / str(f)) for f in self.files]
+
+
+class CountySubdivisionAdapter(SourceAdapter):
+    """
+    Adapter for downloading US Census County Subdivision (TIGER).
+
+    TIGER county subdivisions are Census Bureau's statistical entities
+    that subdivide counties and county equivalents such as parishes,
+    boroughs, and census areas.
+
+    Census URL: f"https://www2.census.gov/geo/tiger/TIGER{year}/COUSUB/tl_{year}_{state}_cousub.zip"
+    """
+
+    SOURCE_URL = TIGER_URL
+
+    def __init__(
+        self,
+        year: int,
+        fips: str,
+        mirror: str | None = None,
+    ) -> None:
+        """Initialize the CountySubdivisionAdapter."""
+        super().__init__(mirror)
+        self.year = year
+        self.fips = fips
+
+    @property
+    def name(self) -> str:
+        """Return the source name."""
+        return "cousub"
+
+    @property
+    def files(self) -> abc.Sequence[pathlib.Path]:
+        """
+        Return the source data files.
+
+        Example:
+            >>> adapter = CountySubdivisionAdapter(2024, "06")
+            >>> adapter.files[0].name
+            tl_2024_06_cousub.zip
+        """
+        return [pathlib.Path(f"tl_{self.year}_{self.fips}_cousub.zip")]
+
+    @property
+    def urls(self) -> abc.Sequence[yarl.URL]:
+        """Return the source data URLs."""
+        base_url = yarl.URL(self.source_url / f"TIGER{self.year}" / "COUSUB")
+        return [yarl.URL(base_url / str(f)) for f in self.files]
