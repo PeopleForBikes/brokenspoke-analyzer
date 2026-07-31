@@ -35,7 +35,6 @@ def run(
     lodes_year: common.LODESYear = None,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
     mirror: common.Mirror = None,
-    retries: common.Retries = common.DEFAULT_RETRIES,
     s3_bucket: Annotated[
         str | None,
         typer.Option(help="S3 bucket name where to export"),
@@ -66,7 +65,6 @@ def run(
             mirror=mirror,
             no_cache=no_cache,
             region=region,
-            retries=retries,
             s3_bucket=s3_bucket,
             s3_dir=s3_dir,
             with_bundle=with_bundle,

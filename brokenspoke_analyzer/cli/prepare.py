@@ -76,13 +76,12 @@ def prepare_cmd(
             city_speed_limit=city_speed_limit,
             city=city,
             country=country,
-            fips_code=fips_code,
             data_dir=data_dir,
+            fips_code=fips_code,
             lodes_year=lodes_year,
             mirror=mirror or None,
             no_cache=bool(no_cache),
             region=region or None,
-            retries=retries,
             worldpop_year=worldpop_year,
         ),
     )
@@ -96,9 +95,8 @@ async def prepare_(  # noqa: PLR0915
     city_speed_limit: int,
     city: str,
     country: str,
-    fips_code: str | None,
     data_dir: pathlib.Path,
-    retries: int,
+    fips_code: str | None,
     no_cache: bool,
     lodes_year: int | None,
     mirror: str | None,
@@ -132,28 +130,28 @@ async def prepare_(  # noqa: PLR0915
         custom_dir=cache_dir,
     )
 
-    # Download the city boundaries.
-    console.log(f"[green]Fetching city boundaries for {city}...")
-    with console.status("Downloading..."):
-        await bna_store.download_city_boundaries(
-            retries,
-            structured_query,
-            text_query,
-            slug,
-            fips_code=fips_code,
-        )
-
     # Derive some information from the input.
     state_abbrev, state_fips, _ = analysis.derive_state_info(region)
     osm_region = region or country
 
     async with aiohttp.ClientSession() as session:
+        # Download the city boundaries.
+        console.log(f"[green]Fetching city boundaries for {city}...")
+        with console.status("Downloading..."):
+            await bna_store.download_city_boundaries(
+                session=session,
+                structured_query=structured_query,
+                text_query=text_query,
+                slug=slug,
+                fips_code=fips_code,
+            )
+
+        # Download the OSMregion file.
         console.log(
             f"[green]Fetching the OSM region file for {osm_region}...",
         )
         with console.status("Downloading..."):
             region_file_name = await bna_store.download_osm_data(session, osm_region)
-        await bna_store.download_osm_data(session, osm_region)
 
     # Reduce the osm file with osmium.
     console.log(f"[green]Reducing the OSM file for {city} with osmium...")
