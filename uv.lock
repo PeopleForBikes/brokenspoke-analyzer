@@ -396,7 +396,7 @@ requires-dist = [
     { name = "platformdirs", specifier = ">=4.10.1" },
     { name = "pycountry", specifier = ">=26.2.16" },
     { name = "pygris", specifier = ">=0.2.1" },
-    { name = "pyrosm", specifier = ">=0.11.0" },
+    { name = "pyrosm", specifier = ">=0.13.0" },
     { name = "python-dotenv", specifier = ">=1.2.2,<2" },
     { name = "python-slugify", specifier = ">=8.0.4,<9" },
     { name = "rasterio", specifier = ">=1.5.0" },
@@ -1659,7 +1659,7 @@ name = "pexpect"
 version = "4.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "ptyprocess", marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
+    { name = "ptyprocess" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/42/92/cc564bf6381ff43ce1f4d06852fc19a2f11d180f23dc32d9588bee2f149d/pexpect-4.9.0.tar.gz", hash = "sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f", size = 166450, upload-time = "2023-11-25T09:07:26.339Z" }
 wheels = [
@@ -1921,7 +1921,7 @@ wheels = [
 
 [[package]]
 name = "pyrosm"
-version = "0.11.0"
+version = "0.13.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "certifi" },
@@ -1932,12 +1932,12 @@ dependencies = [
     { name = "setuptools" },
     { name = "shapely" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/6f/d1/7e8ca4e359643d3b1732a665395f0b574558b21c4727bd4f17a55b179238/pyrosm-0.11.0.tar.gz", hash = "sha256:d81ebda14461c570cdb757b4ac9ec369f5a8959eba5eff6edd7760653aeb4600", size = 5360268, upload-time = "2026-07-01T08:49:11.992Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ff/6d/46c47720e9c69c44b966c895bdbb11e69404eaea8724a87a8992a24075c7/pyrosm-0.13.0.tar.gz", hash = "sha256:3c2fb5d8e1b85eb76a6ff7132f1638da26591ac95efd9f784139233b137cf578", size = 5382857, upload-time = "2026-07-29T16:05:41.525Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5c/01/e86cd478496d848d152495f407b87f80f7a63c52d7218a2504cac34ca97d/pyrosm-0.11.0-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:0fe4f890afe27fa1d751dad9e19e55020c286fe446d07db645f83192df00100a", size = 5158839, upload-time = "2026-07-01T08:48:58.209Z" },
-    { url = "https://files.pythonhosted.org/packages/c3/5a/ef19c18b31919575d46361801c8a97b7065e5edf0678ba103b38eb640300/pyrosm-0.11.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:8288419480393312ed037cdb258cbc283cc28a66654e8e8b5064464d1bb1dc75", size = 5071461, upload-time = "2026-07-01T08:48:59.741Z" },
-    { url = "https://files.pythonhosted.org/packages/72/6a/d3c5ff729b4876630e216c40948cec637a7cd9b2e0c137b81a3e9bab8658/pyrosm-0.11.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:444b870f129d656dfad51b892b1677e6b35d3874c71bd746a9018def601e7cff", size = 11855524, upload-time = "2026-07-01T08:49:01.401Z" },
-    { url = "https://files.pythonhosted.org/packages/4e/23/daa956785316c269f4736b1b9fae561ab362e4a4c138fb8e155f69b89a5d/pyrosm-0.11.0-cp313-cp313-win_amd64.whl", hash = "sha256:56b2a0bd494fd49e10592aed9a509f14ba1df0d395d67c62c455c9894d696585", size = 5031936, upload-time = "2026-07-01T08:49:03.259Z" },
+    { url = "https://files.pythonhosted.org/packages/fb/2b/07086d95bf7b8086439fb5cedeca40cd045e8bb8bca01662fd59844ab995/pyrosm-0.13.0-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:e11f53b78eb8729dc240f243c85133d37a9eb44ba449d579d848d2bb0463dae6", size = 5175467, upload-time = "2026-07-29T16:05:26.863Z" },
+    { url = "https://files.pythonhosted.org/packages/d0/2d/1ad3ea1a5728cad3bff7ca46e339527069dd7095edd07fea88ce6b7ec8dd/pyrosm-0.13.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:ae29c80f4ffc5b0da2f302931c0503236f73dbdf8dd44f306b490af777f03304", size = 5087558, upload-time = "2026-07-29T16:05:28.427Z" },
+    { url = "https://files.pythonhosted.org/packages/26/dd/2cb7b37d10bd75043cff5cd3bb863c94d02c55758fae5f3224d2c465718b/pyrosm-0.13.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:753c9133668e67faeccc3fca492f262785c87009e03d1275c35f64a1c4ff91fc", size = 11876905, upload-time = "2026-07-29T16:05:30.26Z" },
+    { url = "https://files.pythonhosted.org/packages/bb/25/4cfcbafe7d7518b268f0a441fdfd875e449b194c3c63fcd3bf79d06c1db3/pyrosm-0.13.0-cp313-cp313-win_amd64.whl", hash = "sha256:0f6e37fcb84cb39aa2a3a949b86b6ddddb0a723d324b1c542cb3e195d1016d8a", size = 5048881, upload-time = "2026-07-29T16:05:32.712Z" },
 ]
 
 [[package]]

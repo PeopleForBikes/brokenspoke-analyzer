@@ -43,14 +43,14 @@ class SourceAdapter(ABC):
         """
         self.mirror = mirror
 
-    @property
+    @staticmethod
     @abstractmethod
-    def name(self) -> str:
-        """Return the source name.
+    def key() -> str:
+        """Return the source key.
 
         Example:
             >>> adapter = CitySpeedLimitAdapter()
-            >>> adapter.name
+            >>> adapter.key()
             'city_speed_limits'
         """
 
@@ -64,6 +64,15 @@ class SourceAdapter(ABC):
             >>> len(adapter.files)
             1
         """
+
+    @property
+    def keyed_files(self) -> abc.Sequence[pathlib.Path]:
+        """
+        Return the source data files with the source key prefixed.
+
+        This is useful to access cache files
+        """
+        return [pathlib.Path(self.key()) / f.name for f in self.files]
 
     @property
     def source_url(self) -> yarl.URL:
@@ -80,7 +89,7 @@ class SourceAdapter(ABC):
     @property
     def subpath(self) -> pathlib.Path:
         """Return the sub-directory for the source data."""
-        return pathlib.Path(self.name)
+        return pathlib.Path(self.key())
 
     def prepare(self, datastore: pathlib.Path) -> None:  # noqa: ARG002
         """Prepare the data files.
@@ -130,9 +139,9 @@ class CensusAdapter(SourceAdapter):
         super().__init__(mirror)
         self.fips = fips
 
-    @property
-    def name(self) -> str:
-        """Return the source name."""
+    @staticmethod
+    def key() -> str:
+        """Return the source key."""
         return "census"
 
     @property
@@ -197,9 +206,9 @@ class WorldPopAdapter(SourceAdapter):
         self.country = country
         self.year = year
 
-    @property
-    def name(self) -> str:
-        """Return the source name."""
+    @staticmethod
+    def key() -> str:
+        """Return the source key."""
         return "worldpop"
 
     @property
@@ -285,9 +294,9 @@ class CitySpeedLimitAdapter(SourceAdapter):
 
     SOURCE_URL = yarl.URL("https://s3.amazonaws.com/pfb-public-documents")
 
-    @property
-    def name(self) -> str:
-        """Return the source name."""
+    @staticmethod
+    def key() -> str:
+        """Return the source key."""
         return "city_speed_limits"
 
     @property
@@ -315,9 +324,9 @@ class OSMAdapter(SourceAdapter):
         super().__init__(mirror)
         self.region = region
 
-    @property
-    def name(self) -> str:
-        """Return the source name."""
+    @staticmethod
+    def key() -> str:
+        """Return the source key."""
         return "osm"
 
     @property
@@ -362,9 +371,9 @@ class StateSpeedLimitAdapter(SourceAdapter):
 
     SOURCE_URL = yarl.URL("https://s3.amazonaws.com/pfb-public-documents")
 
-    @property
-    def name(self) -> str:
-        """Return the source name."""
+    @staticmethod
+    def key() -> str:
+        """Return the source key."""
         return "state_speed_limits"
 
     @property
@@ -419,9 +428,9 @@ class LodesAdapter(SourceAdapter):
         self.state_abbrev = state_abbrev
         self.lodes_year = lodes_year
 
-    @property
-    def name(self) -> str:
-        """Return the source name."""
+    @staticmethod
+    def key() -> str:
+        """Return the source key."""
         return "lodes"
 
     @property
@@ -485,17 +494,17 @@ class PlaceAdapter(SourceAdapter):
     def __init__(
         self,
         year: int,
-        fips: str,
+        state_fips: str,
         mirror: str | None = None,
     ) -> None:
         """Initialize the PlaceAdapter."""
         super().__init__(mirror)
         self.year = year
-        self.fips = fips
+        self.state_fips = state_fips
 
-    @property
-    def name(self) -> str:
-        """Return the source name."""
+    @staticmethod
+    def key() -> str:
+        """Return the source key."""
         return "place"
 
     @property
@@ -508,7 +517,7 @@ class PlaceAdapter(SourceAdapter):
             >>> adapter.files[0].name
             tl_2024_06_place.zip
         """
-        return [pathlib.Path(f"tl_{self.year}_{self.fips}_place.zip")]
+        return [pathlib.Path(f"tl_{self.year}_{self.state_fips}_place.zip")]
 
     @property
     def urls(self) -> abc.Sequence[yarl.URL]:
@@ -533,17 +542,17 @@ class CountySubdivisionAdapter(SourceAdapter):
     def __init__(
         self,
         year: int,
-        fips: str,
+        state_fips: str,
         mirror: str | None = None,
     ) -> None:
         """Initialize the CountySubdivisionAdapter."""
         super().__init__(mirror)
         self.year = year
-        self.fips = fips
+        self.state_fips = state_fips
 
-    @property
-    def name(self) -> str:
-        """Return the source name."""
+    @staticmethod
+    def key() -> str:
+        """Return the source key."""
         return "cousub"
 
     @property
@@ -556,7 +565,7 @@ class CountySubdivisionAdapter(SourceAdapter):
             >>> adapter.files[0].name
             tl_2024_06_cousub.zip
         """
-        return [pathlib.Path(f"tl_{self.year}_{self.fips}_cousub.zip")]
+        return [pathlib.Path(f"tl_{self.year}_{self.state_fips}_cousub.zip")]
 
     @property
     def urls(self) -> abc.Sequence[yarl.URL]:

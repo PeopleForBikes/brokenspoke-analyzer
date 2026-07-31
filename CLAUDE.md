@@ -29,16 +29,17 @@ scripts to compute connectivity and stress metrics, then exports the results.
   code.
 
 Individual linters/formatters can be run directly with `uv run <tool>`, e.g.
-`uv run ruff check brokenspoke_analyzer utils`, `uv run ty check
-brokenspoke_analyzer`, `uv run sqlfluff lint brokenspoke_analyzer/scripts/sql/`.
+`uv run ruff check brokenspoke_analyzer utils`,
+`uv run ty check brokenspoke_analyzer`,
+`uv run sqlfluff lint brokenspoke_analyzer/scripts/sql/`.
 
 ## Running the CLI
 
-The package installs a `bna` console script (`brokenspoke_analyzer.cli.root:app`,
-a Typer app). During development, invoke it as `uv run bna <command>`.
-Requires `DATABASE_URL` to be set. Top-level subcommands (each its own Typer
-app under `brokenspoke_analyzer/cli/`): `cache`, `compute`, `configure`,
-`export`, `import`, `prepare`, `run`, `run-with`.
+The package installs a `bna` console script
+(`brokenspoke_analyzer.cli.root:app`, a Typer app). During development, invoke
+it as `uv run bna <command>`. Requires `DATABASE_URL` to be set. Top-level
+subcommands (each its own Typer app under `brokenspoke_analyzer/cli/`): `cache`,
+`compute`, `configure`, `export`, `import`, `prepare`, `run`, `run-with`.
 
 `bna run-with compose <country> <city> <region> <fips_code>` is the common
 end-to-end entry point: it starts/stops the Docker Compose PostGIS database,
@@ -46,13 +47,13 @@ runs the full analysis pipeline, and exports results.
 
 ## Architecture
 
-The pipeline is: **prepare → configure → import → compute → export**, and
-`run` / `run-with` orchestrate all of these steps together.
+The pipeline is: **prepare → configure → import → compute → export**, and `run`
+/ `run-with` orchestrate all of these steps together.
 
 - `brokenspoke_analyzer/cli/` — one Typer sub-app per pipeline stage
   (`prepare.py`, `configure.py`, `importer.py`, `compute.py`, `export.py`,
-  `run.py`, `run_with.py`, `cache.py`), wired together in `root.py`. CLI
-  modules are thin wrappers that parse options and delegate to `core/`.
+  `run.py`, `run_with.py`, `cache.py`), wired together in `root.py`. CLI modules
+  are thin wrappers that parse options and delegate to `core/`.
 - `brokenspoke_analyzer/core/` — the actual logic:
   - `downloader.py` / `datasource.py` — fetch OSM extracts, US Census boundary
     and jobs data
@@ -64,20 +65,20 @@ The pipeline is: **prepare → configure → import → compute → export**, an
     connectivity/stress scores
   - `exporter.py` — export result tables (locally or to S3 via `boto3`)
   - `database/` — SQLAlchemy models/session helpers for the PostGIS schema
-  - `datastore.py`, `file_utils.py`, `utils.py`, `constant.py` — shared
-    helpers and constants (city/region naming, paths, etc.)
+  - `datastore.py`, `file_utils.py`, `utils.py`, `constant.py` — shared helpers
+    and constants (city/region naming, paths, etc.)
 - `brokenspoke_analyzer/scripts/sql/` — the GIS SQL itself, split into
-  `connectivity/`, `features/`, `stress/`. These are templated with
-  `sqlfluff`'s placeholder templater (`:param` style) — placeholder values used
-  for linting are defined under `[tool.sqlfluff.templater.placeholder]` in
-  `pyproject.toml`; do not treat those as runtime defaults.
-- `data/<city-slug>` and `results/<country>/<region>/<city>/<version>/` are
-  the on-disk working/output directories used by a full run.
+  `connectivity/`, `features/`, `stress/`. These are templated with `sqlfluff`'s
+  placeholder templater (`:param` style) — placeholder values used for linting
+  are defined under `[tool.sqlfluff.templater.placeholder]` in `pyproject.toml`;
+  do not treat those as runtime defaults.
+- `data/<city-slug>` and `results/<country>/<region>/<city>/<version>/` are the
+  on-disk working/output directories used by a full run.
 - `tests/` mirrors the `brokenspoke_analyzer` package layout for unit tests;
   `integration/` holds end-to-end city fixtures (`e2e-cities*.csv`/`.json`,
   split by size) and their generation script (`x.py`).
-- `utils/` — standalone maintenance scripts, linted/formatted alongside the
-  main package but not part of the installed package.
+- `utils/` — standalone maintenance scripts, linted/formatted alongside the main
+  package but not part of the installed package.
 
 ## Conventions
 
