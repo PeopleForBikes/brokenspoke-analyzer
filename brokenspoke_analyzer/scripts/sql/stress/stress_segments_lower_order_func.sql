@@ -1,4 +1,4 @@
-CREATE FUNCTION low_order_segment_stress(
+CREATE OR REPLACE FUNCTION low_order_segment_stress(
     bike_infra text,
     speed_limit integer,
     lanes integer
