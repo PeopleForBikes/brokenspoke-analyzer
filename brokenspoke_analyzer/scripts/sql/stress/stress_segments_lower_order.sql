@@ -6,22 +6,17 @@
 --      :class -> functional class to operate on
 --      :default_speed -> assumed speed limit
 --      :default_lanes -> assumed number of lanes
---      :default_parking -> assumed parking 1/0
---      :default_roadway_width -> assumed width of roadway
 ----------------------------------------
-UPDATE received.neighborhood_ways SET ft_seg_stress = NULL, tf_seg_stress = NULL
-WHERE functional_class = ':class';
-
 UPDATE received.neighborhood_ways
 SET
-    ft_seg_stress
-    = CASE
-        WHEN COALESCE(speed_limit, :default_speed) <= 25 THEN 1
-        ELSE 3
-    END,
-    tf_seg_stress
-    = CASE
-        WHEN COALESCE(speed_limit, :default_speed) <= 25 THEN 1
-        ELSE 3
-    END
+    ft_seg_stress = low_order_segment_stress(
+        ft_bike_infra,
+        coalesce(speed_limit, :default_speed),
+        coalesce(ft_lanes, :default_lanes)
+    ),
+    tf_seg_stress = low_order_segment_stress(
+        tf_bike_infra,
+        coalesce(speed_limit, :default_speed),
+        coalesce(tf_lanes, :default_lanes)
+    )
 WHERE functional_class = ':class';
