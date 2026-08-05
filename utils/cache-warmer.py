@@ -6,9 +6,12 @@ This is a small utility to warm-up you cache with US data.
 The cache will be populated with the following items:
     - US 2020 Census blocks
     - US 2022 LODES data (employment)
+    - US 2025 Census Places
+    - US 2025 Census County Subdivisions
     - US Water blocks
     - US State speed limits
     - US City speed limits
+    - OSM data for countries we process
 
 From the root of this repository run:
 ```bash
@@ -24,9 +27,10 @@ import pathlib
 from typing import Annotated
 
 import aiohttp
+import pycountry
 import rich
 import typer
-from pyrosm import geofabrik
+from pyrosm.data import geofabrik
 
 from brokenspoke_analyzer.cli import (
     common,
@@ -64,6 +68,7 @@ async def _run_downloads(
         console.log("Downloading city speed limits")
         await bna_store.download_city_speed_limits(session, cache_only=cache_only)
 
+        # Download US Census data.
         for i, (fips, abbr) in enumerate(us.states.mapping("fips", "abbr").items()):
             if fips in {"60", "66", "69", "72", "78"}:
                 continue
@@ -80,9 +85,39 @@ async def _run_downloads(
                     abbr,
                     cache_only=cache_only,
                 )
+                console.log(f"Downloading US Census Place for {abbr} ({fips})")
+                place = datasource.PlaceAdapter(2025, fips)
+                await bna_store.fetch_from_source(session, place, cache_only=cache_only)
+                console.log(
+                    f"Downloading US Census County Subdivisions for {abbr} ({fips})"
+                )
+                cousub = datasource.CountySubdivisionAdapter(2025, fips)
+                await bna_store.fetch_from_source(
+                    session, cousub, cache_only=cache_only
+                )
 
+        # Download Worldpop data.
+        for i, country in enumerate(pycountry.countries):
+            with console.status(
+                f"[{i + 1}/{len(pycountry.countries)}] "
+                f"Downloading Worldpop data for {country.name}"
+            ):
+                console.log(f"Downloading Worldpop data for {country.name}")
+                try:
+                    await bna_store.download_worldpop(
+                        session, country.alpha_3, 2026, cache_only=cache_only
+                    )
+                except aiohttp.ClientResponseError as e:
+                    console.log(
+                        f"Skipping Worldpop data for {country.name}: {e.message}"
+                    )
+
+        # Download OSM data.
         osm_regions = []
         osm_regions.extend(geofabrik.USA()._sources.keys())
+        osm_regions.extend(geofabrik.Europe()._sources.keys())
+        osm_regions.extend(geofabrik.Asia()._sources.keys())
+        osm_regions.extend(geofabrik.AustraliaOceania()._sources.keys())
         if clear_osm:
             console.log("Deleting existing OSM data from cache")
             await bna_store.clear_source(
@@ -93,11 +128,33 @@ async def _run_downloads(
                 f"[{i + 1}/{len(osm_regions)}] Processing OSM {region}",
             ):
                 console.log(f"Downloading OSM data for {region}")
-                await bna_store.download_osm_data(
-                    session,
-                    region,
-                    cache_only=cache_only,
-                )
+
+                # Skip regions with known issues.
+                if region in {
+                    "east-timor",
+                    "france",
+                    "georgia",
+                    "germany",
+                    "ile-de-clipperton",
+                    "pitcairn-islands",
+                    "polynesie-francaise",
+                    "russia",
+                    "wallis-et-futuna",
+                }:
+                    console.log(f"Skipping {region} due to ambiguity/issues")
+                    continue
+
+                # Fetch the region file.
+                try:
+                    await bna_store.download_osm_data(
+                        session,
+                        region,
+                        cache_only=cache_only,
+                    )
+                except asyncio.TimeoutError as e:  # noqa: UP041
+                    console.log(f"Timeout downloading OSM data for {region}: {e}")
+                except (ValueError, aiohttp.ClientResponseError) as e:
+                    console.log(f"Error downloading OSM data for {region}: {e}")
 
 
 def _build_store(mirror: str | None) -> datastore.BNADataStore:

@@ -9,7 +9,6 @@ import zipfile
 
 import geopandas as gpd
 import numpy as np
-import pygris
 import shapely
 from geopandas.geodataframe import GeoDataFrame
 from loguru import logger
@@ -146,55 +145,6 @@ def ensure_gdf_class_boundary(gdf: gpd.GeoDataFrame) -> None:
     gdf_class = gdf["class"].iloc[0]
     if gdf_class != constant.GDF_CLASS_BOUNDARY:
         raise TypeError(f"invalid result class: {gdf_class}")
-
-
-def retrieve_city_boundaries(
-    structured_query: dict[str, str],
-    text_query: str,
-    fips_code: str | None = None,
-) -> GeoDataFrame:
-    """
-    Retrieve the city boundaries and save them as Shapefile and GeoJSON.
-
-    :return: the slugified query used to retrieve the city boundaries.
-    """
-    if fips_code is not None and fips_code != common.DEFAULT_CITY_FIPS_CODE:
-        places = pygris.places(
-            state=fips_code[:2],
-            cache=False,
-            year=common.DEFAULT_PYGRIS_YEAR,
-        )
-        city_gdf = places[places["PLACEFP"] == fips_code[2:]]
-        if city_gdf.empty:
-            logger.debug(
-                f"Cannot find Place with FIPS code: {fips_code}, "
-                f"trying the County Subdivisions table",
-            )
-            county_subdivisions = pygris.county_subdivisions(
-                state=fips_code[:2],
-                cache=False,
-                year=common.DEFAULT_PYGRIS_YEAR,
-            )
-            city_gdf = county_subdivisions[
-                county_subdivisions["COUSUBFP"] == fips_code[2:]
-            ]
-    else:
-        settings.use_cache = False
-        logger.debug(f"Query used to retrieve the boundaries: {structured_query}")
-        try:
-            city_gdf = geocoder.geocode_to_gdf(structured_query)
-            ensure_gdf_class_boundary(city_gdf)
-        except (TypeError, InsufficientResponseError):
-            city_gdf = geocoder.geocode_to_gdf(text_query)
-            ensure_gdf_class_boundary(city_gdf)
-
-        # Remove the display_name series to ensure there are no international
-        # characters in the dataframe. The import will fail if the analyzer finds
-        # non US characters.
-        # https://github.com/PeopleForBikes/brokenspoke-analyzer/issues/24
-        city_gdf.drop("display_name", axis=1, inplace=True)
-
-    return city_gdf
 
 
 # pylint: disable=too-many-locals

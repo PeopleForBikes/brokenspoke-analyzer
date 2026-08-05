@@ -112,3 +112,7 @@ test-e2e-prepare:
     xan to json {{ e2e_cities_csv }} --strings fips_code -o {{ e2e_cities_json }}
     uv run integration/x.py {{ e2e_cities_csv }} {{ e2e_test_dir }}/README.j2
     npx --yes prettier --write --prose-wrap always {{ e2e_test_dir }}/README.md
+
+# Use nono sandbox for Claude
+nono-claude profile="always-further/claude":
+    nono run --allow-cwd --profile {{ profile }} -- claude
