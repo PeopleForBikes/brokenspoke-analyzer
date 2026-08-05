@@ -99,7 +99,7 @@ class BNADataStore:
             raise ValueError(f"path must start with '/': {path}")
 
         # Define the common data store options.
-        client_options = {"connect_timeout": "1h"}
+        client_options = {"timeout": "1h"}
 
         # Create the data store.
         self.store = from_url(

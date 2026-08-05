@@ -394,7 +394,8 @@ def create_s3_store(
     if prefix:
         url /= str(prefix)
     logger.debug(f"Creating S3 store with URL: {url}")
-    return from_url(str(url))
+    client_options = {"timeout": "1h"}
+    return from_url(str(url), client_options=client_options)  # ty:ignore[no-matching-overload]
 
 
 def create_r2_store(
@@ -416,11 +417,13 @@ def create_r2_store(
     if prefix:
         url /= str(prefix)
     logger.debug(f"Creating R2 store with URL: {url}")
+    client_options = {"timeout": "1h"}
     return from_url(
         str(url),
         access_key_id=access_key_id,
         secret_access_key=secret_access_key,
-    )
+        client_options=client_options,
+    )  # ty:ignore[no-matching-overload]
 
 
 async def upload_file(store: ObjectStore, path: pathlib.Path) -> None:
