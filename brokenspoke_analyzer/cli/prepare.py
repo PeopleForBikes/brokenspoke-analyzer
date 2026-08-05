@@ -1,19 +1,14 @@
 """Define the prepare sub-command."""
 
 import asyncio
-import logging
 import pathlib
 
 import aiohttp
 import geopandas as gpd
+import pycountry
 import rich
 import typer
 from loguru import logger
-from tenacity import (
-    Retrying,
-    before_log,
-    stop_after_attempt,
-)
 
 from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core import (
@@ -44,6 +39,7 @@ def prepare_cmd(
     lodes_year: common.LODESYear = None,
     mirror: common.Mirror = None,
     retries: common.Retries = common.DEFAULT_RETRIES,
+    worldpop_year: common.WorldPopYear = common.DEFAULT_WORLDPOP_YEAR,
     *,
     no_cache: common.NoCache = False,
 ) -> None:
@@ -80,13 +76,13 @@ def prepare_cmd(
             city_speed_limit=city_speed_limit,
             city=city,
             country=country,
-            fips_code=fips_code,
             data_dir=data_dir,
+            fips_code=fips_code,
             lodes_year=lodes_year,
             mirror=mirror or None,
             no_cache=bool(no_cache),
             region=region or None,
-            retries=retries,
+            worldpop_year=worldpop_year,
         ),
     )
 
@@ -99,50 +95,25 @@ async def prepare_(  # noqa: PLR0915
     city_speed_limit: int,
     city: str,
     country: str,
-    fips_code: str | None,
     data_dir: pathlib.Path,
-    retries: int,
+    fips_code: str | None,
     no_cache: bool,
     lodes_year: int | None,
     mirror: str | None,
     region: str | None,
+    worldpop_year: int,
 ) -> None:
     """Prepare and kicks off the analysis."""
-    # Compute the city slug.
-    _, _, slug = analysis.osmnx_query(country, city, region)
-
-    # Prepare the data directory.
-    data_dir /= slug
-    data_dir.mkdir(parents=True, exist_ok=True)
-    logger.info(f"{data_dir=}")
-
     # Prepare the Rich output.
     console = rich.get_console()
 
-    # Create retrier instance to use for all downloads.
-    retryer = Retrying(
-        stop=stop_after_attempt(retries),
-        reraise=True,
-        before=before_log(logger, logging.DEBUG),
-    )
+    # Compute the OSM queries and city slug.
+    structured_query, text_query, slug = analysis.osmnx_query(country, city, region)
 
-    # Retrieve city boundaries.
-    console.log(
-        f"[green]Querying OSM to retrieve {city} boundaries...",
-    )
-    slug = retryer(
-        analysis.retrieve_city_boundaries,
-        data_dir,
-        country,
-        city,
-        region,
-        fips_code,
-    )
-    boundary_file = data_dir / f"{slug}.shp"
-
-    # Download the OSM region file.
-    state_abbrev, state_fips, _ = analysis.derive_state_info(region)
-    osm_region = region or country
+    # Prepare the data directory for custom downloads.
+    data_dir /= slug
+    data_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(f"{data_dir=}")
 
     # Prepare the caching strategy.
     caching_strategy = datastore.CacheType.USER_CACHE
@@ -151,6 +122,7 @@ async def prepare_(  # noqa: PLR0915
     elif cache_dir:
         caching_strategy = datastore.CacheType.CUSTOM
 
+    # Prepare the data store.
     bna_store = datastore.BNADataStore(
         data_dir,
         caching_strategy,
@@ -158,13 +130,28 @@ async def prepare_(  # noqa: PLR0915
         custom_dir=cache_dir,
     )
 
+    # Derive some information from the input.
+    state_abbrev, state_fips, _ = analysis.derive_state_info(region)
+    osm_region = region or country
+
     async with aiohttp.ClientSession() as session:
+        # Download the city boundaries.
+        console.log(f"[green]Fetching city boundaries for {city}...")
+        with console.status("Downloading..."):
+            await bna_store.download_city_boundaries(
+                session=session,
+                structured_query=structured_query,
+                text_query=text_query,
+                slug=slug,
+                fips_code=fips_code,
+            )
+
+        # Download the OSMregion file.
         console.log(
             f"[green]Fetching the OSM region file for {osm_region}...",
         )
         with console.status("Downloading..."):
             region_file_name = await bna_store.download_osm_data(session, osm_region)
-        await bna_store.download_osm_data(session, osm_region)
 
     # Reduce the osm file with osmium.
     console.log(f"[green]Reducing the OSM file for {city} with osmium...")
@@ -175,25 +162,27 @@ async def prepare_(  # noqa: PLR0915
 
     # Perform some specific operations for non-US cities.
     if state_fips == runner.NON_US_STATE_FIPS:
-        if country == "Canada":
-            country_iso = country[:3].upper()
-            async with aiohttp.ClientSession() as session:
-                console.log("[green]Fetching WorldPop (2021) data...")
-                with console.status("Downloading..."):
-                    await bna_store.download_worldpop(session, country_iso)
-        else:
+        try:
+            country_iso = pycountry.countries.search_fuzzy("country")[0].alpha_3
+        except LookupError:
             # Create synthetic population.
             console.log("[green]Preparing synthetic population...")
             cell_size = (block_size, block_size)
+            boundary_file = data_dir / f"{slug}.geojson"
             city_boundaries_gdf = gpd.read_file(boundary_file)
             synthetic_population = analysis.create_synthetic_population(
                 city_boundaries_gdf, *cell_size, population=block_population
             )
-
             # Simulate the census blocks.
             console.log("[green]Simulating census blocks...")
             analysis.simulate_census_blocks(data_dir, synthetic_population)
-
+        else:
+            async with aiohttp.ClientSession() as session:
+                console.log(f"[green]Fetching WorldPop ({worldpop_year}) data...")
+                with console.status("Downloading..."):
+                    await bna_store.download_worldpop(
+                        session, country_iso, worldpop_year
+                    )
         # Change the speed limit.
         console.log(
             f"[green]Adjusting default city speed limit to {city_speed_limit} km/h...",

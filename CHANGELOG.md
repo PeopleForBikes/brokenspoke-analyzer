@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [3.2.0] - 2026-08-02
+
+## Changed
+
+- Expand the exporter to support more object stores. [#1059]
+- Add SourceAdapters to BNAStore. [#1069]
+- Add WorldPop support for all/supported countries. [#1167]
+
+[#1059]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1059
+[#1069]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1069
+[#1167]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1167
+[3.2.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/3.2.0
+
 ## [3.1.1] - 2026-04-03
 
 ### Fixed

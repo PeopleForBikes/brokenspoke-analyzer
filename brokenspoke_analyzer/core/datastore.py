@@ -7,16 +7,28 @@ import pathlib
 from typing import TYPE_CHECKING
 
 import aiohttp
+import geopandas
 from loguru import logger
 from obstore import exceptions as obstore_exceptions
 from obstore.store import (
     from_url,
 )
+from osmnx import (
+    geocoder,
+    settings,
+)
+from osmnx._errors import InsufficientResponseError
 
+from brokenspoke_analyzer.cli import common
 from brokenspoke_analyzer.core import (
+    analysis,
     datasource,
     downloader,
     file_utils,
+)
+from brokenspoke_analyzer.core.datasource import (
+    CountySubdivisionAdapter,
+    PlaceAdapter,
 )
 
 if TYPE_CHECKING:
@@ -125,14 +137,14 @@ class BNADataStore:
         destination: str | None = None,
     ) -> None:
         """Copy a file from the cache to the store."""
-        if not exists(self.cache, path):
+        if not self.is_cached(path):
             raise FileNotFoundError(f"{path} was not found in the cache")
 
         # Change the destination path if we do not want it to match the source path.
         destination_path = destination or path
 
         # Copy the file if it does not already exist in the store.
-        if exists(self.store, destination_path):
+        if self.is_stored(destination_path):
             return
         res = await self.cache.get_async(path)
         await self.store.put_async(destination_path, res)
@@ -241,6 +253,31 @@ class BNADataStore:
         if not cache_only:
             await self.store.delete_async(source.subpath)
 
+    async def put(
+        self,
+        path: str,
+        file: pathlib.Path,
+        *,
+        cache_only: bool = False,
+    ) -> None:
+        """Put a file into the data store."""
+        logger.debug(f"Putting file {path} into the store from {file}")
+
+        # Check whether the file already exists in the cache.
+        if not self.is_cached(path):
+            logger.debug(f"Putting file {file} into the cache at {path}")
+            await self.cache.put_async(path, file)
+        else:
+            logger.debug(f"{path} was cached")
+
+        # Put the file in the store if needed.
+        if not cache_only:
+            logger.debug(f"Putting file {file} into the store at {path}")
+            await self.copy_to_store(path)
+
+    # --------------------------------------------------------------------------
+    # Download helpers
+    # --------------------------------------------------------------------------
     async def download_state_speed_limits(
         self,
         session: aiohttp.ClientSession,
@@ -290,26 +327,26 @@ class BNADataStore:
     async def download_2020_census_blocks(
         self,
         session: aiohttp.ClientSession,
-        fips: str,
+        state_fips: str,
         *,
         cache_only: bool = False,
     ) -> None:
         """Download a 2020 census tabulation block code for a specific state."""
-        s = datasource.CensusAdapter(fips, self.mirror)
+        s = datasource.CensusAdapter(state_fips, self.mirror)
         await self.fetch_from_source(session, s, cache_only=cache_only)
 
     async def download_worldpop(
         self,
         session: aiohttp.ClientSession,
         country: str,
-        year: str = "2026",
+        year: int,
         *,
         cache_only: bool = False,
     ) -> None:
         """
         Download a WorldPop 1km resolution geoTIFF for a specific country.
 
-        Default year to 2026 to match current year
+        Default year to current year
         """
         s = datasource.WorldPopAdapter(country, year, self.mirror)
         await self.fetch_from_source(session, s, cache_only=cache_only)
@@ -325,3 +362,106 @@ class BNADataStore:
         s = datasource.OSMAdapter(region, self.mirror)
         await self.fetch_from_source(session, s, cache_only=cache_only)
         return pathlib.Path(s.urls[0].name)
+
+    async def download_city_boundaries(
+        self,
+        session: aiohttp.ClientSession,
+        structured_query: dict[str, str],
+        text_query: str,
+        slug: str,
+        year: int = 2025,
+        fips_code: str | None = None,
+        *,
+        cache_only: bool = False,
+    ) -> None:
+        """Retrieve the city boundaries file."""
+        cache_key = "boundary"
+        cache_path = pathlib.Path(cache_key)
+        extensions = {".geojson", ".cpg", ".dbf", ".prj", ".shp", ".shx"}
+        boundary_file_name_stem = pathlib.Path(slug)
+        cached_boundary_files = [
+            cache_path / boundary_file_name_stem.with_suffix(ext) for ext in extensions
+        ]
+
+        # Prepare the "boundaries" folder in the cache if needed.
+        prefix = self.cache.prefix / cache_path
+        prefix.mkdir(parents=True, exist_ok=True)
+        logger.debug(f"{prefix=}")
+
+        # Check if the boundary file was already cached.
+        if all(self.is_cached(str(f)) for f in cached_boundary_files):
+            if cache_only:
+                return
+
+            # Copy the boundary files to the store if needed.
+            logger.debug("Boundary files are cached. Copying them to the store...")
+            for f in cached_boundary_files:
+                await self.copy_to_store(str(f), f.name)
+            return
+
+        # Check if the city is outside of the US.
+        if fips_code is None or fips_code == common.DEFAULT_CITY_FIPS_CODE:
+            # Use OSMNX to fetch the boundaries
+            settings.use_cache = False
+            logger.debug(f"Query used to retrieve the boundaries: {structured_query}")
+            try:
+                boundary_gdf = geocoder.geocode_to_gdf(structured_query)
+                analysis.ensure_gdf_class_boundary(boundary_gdf)
+            except (TypeError, InsufficientResponseError):
+                boundary_gdf = geocoder.geocode_to_gdf(text_query)
+                analysis.ensure_gdf_class_boundary(boundary_gdf)
+
+            # Remove the display_name series to ensure there are no international
+            # characters in the dataframe. The import will fail if the analyzer finds
+            # non US characters.
+            # https://github.com/PeopleForBikes/brokenspoke-analyzer/issues/24
+            boundary_gdf.drop("display_name", axis=1, inplace=True)
+
+        else:
+            state_fips = fips_code[:2]
+            city_fips = fips_code[2:]
+
+            # Fetch the Place dataset.
+            source = PlaceAdapter(year=year, state_fips=state_fips, mirror=self.mirror)
+            await self.fetch_from_source(session, source, cache_only=cache_only)
+            dataset = self.cache.prefix / source.keyed_files[0]
+            places = geopandas.read_file(dataset)
+            boundary_gdf = places[places["PLACEFP"] == city_fips]
+
+            # Fetch the County Subdivision dataset if nothing was found in the
+            # place dataset.
+            if boundary_gdf.empty:
+                logger.debug(
+                    f"Cannot find Place with FIPS code: {state_fips}, "
+                    f"trying the County Subdivisions table...",
+                )
+                source = CountySubdivisionAdapter(
+                    year=year, state_fips=state_fips, mirror=self.mirror
+                )
+                await self.fetch_from_source(session, source, cache_only=cache_only)
+                dataset = self.cache.prefix / source.keyed_files[0]
+                county_subdivisions = geopandas.read_file(dataset)
+                boundary_gdf = county_subdivisions[
+                    county_subdivisions["COUSUBFP"] == city_fips
+                ]
+                if boundary_gdf.empty:
+                    raise ValueError(
+                        "cannot extract the city boundaries from the Place and County "
+                        f"Subdivision datasets with state FIPS code: {state_fips}"
+                    )
+
+        # Export the city boundary dataframe to shapefile into the data store.
+        boundary_file = prefix / boundary_file_name_stem
+        boundary_shapefile = boundary_file.with_suffix(".shp")
+        logger.debug(f"Copying boundary shapefile to {boundary_shapefile}")
+        boundary_gdf.to_file(boundary_shapefile, encoding="utf-8")
+
+        # Export the city boundary dataframe to geojson into the data store.
+        boundary_geojson_file = boundary_file.with_suffix(".geojson")
+        logger.debug(f"Copying boundary geojson file to {boundary_geojson_file}")
+        boundary_gdf.to_file(boundary_geojson_file)
+
+        # Put the files into the store.
+        for ext in extensions:
+            f = boundary_file_name_stem.with_suffix(ext)
+            await self.put(str(f), prefix / f, cache_only=cache_only)
