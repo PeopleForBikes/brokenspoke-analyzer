@@ -24,7 +24,6 @@ DEFAULT_DOCKER_IMAGE = "azavea/pfb-network-connectivity:0.19.0"
 DEFAULT_EXPORT_DIR = pathlib.Path("./results").resolve()
 DEFAULT_LODES_YEAR = 2022
 DEFAULT_MAX_TRIP_DISTANCE = 2680
-DEFAULT_PYGRIS_YEAR = 2024
 DEFAULT_RETRIES = 2
 DEFAULT_WORLDPOP_YEAR: int = datetime.now(tz=UTC).year
 
