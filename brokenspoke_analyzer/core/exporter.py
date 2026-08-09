@@ -31,7 +31,6 @@ import typing
 from typing import TYPE_CHECKING
 
 import boto3
-import trio
 import yarl
 from loguru import logger
 from obstore.store import from_url
@@ -438,10 +437,10 @@ async def export_to_store(
     """Export PostgreSQL/PostGIS tables to a store."""
     # Create a temporary directory to export the files.
     with tempfile.TemporaryDirectory() as tmpdir_name:
-        tmpdir = trio.Path(tmpdir_name)
+        tmpdir = pathlib.Path(tmpdir_name)
         local_files(
             database_url=database_url,
-            export_dir=pathlib.Path(tmpdir),
+            export_dir=tmpdir,
             with_bundle=with_bundle,
         )
 
@@ -449,9 +448,11 @@ async def export_to_store(
         local_store = from_url(f"file://{tmpdir}")
 
         # Upload each file sequentially.
-        for file in await tmpdir.iterdir():  # ty:ignore[missing-argument]
+        # Runs under asyncio (not trio), and `tmpdir` is a local, short-lived
+        # directory, so plain sync pathlib calls are used instead of trio.Path.
+        for file in tmpdir.iterdir():  # noqa: ASYNC240
             # Skip directories and non-files.
-            if not await file.is_file():
+            if not file.is_file():
                 continue
 
             # Stream the file from the local store to the destination store.
@@ -475,7 +476,10 @@ async def export_to_s3_with_calver(
 
     # Create the calver directory in the store.
     folder = mkdir_calver_directory_s3(bucket, country, city, region)
-    logger.debug(f"Exporting results to s3://{bucket_name}/{folder}...")
+    logger.debug(
+        f"Exporting results for {country}/{city}/{region} "
+        f"to s3://{bucket_name}/{folder}..."
+    )
 
     # Export the files to the store.
     return await export_to_s3(

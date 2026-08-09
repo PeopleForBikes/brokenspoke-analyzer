@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS generated.neighborhood_retail; --noqa
 
 CREATE TABLE generated.neighborhood_retail (
     id SERIAL PRIMARY KEY,
-    blockid20 CHARACTER VARYING(15) [],
+    blockid20 CHARACTER VARYING(15)[],
     pop_low_stress INT,
     pop_high_stress INT,
     pop_score FLOAT,

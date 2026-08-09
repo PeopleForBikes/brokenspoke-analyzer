@@ -56,3 +56,4 @@ venv/
 
 # Exceptions
 !integration/e2e-cities*.csv
+.claude/settings.local.json

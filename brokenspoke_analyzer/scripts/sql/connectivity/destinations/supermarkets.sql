@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS generated.neighborhood_supermarkets;
 
 CREATE TABLE generated.neighborhood_supermarkets (
     id SERIAL PRIMARY KEY,
-    blockid20 CHARACTER VARYING(15) [],
+    blockid20 CHARACTER VARYING(15)[],
     osm_id BIGINT,
     supermarket_name TEXT,
     pop_low_stress INT,

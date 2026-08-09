@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS generated.neighborhood_dentists;
 
 CREATE TABLE generated.neighborhood_dentists (
     id SERIAL PRIMARY KEY,
-    blockid20 CHARACTER VARYING(15) [],
+    blockid20 CHARACTER VARYING(15)[],
     osm_id BIGINT,
     dentists_name TEXT,
     pop_low_stress INT,

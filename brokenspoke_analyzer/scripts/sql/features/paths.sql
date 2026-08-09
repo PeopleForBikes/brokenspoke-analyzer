@@ -10,7 +10,7 @@ DROP INDEX IF EXISTS idx_neighborhood_ways_path_id;
 CREATE TABLE generated.neighborhood_paths (
     path_id SERIAL PRIMARY KEY,
     geom GEOMETRY (MULTILINESTRING, :nb_output_srid),
-    road_ids INTEGER [],
+    road_ids INTEGER[],
     path_length INTEGER,
     bbox_length INTEGER
 );

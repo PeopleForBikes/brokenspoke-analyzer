@@ -61,7 +61,7 @@ ALTER TABLE neighborhood_census_blocks DROP COLUMN IF EXISTS transit_high_stress
 ALTER TABLE neighborhood_census_blocks DROP COLUMN IF EXISTS transit_score;
 ALTER TABLE neighborhood_census_blocks DROP COLUMN IF EXISTS overall_score;
 
-ALTER TABLE neighborhood_census_blocks ADD COLUMN road_ids INTEGER [];
+ALTER TABLE neighborhood_census_blocks ADD COLUMN road_ids INTEGER[];
 ALTER TABLE neighborhood_census_blocks ADD COLUMN pop_low_stress INT;
 ALTER TABLE neighborhood_census_blocks ADD COLUMN pop_high_stress INT;
 ALTER TABLE neighborhood_census_blocks ADD COLUMN pop_score FLOAT;

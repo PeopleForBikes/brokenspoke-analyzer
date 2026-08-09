@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS generated.neighborhood_transit;
 
 CREATE TABLE generated.neighborhood_transit (
     id SERIAL PRIMARY KEY,
-    blockid20 CHARACTER VARYING(15) [],
+    blockid20 CHARACTER VARYING(15)[],
     osm_id BIGINT,
     transit_name TEXT,
     pop_low_stress INT,
