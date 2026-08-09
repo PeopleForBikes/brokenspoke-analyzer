@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS generated.neighborhood_community_centers;
 
 CREATE TABLE generated.neighborhood_community_centers (
     id SERIAL PRIMARY KEY,
-    blockid20 CHARACTER VARYING(15) [],
+    blockid20 CHARACTER VARYING(15)[],
     osm_id BIGINT,
     center_name TEXT,
     pop_low_stress INT,

@@ -39,8 +39,8 @@ WITH census_block_pairs AS (
                 hs.source_block = source.geoid20
                 AND hs.target_road = ANY(target.road_ids)
         ) AS min_hs_total_cost
-    FROM neighborhood_census_blocks AS source,
-        neighborhood_census_blocks AS target,
+    FROM neighborhood_census_blocks AS source, -- noqa: RF04
+        neighborhood_census_blocks AS target,  -- noqa: RF04
         neighborhood_boundary
     WHERE
         ST_Intersects(source.geom, neighborhood_boundary.geom)
@@ -55,8 +55,8 @@ UPDATE generated.neighborhood_connected_census_blocks
 SET low_stress = TRUE
 WHERE EXISTS (
     SELECT 1
-    FROM neighborhood_census_blocks AS source,
-        neighborhood_census_blocks AS target
+    FROM neighborhood_census_blocks AS source, -- noqa: RF04
+        neighborhood_census_blocks AS target -- noqa: RF04
     WHERE
         neighborhood_connected_census_blocks.source_blockid20 = source.geoid20
         AND neighborhood_connected_census_blocks.target_blockid20
