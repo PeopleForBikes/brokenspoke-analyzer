@@ -7,9 +7,24 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
-## [3.2.0] - 2026-08-02
+## [3.2.1] - 2026-08-09
+
+## Fixed
+
+- Fixes export issues cause by using the `trio` async framework. [#1190]
 
 ## Changed
+
+- Updates the logic of the `cache-warmer` script. [#1191]
+
+[#1190]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1190
+[#1191]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1191
+[3.2.1]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/3.2.1
+
+## [3.2.0] - 2026-08-02
+
+### Changed
 
 - Expand the exporter to support more object stores. [#1059]
 - Add SourceAdapters to BNAStore. [#1069]
