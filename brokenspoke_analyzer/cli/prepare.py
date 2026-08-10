@@ -163,7 +163,7 @@ async def prepare_(  # noqa: PLR0915
     # Perform some specific operations for non-US cities.
     if state_fips == runner.NON_US_STATE_FIPS:
         try:
-            country_iso = pycountry.countries.search_fuzzy("country")[0].alpha_3
+            country_iso = pycountry.countries.search_fuzzy(country)[0].alpha_3
         except LookupError:
             # Create synthetic population.
             console.log("[green]Preparing synthetic population...")
