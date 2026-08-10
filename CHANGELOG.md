@@ -7,15 +7,25 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [3.2.2] - 2026-08-10
+
+### Fixed
+
+- Fixed country name conversion to ISO 3166 representation. [#1195]
+
+[#1195]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1195
+[3.2.2]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/3.2.2
+
 ## [3.2.1] - 2026-08-09
 
-## Fixed
+### Fixed
 
-- Fixes export issues cause by using the `trio` async framework. [#1190]
+- Fixed export issues cause by using the `trio` async framework. [#1190]
 
-## Changed
+### Changed
 
-- Updates the logic of the `cache-warmer` script. [#1191]
+- Updated the logic of the `cache-warmer` script. [#1191]
 
 [#1190]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1190
 [#1191]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1191
