@@ -192,7 +192,7 @@ class WorldPopAdapter(SourceAdapter):
 
     def __init__(
         self,
-        country: str,
+        country_iso_3166: str,
         year: int,
         mirror: str | None = None,
     ) -> None:
@@ -203,7 +203,7 @@ class WorldPopAdapter(SourceAdapter):
         https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes
         """
         super().__init__(mirror)
-        self.country = country
+        self.country_iso_3166 = country_iso_3166
         self.year = year
 
     @staticmethod
@@ -223,7 +223,7 @@ class WorldPopAdapter(SourceAdapter):
         """
         return [
             pathlib.Path(
-                f"{self.country.lower()}_pop_{self.year}_CN_1km_R2025A_UA_v1.tif"
+                f"{self.country_iso_3166.lower()}_pop_{self.year}_CN_1km_R2025A_UA_v1.tif"
             )
         ]
 
@@ -231,7 +231,10 @@ class WorldPopAdapter(SourceAdapter):
     def urls(self) -> abc.Sequence[yarl.URL]:
         """Return the source data URLs."""
         base_url = (
-            self.source_url / str(self.year) / self.country / "v1/1km_ua/constrained"
+            self.source_url
+            / str(self.year)
+            / self.country_iso_3166
+            / "v1/1km_ua/constrained"
         )
         return [base_url / str(f) for f in self.files]
 

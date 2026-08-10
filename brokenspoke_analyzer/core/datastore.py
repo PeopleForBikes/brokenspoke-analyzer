@@ -338,7 +338,7 @@ class BNADataStore:
     async def download_worldpop(
         self,
         session: aiohttp.ClientSession,
-        country: str,
+        country_iso_3166: str,
         year: int,
         *,
         cache_only: bool = False,
@@ -348,7 +348,7 @@ class BNADataStore:
 
         Default year to current year
         """
-        s = datasource.WorldPopAdapter(country, year, self.mirror)
+        s = datasource.WorldPopAdapter(country_iso_3166, year, self.mirror)
         await self.fetch_from_source(session, s, cache_only=cache_only)
 
     async def download_osm_data(
@@ -394,7 +394,10 @@ class BNADataStore:
                 return
 
             # Copy the boundary files to the store if needed.
-            logger.debug("Boundary files are cached. Copying them to the store...")
+            logger.debug(
+                f"Boundary files `{prefix / boundary_file_name_stem}.*` are cached. "
+                "Copying them to the store..."
+            )
             for f in cached_boundary_files:
                 await self.copy_to_store(str(f), f.name)
             return
