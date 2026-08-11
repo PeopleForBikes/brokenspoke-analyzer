@@ -99,7 +99,7 @@ def prepare_census_blocks(tabblk_file: pathlib.Path, output_dir: pathlib.Path) -
         file.rename(output_dir / f"population{file.suffix}")
 
 
-def normalize_unicode_name(value: str) -> str:
+def normalize_unicode_name(value: str, separator: str = " ") -> str:
     """
     Normalize unicode names.
 
@@ -110,7 +110,7 @@ def normalize_unicode_name(value: str) -> str:
         >>> normalize_unicode_name("Cañon City")
         canon city
     """
-    return slugify(value, save_order=True, separator=" ")
+    return slugify(value, save_order=True, separator=separator)
 
 
 def prepare_environment(
