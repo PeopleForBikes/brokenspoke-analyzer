@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [3.2.3] - 2026-08-15
+
+### Fixed
+
+- Handled unsupported or ambiguous places in `pyrosm`. [#1198]
+
+[#1198]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1198
+[3.2.3]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/3.2.3
+
 ## [3.2.2] - 2026-08-10
 
 ### Fixed
