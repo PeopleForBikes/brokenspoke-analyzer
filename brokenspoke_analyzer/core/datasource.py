@@ -412,8 +412,7 @@ class OSMAdapter(SourceAdapter):
             "hamburg": u / "europe/germany/hamburg-latest.osm.pbf",
             "heard_mcdonald": u
             / "australia-oceania/australia/heard-mcdonald-latest.osm.pbf",
-            "ireland": u
-            / "europe/ireland-and-northern-ireland-latest.osm.pbf",
+            "ireland": u / "europe/ireland-and-northern-ireland-latest.osm.pbf",
             "islas_baleares": u / "europe/spain/islas-baleares-latest.osm.pbf",
             "la_rioja": u / "europe/spain/la-rioja-latest.osm.pbf",
             "madrid": u / "europe/spain/madrid-latest.osm.pbf",
