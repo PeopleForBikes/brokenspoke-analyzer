@@ -384,7 +384,8 @@ class OSMAdapter(SourceAdapter):
         u = yarl.URL("https://download.geofabrik.de")
         custom_url_mapping: dict[str, yarl.URL] = {
             "act": u / "australia-oceania/australia/act-latest.osm.pbf",
-            "andalucia": u / "europe/spain/andalucía-latest.osm.pbf",
+            "australian capital territory": u / "australia-oceania/australia/act-latest.osm.pbf",
+            "andalucia": u / "europe/spain/andalucia-latest.osm.pbf",
             "aragon": u / "europe/spain/aragón-latest.osm.pbf",
             "ashmore_cartier": u
             / "australia-oceania/australia/ashmore-cartier-latest.osm.pbf",
@@ -395,7 +396,7 @@ class OSMAdapter(SourceAdapter):
             "cantabria": u / "europe/spain/cantabria-latest.osm.pbf",
             "castilla_y_leon": u / "europe/spain/castilla-y-leon-latest.osm.pbf",
             "castilla_la_mancha": u / "europe/spain/castilla-la-mancha-latest.osm.pbf",
-            "cataluna": u / "europe/spain/cataluña-latest.osm.pbf",
+            "cataluna": u / "europe/spain/cataluna-latest.osm.pbf",
             "ceuta": u / "europe/spain/ceuta-latest.osm.pbf",
             "christmas_island": u
             / "australia-oceania/australia/christmas-island-latest.osm.pbf",
@@ -410,8 +411,9 @@ class OSMAdapter(SourceAdapter):
             "hamburg": u / "europe/germany/hamburg-latest.osm.pbf",
             "heard_mcdonald": u
             / "australia-oceania/australia/heard-mcdonald-latest.osm.pbf",
+            "ireland": u / "europe/ireland-and-northern-ireland-latest.osm.pbf",
             "islas_baleares": u / "europe/spain/islas-baleares-latest.osm.pbf",
-            "la_rioja": u / "europe/spain/la rioja-latest.osm.pbf",
+            "la_rioja": u / "europe/spain/la-rioja-latest.osm.pbf",
             "madrid": u / "europe/spain/madrid-latest.osm.pbf",
             "melilla": u / "europe/spain/melilla-latest.osm.pbf",
             "murcia": u / "europe/spain/murcia-latest.osm.pbf",
@@ -422,6 +424,7 @@ class OSMAdapter(SourceAdapter):
             / "australia-oceania/australia/norfolk-island-latest.osm.pbf",
             "northern_territory": u
             / "australia-oceania/australia/northern-territory-latest.osm.pbf",
+            "northern_ireland": u / "europe/ireland-and-northern-ireland-latest.osm.pbf",
             "pais_vasco": u / "europe/spain/pais-vasco-latest.osm.pbf",
             "queensland": u / "australia-oceania/australia/queensland-latest.osm.pbf",
             "south_australia": u
