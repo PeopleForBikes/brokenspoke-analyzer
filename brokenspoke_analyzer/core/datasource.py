@@ -384,7 +384,8 @@ class OSMAdapter(SourceAdapter):
         u = yarl.URL("https://download.geofabrik.de")
         custom_url_mapping: dict[str, yarl.URL] = {
             "act": u / "australia-oceania/australia/act-latest.osm.pbf",
-            "australian capital territory": u / "australia-oceania/australia/act-latest.osm.pbf",
+            "australian capital territory": u
+            / "australia-oceania/australia/act-latest.osm.pbf",
             "andalucia": u / "europe/spain/andalucia-latest.osm.pbf",
             "aragon": u / "europe/spain/aragón-latest.osm.pbf",
             "ashmore_cartier": u
@@ -411,7 +412,8 @@ class OSMAdapter(SourceAdapter):
             "hamburg": u / "europe/germany/hamburg-latest.osm.pbf",
             "heard_mcdonald": u
             / "australia-oceania/australia/heard-mcdonald-latest.osm.pbf",
-            "ireland": u / "europe/ireland-and-northern-ireland-latest.osm.pbf",
+            "ireland": u
+            / "europe/ireland-and-northern-ireland-latest.osm.pbf",
             "islas_baleares": u / "europe/spain/islas-baleares-latest.osm.pbf",
             "la_rioja": u / "europe/spain/la-rioja-latest.osm.pbf",
             "madrid": u / "europe/spain/madrid-latest.osm.pbf",
@@ -424,7 +426,8 @@ class OSMAdapter(SourceAdapter):
             / "australia-oceania/australia/norfolk-island-latest.osm.pbf",
             "northern_territory": u
             / "australia-oceania/australia/northern-territory-latest.osm.pbf",
-            "northern_ireland": u / "europe/ireland-and-northern-ireland-latest.osm.pbf",
+            "northern_ireland": u
+            / "europe/ireland-and-northern-ireland-latest.osm.pbf",
             "pais_vasco": u / "europe/spain/pais-vasco-latest.osm.pbf",
             "queensland": u / "australia-oceania/australia/queensland-latest.osm.pbf",
             "south_australia": u
