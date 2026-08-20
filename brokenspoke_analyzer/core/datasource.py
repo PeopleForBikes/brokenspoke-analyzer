@@ -384,7 +384,7 @@ class OSMAdapter(SourceAdapter):
         u = yarl.URL("https://download.geofabrik.de")
         custom_url_mapping: dict[str, yarl.URL] = {
             "act": u / "australia-oceania/australia/act-latest.osm.pbf",
-            "australian capital territory": u
+            "australian_capital_territory": u
             / "australia-oceania/australia/act-latest.osm.pbf",
             "andalucia": u / "europe/spain/andalucia-latest.osm.pbf",
             "aragon": u / "europe/spain/aragón-latest.osm.pbf",
