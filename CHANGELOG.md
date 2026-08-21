@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [3.2.4] - 2026-09-21
+
+- Updated custom OSM region mapping for Geofabrik. [#1201]
+
+### Changed
+
+[#1201]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1198
+[3.2.4]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/3.2.4
+
 ## [3.2.3] - 2026-08-15
 
 ### Fixed
