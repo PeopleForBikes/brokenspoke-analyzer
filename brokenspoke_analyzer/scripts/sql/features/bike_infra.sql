@@ -636,4 +636,38 @@ FROM neighborhood_osm_full_line AS osm
 WHERE
     neighborhood_ways.osm_id = osm.osm_id
     AND tf_bike_infra IS NOT NULL;
+
+--------------------------------------------------------------------------------
+-- Protected bike lane (PBL) identification
+-- Find geometries explicitly tagged as highway=cycleway, and if they are within
+-- 10 meters of a road, treat them as PBLs (tracks). This identifies off-street
+-- paths that should actually be classified as PBLs instead.
+--------------------------------------------------------------------------------
+UPDATE neighborhood_ways
+SET
+    ft_bike_infra = 'track',
+    tf_bike_infra = CASE
+        -- Assume two-way unless specifically tagged as one-way
+        WHEN
+            COALESCE(osm.oneway, 'no') = 'no'
+            OR COALESCE(osm."oneway:bicycle", 'no') = 'no'
+            THEN 'track'
+        ELSE tf_bike_infra
+    END
+FROM neighborhood_osm_full_line AS osm
+WHERE
+    neighborhood_ways.osm_id = osm.osm_id
+    AND osm.highway = 'cycleway'
+    AND EXISTS (
+        SELECT 1
+        FROM neighborhood_osm_full_line AS car_roads
+        WHERE car_roads.highway NOT IN (
+            'cycleway', 'footway', 'pedestrian',
+            'path', 'steps', 'track', 'service'
+        )
+        AND car_roads.highway IS NOT NULL
+        -- Spatial join checking for geometries within 10 meters
+        AND ST_DWithin(neighborhood_ways.geom, car_roads.way, 10)
+    );
+
 -- noqa: enable=all
