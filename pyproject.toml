@@ -1,6 +1,6 @@
 [project]
 name = "brokenspoke-analyzer"
-version = "3.2.4"
+dynamic = ["version"]
 description = "Run a BNA analysis locally."
 authors = [
   { name = "Rémy Greinhofer", email = "remy.greinhofer@gmail.com" },
@@ -9,35 +9,26 @@ authors = [
 ]
 requires-python = "~=3.13.0"
 license = "MIT"
-dependencies = [
-  "aiohttp>=3.14.3,<4",
-  "beautifulsoup4>=4.15.0",
-  "boto3>=1.43.77,<2",
-  "geopandas>=1.1.4,<2",
-  "loguru>=0.7.3,<0.8",
-  "numpy>=2.5.2",
-  "obstore>=0.11.0",
-  "osmnx>=2.1.1,<3",
-  "platformdirs>=4.11.3",
-  "pycountry>=26.2.16",
-  "pyrosm>=0.13.1",
-  "python-dotenv>=1.2.3,<2",
-  "python-slugify>=8.0.4,<9",
-  "rasterio>=1.5.1",
-  "rich>=15.0.0,<16",
-  "shapely>=2.1.2",
-  "sqlalchemy[asyncio, postgresql_psycopg]>=2.0.52,<3",
-  "tenacity>=9.1.4,<10",
-  "typer>=0.27.1,<0.28",
-  "us>=3.2.0,<4",
-  "yarl>=1.24.5",
+
+[tool.uv.workspace]
+members = [
+  "packages/brokenspoke-analyzer-lib",
+  "packages/brokenspoke-analyzer-cli",
 ]
 
-[project.scripts]
-bna = "brokenspoke_analyzer.cli.root:app"
+[tool.uv]
+# The root is a virtual project: it declares the workspace and the shared
+# tooling configuration, but is never built, installed nor published.
+package = false
+
+[tool.uv.sources]
+brokenspoke-analyzer-lib = { workspace = true }
+brokenspoke-analyzer-cli = { workspace = true }
 
 [dependency-groups]
 dev = [
+  "brokenspoke-analyzer-cli",
+  "brokenspoke-analyzer-lib",
   "bpython>=0.26,<0.27",
   "furo>=2025.12.19,<2026",
   "isort>=8.0.1,<9",
@@ -70,27 +61,33 @@ dev = [
   "xdoctest>=1.3.2,<2",
 ]
 
+[tool.hatch.version]
+path = "VERSION"
+pattern = "(?P<version>.+)"
+
 [tool.isort]
 profile = "black"
 force_grid_wrap = 2
+known_first_party = ["brokenspoke_analyzer_cli", "brokenspoke_analyzer_lib"]
 
 [tool.coverage.run]
 omit = [
   "*/__init__.py",
-  "brokenspoke_analyzer/cli_.py",
-  "brokenspoke_analyzer/cli/*",
-  "brokenspoke_analyzer/core/constant.py",
-  "brokenspoke_analyzer/core/database/*",
-  "brokenspoke_analyzer/core/downloader.py",
-  "brokenspoke_analyzer/core/ingestor.py",
-  "brokenspoke_analyzer/core/compute.py",
-  "brokenspoke_analyzer/main.py",
-  "brokenspoke_analyzer/pyrosm/*",
+  "*/brokenspoke_analyzer_cli/*",
+  "*/brokenspoke_analyzer_lib/constant.py",
+  "*/brokenspoke_analyzer_lib/core/compute.py",
+  "*/brokenspoke_analyzer_lib/core/downloader.py",
+  "*/brokenspoke_analyzer_lib/core/ingestor.py",
+  "*/brokenspoke_analyzer_lib/database/*",
 ]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-p no:warnings --cov-report term-missing --cov-report html --xdoctest"
+testpaths = [
+  "packages/brokenspoke-analyzer-lib/tests",
+  "packages/brokenspoke-analyzer-cli/tests",
+]
 markers = [
   "australia",
   "canada",
@@ -108,7 +105,12 @@ markers = [
 ]
 
 [tool.ruff]
-extend-exclude = ["brokenspoke_analyzer/pyrosm"]
+# The workspace members live under packages/*/src, so ruff needs to be told
+# where first-party code is to keep its import sorting in sync with isort.
+src = [
+  "packages/brokenspoke-analyzer-cli/src",
+  "packages/brokenspoke-analyzer-lib/src",
+]
 
 [tool.ruff.lint]
 select = ["ALL"]
@@ -128,6 +130,23 @@ ignore = [
   "SLF001",  # private-member-access
   "TD003",   # missing-todo-link
   "TRY003",  # raise-vanilla-args
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["brokenspoke_analyzer_cli", "brokenspoke_analyzer_lib"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = [
+  "ANN201",  # missing-return-type-undocumented-public-function
+  "D101",    # undocumented-public-class
+  "D102",    # undocumented-public-method
+  "D103",    # undocumented-public-function
+  "D105",    # undocumented-magic-method
+  "D107",    # undocumented-public-init
+  "PLR2004", # magic-value-comparison
+  "PYI034",  # non-self-return-type
+  "S101",    # assert
+  "T201",    # print
 ]
 
 [tool.ruff.lint.pydocstyle]
@@ -181,7 +200,6 @@ ignore_comment_lines = true
 
 [tool.ty.src]
 exclude = [
-  "brokenspoke_analyzer/pyrosm/**",
   "boto3",
   "geopandas",
   "osmnx",

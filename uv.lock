@@ -7,6 +7,13 @@ resolution-markers = [
     "sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 
+[manifest]
+members = [
+    "brokenspoke-analyzer",
+    "brokenspoke-analyzer-cli",
+    "brokenspoke-analyzer-lib",
+]
+
 [[package]]
 name = "accessible-pygments"
 version = "0.0.5"
@@ -321,35 +328,13 @@ wheels = [
 
 [[package]]
 name = "brokenspoke-analyzer"
-version = "3.2.4"
-source = { editable = "." }
-dependencies = [
-    { name = "aiohttp" },
-    { name = "beautifulsoup4" },
-    { name = "boto3" },
-    { name = "geopandas" },
-    { name = "loguru" },
-    { name = "numpy" },
-    { name = "obstore" },
-    { name = "osmnx" },
-    { name = "platformdirs" },
-    { name = "pycountry" },
-    { name = "pyrosm" },
-    { name = "python-dotenv" },
-    { name = "python-slugify" },
-    { name = "rasterio" },
-    { name = "rich" },
-    { name = "shapely" },
-    { name = "sqlalchemy", extra = ["asyncio", "postgresql-psycopg"] },
-    { name = "tenacity" },
-    { name = "typer" },
-    { name = "us" },
-    { name = "yarl" },
-]
+source = { virtual = "." }
 
 [package.dev-dependencies]
 dev = [
     { name = "bpython" },
+    { name = "brokenspoke-analyzer-cli" },
+    { name = "brokenspoke-analyzer-lib" },
     { name = "furo" },
     { name = "isort" },
     { name = "jupyterlab" },
@@ -382,33 +367,12 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "aiohttp", specifier = ">=3.14.3,<4" },
-    { name = "beautifulsoup4", specifier = ">=4.15.0" },
-    { name = "boto3", specifier = ">=1.43.77,<2" },
-    { name = "geopandas", specifier = ">=1.1.4,<2" },
-    { name = "loguru", specifier = ">=0.7.3,<0.8" },
-    { name = "numpy", specifier = ">=2.5.2" },
-    { name = "obstore", specifier = ">=0.11.0" },
-    { name = "osmnx", specifier = ">=2.1.1,<3" },
-    { name = "platformdirs", specifier = ">=4.11.3" },
-    { name = "pycountry", specifier = ">=26.2.16" },
-    { name = "pyrosm", specifier = ">=0.13.1" },
-    { name = "python-dotenv", specifier = ">=1.2.3,<2" },
-    { name = "python-slugify", specifier = ">=8.0.4,<9" },
-    { name = "rasterio", specifier = ">=1.5.1" },
-    { name = "rich", specifier = ">=15.0.0,<16" },
-    { name = "shapely", specifier = ">=2.1.2" },
-    { name = "sqlalchemy", extras = ["asyncio", "postgresql-psycopg"], specifier = ">=2.0.52,<3" },
-    { name = "tenacity", specifier = ">=9.1.4,<10" },
-    { name = "typer", specifier = ">=0.27.1,<0.28" },
-    { name = "us", specifier = ">=3.2.0,<4" },
-    { name = "yarl", specifier = ">=1.24.5" },
-]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "bpython", specifier = ">=0.26,<0.27" },
+    { name = "brokenspoke-analyzer-cli", editable = "packages/brokenspoke-analyzer-cli" },
+    { name = "brokenspoke-analyzer-lib", editable = "packages/brokenspoke-analyzer-lib" },
     { name = "furo", specifier = ">=2025.12.19,<2026" },
     { name = "isort", specifier = ">=8.0.1,<9" },
     { name = "jupyterlab", specifier = ">=4.6.3,<5" },
@@ -438,6 +402,76 @@ dev = [
     { name = "types-python-slugify", specifier = ">=8.0.2.20240310,<9" },
     { name = "types-six", specifier = ">=1.17.0.20260724,<2" },
     { name = "xdoctest", specifier = ">=1.3.2,<2" },
+]
+
+[[package]]
+name = "brokenspoke-analyzer-cli"
+source = { editable = "packages/brokenspoke-analyzer-cli" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "brokenspoke-analyzer-lib" },
+    { name = "geopandas" },
+    { name = "loguru" },
+    { name = "pycountry" },
+    { name = "rich" },
+    { name = "typer" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aiohttp", specifier = ">=3.14.3,<4" },
+    { name = "brokenspoke-analyzer-lib", editable = "packages/brokenspoke-analyzer-lib" },
+    { name = "geopandas", specifier = ">=1.1.4,<2" },
+    { name = "loguru", specifier = ">=0.7.3,<0.8" },
+    { name = "pycountry", specifier = ">=26.2.16" },
+    { name = "rich", specifier = ">=15.0.0,<16" },
+    { name = "typer", specifier = ">=0.27.1,<0.28" },
+]
+
+[[package]]
+name = "brokenspoke-analyzer-lib"
+source = { editable = "packages/brokenspoke-analyzer-lib" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "beautifulsoup4" },
+    { name = "boto3" },
+    { name = "geopandas" },
+    { name = "loguru" },
+    { name = "numpy" },
+    { name = "obstore" },
+    { name = "osmnx" },
+    { name = "platformdirs" },
+    { name = "pyrosm" },
+    { name = "python-dotenv" },
+    { name = "python-slugify" },
+    { name = "rasterio" },
+    { name = "shapely" },
+    { name = "sqlalchemy", extra = ["asyncio", "postgresql-psycopg"] },
+    { name = "tenacity" },
+    { name = "us" },
+    { name = "yarl" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aiohttp", specifier = ">=3.14.3,<4" },
+    { name = "beautifulsoup4", specifier = ">=4.15.0" },
+    { name = "boto3", specifier = ">=1.43.77,<2" },
+    { name = "geopandas", specifier = ">=1.1.4,<2" },
+    { name = "loguru", specifier = ">=0.7.3,<0.8" },
+    { name = "numpy", specifier = ">=2.5.2" },
+    { name = "obstore", specifier = ">=0.11.0" },
+    { name = "osmnx", specifier = ">=2.1.1,<3" },
+    { name = "platformdirs", specifier = ">=4.11.3" },
+    { name = "pyrosm", specifier = ">=0.13.1" },
+    { name = "python-dotenv", specifier = ">=1.2.3,<2" },
+    { name = "python-slugify", specifier = ">=8.0.4,<9" },
+    { name = "rasterio", specifier = ">=1.5.1" },
+    { name = "shapely", specifier = ">=2.1.2" },
+    { name = "sqlalchemy", extras = ["asyncio", "postgresql-psycopg"], specifier = ">=2.0.52,<3" },
+    { name = "tenacity", specifier = ">=9.1.4,<10" },
+    { name = "us", specifier = ">=3.2.0,<4" },
+    { name = "yarl", specifier = ">=1.24.5" },
 ]
 
 [[package]]

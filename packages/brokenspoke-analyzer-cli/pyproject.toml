@@ -1,0 +1,57 @@
+[project]
+name = "brokenspoke-analyzer-cli"
+dynamic = ["version"]
+description = "Command line frontend running a BNA analysis locally."
+authors = [
+  { name = "Rémy Greinhofer", email = "remy.greinhofer@gmail.com" },
+  { name = "Luis Alvergue", email = "lalver1@gmail.com" },
+  { name = "Grace Stonecipher", email = "grace@peopleforbikes.org" },
+]
+requires-python = "~=3.13.0"
+license = "MIT"
+dependencies = [
+  "aiohttp>=3.14.3,<4",
+  "brokenspoke-analyzer-lib",
+  "geopandas>=1.1.4,<2",
+  "loguru>=0.7.3,<0.8",
+  "pycountry>=26.2.16",
+  "rich>=15.0.0,<16",
+  "typer>=0.27.1,<0.28",
+]
+
+[project.scripts]
+bna = "brokenspoke_analyzer_cli.root:app"
+
+[tool.uv.sources]
+brokenspoke-analyzer-lib = { workspace = true }
+
+[tool.hatch.version]
+path = "../../VERSION"
+pattern = "(?P<version>.+)"
+
+[tool.coverage.run]
+omit = ["*/__init__.py", "*/brokenspoke_analyzer_cli/*"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-p no:warnings --cov-report term-missing --cov-report html --xdoctest"
+testpaths = ["tests"]
+markers = [
+  "australia",
+  "canada",
+  "europe",
+  "france",
+  "spain",
+  "usa",
+  "main: main test suite",
+  "xs: runs under 5min",
+  "s: runs under 15min",
+  "m: runs under 60min (1h)",
+  "l: runs under 180min (2h)",
+  "xl: runs under 360min (6h)",
+  "xxl: runs under 720min (12h / 1/2day)",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -24,4 +24,5 @@ justfile
 LICENSE
 README.md
 setup.cfg
+packages/*/tests
 tests
