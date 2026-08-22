@@ -123,3 +123,5 @@ The pipeline is: **prepare → configure → import → compute → export**, an
   `packages/brokenspoke-analyzer-lib/src/brokenspoke_analyzer_lib/scripts/sql/`.
 - New repeatable, team-facing operations should become a `just` recipe named
   `verb-noun`, following the existing style; one-off commands don't need one.
+- Markdown (including this file and `specs/`) is Prettier-checked; after editing
+  it, run `npx prettier --write --prose-wrap always <file>`.
