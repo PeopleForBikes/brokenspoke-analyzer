@@ -1,6 +1,10 @@
 set positional-arguments
 
-src_dir := "brokenspoke_analyzer"
+lib_pkg := "packages/brokenspoke-analyzer-lib"
+cli_pkg := "packages/brokenspoke-analyzer-cli"
+src_dirs := lib_pkg / "src" + " " + cli_pkg / "src"
+test_dirs := lib_pkg / "tests" + " " + cli_pkg / "tests"
+sql_dir := lib_pkg / "src/brokenspoke_analyzer_lib/scripts/sql"
 utils_dir := "utils"
 docker_image := "ghcr.io/peopleforbikes/brokenspoke-analyzer"
 e2e_test_dir := "integration"
@@ -20,13 +24,13 @@ lint-md:
 # Lint python files.
 lint-python:
     uv run isort --check .
-    uv run ruff format --check {{ src_dir }} {{ utils_dir }}
-    uv run ruff check {{ src_dir }} {{ utils_dir }}
-    uv run ty check {{ src_dir }}
+    uv run ruff format --check {{ src_dirs }} {{ test_dirs }} {{ utils_dir }}
+    uv run ruff check {{ src_dirs }} {{ test_dirs }} {{ utils_dir }}
+    uv run ty check {{ src_dirs }}
 
 # Lint SQL files.
 lint-sql:
-    uv run sqlfluff lint brokenspoke_analyzer/scripts/sql/
+    uv run sqlfluff lint {{ sql_dir }}
 
 # Check uv.lock is synced
 lint-uv:
@@ -46,12 +50,12 @@ fmt-md:
 # Format python files.
 fmt-python:
     uv run isort .
-    uv run ruff format {{ src_dir }} {{ utils_dir }}
-    uv run ruff check --fix {{ src_dir }} {{ utils_dir }}
+    uv run ruff format {{ src_dirs }} {{ test_dirs }} {{ utils_dir }}
+    uv run ruff check --fix {{ src_dirs }} {{ test_dirs }} {{ utils_dir }}
 
-# Run the unit tests.
+# Run the unit tests across all the workspace members.
 test *extra_args='':
-    uv run pytest --cov={{ src_dir }} -x $@
+    uv run pytest --cov=brokenspoke_analyzer_lib --cov=brokenspoke_analyzer_cli -x $@
 
 # Build the documentation
 docs:
