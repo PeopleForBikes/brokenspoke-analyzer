@@ -57,12 +57,12 @@ from typing import Annotated
 
 import typer
 
-from brokenspoke_analyzer.cli import (
+from brokenspoke_analyzer_cli import (
     common,
     root,
     run_with,
 )
-from brokenspoke_analyzer.core import (
+from brokenspoke_analyzer_lib import (
     constant,
 )
 

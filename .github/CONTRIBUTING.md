@@ -146,16 +146,19 @@ Close the container and return to your local environment by running the command
 ### Debugging
 
 You can make changes to the source code of `brokenspoke-analyzer` and run the
-debugger to see the effect of your changes. But since the `brokenspoke-analyzer`
-package is already installed in the dev container, running the system `python`
-interpreter in `/usr/local/bin/python/` will run the `brokenspoke-analyzer`
-installed in `usr/local/lib/python3.13/site-packages`. What we need to do is run
-the debugger using the source `brokenspoke-analyzer` in `/usr/src/app` so we
-create a virtual environment:
+debugger to see the effect of your changes. But since the
+`brokenspoke-analyzer-lib` and `brokenspoke-analyzer-cli` packages are already
+installed in the dev container, running the system `python` interpreter in
+`/usr/local/bin/python/` will run the ones installed in
+`usr/local/lib/python3.13/site-packages`. What we need to do is run the debugger
+using the sources in `/usr/src/app` so we create a virtual environment:
 
 ```bash
 uv sync
 ```
+
+Run from the workspace root, `uv sync` editable-installs every workspace member
+at once, so both packages are picked up from the sources.
 
 Then we open the the command palette (⇧⌘P in Mac or `Ctrl+Shift+P` in Windows)
 and choose `Python: Select Interpreter`, `./.venv/bin/python`. Once we are set

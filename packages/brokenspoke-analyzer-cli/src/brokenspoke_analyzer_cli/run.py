@@ -1,0 +1,75 @@
+"""Define the run command."""
+
+import asyncio
+import pathlib
+from typing import Annotated
+
+import typer
+
+from brokenspoke_analyzer_cli import (
+    common,
+    run_with,
+)
+from brokenspoke_analyzer_lib.core import (
+    exporter,
+)
+
+# Create the CLI app.
+app = typer.Typer()
+verbose = False
+
+
+@app.command()
+def run(
+    database_url: common.DatabaseURL,
+    country: common.Country,
+    city: common.City,
+    region: common.Region = None,
+    fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
+    block_population: common.BlockPopulation = common.DEFAULT_BLOCK_POPULATION,
+    block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
+    buffer: common.Buffer = common.DEFAULT_BUFFER,
+    cache_dir: common.CacheDir = None,
+    city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
+    data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
+    lodes_year: common.LODESYear = None,
+    max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
+    mirror: common.Mirror = None,
+    s3_bucket: Annotated[
+        str | None,
+        typer.Option(help="S3 bucket name where to export"),
+    ] = None,
+    s3_dir: pathlib.Path | None = None,
+    with_export: exporter.Exporter = exporter.Exporter.local,
+    with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
+    worldpop_year: common.WorldPopYear = common.DEFAULT_WORLDPOP_YEAR,
+    *,
+    no_cache: common.NoCache = False,
+    with_bundle: bool = False,
+) -> None:
+    """Run a full analysis."""
+    asyncio.run(
+        run_with.run_(
+            block_population=block_population,
+            block_size=block_size,
+            buffer=buffer,
+            cache_dir=cache_dir,
+            city_speed_limit=city_speed_limit,
+            city=city,
+            country=country,
+            data_dir=data_dir,
+            database_url=database_url,
+            fips_code=fips_code,
+            lodes_year=lodes_year,
+            max_trip_distance=max_trip_distance,
+            mirror=mirror,
+            no_cache=no_cache,
+            region=region,
+            s3_bucket=s3_bucket,
+            s3_dir=s3_dir,
+            with_bundle=with_bundle,
+            with_export=with_export,
+            with_parts=with_parts,
+            worldpop_year=worldpop_year,
+        ),
+    )
