@@ -639,8 +639,9 @@ WHERE
 
 --------------------------------------------------------------------------------
 -- Protected bike lane (PBL) identification
--- Find geometries explicitly tagged as highway=cycleway, and if they are within
--- 10 meters of a road, treat them as PBLs (tracks). This identifies off-street
+-- For each geometry explicitly tagged as highway=cycleway, and if it is
+-- completely within a 10m buffer of adjacent (UNIONed) car roads,
+-- treat it as a PBL (track). This identifies off-street
 -- paths that should actually be classified as PBLs instead.
 --------------------------------------------------------------------------------
 UPDATE neighborhood_ways
@@ -658,15 +659,22 @@ FROM neighborhood_osm_full_line AS osm
 WHERE
     neighborhood_ways.osm_id = osm.osm_id
     AND osm.highway = 'cycleway'
-    AND EXISTS (
-        SELECT 1
+    -- Verify the entire cycleway is within a 10m buffer of
+    -- UNIONed adjacent car roads
+    AND (
+        SELECT
+            ST_Within(
+                neighborhood_ways.geom,
+                ST_Buffer(ST_Union(car_roads.way), 10)
+            )
         FROM neighborhood_osm_full_line AS car_roads
         WHERE car_roads.highway NOT IN (
             'cycleway', 'footway', 'pedestrian',
             'path', 'steps', 'track', 'service'
         )
         AND car_roads.highway IS NOT NULL
-        -- Spatial join checking for geometries within 10 meters
+        -- The car_roads.way geometry array UNIONed above contains only the car roads
+        -- within 10m of the cycleway given by the filter below
         AND ST_DWithin(neighborhood_ways.geom, car_roads.way, 10)
     );
 
