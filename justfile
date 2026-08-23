@@ -85,7 +85,7 @@ docker-prepare-all *args:
     echo "$@"
     docker run --rm \
       -u $(id -u):$(id -g) \
-      -v ./data/container:/usr/src/app/data {{ docker_image }}:latest \
+      -v ./data/container:/usr/src/app/data {{ docker_image }}:dev \
       prepare \
       --no-cache \
       "$@"

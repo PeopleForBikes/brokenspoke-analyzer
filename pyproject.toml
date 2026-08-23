@@ -49,7 +49,7 @@ dev = [
   "sphinx-copybutton>=0.5.2,<0.6",
   "Sphinx>=9.1.0,<10",
   "sqlfluff>=4.3.0,<5",
-  "ty>=0.0.73",
+  "ty>=0.0.74",
   "types-beautifulsoup4>=4.12.0.20250516",
   "types-boto3>=1.43.77",
   "types-colorama>=0.4.15.20260508,<0.5",
@@ -199,13 +199,7 @@ ignore_words_regex = "ST_."
 ignore_comment_lines = true
 
 [tool.ty.src]
-exclude = [
-  "boto3",
-  "geopandas",
-  "osmnx",
-  "shapely",
-  "us",
-]
+exclude = ["boto3", "geopandas", "osmnx", "shapely", "us"]
 
 [build-system]
 requires = ["hatchling"]
