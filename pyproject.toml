@@ -199,13 +199,7 @@ ignore_words_regex = "ST_."
 ignore_comment_lines = true
 
 [tool.ty.src]
-exclude = [
-  "boto3",
-  "geopandas",
-  "osmnx",
-  "shapely",
-  "us",
-]
+exclude = ["boto3", "geopandas", "osmnx", "shapely", "us"]
 
 [build-system]
 requires = ["hatchling"]

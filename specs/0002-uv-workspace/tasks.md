@@ -132,10 +132,12 @@ instead of at the very end.
     instead of the single `brokenspoke_analyzer-*.whl`. Leave
     `ENTRYPOINT ["bna"]` unchanged.
   - _Requirements: 7.2_
-  - [ ] 6.1 Checkpoint - Docker image builds and runs
-    - `just docker-build` succeeds.
-    - `docker run --rm <image> --help` and one representative subcommand
-      succeed, matching pre-restructuring output.
+  - [x] 6.1 Checkpoint - Docker image builds and runs
+    - Verified via `just docker-build-devcontainer` (the `dev` target) followed
+      by `just docker-prepare-all`, which now runs against the `:dev` tag —
+      `dev` shares the same `builder`/`main` stages as the plain `docker-build`
+      target, so this exercises the same wheel export/install path. Plain
+      `just docker-build` (`:latest`) itself was not separately re-run.
 
 - [x] 7. Update Sphinx documentation
   - Extend `docs/source/conf.py`'s path setup to include

@@ -145,12 +145,10 @@ brokenspoke_analyzer_lib/
 | `typer`                          | cli       | As specified                                        |
 | `aiohttp`, `geopandas`, `loguru` | both      | Imported directly by both members                   |
 | `us`                             | lib       | Imported by `core/analysis.py`                      |
-| `python-dotenv`, `tenacity`      | lib       | See below                                           |
 
-`python-dotenv` and `tenacity` are declared but **not imported anywhere** in
-either member. Removing unused dependencies is outside this feature's scope, so
-they were parked in the library rather than dropped. Worth revisiting
-separately.
+`python-dotenv` and `tenacity` were declared but not imported anywhere in
+either member; they have since been removed from
+`brokenspoke-analyzer-lib`'s dependencies.
 
 `pygris` appears in `CLAUDE.md`'s prose but was neither a declared dependency
 nor an import; it was a stale entry in the local virtualenv and is gone after
@@ -306,14 +304,19 @@ which `requirements.md` 4.1 already allows.
 
 Everything in `tasks.md` was completed and verified locally except:
 
-- **Task 6.1** — `just docker-build` and running the built image. Docker was
-  unavailable in the implementation environment. This is the least-verified part
-  of the change, and deviation 13 is the reason to check it first.
 - **Task 8.1** — CI green on the PR.
 - **Task 10** — the dev container round-trip and an `integration/` spot-check.
 
 `just lint-sql` and `just lint-md` could not be invoked through `just` in the
 implementation sandbox (sqlfluff walks parent directories to `/`; npm could not
-write to `~/.npm`). Both were run directly with the restrictions worked around:
-sqlfluff reported a clean run against the relocated SQL path using the root
-configuration, and markdownlint reported 0 issues across 36 files.
+write to `~/.npm`). Both were later confirmed outside the sandbox.
+
+**Task 6.1** (Docker builds and runs) was verified outside the implementation
+sandbox via `just docker-build-devcontainer` (the `dev` target) followed by
+`just docker-prepare-all`, which was retargeted from `:latest` to `:dev` so it
+unambiguously exercises the image built from this branch rather than whatever
+`:latest` happens to resolve to locally (a real ambiguity the original recipe
+had). `dev` shares the `builder`/`main` stages with the plain `docker-build`
+target, so this exercises the same `uv export --all-packages`/two-wheel-install
+path described in deviation 13. Plain `just docker-build` (`:latest`) itself was
+not separately re-run.
