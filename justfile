@@ -85,10 +85,9 @@ docker-prepare-all *args:
     echo "$@"
     docker run --rm \
       -u $(id -u):$(id -g) \
-      -v ./data/container:/usr/src/app/data peopleforbikes/brokenspoke-analyzer:latest \
+      -v ./data/container:/usr/src/app/data {{ docker_image }}:latest \
       prepare \
-      all \
-      --output-dir /usr/src/app/data \
+      --no-cache \
       "$@"
 
 # Spin up Docker Compose.
@@ -123,4 +122,8 @@ nono-claude profile="claude":
 
 # Use nono sandbox for Claude -- no internet, skip-permissions.
 nono-claude-danger profile="claude":
-    nono run --allow-cwd --block-net --profile {{ profile }} -- claude --dangerously-skip-permissions
+    nono run \
+    --allow-cwd \
+    --allow-domain github.com \
+    --profile {{ profile }} \
+    -- claude --dangerously-skip-permissions
