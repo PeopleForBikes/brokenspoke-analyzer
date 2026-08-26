@@ -2,10 +2,10 @@
 
 ## Status
 
-DRAFT — depends on `requirements.md` (status: requirements locked, 8/9 open
-questions resolved). This document resolves the remaining deferred items
-(routing engine, library selection) via a documented recommendation +
-mandatory pre-implementation benchmark spike, not a runtime guess.
+APPROVED. Depends on `requirements.md` (status: APPROVED). The one item
+left open at approval time — final routing-engine confirmation — is
+resolved via the mandatory pre-implementation benchmark spike (§3.4), not
+a runtime guess.
 
 ## 1. Current architecture (baseline)
 
@@ -219,8 +219,15 @@ on phase (requirements.md §6/§7.3):
 - **Iteration phase** (while stages are being actively built): `XS`/`S`
   `test_size` cities only, from `integration/e2e-cities-XS.csv` and
   `integration/e2e-cities-S.csv`, for fast feedback.
-- **Pre-ship gate**: full corpus from `integration/e2e-cities.csv`
-  (NFR-VALIDATION-2), including Washington DC for the NFR-PERF-1 check.
+- **Pre-ship gate**: the automated corpus, `integration/e2e-cities.csv`
+  restricted to `XS`/`S`/`M` `test_size` rows (NFR-VALIDATION-2). `L`/`XL`/
+  `XXL` cities (Valencia, Washington DC) are excluded — with the current
+  implementation they take hours per city, which is impractical for a
+  repeatable automated gate. Washington DC is validated manually by
+  maintainers after the migration instead (e.g.
+  `just validate-parity washington`), including the NFR-PERF-1 check.
+  Valencia is excluded from validation entirely — no automated run, no
+  manual follow-up.
 
 Runs `utils/validate_parity.py` (or a `brokenspoke_analyzer` test-only
 module):
@@ -230,23 +237,27 @@ module):
 <version>/`.
 2. Load the corresponding checked-in `results/**` files (frozen ground
    truth per NFR-PARITY-3) and the freshly generated output.
-3. Compare, per FR/NFR §5-6:
-   - `neighborhood_overall_scores`-derived values: absolute diff ≤ `1e-4`
-     (raw) or exact match at display precision. No skip/exception list —
-     our SQL is the reference implementation (requirements.md §3), so
-     every row/column must match.
-   - Row-for-row comparison of `neighborhood_census_blocks.*`,
-     `neighborhood_ways.*`, `mileage.csv`, `residential_speed_limit.csv` by
-     stable key (`geoid20`/way id); numeric columns within tolerance;
+3. Compare, per FR/NFR §5-6 (mapping each legacy `neighborhood_`-prefixed
+   reference name to its unprefixed new-pipeline name, requirements.md
+   FR-EXPORT-2 — the prefix drop is a rename, not a value it validates):
+   - `neighborhood_overall_scores`/`overall_scores`-derived values: absolute
+     diff ≤ `1e-4` (raw) or exact match at display precision. No skip/
+     exception list — our SQL is the reference implementation
+     (requirements.md §3), so every row/column must match.
+   - Row-for-row comparison of `neighborhood_census_blocks.*`/
+     `census_blocks.*`, `neighborhood_ways.*`/`ways.*`, `mileage.csv`,
+     `residential_speed_limit.csv` by stable key (`geoid20`/way id); numeric
+     columns within tolerance;
      geometry columns compared via `shapely.geometry.base.BaseGeometry.
 equals_exact` with a small tolerance (not WKB byte-equality, matching
      NFR-PARITY-2's explicit allowance for representation differences).
 4. Emit a structured pass/fail report per city + per comparison dimension
    (not just an aggregate pass/fail), so a single-city or single-column
    regression is diagnosable without re-running the whole corpus.
-5. Report wall-clock time per city, specifically flagging Washington DC
-   against the NFR-PERF-1 2x ceiling (pre-ship gate run only — DC is
-   `XXL`, not part of the XS/S iteration corpus).
+5. Report wall-clock time per city run. Washington DC is not part of any
+   automated corpus (`XS`/`S`/`M` pre-ship gate or `XS`/`S` iteration
+   corpus); the NFR-PERF-1 2x ceiling against it is checked manually by
+   maintainers, not by this harness.
 
 This harness is itself modeled on `bikescore-bna`'s `parity.py`/
 `validation.py` (architectural reuse per §4's last row), adapted to our
@@ -306,6 +317,8 @@ tests/
 integration/
   e2e-cities.csv                 # unchanged, now doubles as the
                                   # NFR-VALIDATION-2 parity corpus source
+                                  # (XS/S/M rows only are the automated gate;
+                                  # L/XL/XXL rows stay for manual validation)
 ```
 
 `justfile` changes: remove `compose-up`/`compose-down`/`docker-build`
@@ -317,7 +330,9 @@ Illustrative, not exhaustive — full column-level schemas are a `tasks.md`-
 level deliverable once each stage's SQL is transcribed.
 
 - **Ways** (`GeoDataFrame`): one row per road segment, replacing
-  `neighborhood_ways`. Columns: `way_id`, `geometry` (LineString),
+  `neighborhood_ways` (exported as `ways.*`, the `neighborhood_` prefix
+  dropped per requirements.md FR-EXPORT-2). Columns: `way_id`, `geometry`
+  (LineString),
   OSM tags subset (`highway`, `cycleway`, `lanes`, `maxspeed`, `oneway`,
   `width`, ...), derived feature columns (`functional_class`, `bike_infra`,
   `ft_seg_stress`, `tf_seg_stress`, ...).
@@ -325,11 +340,14 @@ level deliverable once each stage's SQL is transcribed.
   CSR build): `vert_id`, `road_id`, `geometry` (Point) for vertices;
   `link_id`, `source_vert`, `target_vert`, `link_cost`, `link_stress` for
   links — direct analogues of `neighborhood_ways_net_vert`/
-  `neighborhood_ways_net_link`.
+  `neighborhood_ways_net_link` (internal working tables, not exported —
+  FR-EXPORT-2's rename applies to exported artifacts, not internal pipeline
+  state, so these have no new-pipeline equivalent name to define).
 - **Census blocks** (`GeoDataFrame`): `geoid20`, `geometry` (Polygon),
   `pop20`, plus per-destination-category score columns added by
   `scoring.py` (`*_score`, `*_high_stress`, ...) — analogue of
-  `neighborhood_census_blocks`.
+  `neighborhood_census_blocks` (exported as `census_blocks.*`, prefix
+  dropped per FR-EXPORT-2).
 - **Destinations** (`GeoDataFrame` per category): `geometry` (Point),
   category-specific attributes, clustered per `Tolerance` dataclass values.
 - **Reachability result** (`network.py` output, feeding `scoring.py`):
@@ -337,7 +355,8 @@ level deliverable once each stage's SQL is transcribed.
   low-stress and high-stress graphs — analogue of
   `neighborhood_reachable_roads_{low,high}_stress`.
 - **Scores** (`pandas.DataFrame`): analogue of
-  `generated.neighborhood_overall_scores` — `score_id`, `score_original`,
+  `generated.neighborhood_overall_scores` (renamed
+  `generated.overall_scores` per FR-EXPORT-2) — `score_id`, `score_original`,
   `score_normalized`, `human_explanation`.
 
 ## 9. Error handling

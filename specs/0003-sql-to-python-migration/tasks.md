@@ -4,6 +4,11 @@ This file contains the ordered implementation plan for replacing
 `brokenspoke_analyzer/scripts/sql/**` and the PostGIS/pgRouting runtime with
 a pure-Python pipeline, per `requirements.md` (WHAT) and `design.md` (HOW).
 
+## Status
+
+APPROVED. Depends on `requirements.md` (status: APPROVED) and `design.md`
+(status: APPROVED).
+
 ## Overview
 
 This is a big-bang rewrite (requirements.md §1): implemented as one body of
@@ -16,14 +21,23 @@ before `network.py` since it determines that stage's implementation, not
 after.
 
 **Pre-implementation gate** (requirements.md §7.3, blocking — not a task in
-this plan): every city in `integration/e2e-cities.csv`, including Valencia,
-Spain, must have a checked-in `results/**` baseline before task 1 starts.
-Do not begin implementation until this is confirmed.
+this plan): every `XS`/`S`/`M` `test_size` city in `integration/
+e2e-cities.csv` must have a checked-in `results/**` baseline before task 1
+starts. Do not begin implementation until this is confirmed. Valencia,
+Spain (`XL`) is not required — it takes too long to run and is not part of
+the automated corpus (below).
 
 **Validation corpus during iteration**: use only `integration/e2e-cities-XS.csv`
 and `integration/e2e-cities-S.csv` cities (design.md §5) for all per-task
-verification below. The full corpus (including Washington DC) is reserved
-for the final pre-ship checkpoint (task 9).
+verification below. The automated pre-ship gate (task 9/10) uses
+`integration/e2e-cities.csv` restricted to `XS`/`S`/`M` `test_size` rows.
+`L`/`XL`/`XXL` cities (Valencia, Washington DC) are excluded from all
+automated runs in this plan — they take hours per city with the current
+implementation. Washington DC is left for maintainers to validate manually
+after the migration ships (its `results/**` baseline is still required by
+the pre-implementation gate above, for that manual comparison); Valencia is
+excluded from validation entirely for now (no baseline required, no manual
+follow-up planned in this document).
 
 **`prepare` stays as-is**: the `prepare` stage works well today and is not
 being rewritten. `ingest.py` (task 3) is a consumer of `prepare`'s existing
@@ -169,7 +183,8 @@ core_services=20, retail=15, recreation=15, transit=15`,
   - [ ] 7.3 Implement the population-weighted overall score (FR-SCORE-2):
         score × `pop20`, normalized by total reachable population.
   - [ ] 7.4 Produce the same summary row shape as
-        `generated.neighborhood_overall_scores` (FR-SCORE-3): per-category
+        `generated.neighborhood_overall_scores` (renamed
+        `generated.overall_scores`, FR-EXPORT-2 — FR-SCORE-3): per-category
         scores, `population_total`, `total_miles_low_stress`,
         `total_miles_high_stress`, mileage rounded to 1 decimal place.
   - [ ] 7.5 Unit tests: representative synthetic cases per category
@@ -180,11 +195,14 @@ core_services=20, retail=15, recreation=15, transit=15`,
 - [ ] 8. Wire the new pipeline into the CLI and exporter
   - [ ] 8.1 Update `exporter.py` to consume GeoDataFrames/DataFrames in
         memory instead of querying PostGIS tables, producing byte-for-byte
-        the same file set/schema/column names/order as today
-        (FR-EXPORT-1): `neighborhood_census_blocks.*`,
-        `neighborhood_ways.*`, `neighborhood_ways_intersections.geojson`,
-        `neighborhood_boundary.geojson`, `mileage.csv`,
-        `residential_speed_limit.csv`.
+        the same schema/column names/order/row contents as today but with
+        the `neighborhood_` prefix dropped from file names (FR-EXPORT-1,
+        FR-EXPORT-2): `neighborhood_census_blocks.*` →`census_blocks.*`,
+        `neighborhood_ways.*` → `ways.*`,
+        `neighborhood_ways_intersections.geojson` →
+        `ways_intersections.geojson`, `neighborhood_boundary.geojson` →
+        `boundary.geojson`; `mileage.csv`/`residential_speed_limit.csv`
+        (already unprefixed) unchanged.
   - [ ] 8.2 Replace `bna run-with compose <country> <city> <region>
 <fips_code>` with `bna run <country> <city> <region> <fips_code>`
         (design.md §2) — no Docker Compose, no `DATABASE_URL`, chaining
@@ -212,18 +230,28 @@ export` as plain async orchestration (design.md §6's "overall
         task 10 with a known parity gap in the iteration corpus.
   - _Requirements: NFR-VALIDATION-1, NFR-PARITY-1, NFR-PARITY-2, NFR-PARITY-3_
 
-- [ ] 10. Full-corpus pre-ship gate
-  - [ ] 10.1 Run `just validate-parity` against the **full**
-        `integration/e2e-cities.csv` corpus (all 17 rows, including
-        Valencia and Washington DC).
-  - [ ] 10.2 Confirm Washington DC's wall-clock run time is within the 2x
-        ceiling of the current SQL/PostGIS pipeline on the same reference
-        hardware (NFR-PERF-1); profile `network.py`'s reachability stage
-        first if it regresses, per requirements.md §7 open question #4.
-  - [ ] 10.3 Fix any parity or performance regression found; re-run 10.1
-        until the full corpus passes. Do not proceed to task 11 until it
-        does — this is a hard ceiling, not report-only (requirements.md
-        §7).
+- [ ] 10. Automated pre-ship gate (`XS`/`S`/`M` corpus)
+  - [ ] 10.1 Run `just validate-parity` against the automated corpus:
+        `integration/e2e-cities.csv` restricted to `XS`/`S`/`M` `test_size`
+        rows (NFR-VALIDATION-2). `L`/`XL`/`XXL` cities (Valencia,
+        Washington DC) are excluded — they take hours per city with the
+        current implementation, which is impractical for a repeatable
+        automated gate. Valencia is excluded from validation entirely (no
+        baseline, no manual follow-up); Washington DC gets a manual
+        follow-up (10.3).
+  - [ ] 10.2 Fix any parity regression found; re-run 10.1 until the
+        automated corpus passes. Do not proceed to task 11 until it does —
+        this is a hard ceiling, not report-only (requirements.md §7).
+  - [ ] 10.3 Manual maintainer validation (not blocking, best-effort — run
+        after task 11 once the codebase is stable, not as part of this
+        gate): run `just validate-parity` against Washington DC and confirm
+        its wall-clock run time is within the 2x ceiling of the current
+        SQL/PostGIS pipeline on the same reference hardware (NFR-PERF-1);
+        profile `network.py`'s reachability stage first if it regresses,
+        per requirements.md §7 open question #4. File a follow-up issue for
+        any regression found instead of blocking the migration on it.
+        Valencia is not included — it's excluded from validation entirely
+        for now (no checked-in baseline, no manual follow-up planned).
   - _Requirements: NFR-VALIDATION-1, NFR-VALIDATION-2, NFR-PERF-1, NFR-PARITY-1,
     NFR-PARITY-2, NFR-PARITY-3_
 
@@ -253,9 +281,9 @@ export` as plain async orchestration (design.md §6's "overall
         PostGIS/Docker Compose dependency anywhere in the toolchain.
   - [ ] 12.2 Confirm `just test` runs without `docker compose up` (user
         story in requirements.md §4).
-  - [ ] 12.3 Re-run task 10's full-corpus `validate-parity` one final time
-        post-deletion to confirm nothing in task 11's removals broke
-        parity.
+  - [ ] 12.3 Re-run task 10.1's automated `XS`/`S`/`M` `validate-parity`
+        one final time post-deletion to confirm nothing in task 11's
+        removals broke parity.
   - _Requirements: NFR-DEP-1, NFR-TEST-1, all FR/NFR (final gate)_
 
 ## Notes & decisions
@@ -275,8 +303,9 @@ export` as plain async orchestration (design.md §6's "overall
 
 ## Next steps (after tasks.md)
 
-1. Confirm the pre-implementation gate (Valencia + full corpus baselines
-   checked into `results/**`) is satisfied before starting task 1.
+1. Confirm the pre-implementation gate (`XS`/`S`/`M` corpus baselines
+   checked into `results/**`) is satisfied before starting task 1. Valencia
+   is not required.
 2. Execute tasks 1-12 in order, checking in after each numbered task.
 3. Keep `requirements.md`/`design.md` updated if reality diverges during
    implementation (per `specs/README.md`'s contributing guidelines) rather
