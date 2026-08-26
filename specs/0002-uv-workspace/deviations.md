@@ -146,9 +146,9 @@ brokenspoke_analyzer_lib/
 | `aiohttp`, `geopandas`, `loguru` | both      | Imported directly by both members                   |
 | `us`                             | lib       | Imported by `core/analysis.py`                      |
 
-`python-dotenv` and `tenacity` were declared but not imported anywhere in
-either member; they have since been removed from
-`brokenspoke-analyzer-lib`'s dependencies.
+`python-dotenv` and `tenacity` were declared but not imported anywhere in either
+member; they have since been removed from `brokenspoke-analyzer-lib`'s
+dependencies.
 
 `pygris` appears in `CLAUDE.md`'s prose but was neither a declared dependency
 nor an import; it was a stale entry in the local virtualenv and is gone after
@@ -302,10 +302,11 @@ which `requirements.md` 4.1 already allows.
 
 ## Verification status
 
-Everything in `tasks.md` was completed and verified locally except:
-
-- **Task 8.1** — CI green on the PR.
-- **Task 10** — the dev container round-trip and an `integration/` spot-check.
+Everything in `tasks.md` was completed. All items requiring verification outside
+the implementation sandbox — **Task 8.1** (CI green on the PR) and **Task 10**
+(the full manual verification pass, including the dev container round-trip and
+an `integration/` spot-check) — have since been confirmed by the user outside
+the sandbox.
 
 `just lint-sql` and `just lint-md` could not be invoked through `just` in the
 implementation sandbox (sqlfluff walks parent directories to `/`; npm could not
