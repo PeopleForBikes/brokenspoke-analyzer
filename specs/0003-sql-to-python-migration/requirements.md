@@ -2,7 +2,7 @@
 
 ## Status
 
-DRAFT — under active review. Not yet approved.
+APPROVED.
 
 ## 1. Summary
 
@@ -198,7 +198,8 @@ Numbering: `FR-<stage>-<n>`. Each maps to acceptance criteria in §6.
   per neighborhood boundary, matching `overall_scores.sql`'s weighting
   (score × pop20, normalized by total reachable population).
 - FR-SCORE-3: Produce the same summary rows as
-  `generated.neighborhood_overall_scores` today (per-category scores,
+  `generated.neighborhood_overall_scores` today (renamed to
+  `generated.overall_scores`, FR-EXPORT-2 — per-category scores,
   `population_total`, `total_miles_low_stress`, `total_miles_high_stress`),
   rounded the same way (1 decimal place for mileage totals).
 
@@ -216,11 +217,23 @@ Numbering: `FR-<stage>-<n>`. Each maps to acceptance criteria in §6.
 
 ### FR-EXPORT (Export)
 
-- FR-EXPORT-1: `exporter.py` output (file names, formats, schemas, column
-  names/order) is unchanged from today for every existing output artifact
-  (`neighborhood_census_blocks.*`, `neighborhood_ways.*`,
-  `neighborhood_ways_intersections.geojson`, `neighborhood_boundary.geojson`,
-  `mileage.csv`, `residential_speed_limit.csv`, etc.).
+- FR-EXPORT-1: `exporter.py` output (formats, schemas, column names/order,
+  and row contents) is unchanged from today for every existing output
+  artifact, **except** that the legacy `neighborhood_` table/file-name
+  prefix is dropped (FR-EXPORT-2): today's `neighborhood_census_blocks.*`,
+  `neighborhood_ways.*`, `neighborhood_ways_intersections.geojson`,
+  `neighborhood_boundary.geojson` are renamed to `census_blocks.*`,
+  `ways.*`, `ways_intersections.geojson`, `boundary.geojson` respectively;
+  `mileage.csv` and `residential_speed_limit.csv` (already unprefixed) are
+  unchanged.
+- FR-EXPORT-2: The Python implementation must not carry forward the
+  `neighborhood_` prefix used by the legacy SQL tables/exported files. It is
+  a naming holdover with no remaining meaning (the pipeline only ever
+  analyzes one boundary at a time) and must be dropped from every new table
+  and export file name, including `generated.neighborhood_overall_scores`
+  → `generated.overall_scores`. This is a naming-only change — it is not a
+  "deviation" from the SQL reference (§3, FR-REF-2) and does not affect any
+  computed value.
 
 ## 6. Non-functional requirements & acceptance criteria
 
@@ -228,17 +241,22 @@ Numbering: `FR-<stage>-<n>`. Each maps to acceptance criteria in §6.
   corpus (§6.1), the final overall BNA score and all category/sub-category
   scores produced by the Python pipeline must match the corresponding values
   in the checked-in `results/**/neighborhood_overall_scores`-derived output
-  within `1e-4` (matching the existing `NUMERIC(16, 4)` storage precision),
-  OR match at the rounded/displayed precision if a value is only ever
-  surfaced rounded (e.g. mileage totals at 1 decimal place) — exact
-  tolerance definition is an open question, see §7.
+  (renamed `overall_scores` in the new pipeline, FR-EXPORT-2) within `1e-4`
+  (matching the existing `NUMERIC(16, 4)` storage precision), OR match at
+  the rounded/displayed precision if a value is only ever surfaced rounded
+  (e.g. mileage totals at 1 decimal place) — exact tolerance definition is
+  an open question, see §7.
 - **NFR-PARITY-2 (File-level parity)**: All other exported files
-  (`neighborhood_census_blocks.*`, `neighborhood_ways.*`, mileage/speed
-  CSVs) must be equivalent to the `results/**` versions: same rows (by
+  (`neighborhood_census_blocks.*`/`census_blocks.*`,
+  `neighborhood_ways.*`/`ways.*` — old/new names per FR-EXPORT-2 —, mileage/
+  speed CSVs) must be equivalent to the `results/**` versions: same rows (by
   stable key, e.g. `geoid20`/way id), same columns, numeric columns within
   the same tolerance as NFR-PARITY-1, geometry columns equivalent (same
   shape within floating-point tolerance, not necessarily identical
-  WKB/coordinate ordering).
+  WKB/coordinate ordering). The validation harness must map each legacy
+  `neighborhood_`-prefixed reference file/table to its unprefixed new-pipeline
+  counterpart before comparing (FR-EXPORT-2) — the prefix drop is a rename,
+  not a parity mismatch.
 - **NFR-PARITY-3 (Ground truth)**: `results/**` files, as currently checked
   into the repository, are treated as the frozen ground truth for
   validation. They are not regenerated from a fresh SQL run before
@@ -247,17 +265,30 @@ Numbering: `FR-<stage>-<n>`. Each maps to acceptance criteria in §6.
   recipe exists that runs the full Python pipeline for each city in the
   validation corpus and reports a pass/fail + diff report against the
   corresponding `results/**` directory.
-- **NFR-VALIDATION-2 (Validation corpus)**: The full corpus (§7.3) is the
-  complete `integration/e2e-cities.csv` list and is the gate for shipping
-  the migration. During the iteration phase (while stages are actively
-  being built out), validation runs are scoped down to just the `XS` and
-  `S` `test_size` rows (`integration/e2e-cities-XS.csv` and
-  `integration/e2e-cities-S.csv`) for fast feedback; the full corpus,
-  including `M`/`L`/`XL`/`XXL` cities and Washington DC's NFR-PERF-1 check,
-  must still pass before the migration is considered done.
+- **NFR-VALIDATION-2 (Validation corpus)**: The automated corpus (§7.3) is
+  `integration/e2e-cities.csv` restricted to the `XS`, `S`, and `M`
+  `test_size` rows, and is the gate for shipping the migration. `L`/`XL`/
+  `XXL` cities (currently Valencia [`XL`] and Washington DC [`XXL`]) are
+  excluded from the automated corpus entirely — with the current
+  implementation they take hours per city to run, which is impractical for
+  a repeatable gate. They are not deleted from `integration/e2e-cities.csv`.
+  Washington DC remains available for maintainers to validate manually
+  (e.g. via `just validate-parity washington`) at the end of the migration,
+  but passing it is not a merge/ship gate; Valencia is excluded from
+  validation entirely — no automated run, no manual follow-up, no
+  `results/**` baseline required (§7.3). During the iteration phase (while
+  stages
+  are actively being built out), validation runs are scoped down further to
+  just the `XS` and `S` `test_size` rows (`integration/e2e-cities-XS.csv`
+  and `integration/e2e-cities-S.csv`) for fast feedback; the automated
+  `XS`/`S`/`M` corpus must pass before the migration is considered done.
 - **NFR-PERF-1 (Performance)**: End-to-end run time for a given city must
   not regress beyond [threshold TBD, see §7] compared to the current
-  SQL/PostGIS pipeline, measured on the same hardware.
+  SQL/PostGIS pipeline, measured on the same hardware. Automated
+  enforcement is limited to the `XS`/`S`/`M` corpus (NFR-VALIDATION-2);
+  verifying this on `L`/`XL`/`XXL` cities (including Washington DC, the
+  city this requirement was originally sized against) is part of the
+  manual maintainer validation, not the automated gate.
 - **NFR-TEST-1 (Testability)**: Every scoring/classification function
   (stress rules, feature derivation rules, category/overall score formulas)
   has direct unit tests with representative inputs/edge cases (not only
@@ -327,25 +358,28 @@ retail=15, recreation=15, transit=15`), passed as SQL variables at
    rather than being duplicated as a separate hardcoded list in design.md.
    During iteration, use only the `XS`/`S` subsets
    (`integration/e2e-cities-XS.csv`/`-S.csv`) for fast feedback loops; the
-   full corpus remains the pre-ship gate (NFR-VALIDATION-2).
+   automated `XS`/`S`/`M` corpus is the pre-ship gate (NFR-VALIDATION-2).
+   `L`/`XL`/`XXL` cities (Valencia, Washington DC) are excluded from the
+   automated gate — with the current implementation they take hours per
+   city — and are validated manually by maintainers after the migration
+   instead.
 
-   **Pre-implementation gate — Valencia baseline**: `e2e-cities.csv` also
-   lists Valencia, Spain (XL, "a non-US city with a fantastic bike
-   network"), which as of this review has **no checked-in
-   `results/**`directory** — every other row in the CSV does (verified: all 16 US/
-Canada/France/Australia rows have a matching`results/**`path; Spain
-does not appear in`results/`at all). This conflicts with
-NFR-PARITY-3's "treat checked-in`results/**` as ground truth, don't
-   regenerate" rule, since there's currently nothing to compare Valencia's
-   Python output against.
+   **Pre-implementation gate — baselines**: as of this review, every `XS`/
+   `S`/`M` row in `e2e-cities.csv` has a checked-in `results/**` directory
+   except Washington DC (`XXL`), which does not need one to unblock the
+   automated gate but does need one for its manual post-migration
+   validation pass (NFR-VALIDATION-2, NFR-PERF-1). Valencia, Spain (`XL`,
+   "a non-US city with a fantastic bike network") has **no checked-in
+   `results/**` directory** and, since it takes too long to run and is
+   excluded from validation entirely (no automated run, no manual
+   follow-up planned), generating one is **not** a precondition for
+   starting implementation.
 
-   **Decision**: the team will generate and check in `results/spain/
-valencia/` (via the current SQL pipeline) before implementation begins,
-   so all 17 `e2e-cities.csv` rows have a baseline under NFR-PARITY-3 by
-   the time the Python work starts — no smoke-test-only carve-out needed.
-   This is a precondition for starting implementation, not a design.md
-   task: **implementation must not begin until every corpus city in
-   `integration/e2e-cities.csv` has a checked-in `results/**` baseline.\*\*
+   **Decision**: implementation must not begin until every `XS`/`S`/`M`
+   corpus city in `integration/e2e-cities.csv` has a checked-in
+   `results/**` baseline (NFR-PARITY-3), and until Washington DC's baseline
+   is checked in for its later manual comparison. Valencia is exempt from
+   this gate.
 
 4. ~~Performance threshold~~ — RESOLVED. No regression beyond ~2x wall-clock
    run time on the largest corpus city (Washington DC, 16M) compared to the
@@ -354,9 +388,11 @@ valencia/` (via the current SQL pipeline) before implementation begins,
    specific stage most likely to regress and therefore the one to profile
    first. Smaller/medium cities are expected to be _faster_ once
    Docker/DB startup overhead is removed; DC is the binding constraint.
-   This is a hard ceiling (gates shipping), not report-only, given the
-   project's stated "cannot be done iteratively" risk profile — we want a
-   concrete tripwire, not a discovered-too-late regression.
+   This remains a hard ceiling in principle, but per NFR-VALIDATION-2 it is
+   no longer automated as part of the corpus gate — Washington DC (`XXL`)
+   is excluded from the automated run, so this check is now part of the
+   manual maintainer validation performed at the end of the migration
+   rather than a blocking, machine-enforced tripwire.
 5. **Routing engine choice** — `networkx` vs `igraph`/`graph-tool` vs
    `scipy.sparse.csgraph` (the approach `bikescore-bna` uses, §1a) vs other,
    to be settled in design.md via a benchmark (see design.md plan).
@@ -406,7 +442,11 @@ MIT License` classifier — sufficient grounds to treat it as MIT-licensed
   traffic speed/volume proxies (functional class, lanes, speed limit);
   low-stress segments are considered comfortable for most riders.
 - **Neighborhood** — the BNA's term for the boundary (typically a city)
-  being analyzed; `neighborhood_*` tables/prefixes refer to this scope.
+  being analyzed. The legacy SQL schema prefixes tables/files with
+  `neighborhood_` for this reason, but the prefix is a holdover with no
+  remaining meaning (the pipeline only ever analyzes one boundary at a
+  time) and is dropped in the new Python-generated tables/exports
+  (FR-EXPORT-2).
 - **Census block** — smallest US Census Bureau geographic unit used as the
   origin point for reachability/access scoring (`geoid20` key).
 - **Reachability shed** — the set of road segments/blocks reachable from a

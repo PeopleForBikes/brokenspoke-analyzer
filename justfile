@@ -116,3 +116,11 @@ test-e2e-prepare:
 # Use nono sandbox for Claude.
 nono-claude profile="claude":
     nono run --allow-cwd --profile {{ profile }} -- claude
+
+# Use nono sandbox for Claude -- restricted internet, skip-permissions.
+nono-claude-danger profile="claude":
+    nono run \
+    --allow-cwd \
+    --allow-domain github.com \
+    --profile {{ profile }} \
+    -- claude --dangerously-skip-permissions
