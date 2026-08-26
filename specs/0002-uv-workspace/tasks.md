@@ -168,9 +168,9 @@ instead of at the very end.
     `release.yaml`'s `release-dist` job) rather than blocking this feature on
     the separately tracked shared-workflow issue.
   - _Requirements: 7.3_
-  - [ ] 8.1 Checkpoint - CI green on this branch's PR
-    - All CI jobs (`ci`, `lint-sql`, and any added workaround steps) pass on the
-      actual PR, not just local `just ci`.
+  - [x] 8.1 Checkpoint - CI green on this branch's PR
+    - Verified: all CI jobs (`ci`, `lint-sql`, and any added workaround steps)
+      pass on the actual PR on GitHub.com.
 
 - [x] 9. Update documentation referencing the old layout
   - Update `CLAUDE.md`'s Architecture section to describe
@@ -182,19 +182,21 @@ instead of at the very end.
     rebuild/reopen flow unchanged.
   - _Requirements: 7.5, 7.6_
 
-- [ ] 10. Checkpoint - full manual verification pass
-  - `uv sync --all-extras --dev` succeeds from a clean checkout.
-  - `just ci` (lint + docs + test) passes end-to-end.
-  - `uv run bna --help` and a representative subcommand behave identically to
-    `main`.
-  - `just docker-build` succeeds and the built image runs `bna` correctly.
-  - `uv build --package brokenspoke-analyzer-lib --wheel` succeeds independently
-    of the cli package.
-  - Dev container: `Dev Containers: Rebuild and Reopen in Container`, then
-    `uv sync` inside it, confirms editable installs of both members and that
-    `Python: Select Interpreter` → `./.venv/bin/python` debugging still works.
-  - `integration/` e2e fixtures still invoke `bna` successfully (spot-check one
-    city rather than the full suite, given e2e run time).
+- [x] 10. Checkpoint - full manual verification pass
+  - Verified: `uv sync --all-extras --dev` succeeds from a clean checkout (via
+    the passing GitHub Actions CI run, which runs this step).
+  - Verified: `just ci` (lint + docs + test) passes end-to-end (via CI).
+  - Verified: `uv run bna --help` and a representative subcommand behave
+    identically to `main`.
+  - Verified: `just docker-build` succeeds and the built image runs `bna`
+    correctly.
+  - Verified: `uv build --package brokenspoke-analyzer-lib --wheel` succeeds
+    independently of the cli package.
+  - Verified: Dev container round-trip
+    (`Dev Containers: Rebuild and Reopen in Container`, `uv sync` inside it,
+    `Python: Select Interpreter` → `./.venv/bin/python` debugging) works.
+  - Verified: `integration/` e2e fixtures still invoke `bna` successfully
+    (spot-checked).
 
 ## Notes
 
