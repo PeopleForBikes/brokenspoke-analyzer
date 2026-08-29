@@ -10,17 +10,22 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import pathlib
+import sys
 from importlib import metadata
+
+# The workspace members live under packages/*/src: make them importable so
+# autodoc works even when they are not installed in the environment.
+REPOSITORY_ROOT = pathlib.Path(__file__).parents[2]
+for member in ("brokenspoke-analyzer-lib", "brokenspoke-analyzer-cli"):
+    sys.path.insert(0, str(REPOSITORY_ROOT / "packages" / member / "src"))
 
 # -- Project information -----------------------------------------------------
 
 project = "Brokenspoke Analyzer"
 copyright = "2022, PeopleForBikes"
 author = "PeopleForBikes"
-package = "brokenspoke-analyzer"
+package = "brokenspoke-analyzer-cli"
 
 # The full version, including alpha/beta/rc tags
 release = metadata.version(package)
@@ -67,6 +72,14 @@ exclude_patterns = []
 # Generate labels for heading anchors for h1, h2, and h3 level headings
 # (corresponding to #, ##, and ### in markdown).
 myst_heading_anchors = 3
+
+# `obstore` re-exports Rust-backed callables whose annotations reference types
+# that are not importable at documentation build time. Their warnings are not
+# actionable from this repository, and the docs are built with `-W`.
+suppress_warnings = [
+    "sphinx_autodoc_typehints.forward_reference",
+    "sphinx_autodoc_typehints.guarded_import",
+]
 
 # -- Options for HTML output -------------------------------------------------
 

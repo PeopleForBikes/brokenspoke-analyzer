@@ -39,13 +39,14 @@ specs/
 
 ## 📄 Document Definitions
 
-Every feature directory must contain exactly these three files:
+Every feature directory must contain at least these three files:
 
 | File                  | Purpose                                                                                                                                                                   | Audience                         |
 | :-------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :------------------------------- |
 | **`requirements.md`** | Defines the **functional and non-functional requirements**. Includes user stories, acceptance criteria, and glossary. Focuses on _behavior_ and _constraints_.            | Product Managers, QA, Developers |
 | **`design.md`**       | Defines the **technical architecture**. Includes component diagrams, data models, error handling strategies, and integration points. Focuses on _implementation details_. | Developers, Architects           |
 | **`tasks.md`**        | Defines the **implementation plan**. A granular checklist of tasks, subtasks, and file paths. Used as the roadmap for the sprint.                                         | Developers, Project Managers     |
+| **`deviations.md`**   | _Optional, written during implementation._ Records where the implementation departed from the other three documents, and why. Added only when deviations actually occur.  | Developers, Reviewers            |
 
 ## 🔄 The Workflow
 
@@ -312,6 +313,9 @@ Review the implementation against all three documents and produce the report.
 - **Naming**: Use `YYYY-feature-name` for directories (e.g.,
   `0001-auth-module`).
 - **Updates**: If a design changes during implementation, update the `design.md`
-  and `tasks.md` to reflect reality. Do not leave specs outdated.
+  and `tasks.md` to reflect reality. Do not leave specs outdated. When the
+  change is a departure worth remembering rather than a simple correction,
+  record it in `deviations.md` and link to it from the affected document, so the
+  original intent and the delta both survive.
 - **Deletion**: Never delete old specs. If a feature is cancelled, mark the
   directory as `cancelled` in the README.

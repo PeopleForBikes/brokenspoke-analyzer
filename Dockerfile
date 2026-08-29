@@ -32,10 +32,10 @@ RUN apt-get update \
 WORKDIR /usr/src/app
 COPY . .
 RUN pip install uv \
-  && uv export --format requirements-txt --all-extras --no-group dev --no-hashes -o requirements.txt \
+  && uv export --all-packages --no-emit-workspace --format requirements-txt --all-extras --no-group dev --no-hashes -o requirements.txt \
   && mkdir -p deps \
   && pip wheel -r requirements.txt -w deps \
-  && uv build --wheel
+  && uv build --all-packages --wheel
 
 FROM base AS main
 LABEL author="PeopleForBikes" \
@@ -60,7 +60,9 @@ COPY --from=builder /usr/src/app/deps ./pkg/deps
 COPY --from=builder /usr/src/app/dist ./pkg/dist
 COPY --from=osm2pgrouting3 /usr/src/osm2pgrouting/build/osm2pgrouting /usr/bin/osm2pgrouting
 RUN  pip install pkg/deps/* \
-  && pip install pkg/dist/brokenspoke_analyzer-*-py3-none-any.whl \
+  && pip install \
+  pkg/dist/brokenspoke_analyzer_lib-*-py3-none-any.whl \
+  pkg/dist/brokenspoke_analyzer_cli-*-py3-none-any.whl \
   && rm -fr /usr/src/app/pkg \
   && addgroup --system --gid 1001 bna \
   && adduser --system --uid 1001 bna \

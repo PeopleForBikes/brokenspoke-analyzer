@@ -1,0 +1,232 @@
+"""Define the prepare sub-command."""
+
+import asyncio
+import pathlib
+
+import aiohttp
+import geopandas as gpd
+import pycountry
+import rich
+import typer
+from loguru import logger
+
+from brokenspoke_analyzer_cli import common
+from brokenspoke_analyzer_lib import (
+    datastore,
+    utils,
+)
+from brokenspoke_analyzer_lib.core import (
+    analysis,
+    downloader,
+    runner,
+)
+
+app = typer.Typer()
+
+AWS_REGION = "AWS_REGION"
+BNA_CACHE_AWS_S3_BUCKET = "BNA_CACHE_AWS_S3_BUCKET"
+
+
+@app.command(name="prepare")
+def prepare_cmd(
+    country: common.Country,
+    city: common.City,
+    region: common.Region = None,
+    block_population: common.BlockPopulation = common.DEFAULT_BLOCK_POPULATION,
+    block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
+    cache_dir: common.CacheDir = None,
+    city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
+    data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
+    fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
+    lodes_year: common.LODESYear = None,
+    mirror: common.Mirror = None,
+    retries: common.Retries = common.DEFAULT_RETRIES,
+    worldpop_year: common.WorldPopYear = common.DEFAULT_WORLDPOP_YEAR,
+    *,
+    no_cache: common.NoCache = False,
+) -> None:
+    """Prepare all the files required for an analysis."""
+    # Make MyPy happy.
+    if not data_dir:
+        raise ValueError("`data_dir` must be set")
+    if not city_speed_limit:
+        raise ValueError("`city_speed_limit` must be set")
+    if not block_size:
+        raise ValueError("`block_size` must be set")
+    if not block_population:
+        raise ValueError("`block_population` must be set")
+    if not retries:
+        raise ValueError("`retries` must be set")
+
+    # Handles us/usa as the same country.
+    country = utils.normalize_country_name(country)
+
+    # Ensure US/USA cities have the right parameters.
+    if utils.is_usa(country):
+        if not (region and fips_code != common.DEFAULT_CITY_FIPS_CODE):
+            raise ValueError("`state` and `fips_code` are required for US cities")
+    else:
+        # Ensure FIPS code has the default value for non-US cities.
+        fips_code = common.DEFAULT_CITY_FIPS_CODE
+
+    logger.debug(f"{data_dir=}")
+    asyncio.run(
+        prepare_(
+            block_population=block_population,
+            block_size=block_size,
+            cache_dir=cache_dir,
+            city_speed_limit=city_speed_limit,
+            city=city,
+            country=country,
+            data_dir=data_dir,
+            fips_code=fips_code,
+            lodes_year=lodes_year,
+            mirror=mirror or None,
+            no_cache=bool(no_cache),
+            region=region or None,
+            worldpop_year=worldpop_year,
+        ),
+    )
+
+
+async def prepare_(  # noqa: PLR0915
+    *,
+    block_population: int,
+    block_size: int,
+    cache_dir: pathlib.Path | None,
+    city_speed_limit: int,
+    city: str,
+    country: str,
+    data_dir: pathlib.Path,
+    fips_code: str | None,
+    no_cache: bool,
+    lodes_year: int | None,
+    mirror: str | None,
+    region: str | None,
+    worldpop_year: int,
+) -> None:
+    """Prepare and kicks off the analysis."""
+    # Prepare the Rich output.
+    console = rich.get_console()
+
+    # Compute the OSM queries and city slug.
+    structured_query, text_query, slug = analysis.osmnx_query(country, city, region)
+
+    # Prepare the data directory for custom downloads.
+    data_dir /= slug
+    data_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(f"{data_dir=}")
+
+    # Prepare the caching strategy.
+    caching_strategy = datastore.CacheType.USER_CACHE
+    if no_cache:
+        caching_strategy = datastore.CacheType.NONE
+    elif cache_dir:
+        caching_strategy = datastore.CacheType.CUSTOM
+
+    # Prepare the data store.
+    bna_store = datastore.BNADataStore(
+        data_dir,
+        caching_strategy,
+        mirror=mirror,
+        custom_dir=cache_dir,
+    )
+
+    # Derive some information from the input.
+    state_abbrev, state_fips, _ = analysis.derive_state_info(region)
+    osm_region = region or country
+
+    async with aiohttp.ClientSession() as session:
+        # Download the city boundaries.
+        console.log(f"[green]Fetching city boundaries for {city}...")
+        with console.status("Downloading..."):
+            await bna_store.download_city_boundaries(
+                session=session,
+                structured_query=structured_query,
+                text_query=text_query,
+                slug=slug,
+                fips_code=fips_code,
+            )
+
+        # Download the OSMregion file.
+        console.log(
+            f"[green]Fetching the OSM region file for {osm_region}...",
+        )
+        with console.status("Downloading..."):
+            region_file_name = await bna_store.download_osm_data(session, osm_region)
+
+    # Reduce the osm file with osmium.
+    console.log(f"[green]Reducing the OSM file for {city} with osmium...")
+    polygon_file = data_dir / f"{slug}.geojson"
+    region_file_path = data_dir / region_file_name
+    pfb_osm_file = pathlib.Path(f"{slug}.osm")
+    analysis.prepare_city_file(data_dir, region_file_path, polygon_file, pfb_osm_file)
+
+    # Perform some specific operations for non-US cities.
+    if state_fips == runner.NON_US_STATE_FIPS:
+        try:
+            country_iso = pycountry.countries.search_fuzzy(country)[0].alpha_3
+        except LookupError:
+            # Create synthetic population.
+            console.log("[green]Preparing synthetic population...")
+            cell_size = (block_size, block_size)
+            boundary_file = data_dir / f"{slug}.geojson"
+            city_boundaries_gdf = gpd.read_file(boundary_file)
+            synthetic_population = analysis.create_synthetic_population(
+                city_boundaries_gdf, *cell_size, population=block_population
+            )
+            # Simulate the census blocks.
+            console.log("[green]Simulating census blocks...")
+            analysis.simulate_census_blocks(data_dir, synthetic_population)
+        else:
+            async with aiohttp.ClientSession() as session:
+                console.log(f"[green]Fetching WorldPop ({worldpop_year}) data...")
+                with console.status("Downloading..."):
+                    await bna_store.download_worldpop(
+                        session, country_iso, worldpop_year
+                    )
+        # Change the speed limit.
+        console.log(
+            f"[green]Adjusting default city speed limit to {city_speed_limit} km/h...",
+        )
+        analysis.change_speed_limit(data_dir, city, state_abbrev, city_speed_limit)
+    else:
+        # Fetch the data.
+        async with aiohttp.ClientSession() as session:
+            console.log("[green]Fetching US state speed limits...")
+            with console.status("Downloading..."):
+                await bna_store.download_state_speed_limits(session)
+
+            console.log("[green]Fetching US city speed limits...")
+            with console.status("Downloading..."):
+                await bna_store.download_city_speed_limits(session)
+
+            if state_abbrev.lower() == "pr":
+                logger.warning(
+                    f"There is no LODES data for the state of '{state_abbrev}'",
+                )
+            elif not lodes_year:
+                console.log("[green]Autodetecting latest LODES year...")
+                try:
+                    lodes_year = await downloader.autodetect_latest_lodes_year(
+                        session,
+                        state_abbrev,
+                    )
+                except ValueError as e:
+                    lehd_url = f"{downloader.LODES_URL}/{state_abbrev.lower()}/od"
+                    console.log(f"[red]Autodetection failed: {e}.")
+                    console.log(f"[red]Check {lehd_url} manually.")
+                    raise
+                console.log(f"[green]LODES year found: {lodes_year}")
+
+                console.log(f"[green]Fetching US employment data ({lodes_year})...")
+                with console.status("Downloading..."):
+                    await bna_store.download_lodes_data(
+                        session,
+                        state_abbrev,
+                        lodes_year,
+                    )
+
+            console.log("[green]Fetching US census blocks (2020)...")
+            with console.status("Downloading..."):
+                await bna_store.download_2020_census_blocks(session, state_fips)
