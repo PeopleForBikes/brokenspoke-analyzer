@@ -587,6 +587,7 @@ def osm_wrapper(
     database_url: str,
     fips_code: str,
     region: str,
+    city_speed_limit_override: str | None = None,
 ) -> None:
     """
     Wrap the `import_osm_data` function.
@@ -623,6 +624,7 @@ def osm_wrapper(
         fips_code,
         state_speed_limits_csv,
         city_speed_limits_csv,
+        city_speed_limit_override,
     )
 
 
@@ -635,6 +637,7 @@ async def all_wrapper(
     fips_code: str = common.DEFAULT_CITY_FIPS_CODE,
     region: str,
     lodes_year: int | None = None,
+    city_speed_limit_override: str | None = None,
 ) -> None:
     """
     Wrap the all the `import_*` functions.
@@ -669,4 +672,5 @@ async def all_wrapper(
         database_url=database_url,
         fips_code=fips_code,
         region=region,
+        city_speed_limit_override=city_speed_limit_override,
     )

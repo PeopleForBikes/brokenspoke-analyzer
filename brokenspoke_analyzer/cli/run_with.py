@@ -191,6 +191,7 @@ async def run_(  # noqa: C901, PLR0912, PLR0915
             fips_code=fips_code,
             lodes_year=lodes_year,
             region=region or country,
+            city_speed_limit_override=str(city_speed_limit),
         )
 
     # Compute.
