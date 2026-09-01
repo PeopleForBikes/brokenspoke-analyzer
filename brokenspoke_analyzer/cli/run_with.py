@@ -207,7 +207,10 @@ async def run_(  # noqa: C901, PLR0912, PLR0915
     logger.debug(f"{state_default_speed=}")
     logger.debug(f"{city_default_speed=}")
     country = utils.normalize_country_name(country)
-    import_jobs = utils.is_usa(country)
+
+    # Only some US states have job data.
+    _, _, import_jobs = analysis.derive_state_info(region)
+    logger.debug(f"{import_jobs=}")
 
     with console.status("[green]Computing..."):
         compute.parts(
