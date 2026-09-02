@@ -405,6 +405,7 @@ class OSMAdapter(SourceAdapter):
             / "australia-oceania/australia/cocos-keeling-latest.osm.pbf",
             "coral_sea_islands": u
             / "australia-oceania/australia/coral-sea-islands-latest.osm.pbf",
+            "czechia": u / "europe/czech-republic-latest.osm.pbf",
             "extremadura": u / "europe/spain/extremadura-latest.osm.pbf",
             "galicia": u / "europe/spain/galicia-latest.osm.pbf",
             "georgia": u / "north-america/us/georgia-latest.osm.pbf",
