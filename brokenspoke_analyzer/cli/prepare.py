@@ -185,7 +185,7 @@ async def prepare_(  # noqa: PLR0915
                     )
         # Change the speed limit.
         console.log(
-            f"[green]Adjusting default city speed limit to {city_speed_limit} km/h...",
+            f"[green]Adjusting default city speed limit to {city_speed_limit} mph...",
         )
         analysis.change_speed_limit(data_dir, city, state_abbrev, city_speed_limit)
     else:
