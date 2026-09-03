@@ -25,6 +25,8 @@ CENSUS_BLOCKS_TABLE = "neighborhood_census_blocks"
 CITY_SPEED_TABLE = "city_speed"
 STATE_SPEED_TABLE = "state_speed"
 RESIDENTIAL_SPEED_LIMIT_TABLE = "residential_speed_limit"
+US_MIN_OVERLAP_RATIO = 0.5
+INTERNATIONAL_MIN_OVERLAP_RATIO = 0.25
 script_dir = resources.files("brokenspoke_analyzer.scripts")
 
 # https://gis.stackexchange.com/questions/48949/epsg-3857-or-4326-for-web-mapping
@@ -106,14 +108,16 @@ def import_and_transform_shapefile(
     dbcore.execute_query(engine, transform_query)
 
 
-def delete_block_outside_buffer(engine: Engine) -> None:
+def delete_block_outside_buffer(
+    engine: Engine, *, min_overlap_ratio: float = US_MIN_OVERLAP_RATIO
+) -> None:
     """Delete the blocks which are outside the boundaries+buffer."""
     query = (
         "DELETE FROM neighborhood_census_blocks AS blocks "
         "USING neighborhood_boundary AS boundary "
         "WHERE (NOT ST_Intersects(blocks.geom, boundary.geom)) "
         "OR (ST_AREA(ST_INTERSECTION(blocks.geom, boundary.geom)) / "
-        "ST_AREA(blocks.geom)) < .50"
+        f"ST_AREA(blocks.geom)) < {min_overlap_ratio}"
     )
     dbcore.execute_query(engine, query)
 
@@ -170,7 +174,12 @@ def import_neighborhood(
 
     # Discard blocks outside of the boundary+buffer.
     logger.info("Removing blocks outside buffer...")
-    delete_block_outside_buffer(engine)
+    overlap_ratio = (
+        US_MIN_OVERLAP_RATIO
+        if utils.is_usa(country)
+        else INTERNATIONAL_MIN_OVERLAP_RATIO
+    )
+    delete_block_outside_buffer(engine, min_overlap_ratio=overlap_ratio)
 
     # For US cities, remove the water blocks.
     if utils.is_usa(country):
