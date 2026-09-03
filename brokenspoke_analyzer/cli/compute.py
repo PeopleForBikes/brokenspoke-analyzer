@@ -55,7 +55,10 @@ def compute_cmd(
     state_default_speed, city_default_speed = ingestor.retrieve_default_speed_limits(
         engine,
     )
-    import_jobs = utils.is_usa(country)
+
+    # Only some US states have job data.
+    _, _, import_jobs = analysis.derive_state_info(region)
+    logger.debug(f"{import_jobs=}")
 
     # Compute the output SRID from the boundary file.
     output_srid = utils.get_srid(boundary_file.resolve(strict=True))
