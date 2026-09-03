@@ -251,7 +251,7 @@ class WorldPopAdapter(SourceAdapter):
         if file_shp.exists():
             return
         logger.debug(f"{file_shp} doesn't exist, creating shapefile")
-        
+
         boundary_candidates = [
             p for p in output_dir.glob("*.geojson") if p.name != "population.geojson"
         ]
@@ -269,20 +269,22 @@ class WorldPopAdapter(SourceAdapter):
                 f"found {len(boundary_candidates)}; falling back to reading "
                 "the entire raster (this will be slow)."
             )
-        
-        with rasterio.open(file_geotiff) as src:
 
+        with rasterio.open(file_geotiff) as src:
             if boundary_candidates and len(boundary_candidates) == 1:
-                boundary_window = rasterio.windows.from_bounds(
-                    minx, miny, maxx, maxy, transform=src.transform
-                ).round_offsets().round_shape()
+                boundary_window = (
+                    rasterio.windows.from_bounds(
+                        minx, miny, maxx, maxy, transform=src.transform
+                    )
+                    .round_offsets()
+                    .round_shape()
+                )
                 band_data = src.read(1, window=boundary_window)
                 transform = src.window_transform(boundary_window)
             else:
                 # Read the population count as a numpy array
                 band_data = src.read(1)
                 transform = src.transform
-            
 
             # Get spatial metadata
             crs = src.crs
@@ -298,9 +300,7 @@ class WorldPopAdapter(SourceAdapter):
             )
 
             # Generate shapes from every pixel.
-            shapes_generator = rasterio.features.shapes(
-                pixel_ids, transform=transform
-            )
+            shapes_generator = rasterio.features.shapes(pixel_ids, transform=transform)
 
             flat_pop = band_data.reshape(-1)
 
