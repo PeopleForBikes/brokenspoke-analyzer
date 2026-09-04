@@ -263,11 +263,11 @@ class WorldPopAdapter(SourceAdapter):
         with rasterio.open(file_geotiff) as src:
             boundary_window = (
                 rasterio.windows.from_bounds(
-                minx, miny, maxx, maxy, transform=src.transform
+                    minx, miny, maxx, maxy, transform=src.transform
                 )
                 .round_offsets()
                 .round_shape()
-             )
+            )
             band_data = src.read(1, window=boundary_window)
             transform = src.window_transform(boundary_window)
 

@@ -351,7 +351,7 @@ class BNADataStore:
         """
         s = datasource.WorldPopAdapter(
             country_iso_3166, year, boundary_file, self.mirror
-            )
+        )
         await self.fetch_from_source(session, s, cache_only=cache_only)
 
     async def download_osm_data(
