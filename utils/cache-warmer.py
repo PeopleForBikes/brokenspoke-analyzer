@@ -109,6 +109,7 @@ async def _run_downloads(
                         session,
                         country.alpha_3,
                         2026,
+                        # Unused: prepare() only runs when cache_only=False
                         pathlib.Path(),
                         cache_only=cache_only,
                     )
