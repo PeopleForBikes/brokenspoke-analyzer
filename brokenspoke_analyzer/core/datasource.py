@@ -219,7 +219,9 @@ class WorldPopAdapter(SourceAdapter):
         Return the source data files.
 
         Example:
-            >>> adapter = WorldPopAdapter("can", "2026")
+            >>> adapter = WorldPopAdapter(
+            ... "can", "2026", pathlib.Path("boundary.geojson")
+            ... )
             >>> adapter.files[0].name
             can_pop_2026_CN_1km_R2025A_UA_v1.tif
         """
