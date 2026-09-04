@@ -194,6 +194,7 @@ class WorldPopAdapter(SourceAdapter):
         self,
         country_iso_3166: str,
         year: int,
+        boundary_file: pathlib.Path,
         mirror: str | None = None,
     ) -> None:
         """
@@ -205,6 +206,7 @@ class WorldPopAdapter(SourceAdapter):
         super().__init__(mirror)
         self.country_iso_3166 = country_iso_3166
         self.year = year
+        self.boundary_file = boundary_file
 
     @staticmethod
     def key() -> str:
@@ -252,39 +254,22 @@ class WorldPopAdapter(SourceAdapter):
             return
         logger.debug(f"{file_shp} doesn't exist, creating shapefile")
 
-        boundary_candidates = [
-            p for p in output_dir.glob("*.geojson") if p.name != "population.geojson"
-        ]
-        boundary_window = None
-
-        if len(boundary_candidates) == 1:
-            boundary_gdf = gpd.read_file(boundary_candidates[0])
-            minx, miny, maxx, maxy = boundary_gdf.total_bounds
-            # Small padding (in degrees) so edge pixels aren't clipped off.
-            pad = 0.02
-            minx, miny, maxx, maxy = minx - pad, miny - pad, maxx + pad, maxy + pad
-        else:
-            logger.warning(
-                f"Expected exactly 1 boundary geojson in {output_dir}, "
-                f"found {len(boundary_candidates)}; falling back to reading "
-                "the entire raster (this will be slow)."
-            )
+        boundary_gdf = gpd.read_file(self.boundary_file)
+        minx, miny, maxx, maxy = boundary_gdf.total_bounds
+        # Small padding (in degrees) so edge pixels aren't clipped off.
+        pad = 0.02
+        minx, miny, maxx, maxy = minx - pad, miny - pad, maxx + pad, maxy + pad
 
         with rasterio.open(file_geotiff) as src:
-            if boundary_candidates and len(boundary_candidates) == 1:
-                boundary_window = (
-                    rasterio.windows.from_bounds(
-                        minx, miny, maxx, maxy, transform=src.transform
-                    )
-                    .round_offsets()
-                    .round_shape()
+            boundary_window = (
+                rasterio.windows.from_bounds(
+                minx, miny, maxx, maxy, transform=src.transform
                 )
-                band_data = src.read(1, window=boundary_window)
-                transform = src.window_transform(boundary_window)
-            else:
-                # Read the population count as a numpy array
-                band_data = src.read(1)
-                transform = src.transform
+                .round_offsets()
+                .round_shape()
+             )
+            band_data = src.read(1, window=boundary_window)
+            transform = src.window_transform(boundary_window)
 
             # Get spatial metadata
             crs = src.crs

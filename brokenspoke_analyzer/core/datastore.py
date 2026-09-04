@@ -340,6 +340,7 @@ class BNADataStore:
         session: aiohttp.ClientSession,
         country_iso_3166: str,
         year: int,
+        boundary_file: pathlib.Path,
         *,
         cache_only: bool = False,
     ) -> None:
@@ -348,7 +349,9 @@ class BNADataStore:
 
         Default year to current year
         """
-        s = datasource.WorldPopAdapter(country_iso_3166, year, self.mirror)
+        s = datasource.WorldPopAdapter(
+            country_iso_3166, year, boundary_file, self.mirror
+            )
         await self.fetch_from_source(session, s, cache_only=cache_only)
 
     async def download_osm_data(
