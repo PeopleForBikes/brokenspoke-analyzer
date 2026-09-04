@@ -12,6 +12,7 @@ import geopandas as gpd
 import numpy as np
 import rasterio
 import rasterio.features
+import rasterio.windows
 import yarl
 from loguru import logger
 from pyrosm import data
@@ -193,6 +194,7 @@ class WorldPopAdapter(SourceAdapter):
         self,
         country_iso_3166: str,
         year: int,
+        boundary_file: pathlib.Path,
         mirror: str | None = None,
     ) -> None:
         """
@@ -204,6 +206,7 @@ class WorldPopAdapter(SourceAdapter):
         super().__init__(mirror)
         self.country_iso_3166 = country_iso_3166
         self.year = year
+        self.boundary_file = boundary_file
 
     @staticmethod
     def key() -> str:
@@ -216,7 +219,9 @@ class WorldPopAdapter(SourceAdapter):
         Return the source data files.
 
         Example:
-            >>> adapter = WorldPopAdapter("can", "2026")
+            >>> adapter = WorldPopAdapter(
+            ... "can", "2026", pathlib.Path("boundary.geojson")
+            ... )
             >>> adapter.files[0].name
             can_pop_2026_CN_1km_R2025A_UA_v1.tif
         """
@@ -250,29 +255,46 @@ class WorldPopAdapter(SourceAdapter):
         if file_shp.exists():
             return
         logger.debug(f"{file_shp} doesn't exist, creating shapefile")
+
+        boundary_gdf = gpd.read_file(self.boundary_file)
+        minx, miny, maxx, maxy = boundary_gdf.total_bounds
+        # Small padding (in degrees) so edge pixels aren't clipped off.
+        pad = 0.02
+        minx, miny, maxx, maxy = minx - pad, miny - pad, maxx + pad, maxy + pad
+
         with rasterio.open(file_geotiff) as src:
-            # Read the population count as a numpy array
-            band_data = src.read(1)
+            boundary_window = (
+                rasterio.windows.from_bounds(
+                    minx, miny, maxx, maxy, transform=src.transform
+                )
+                .round_offsets()
+                .round_shape()
+            )
+            band_data = src.read(1, window=boundary_window)
+            transform = src.window_transform(boundary_window)
 
             # Get spatial metadata
-            transform = src.transform
             crs = src.crs
             nodata_val = src.nodata
 
-            # Mask to ignore NoData values
-            mask = (
-                band_data != nodata_val if nodata_val is not None else band_data > 0
-            )  # Fallback: ignore 0 population pixels
+            # Set no data pixels as population = 0
+            if nodata_val is not None:
+                band_data = np.where(band_data == nodata_val, 0, band_data)
 
-            # Generate shapes from the raster pixels
-            shapes_generator = rasterio.features.shapes(
-                band_data, mask=mask, transform=transform
+            # Convert to vector first so that equal values aren't merged
+            pixel_ids = np.arange(band_data.size, dtype=np.int32).reshape(
+                band_data.shape
             )
+
+            # Generate shapes from every pixel.
+            shapes_generator = rasterio.features.shapes(pixel_ids, transform=transform)
+
+            flat_pop = band_data.reshape(-1)
 
             # Convert the extracted shapes into Shapely geometries
             records = [
-                {"geometry": shape(geom), "POP20": val}
-                for geom, val in shapes_generator
+                {"geometry": shape(geom), "POP20": flat_pop[int(pid)]}
+                for geom, pid in shapes_generator
             ]
 
         # Load into a GeoDataFrame
