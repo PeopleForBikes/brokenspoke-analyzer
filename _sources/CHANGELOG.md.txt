@@ -7,11 +7,29 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
-## [3.2.4] - 2026-09-21
+## [3.2.5] - 2026-0904
+
+### Fixed
+
+- Fixed the OSM download for Czech Republic. [#1209]
+- Honored the `--city-speed-limit` flag. [#1213]
+- Fixed the import of US job data only when available from the US Census Bureau.
+  [#1214]
+- Fixed the population grid provided by WorldPop. [#1215] [#1216]
+
+[#1209]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1209
+[#1213]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1213
+[#1214]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1214
+[#1215]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1215
+[#1216]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1216
+[3.2.5]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/3.2.5
+
+## [3.2.4] - 2026-08-21
+
+### Fixed
 
 - Updated custom OSM region mapping for Geofabrik. [#1201]
-
-### Changed
 
 [#1201]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1198
 [3.2.4]:
