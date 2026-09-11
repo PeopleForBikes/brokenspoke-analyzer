@@ -118,7 +118,7 @@ test-e2e-prepare:
 
 # Use nono sandbox to login with Claude.
 nono-claude-login:
-    nono run --profile nolabs-ai/claude --allow-launch-services -- claude login
+    nono run --profile nolabs-ai/claude --allow-launch-services -- claude "/login"
 
 # Use nono sandbox for Claude.
 nono-claude profile="claude":
