@@ -65,9 +65,9 @@ Select a table, click `Add` and the table will load as a regular layer in QGIS.
 
 ```{admonition} Note
 :class: note
-To create the `neighborhood_boundary` and `neighborhood_census_blocks`, tables, first the [best (planar) projected CRS](https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/brokenspoke_analyzer/core/ingestor.py#L530) is determined during the ingestion phase using GeoPandas, then the data is [imported into PostGIS](https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/brokenspoke_analyzer/core/ingestor.py#L149), and finally the data is [projected](https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/brokenspoke_analyzer/core/ingestor.py#L96) to the best (planar) projected CRS.
+To create the `neighborhood_boundary` and `neighborhood_census_blocks`, tables, first the [best (planar) projected CRS](https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/packages/brokenspoke-analyzer-lib/src/brokenspoke_analyzer_lib/core/ingestor.py#L530) is determined during the ingestion phase using GeoPandas, then the data is [imported into PostGIS](https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/packages/brokenspoke-analyzer-lib/src/brokenspoke_analyzer_lib/core/ingestor.py#L149), and finally the data is [projected](https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/packages/brokenspoke-analyzer-lib/src/brokenspoke_analyzer_lib/core/ingestor.py#L96) to the best (planar) projected CRS.
 
-Note that the CRS for boundary and census blocks shapefiles is North American Datum of 1983 (GCS NAD83 or equivalently EPSG:4269) but the SRID used by [the shp2pgsql command](https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/brokenspoke_analyzer/core/ingestor.py#L62) is [by default EPSG:4326](https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/brokenspoke_analyzer/core/ingestor.py#L43). Since EPSG:4269 and EPSG:4326 are almost identical, the difference between calculated distances for roads/paths is negligible. Setting the default to EPSG:4326 is appropriate since the brokenspoke-analyzer is also used for shapefiles obtained from other sources besides the US census, such as for international cities.
+Note that the CRS for boundary and census blocks shapefiles is North American Datum of 1983 (GCS NAD83 or equivalently EPSG:4269) but the SRID used by [the shp2pgsql command](https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/packages/brokenspoke-analyzer-lib/src/brokenspoke_analyzer_lib/core/ingestor.py#L62) is [by default EPSG:4326](https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/packages/brokenspoke-analyzer-lib/src/brokenspoke_analyzer_lib/core/ingestor.py#L43). Since EPSG:4269 and EPSG:4326 are almost identical, the difference between calculated distances for roads/paths is negligible. Setting the default to EPSG:4326 is appropriate since the brokenspoke-analyzer is also used for shapefiles obtained from other sources besides the US census, such as for international cities.
 ```
 
 ## Rendering
@@ -105,18 +105,18 @@ Rendering generated bicycle infrastructure
 
 If after doing an analysis it is determined that the infrastructure type is
 wrong, there are two approaches to making changes: updating the
-[SQL scripts of the analyzer](https://github.com/PeopleForBikes/brokenspoke-analyzer/tree/main/brokenspoke_analyzer/scripts/sql)
+[SQL scripts of the analyzer](https://github.com/PeopleForBikes/brokenspoke-analyzer/tree/main/packages/brokenspoke-analyzer-lib/src/brokenspoke_analyzer_lib/scripts/sql)
 or directly changing exisitng tags associated with elements in OSM.
 
 ### Update the SQL scripts of the analyzer
 
 The
-[scripts folder](https://github.com/PeopleForBikes/brokenspoke-analyzer/tree/main/brokenspoke_analyzer/scripts/)
+[scripts folder](https://github.com/PeopleForBikes/brokenspoke-analyzer/tree/main/packages/brokenspoke-analyzer-lib/src/brokenspoke_analyzer_lib/scripts/)
 of the analyzer holds code related to importing OSM elements into PostGIS. The
-[.style file](https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/brokenspoke_analyzer/scripts/pfb.style)
+[.style file](https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/packages/brokenspoke-analyzer-lib/src/brokenspoke_analyzer_lib/scripts/pfb.style)
 defines which OSM tags and elements are imported into PostGIS via `osm2pgsql`
 while the
-[sql folder](https://github.com/PeopleForBikes/brokenspoke-analyzer/tree/main/brokenspoke_analyzer/scripts/sql)
+[sql folder](https://github.com/PeopleForBikes/brokenspoke-analyzer/tree/main/packages/brokenspoke-analyzer-lib/src/brokenspoke_analyzer_lib/scripts/sql)
 contains the SQL scripts that set up the features and calculate connectivity and
 stress.
 
