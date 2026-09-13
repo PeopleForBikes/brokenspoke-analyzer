@@ -410,7 +410,7 @@ only bites when a _duplicated_ edge straddles a chunk boundary.
 `census_blocks.pop_low_stress`, `pop_high_stress`, `emp_low_stress` and
 `emp_high_stress` are declared `INT`, so each `SUM()` is rounded half away
 from zero as it lands there -- and `access_population.sql`'s scoring `CASE`
-is a *second* `UPDATE` that reads those rounded columns back. The score is
+is a _second_ `UPDATE` that reads those rounded columns back. The score is
 computed from the rounded totals, not the exact ones.
 
 This is §1.1 again, and it hid for the entire corpus because a US block's
@@ -729,13 +729,16 @@ be reproduced -- is §1.26.
 
 `.gitignore` excludes `results/`, so the "checked-in `results/**` baseline"
 language in requirements.md §7.3 and NFR-PARITY-3 does not describe reality: the
-baselines are local artifacts on one machine. They were regenerated 2026-09-11,
-so they do reflect the current SQL, but nothing in the repo pins them and a
-fresh clone has no ground truth at all.
+baselines are local artifacts on one machine. They were regenerated 2026-09-11
+by the **3.2.5** SQL pipeline (the branch point for this work, tasks.md
+"Branch point and release"), so they did reflect the SQL as it stood, but
+nothing in the repo pins them and a fresh clone has no ground truth at all.
 
 Worth deciding before task 9: either commit the baselines (they are large), or
 state explicitly that parity validation requires a local regeneration step and
-document how to produce it.
+document how to produce it. **Now sharper than when this was written:** the SQL
+that produced them is deleted, so regenerating means checking out `8a1ec91`
+(3.2.5 plus the spec) first.
 
 ### 5a.3 Valencia: one segment lost at a pedestrian plaza, mechanism unconfirmed
 
@@ -748,7 +751,7 @@ ways, all 217 census blocks, all 4,538 block pairs.
 The lost edge is shared with way `23454891`, which is **untagged** and a
 member of relation `r10847213` -- `area=yes, highway=pedestrian`, a plaza.
 That is the same pedestrian-plaza signature as §1.26's Chambéry case, with
-one difference that matters: there the plaza was a *way* `osm2pgrouting`
+one difference that matters: there the plaza was a _way_ `osm2pgrouting`
 imported, and here the claimant is an untagged way it would never import. So
 the §1.26 mechanism does not obviously apply, and the same-looking evidence
 may have a different cause.

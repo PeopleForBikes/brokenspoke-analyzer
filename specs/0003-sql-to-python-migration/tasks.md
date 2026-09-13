@@ -15,6 +15,42 @@ deleted. The pre-ship gate is 14 of 15 corpus cities at exact parity plus one
 documented deviation (requirements.md §6.1a), and it still passes after the
 deletion.
 
+### Branch point and release
+
+This work was built on **3.2.5** (`feature/nosql`, branched at `8a1ec91`),
+which is also the version that produced every `results/**` baseline the parity
+evidence rests on (findings.md §5a.2). "Parity" throughout these documents
+means *parity with 3.2.5's SQL*.
+
+It does **not** ship as 4.0.0. That release is the `uv` workspace split
+(`specs/0002-uv-workspace/`, branch `issues/1143/uv-workspace`), and management
+asked to keep the two breaking changes in separate releases, so this one lands
+as **5.0.0** and must first be rebased onto the workspace layout.
+
+Measured overlap between the two branches, to size that rebase: of the 96 files
+this work touches that the workspace split also moves, **90 are files deleted
+here** (78 SQL scripts plus the database-only CLI/core modules) and resolve as
+"stay deleted"; 6 more are moved *and* modified here. Only 7 files are edited by
+both branches -- `pyproject.toml`, `justfile`, `Dockerfile`, `CLAUDE.md`,
+`CONTRIBUTING.md`, `utils/bna-batch.py` and `uv.lock` (regenerate that one).
+The deletions are deliberately confined to a single commit, so the rename/delete
+conflicts arise once rather than per commit, and
+`just validate-parity --size XS --size S --size M` re-verifies the rebase
+end to end in about 7.5 minutes.
+
+**Rebase soon after 4.0.0 merges, not at release time** -- the conflict surface
+grows with every week the workspace branch moves underneath this one.
+
+### Risk acceptance
+
+Management reviewed the risk/benefit in September 2026 and accepted it, on the
+evidence that 14 of 15 corpus cities reproduce 3.2.5 exactly and that the
+remaining deviation is 3 road segments traced to an `osm2pgrouting` import
+artifact (findings.md §1.26, requirements.md §6.1a). The deciding factor was
+run time: the analysis stage is roughly 20-50x faster without the database
+round trip, with Washington DC's measured comparison (NFR-PERF-1) still to
+come at the time of the decision.
+
 ## Overview
 
 This is a big-bang rewrite (requirements.md §1): implemented as one body of
@@ -73,7 +109,7 @@ is the only record.
 ## Tasks
 
 - [x] 1. Benchmark spike: routing/reachability engine (design.md §3.4) — **DONE.
-      Outcome: `networkx`, not `scipy`** (design.md §3.3).
+     Outcome: `networkx`, not `scipy`** (design.md §3.3).
   - [x] 1.1 Write a throwaway spike script (not shipped, e.g.
         `utils/spike_routing_benchmark.py`) that builds a CSR adjacency matrix
         for a small synthetic graph and for one real corpus city. _Done; ran off
@@ -133,12 +169,12 @@ is the only record.
     access scoring.
 
 - [x] 3. `ingest.py` — OSM parsing and routable graph (FR-ING-1, FR-ING-2) —
-      **DONE.** Census block counts and populations match `results/**` exactly
-      for Crested Butte, Santa Rosa, and Ancienne-Lorette (US and non-US paths).
-      Two design corrections recorded in design.md §3.1: `pyrosm` cannot read
-      `prepare`'s OSM **XML** (converted via `osmium cat` first), and neither
-      `osmnx` nor `pyrosm` reproduces `osm2pgrouting`'s segmentation, so the
-      splitting rule is implemented here rather than taken from a library.
+     **DONE.** Census block counts and populations match `results/**` exactly
+     for Crested Butte, Santa Rosa, and Ancienne-Lorette (US and non-US paths).
+     Two design corrections recorded in design.md §3.1: `pyrosm` cannot read
+     `prepare`'s OSM **XML** (converted via `osmium cat` first), and neither
+     `osmnx` nor `pyrosm` reproduces `osm2pgrouting`'s segmentation, so the
+     splitting rule is implemented here rather than taken from a library.
   - [x] 3.0 **`prepare` is unchanged and is the input boundary for `ingest`.**
         `prepare` (`analysis.py`/`downloader.py`/ `datasource.py`) already works
         well and is explicitly out of scope for this migration (requirements.md
@@ -174,14 +210,14 @@ is the only record.
         topology (source/target, direction) on a hand-verified expected graph.
   - _Requirements: FR-ING-1, FR-ING-2, NFR-TEST-1_
 
-- [x] 4. `features.py` — per-way attribute derivation (FR-FEAT-1) — **DONE.**
+- [x] 4.  `features.py` — per-way attribute derivation (FR-FEAT-1) — **DONE.**
 
       The `ways` layer matches the baseline **exactly on all 15 `XS`/`S`/`M`
-          corpus cities**: same rows, same geometry, and every one of the 30
-          published columns (task 9.3, task 10.1). Chambéry's long-standing +3
-          segments turned out to be an `osm2pgrouting` import artifact rather
-          than anything this stage does, and is scoped out of NFR-PARITY-1
-          (4.5a, findings.md §1.26).
+      corpus cities**: same rows, same geometry, and every one of the 30
+      published columns (task 9.3, task 10.1). Chambéry's long-standing +3
+      segments turned out to be an `osm2pgrouting` import artifact rather
+      than anything this stage does, and is scoped out of NFR-PARITY-1
+      (4.5a, findings.md §1.26).
 
           Two late corrections came out of the parity harness rather than this
           stage's own checks: the published `oneway` label carries
@@ -198,7 +234,6 @@ is the only record.
           borrowed from `bikescore-bna`'s `attributes.py`, design.md §4).
           Sub-tasks follow `compute.features()`'s execution order, which is part
           of the definition: later scripts overwrite columns earlier ones set.
-
   - [x] 4.1 `clip_osm.sql` — drop roads beyond `nb_boundary_buffer` of the
         boundary.
   - [x] 4.2 `one_way.sql` — `one_way_car` from the `oneway` tag.
@@ -247,10 +282,10 @@ is the only record.
   - [x] 4.9 `park.sql` — on-street parking per side. _Matched on first run.
         **The "both" pass has no lasting effect**: `park.sql` runs three
         sequential updates, and the later right/left passes assign their `CASE`
-        result *unconditionally*, so a road with no side tag has whatever
+        result \_unconditionally_, so a road with no side tag has whatever
         `parking:lane:both` just set overwritten with NULL. `ft_park` therefore
         depends only on the right-hand tags and `tf_park` only on the left.
-        Reproduced, not corrected._
+        Reproduced, not corrected.\_
   - [x] 4.10 `bike_infra.sql` — bike infrastructure per direction, the `one_way`
         bike-direction column, and the facility widths. _Done, the largest
         script in the migration at 639 lines. Structured as a shared "both
@@ -314,14 +349,13 @@ is the only record.
   - _Requirements: FR-FEAT-1, FR-FEAT-2, NFR-TEST-1_
 
 - [x] 5. `stress.py` — stress classification (FR-STRESS-1) — **DONE.** Segment
-      stress matches 7 of 8 cities tested and intersection stress matches 7 of 7
-      (Chambéry differs only via its 4.5a rows).
+     stress matches 7 of 8 cities tested and intersection stress matches 7 of 7
+     (Chambéry differs only via its 4.5a rows).
 
-      Cities verified: Crested Butte, Santa Rosa, Jackson, Orange, St. Louis
-          Park, Arcata, Ypsilanti. See findings.md §1.9 for the residential
-          speed-default precedence, which decides every untagged residential
-          street's rating.
-
+     Cities verified: Crested Butte, Santa Rosa, Jackson, Orange, St. Louis
+     Park, Arcata, Ypsilanti. See findings.md §1.9 for the residential
+     speed-default precedence, which decides every untagged residential
+     street's rating.
   - [x] 5.1 Transcribe `scripts/sql/stress/*.sql` rules into vectorized
         stress-rating derivation, covering every functional class
         (motorway/trunk, primary, secondary, tertiary, "lesser", link,
@@ -348,24 +382,24 @@ is the only record.
         in 5.1 (NFR-TEST-1).
   - _Requirements: FR-STRESS-1, NFR-TEST-1_
 
-- [x] 6. `network.py` — graph build & reachability (FR-NET-1/2/3) — **DONE.**
+- [x] 6.  `network.py` — graph build & reachability (FR-NET-1/2/3) — **DONE.**
       **6 of 8 cities reproduce `neighborhood_connected_census_blocks.csv`
       exactly** — every block pair, every low-stress flag, and every cost.
       Crested Butte and Cañon City differ on 0.2-0.3% of costs (mixed sign, so
       alternate-path ties rather than a systematic error).
 
       **The whole gap was one SQL integer-division trap.** In
-          `build_network.sql`, `source_road_length` and `target_road_length` are
-          declared **INTEGER**, so each `ST_Length` is rounded on assignment and
-          `(source_road_length + target_road_length) / 2` is *integer division* --
-          it truncates, and the outer `round()` does nothing. Computing
-          `round((a + b) / 2)` at full precision instead inflates every link by
-          up to half a unit. On one link that is invisible; along a path it
-          compounded to about +0.8% (correlation 0.76 with path length), which
-          pushed block pairs sitting near the 2680 m cutoff out of range
-          entirely. Fixing it took cost agreement from 14% to 100% on six cities.
-          This is the second time a **column type**, not an expression, carried
-          the semantics -- see 4.16's note.
+      `build_network.sql`, `source_road_length` and `target_road_length` are
+      declared **INTEGER**, so each `ST_Length` is rounded on assignment and
+      `(source_road_length + target_road_length) / 2` is _integer division_ --
+      it truncates, and the outer `round()` does nothing. Computing
+      `round((a + b) / 2)` at full precision instead inflates every link by
+      up to half a unit. On one link that is invisible; along a path it
+      compounded to about +0.8% (correlation 0.76 with path length), which
+      pushed block pairs sitting near the 2680 m cutoff out of range
+      entirely. Fixing it took cost agreement from 14% to 100% on six cities.
+      This is the second time a **column type**, not an expression, carried
+      the semantics -- see 4.16's note.
 
           **Tie measurement for 6.3 (was required before assuming parity):**
           ambiguous right-turn groups are 0/999 (Crested Butte), 0/1,123 (Santa
@@ -377,7 +411,6 @@ is the only record.
           **turn-expanded (dual) graph**: vertices are roads, edges are permitted
           turns between roads meeting at an intersection. Not a road-segment
           graph — getting this wrong invalidates every cost.
-
   - [x] 6.1 Build the vertices, equivalent to `build_network.sql`'s
         `neighborhood_ways_net_vert`: exactly **one vertex per road**,
         positioned at `ST_LineInterpolatePoint(geom, 0.5)`. (The `vert_cost`
@@ -456,12 +489,12 @@ is the only record.
         low-stress, included in high-stress), and a disconnected component.
   - _Requirements: FR-NET-1, FR-NET-2, FR-NET-3, NFR-PERF-1, NFR-TEST-1_
 
-- [x] 7. `scoring.py` — access, category, and overall scoring — **DONE.**
+- [x] 7.  `scoring.py` — access, category, and overall scoring — **DONE.**
 
       **Every scored column now matches the baseline on 10 of the 11 XS/S
-          corpus cities** -- all 13 destination categories, all 17 access scores,
-          the category rollups, the per-block `overall_score` and the 23-row
-          headline table. Task 9.3 has the corpus run.
+      corpus cities** -- all 13 destination categories, all 17 access scores,
+      the category rollups, the per-block `overall_score` and the 23-row
+      headline table. Task 9.3 has the corpus run.
 
           Getting there took nine separate rules, every one of them invisible in
           the phrase "extract the destinations". They are written up in
@@ -495,7 +528,6 @@ is the only record.
           rows, needed for `neighborhood_score_inputs.csv` file parity
           (NFR-PARITY-2) but not for any score -- only 16 of its rows carry a
           `use_*` flag and those are done (findings.md §1.13).
-
   - [x] 7.1 Implement per-destination-category access scoring (FR-ACCESS-1) for
         every category in requirements.md §2.5, using the
         low-stress-vs-high-stress reachability comparison logic from
@@ -506,7 +538,7 @@ is the only record.
         name._
   - [x] 7.2 Implement category score combination (FR-SCORE-1) using the exact
         weights from `Score` (`people=15, opportunity=20, core_services=20,
-        retail=15, recreation=15, transit=15`, requirements.md §7 open
+retail=15, recreation=15, transit=15`, requirements.md §7 open
         question #2) and the "drop categories with no
         reachable destinations, renormalize remaining weights" logic from
         `category_scores.sql`/`overall_scores.sql`. _Done:
@@ -515,7 +547,7 @@ is the only record.
   - [x] 7.3 Implement the population-weighted overall score (FR-SCORE-2): score
         × `pop20`, normalized by total reachable population. _Done:
         `scoring.population_weighted_score()`. Note the divisor counts only
-        blocks that can reach *something* in that category._
+        blocks that can reach \_something_ in that category.\_
   - [x] 7.4 Produce the same summary row shape as
         `generated.neighborhood_overall_scores` (renamed
         `generated.overall_scores`, FR-EXPORT-2 — FR-SCORE-3): per-category
@@ -535,17 +567,17 @@ is the only record.
         it.
   - _Requirements: FR-ACCESS-1, FR-SCORE-1, FR-SCORE-2, FR-SCORE-3, NFR-TEST-1_
 
-- [x] 8. Wire the new pipeline into the CLI and exporter — **DONE** (except the
+- [x] 8.  Wire the new pipeline into the CLI and exporter — **DONE** (except the
       prose docs, deliberately deferred to task 11.5). `bna run` now runs the
       whole analysis with **no `DATABASE_URL`, no PostGIS and no Docker** --
       Crested Butte end to end in about 5 seconds, writing the calver tree.
 
       `core/pipeline/export.py` writes the published file set from the
-          in-memory frames. **23 of 24 files are produced, and every layer the
-          parity harness compares is identical to the baseline** across the XS/S
-          corpus (task 9.3) -- schema, row set and values. The only missing file
-          is `score_inputs.csv`, which needs `score_inputs.sql`'s ~110 diagnostic
-          rows (task 7.6).
+      in-memory frames. **23 of 24 files are produced, and every layer the
+      parity harness compares is identical to the baseline** across the XS/S
+      corpus (task 9.3) -- schema, row set and values. The only missing file
+      is `score_inputs.csv`, which needs `score_inputs.sql`'s ~110 diagnostic
+      rows (task 7.6).
 
           Three PostgreSQL spellings had to be reproduced here rather than in the
           analysis: booleans as `t`/`f` and `INTEGER` columns without a trailing
@@ -588,7 +620,7 @@ is the only record.
         (design.md §6); ensure they're awaited from the new `run.py` flow.
         _`prepare.prepare_()` is awaited unchanged. The S3/R2 upload now uploads
         the directory just written rather than re-exporting from the database,
-        so the published files are exactly the ones verified locally._
+        so the published files are exactly the ones verified locally.\_
   - [x] 8.4 Update CLI help text/docs referencing `run-with compose` or
         `DATABASE_URL` to match the new no-database flow. _CLI help done: `run`
         is now "Run a full analysis. No database required." and `run-with` is
@@ -599,8 +631,8 @@ is the only record.
   - _Requirements: FR-EXPORT-1, NFR-DEP-1, NFR-ASYNC-1_
 
 - [x] 9. Checkpoint — iteration-phase parity validation — **DONE.**
-      `utils/validate_parity.py` + `just validate-parity`; **all 11 XS/S cities
-      at full parity on all seven dimensions** (see 9.3).
+     `utils/validate_parity.py` + `just validate-parity`; **all 11 XS/S cities
+     at full parity on all seven dimensions** (see 9.3).
   - [x] 9.1 Implement `utils/validate_parity.py` (design.md §5): run the new
         pipeline per corpus city, compare against checked-in `results/**` per
         NFR-PARITY-1/2/3 (absolute `1e-4` on raw scores, exact match at display
@@ -656,13 +688,12 @@ is the only record.
 - [x] 10. Automated pre-ship gate (`XS`/`S`/`M` corpus) — **PASSES.**
 
       **15 of 15 cities**: 14 at exact parity across all seven dimensions and
-          every published column, and Chambéry within a documented deviation
-          (requirements.md §6.1a, findings.md §1.26). The corpus runs in about
-          **7.5 minutes** end to end, so it is cheap to repeat after every change.
+      every published column, and Chambéry within a documented deviation
+      (requirements.md §6.1a, findings.md §1.26). The corpus runs in about
+      **7.5 minutes** end to end, so it is cheap to repeat after every change.
 
           `just validate-parity --size XS --size S --size M` reproduces it, and
           exits non-zero on anything outside the recorded exception.
-
   - [x] 10.1 Run `just validate-parity` against the automated corpus:
         `integration/e2e-cities.csv` restricted to `XS`/`S`/`M` `test_size` rows
         (NFR-VALIDATION-2). `L`/`XL`/`XXL` cities (Valencia, Washington DC) are
@@ -719,9 +750,9 @@ is the only record.
       question #7 — hard deletion, no dual-path toggle) — **DONE.**
 
       **78 SQL files and the whole database layer are gone.** `bna` is down to
-          three subcommands -- `cache`, `prepare`, `run` -- and the package no
-          longer imports `sqlalchemy`, opens a socket, or shells out to
-          `osm2pgrouting`, `osm2pgsql`, `psql` or `pgsql2shp`.
+      three subcommands -- `cache`, `prepare`, `run` -- and the package no
+      longer imports `sqlalchemy`, opens a socket, or shells out to
+      `osm2pgrouting`, `osm2pgsql`, `psql` or `pgsql2shp`.
 
           What was kept, and why: `runner.run`/`run_osmium_extract`/
           `run_osm_convert` (the new `ingest` stage uses `osmium` and `osmconvert`),
@@ -734,7 +765,6 @@ is the only record.
           reference for `OSM_WAY_TAGS` and `OSM_HIGHWAY_TYPES` (findings.md §2.2,
           §3.11); with them gone the tests would have skipped silently, so the
           lists they validated are asserted directly instead.
-
   - [x] 11.1 Delete `brokenspoke_analyzer/scripts/sql/` in full.
   - [x] 11.2 Delete `mapconfig_highway.xml`, `mapconfig_cycleway.xml`,
         `pfb.style` (osm2pgrouting/osm2pgsql-specific).
