@@ -1,5 +1,5 @@
 """
-Wraps the bna run-with command to process a batch of cities from a CSV file.
+Wraps the bna run command to process a batch of cities from a CSV file.
 
 From the root of this repository run:
 ```bash
@@ -31,15 +31,6 @@ bna-batch.py [OPTIONS] [BATCH_FILE]
 
       Defaults to auto-detect.
 
-- `--with-parts` _parts_
-
-  - Parts of the analysis to compute.
-
-    Valid values are: `features`, `stress`, `connectivity`, and `measure`. This
-    option can be repeated if multiple parts are needed.
-
-    Defaults to `measure`.
-
 ### Batch file format
 
 `cities.csv`:
@@ -60,10 +51,7 @@ import typer
 from brokenspoke_analyzer.cli import (
     common,
     root,
-    run_with,
-)
-from brokenspoke_analyzer.core import (
-    constant,
+    run,
 )
 
 BatchFile = Annotated[
@@ -83,7 +71,6 @@ def main(
     batch_file: BatchFile = pathlib.Path("cities.csv"),
     export_dir: common.ExportDirOpt = common.DEFAULT_EXPORT_DIR,
     lodes_year: common.LODESYear = None,
-    parts: common.ComputeParts = None,
     worldpop_year: common.WorldPopYear = common.DEFAULT_WORLDPOP_YEAR,
 ) -> None:
     """Process a batch of cities."""
@@ -96,9 +83,6 @@ def main(
     # Enable cache.
     os.environ["BNA_CACHING_STRATEGY"] = "USER_CACHE"
 
-    if not parts:
-        parts = [constant.ComputePart.MEASURE]
-
     # Read the CSV file.
     with batch_file.open() as f:
         reader = csv.DictReader(f)
@@ -110,15 +94,14 @@ def main(
             region = row.get("region") or country
             fips_code = row["fips_code"]
 
-            # Run the analysis.
-            run_with.compose(
-                city=city,
+            # Run the analysis. No database, no Docker.
+            run.run(
                 country=country,
-                export_dir=export_dir,
-                fips_code=fips_code,
-                lodes_year=lodes_year,
+                city=city,
                 region=region,
-                with_parts=parts,
+                fips_code=fips_code,
+                export_dir=export_dir,
+                lodes_year=lodes_year,
                 worldpop_year=worldpop_year,
             )
 

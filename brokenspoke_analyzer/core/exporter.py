@@ -1,18 +1,15 @@
 """
-Define functions to export the data to various destinations.
+Publish the analysis results.
 
-To export the data to an object store we use the `obstore` library, which
-provides a unified interface to interact with various object stores, including
-S3 and R2.
+The files themselves are written by `core/pipeline/export.py`; this module
+places them -- the calver directory tree, the optional bundle, and the upload
+to an object store.
 
-The `export_store` function is the main entry point for exporting the data to an
-object store. It takes care of exporting the data to a local temporary directory
-and then uploading it to the destination store.
-
-However, since `obstore` does not have the concept of folders, we cannot
-create directories. For this use case, we leverage the native `boto3` library.
-Same goes for listing the objects, as `obstore` cannot differentiate between
-files and directories.
+To upload we use the `obstore` library, which provides a unified interface to
+S3 and R2. However, since `obstore` does not have the concept of folders, we
+cannot create directories. For this use case, we leverage the native `boto3`
+library. Same goes for listing the objects, as `obstore` cannot differentiate
+between files and directories.
 
 References:
 - <https://github.com/developmentseed/obstore/issues/101>
@@ -26,7 +23,6 @@ import enum
 import os
 import pathlib
 import shutil
-import tempfile
 import typing
 from typing import TYPE_CHECKING
 
@@ -35,48 +31,11 @@ import yarl
 from loguru import logger
 from obstore.store import from_url
 
-from brokenspoke_analyzer.core import runner
-from brokenspoke_analyzer.core.database import dbcore
-
 if TYPE_CHECKING:
     from obstore.store import ObjectStore
-    from sqlalchemy.engine import Engine
+
 
 # Catalog the tables and associate them to an export format.
-TABLE_CATALOG = {
-    "shp": [
-        "neighborhood_census_blocks",
-        "neighborhood_ways",
-    ],
-    "geojson": [
-        "neighborhood_boundary",
-        "neighborhood_census_blocks",
-        "neighborhood_colleges",
-        "neighborhood_community_centers",
-        "neighborhood_dentists",
-        "neighborhood_doctors",
-        "neighborhood_hospitals",
-        "neighborhood_parks",
-        "neighborhood_pharmacies",
-        "neighborhood_retail",
-        "neighborhood_schools",
-        "neighborhood_social_services",
-        "neighborhood_supermarkets",
-        "neighborhood_transit",
-        "neighborhood_universities",
-        "neighborhood_ways",
-        "neighborhood_ways_intersections",
-    ],
-    "csv": [
-        "neighborhood_connected_census_blocks",
-        "neighborhood_overall_scores",
-        "neighborhood_score_inputs",
-        "residential_speed_limit",
-        "mileage",
-    ],
-}
-
-
 class Exporter(enum.StrEnum):
     """Define the available exporters."""
 
@@ -86,70 +45,6 @@ class Exporter(enum.StrEnum):
     s3_custom = "s3_custom"
     r2 = "r2"
     r2_custom = "r2_custom"
-
-
-def export_to_csv(
-    export_dir: pathlib.Path,
-    tables: typing.Sequence[str],
-    engine: Engine,
-) -> None:
-    """Export a list of PostgreSQL tables to CSV files."""
-    for table in tables:
-        # Skip export if the table does not exist.
-        if not dbcore.table_exists(engine, table):
-            continue
-        csv_file = export_dir / f"{table}.csv"
-        dbcore.export_to_csv(engine, csv_file, table)
-
-
-def export_to_geojson(
-    export_dir: pathlib.Path,
-    tables: typing.Sequence[str],
-    database_url: str,
-) -> None:
-    """Export a list of PostGIS tables to GeoJSON files."""
-    engine = dbcore.create_psycopg_engine(database_url)
-    for table in tables:
-        # Skip export if the table does not exist.
-        if not dbcore.table_exists(engine, table):
-            continue
-        geojson_file = export_dir / f"{table}.geojson"
-        runner.run_ogr2ogr_geojson_export(database_url, geojson_file, table)
-
-
-def export_to_shp(
-    export_dir: pathlib.Path,
-    tables: typing.Sequence[str],
-    database_url: str,
-) -> None:
-    """Export a list of PostGIS tables to Shapefiles."""
-    engine = dbcore.create_psycopg_engine(database_url)
-    for table in tables:
-        # Skip export if the table does not exist.
-        if not dbcore.table_exists(engine, table):
-            continue
-        shapefile = export_dir / f"{table}.shp"
-        runner.run_pgsql2shp(database_url, shapefile, table)
-
-
-def auto_export(
-    export_dir: pathlib.Path,
-    tables: typing.Mapping[str, typing.Sequence[str]],
-    database_url: str,
-) -> None:
-    """
-    Export PostgreSQL/PostGIS tables to their respective files.
-
-    Regular tables are exported into CSV files. GIS tables are exported either
-    to geojson or sometimes shapefiles (or both).
-    """
-    # Prepare the database connection.
-    engine = dbcore.create_psycopg_engine(database_url)
-
-    # Export the tables per target.
-    export_to_shp(export_dir, tables.get("shp", []), database_url)
-    export_to_geojson(export_dir, tables.get("geojson", []), database_url)
-    export_to_csv(export_dir, tables.get("csv", []), engine)
 
 
 def create_calver_directories(
@@ -272,24 +167,6 @@ def bundle(src_dir: pathlib.Path) -> pathlib.Path:
     shutil.make_archive(bundle_file.stem, bundle_file.suffix[1:], src_dir)
     shutil.move(bundle_file, dest)
     return dest
-
-
-def local_files(
-    database_url: str,
-    export_dir: pathlib.Path,
-    *,
-    with_bundle: bool = False,
-) -> None:
-    """Export result files into a local directory."""
-    # Prepare the output directory.
-    export_dir.mkdir(parents=True, exist_ok=True)
-
-    # Export the catalogued tables to their associated format.
-    auto_export(export_dir.resolve(strict=True), TABLE_CATALOG, database_url)
-
-    # Bundle the result files into a zip file if needed.
-    if with_bundle:
-        bundle(export_dir)
 
 
 def get_s3_bucket(bucket_name: str) -> typing.Any:
@@ -429,164 +306,3 @@ def create_r2_store(
 async def upload_file(store: ObjectStore, path: pathlib.Path) -> None:
     """Upload a file to the store."""
     await store.put_async(str(path), path)
-
-
-async def export_to_store(
-    store: ObjectStore,
-    database_url: str,
-    *,
-    with_bundle: bool = False,
-) -> None:
-    """Export PostgreSQL/PostGIS tables to a store."""
-    # Create a temporary directory to export the files.
-    with tempfile.TemporaryDirectory() as tmpdir_name:
-        tmpdir = pathlib.Path(tmpdir_name)
-        local_files(
-            database_url=database_url,
-            export_dir=tmpdir,
-            with_bundle=with_bundle,
-        )
-
-        # Create a local store.
-        local_store = from_url(f"file://{tmpdir}")
-
-        # Upload each file sequentially.
-        # Runs under asyncio (not trio), and `tmpdir` is a local, short-lived
-        # directory, so plain sync pathlib calls are used instead of trio.Path.
-        for file in tmpdir.iterdir():  # noqa: ASYNC240
-            # Skip directories and non-files.
-            if not file.is_file():
-                continue
-
-            # Stream the file from the local store to the destination store.
-            logger.debug(f"Uploading {file.name} to the store...")
-            resp = await local_store.get_async(file.name)
-            await store.put_async(file.name, resp)
-
-
-async def export_to_s3_with_calver(
-    bucket_name: str,
-    database_url: str,
-    country: str,
-    city: str,
-    region: str | None = None,
-    *,
-    with_bundle: bool = False,
-) -> pathlib.Path:
-    """Export PostgreSQL/PostGIS tables to a folder following the calver convention."""
-    # Get the S3 bucket.
-    bucket = get_s3_bucket(bucket_name)
-
-    # Create the calver directory in the store.
-    folder = mkdir_calver_directory_s3(bucket, country, city, region)
-    logger.debug(
-        f"Exporting results for {country}/{city}/{region} "
-        f"to s3://{bucket_name}/{folder}..."
-    )
-
-    # Export the files to the store.
-    return await export_to_s3(
-        bucket_name=bucket_name,
-        folder=folder,
-        database_url=database_url,
-        with_bundle=with_bundle,
-    )
-
-
-async def export_to_s3_with_custom_dir(
-    bucket_name: str,
-    database_url: str,
-    custom_dir: pathlib.Path,
-    *,
-    with_bundle: bool = False,
-) -> pathlib.Path:
-    """Export PostgreSQL/PostGIS tables to a custom directory."""
-    # Get the S3 bucket.
-    bucket = get_s3_bucket(bucket_name)
-
-    # Create the custom directory in the store.
-    mkdir_s3(bucket, custom_dir)
-
-    # Export the files to the store.
-    return await export_to_s3(
-        bucket_name=bucket_name,
-        folder=custom_dir,
-        database_url=database_url,
-        with_bundle=with_bundle,
-    )
-
-
-async def export_to_s3(
-    bucket_name: str,
-    folder: pathlib.Path,
-    database_url: str,
-    *,
-    with_bundle: bool = False,
-) -> pathlib.Path:
-    """Export PostgreSQL/PostGIS tables to a S3 directory."""
-    # Export the files to the store.
-    store = create_s3_store(bucket_name, folder)
-    await export_to_store(store, database_url, with_bundle=with_bundle)
-    return folder
-
-
-async def export_to_r2_with_calver(
-    bucket_name: str,
-    database_url: str,
-    country: str,
-    city: str,
-    region: str | None = None,
-    *,
-    with_bundle: bool = False,
-) -> pathlib.Path:
-    """Export PostgreSQL/PostGIS tables to a folder following the calver convention."""
-    # Get the R2 bucket.
-    bucket = get_r2_bucket(bucket_name)
-
-    # Create the calver directory in the store.
-    folder = mkdir_calver_directory_s3(bucket, country, city, region)
-
-    # Export the files to the store.
-    return await export_to_r2(
-        bucket_name=bucket_name,
-        folder=folder,
-        database_url=database_url,
-        with_bundle=with_bundle,
-    )
-
-
-async def export_to_r2_with_custom_dir(
-    bucket_name: str,
-    database_url: str,
-    custom_dir: pathlib.Path,
-    *,
-    with_bundle: bool = False,
-) -> pathlib.Path:
-    """Export PostgreSQL/PostGIS tables to a custom directory."""
-    # Get the R2 bucket.
-    bucket = get_r2_bucket(bucket_name)
-
-    # Create the custom directory in the store.
-    mkdir_s3(bucket, custom_dir)
-
-    # Export the files to the store.
-    return await export_to_r2(
-        bucket_name=bucket_name,
-        folder=custom_dir,
-        database_url=database_url,
-        with_bundle=with_bundle,
-    )
-
-
-async def export_to_r2(
-    bucket_name: str,
-    folder: pathlib.Path,
-    database_url: str,
-    *,
-    with_bundle: bool = False,
-) -> pathlib.Path:
-    """Export PostgreSQL/PostGIS tables to a R2 directory."""
-    # Export the files to the store.
-    store = create_r2_store(bucket_name, folder)
-    await export_to_store(store, database_url, with_bundle=with_bundle)
-    return folder

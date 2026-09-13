@@ -1,9 +1,12 @@
 {
   "name": "pfb/brokenspoke-analyzer",
-  "dockerComposeFile": ["../compose.yml"],
-  "service": "bna-dev",
-  "runServices": ["bna-dev", "postgres"],
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "target": "dev",
+    "context": ".."
+  },
   "workspaceFolder": "/usr/src/app",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/usr/src/app,type=bind",
   "postAttachCommand": ["/bin/bash", ".devcontainer/postAttach.sh"],
   "customizations": {
     "vscode": {

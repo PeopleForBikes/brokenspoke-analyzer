@@ -15,56 +15,8 @@ env:
   TEST_FIPS: "3570670"
 
 jobs:
-  osm2pgrouting3:
-    runs-on: ubuntu-latest
-    steps:
-      - name: install dependencies
-        run: |
-          sudo apt-get update
-          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends \
-          build-essential \
-          cmake \
-          expat \
-          git \
-          libboost-dev \
-          libboost-program-options-dev \
-          libexpat1-dev \
-          libpqxx-dev
-      - name: build osm2pgrouting 3
-        run: |
-          git clone https://github.com/pgRouting/osm2pgrouting.git
-          cd osm2pgrouting
-          cmake -H. -Bbuild
-          cd build
-          make
-          pwd
-          ls -lh
-          echo $PATH
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a #v7.0.1
-        with:
-          name: osm2pgrouting3
-          path: osm2pgrouting/build/osm2pgrouting
-          if-no-files-found: error
-
   integration:
     runs-on: ubuntu-latest
-    needs: osm2pgrouting3
-
-    env:
-      DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
-
-    services:
-      postgres:
-        image: ghcr.io/gui/pgrouting:18.1-trixie-postgis-3.6.1-pgrouting-4.0.0
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_DB: postgres
-        options: >-
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
       - name: Check out repository code
@@ -78,65 +30,30 @@ jobs:
         run: |
           sudo apt-get update
           DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends \
-          osm2pgsql osmctools osmium-tool postgresql-client postgis libpqxx-7.8t64
-
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: osm2pgrouting3
-          path: /home/runner/.local/bin/
-      - name: Set osm2pgrouting permissions
-        run: chmod 755 /home/runner/.local/bin/osm2pgrouting
-      - name: Verify osm2pgrouting installation
-        run: |
-          ls -lh /home/runner/.local/bin/
-          which osm2pgrouting
-          osm2pgrouting --version
+          osmctools osmium-tool
       - name: Setup the project
         run: uv sync --all-extras --dev
 
-      - name: Configure Docker
-        run: |
-          uv run bna configure docker
-      - name: Prepare the files for the analysis
-        run: |
-          uv run bna prepare "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
-
-      - name: Import the files for the analysis
-        run: |
-          uv run bna import all "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}"  "${{ env.TEST_FIPS }}" --data-dir data/santa-rosa-new-mexico-united-states
-
-      - name: Compute the analysis
-        run: |
-          uv run bna compute "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" --data-dir data/santa-rosa-new-mexico-united-states
+      - name: Run the full analysis
+        run: >
+          uv run bna -vv run "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}"
+          "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
 
       - name: Run integration tests
         run: |
           set -x
-          echo "List tables for debugging purpose."
-          psql -c "\d" $DATABASE_URL
+          scores=$(find results -name overall_scores.csv | head -1)
+          echo "Ensure ${scores} contains 23 records + 1 header line."
+          test "$(wc -l < "${scores}")" -eq 24
 
-          echo "Ensure neighborhood_overall_scores table contains 23 records."
-          ACTUAL=$(psql -t -c "SELECT COUNT(*) FROM neighborhood_overall_scores;" $DATABASE_URL)
-          test $ACTUAL -eq 23
+          echo "Ensure the published layers are all present."
+          dir=$(dirname "${scores}")
+          for layer in ways census_blocks ways_intersections boundary; do
+            test -f "${dir}/${layer}.geojson"
+          done
 
   docker-integration:
     runs-on: ubuntu-latest
-
-    env:
-      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/postgres"
-
-    services:
-      postgres:
-        image: ghcr.io/gui/pgrouting:18.1-trixie-postgis-3.6.1-pgrouting-4.0.0
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_DB: postgres
-        options: >-
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
       - name: Check out repository code
@@ -155,23 +72,13 @@ jobs:
           push: false
           load: true
           tags: ${{ env.TEST_TAG }}
-      - name: Configure PostgreSQL
+      - name: Run the full analysis
         run: >
-          docker run --rm --network ${{ job.services.postgres.network }} -e DATABASE_URL
-          ${{ env.TEST_TAG }} -vv configure custom 4 4096 postgres
-      - name: Run full analysis
-        run: >
-          docker run --rm --network ${{ job.services.postgres.network }} -e DATABASE_URL
-          ${{ env.TEST_TAG }} -vv run --no-cache "${{ env.TEST_COUNTRY }}" "${{
-          env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
-      - name: Export the results
-        run: >
-          docker run --rm --network ${{ job.services.postgres.network }} -u $(id
-          -u):$(id -g) -v ${PWD}:/usr/src/app/results -e DATABASE_URL ${{ env.TEST_TAG
-          }} -vv export local-custom .
-      # - name: Asserts
-      #   run: |
-      #     ls
-      #     echo "Ensure neighborhood_overall_scores table contains 23 records + 1 header line."
-      #     x=$(wc -l < "neighborhood_overall_scores.csv")
-      #     test $x -eq 24
+          docker run --rm -u $(id -u):$(id -g) -v ${PWD}/results:/usr/src/app/results
+          ${{ env.TEST_TAG }} -vv run "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}"
+          "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
+      - name: Asserts
+        run: |
+          scores=$(find results -name overall_scores.csv | head -1)
+          echo "Ensure ${scores} contains 23 records + 1 header line."
+          test "$(wc -l < "${scores}")" -eq 24

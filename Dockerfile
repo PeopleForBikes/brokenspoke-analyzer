@@ -1,23 +1,5 @@
 FROM python:3.13.9-slim-trixie AS base
 
-FROM base AS osm2pgrouting3
-RUN apt-get update \
-  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-  build-essential \
-  cmake \
-  expat \
-  git \
-  libboost-dev \
-  libboost-program-options-dev \
-  libexpat1-dev \
-  libpqxx-dev
-WORKDIR /usr/src/
-RUN git clone https://github.com/pgRouting/osm2pgrouting.git \
-  && cd osm2pgrouting \
-  && cmake -H. -Bbuild \
-  && cd build/ \
-  && make
-
 FROM base AS builder
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -45,12 +27,8 @@ LABEL author="PeopleForBikes" \
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
   gdal-bin \
-  libpqxx-7.10 \
-  osm2pgsql \
   osmctools \
   osmium-tool \
-  postgis \
-  postgresql-client-17 \
   proj-bin \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -58,7 +36,6 @@ ENV BNA_OSMNX_CACHE=0
 WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/deps ./pkg/deps
 COPY --from=builder /usr/src/app/dist ./pkg/dist
-COPY --from=osm2pgrouting3 /usr/src/osm2pgrouting/build/osm2pgrouting /usr/bin/osm2pgrouting
 RUN  pip install pkg/deps/* \
   && pip install pkg/dist/brokenspoke_analyzer-*-py3-none-any.whl \
   && rm -fr /usr/src/app/pkg \

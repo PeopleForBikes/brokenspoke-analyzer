@@ -9,18 +9,13 @@ from typing import Annotated
 
 import typer
 
-from brokenspoke_analyzer.core import constant
-
 # Default constants.
 DEFAULT_BLOCK_POPULATION = 100
 DEFAULT_BLOCK_SIZE = 500
 DEFAULT_BUFFER = 2680
 DEFAULT_CITY_FIPS_CODE = "0"  # "0" means an non-US city.
 DEFAULT_CITY_SPEED_LIMIT = 30
-DEFAULT_COMPUTE_PARTS = constant.COMPUTE_PARTS_ALL
-DEFAULT_CONTAINER_NAME = "brokenspoke-analyzer"
 DEFAULT_DATA_DIR = pathlib.Path("./data").resolve()
-DEFAULT_DOCKER_IMAGE = "azavea/pfb-network-connectivity:0.19.0"
 DEFAULT_EXPORT_DIR = pathlib.Path("./results").resolve()
 DEFAULT_LODES_YEAR = 2022
 DEFAULT_MAX_TRIP_DISTANCE = 2680
@@ -50,28 +45,15 @@ CacheDir = Annotated[
     ),
 ]
 City = Annotated[str, typer.Argument()]
-ComputeParts = Annotated[
-    list[constant.ComputePart] | None,
-    typer.Option(help="parts of the analysis to compute"),
-]
-ContainerName = Annotated[
-    str | None,
-    typer.Option(help="give a specific name to the container running the BNA"),
-]
 Country = Annotated[str, typer.Argument()]
-DatabaseURL = Annotated[str, typer.Option(help="database URL", envvar="DATABASE_URL")]
 DataDir = Annotated[
     pathlib.Path,
     typer.Option(
         file_okay=False,
         dir_okay=True,
         resolve_path=True,
-        help="directory where the files to import are located",
+        help="directory where the analysis files are stored",
     ),
-]
-DockerImage = Annotated[
-    str | None,
-    typer.Option(help="override the BNA Docker image"),
 ]
 export_dir_kwargs = {
     "file_okay": False,

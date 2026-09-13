@@ -12,13 +12,8 @@ from rich.logging import RichHandler
 
 from brokenspoke_analyzer.cli import (
     cache,
-    compute,
-    configure,
-    export,
-    importer,
     prepare,
     run,
-    run_with,
 )
 
 # Create the CLI app.
@@ -93,17 +88,5 @@ def callback(
 
 # Register the sub-commands.
 app.add_typer(cache.app, name="cache", help="Manage bna's cache.")
-app.add_typer(compute.app, help="Compute the analysis results.")
-app.add_typer(
-    configure.app,
-    name="configure",
-    help="Configure a database for an analysis.",
-)
-app.add_typer(export.app, name="export", help="Export tables from database.")
-app.add_typer(importer.app, name="import", help="Import files into database.")
 app.add_typer(prepare.app, help="Prepare files needed for an analysis.")
 app.add_typer(run.app, help="Run a full analysis.")
-app.add_typer(run_with.app, name="run-with", help="Run an analysis in different ways.")
-
-# Make shared options accessible to appropriate subcommands.
-run_with.verbose = verbose  # ty:ignore[invalid-assignment]

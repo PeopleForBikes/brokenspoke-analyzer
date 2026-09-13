@@ -11,7 +11,7 @@ e2e_cities_json := e2e_test_dir / "e2e-cities.json"
 ci: lint docs test
 
 # Meta task running all the linters at once.
-lint: lint-md lint-python lint-sql lint-uv
+lint: lint-md lint-python lint-uv
 
 # Lint markown files.
 lint-md:
@@ -23,10 +23,6 @@ lint-python:
     uv run ruff format --check {{ src_dir }} {{ utils_dir }}
     uv run ruff check {{ src_dir }} {{ utils_dir }}
     uv run ty check {{ src_dir }}
-
-# Lint SQL files.
-lint-sql:
-    uv run sqlfluff lint brokenspoke_analyzer/scripts/sql/
 
 # Check uv.lock is synced
 lint-uv:
@@ -87,16 +83,6 @@ docker-prepare-all *args:
       --output-dir /usr/src/app/data \
       "$@"
 
-# Spin up Docker Compose.
-compose-up:
-    docker compose up -d
-
-# Tear down Docker Compose.
-compose-down:
-    docker compose down
-    docker compose rm -sfv
-    docker volume rm -f brokenspoke-analyzer_postgres
-
 # Setup the project
 setup:
     uv sync --all-extras --dev
@@ -130,5 +116,6 @@ nono-claude-danger profile="claude":
     nono run \
     --allow-cwd \
     --allow-domain github.com \
+    --open-port 5432 \
     --profile {{ profile }} \
     -- claude --dangerously-skip-permissions
