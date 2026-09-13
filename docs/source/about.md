@@ -2,25 +2,25 @@
 
 The Brokenspoke-Analyzer is an open source tool that streamlines running People
 for Bikes' “Bicycle Network Analysis” locally and on cloud resources. For the
-user, it simplifies the process of preparing datasets, setting up PostGIS
-databases, running analyses, and exporting results through a command line
-interface (CLI).
+user, it simplifies the process of preparing datasets, running analyses, and
+exporting results through a command line interface (CLI).
 
 ## How does it work?
 
 An analysis is composed of a few steps:
 
 1. Collect the data required for the analysis
-2. Import the data into a database
-3. Run the computation on the data
-4. Export the results to usable formats, like Shapefile, GeoJSON or CSV
+2. Run the computation on the data
+3. Export the results to usable formats, like Shapefile, GeoJSON or CSV
 
-The brokenspoke-analyzer acts as a sort of orchestrator. The heavy lifting is
-done by PostgreSQL/PostGIS. Step 3 is where most of the magic happens. The
-computation part is done by running hundreds of SQL queries against PostGIS.
+Step 2 is where most of the magic happens. The computation runs entirely in
+Python -- `geopandas` for the spatial work and `networkx` for the routing -- so
+an analysis needs no database and no Docker. Earlier versions ran hundreds of
+SQL queries against PostGIS; that implementation was migrated to Python and
+removed.
 
-The CLI allows the user to run all steps, or just some of them depending on the
-user's needs.
+The CLI allows the user to run all steps, or just the data collection, depending
+on the user's needs.
 
 The architecture of the “Bicycle Network Analysis” is shown below. However, not
 all components are necessarily active all the time. Some components are only
@@ -85,75 +85,27 @@ digits, the county value is removed.
 So for Darien, CT, for example, the GEOID is 0919018850, but its entry in the
 BNA will be `0918850`.
 
-## Using the Docker Compose environment
-
-Using Docker Compose is just a simpler way to run the PostGIS container with the
-right parameters (environment variables, network, volume, etc.) and the required
-extensions.
-
-A
-[Docker Compose file](https://github.com/PeopleForBikes/brokenspoke-analyzer/blob/main/compose.yml)
-is provided with this project to simplify the setup.
-
-To start it, retrieve the manifest file and compose up:
-
-```bash
-mkdir -p /tmp/bna
-cd /tmp/bna
-curl -sLO https://raw.githubusercontent.com/PeopleForBikes/brokenspoke-analyzer/main/compose.yml
-docker compose up
-```
-
 ## Using brokenspoke-analyzer in the docker container
 
-Installing all the required GIS tool can be a complicated task, especially on
-Windows platforms.
+Installing the GIS tools can be a complicated task, especially on Windows
+platforms. For this reason, we provide a Docker container that can be used
+instead of the native tools.
 
-For this reason, we provide a Docker container that be used instead of the
-native tools.
-
-Here is an example depicting how to use it:
-
-Start by exporting the `DATABASE_URL` environment variable:
+Collect the data and run the analysis in one command, mounting a directory to
+collect the results:
 
 ```bash
-export DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
+docker run --rm -u $(id -u):$(id -g) -v ./results:/usr/src/app/results \
+  ghcr.io/peopleforbikes/brokenspoke-analyzer:latest \
+  -vv run "united states" "santa rosa" "new mexico" 3570670
 ```
 
-Then run each command using the container:
+To keep the downloaded data between runs, mount the data directory too and pass
+`--skip-prepare` on subsequent runs:
 
 ```bash
-# The `configure docker` command does not work from the container because it
-# needs to connect to the host to get the info.
-# Use `docker info` to get the `CPUs` and `Total Memory` values and configure the
-# database using the `configure custom` command accordingly.
-docker run --rm --network brokenspoke-analyzer_default -e DATABASE_URL ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0 configure custom 4 1943 postgres
-docker run --rm -u $(id -u):$(id -g) -v ./data/container:/usr/src/app/data ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0 prepare all usa "santa rosa" "new mexico" 3570670 --output-dir /usr/src/app/data
-docker run --rm --network brokenspoke-analyzer_default -v ./data/container:/usr/src/app/data -e DATABASE_URL ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0 import all usa "santa rosa" "new mexico" 3570670 --input-dir /usr/src/app/data/santa-rosa-new-mexico-usa
-docker run --rm --network brokenspoke-analyzer_default -e DATABASE_URL ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0 compute usa "santa rosa" "new mexico" --input-dir /usr/src/app/data/santa-rosa-new-mexico-usa
+docker run --rm -u $(id -u):$(id -g) \
+  -v ./data:/usr/src/app/data -v ./results:/usr/src/app/results \
+  ghcr.io/peopleforbikes/brokenspoke-analyzer:latest \
+  -vv run --skip-prepare "united states" "santa rosa" "new mexico" 3570670
 ```
-
-Or with the `run` command:
-
-```bash
-docker run --rm --network brokenspoke-analyzer_default -e DATABASE_URL ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0 -vv run usa "santa rosa" "new mexico" 3570670
-docker run --rm --network brokenspoke-analyzer_default -u $(id -u):$(id -g) -v ./results:/usr/src/app/results -e DATABASE_URL ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0  -vv export local usa "santa rosa" "new mexico"
-```
-
-## Using an existing database instance
-
-If you would prefer to use an existing database, there is no problem with that.
-
-Here are the requirements:
-
-- PostgreSQL 13+
-- PostGIS 3.1+
-- Pgrouting
-- Plpython3
-- Enable the `uuid-ossp` and `plpython3u` extensions.
-- Create the `generated`, `received` and `scratch`, schemas and make sure the
-  user has the authorization to access them
-
-The brokenspoke-analyzer also provides the `configure` command to assist you
-with the configuration. Refer to the [configure](./commands.md#configure)
-section in the command page to get more help.

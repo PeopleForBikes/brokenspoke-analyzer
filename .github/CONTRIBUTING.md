@@ -39,16 +39,12 @@ dependencies, run:
 uv sync --all-extras --dev
 ```
 
-#### Database
+#### Validating a change
 
-The [brokenspoke-analyzer] requires a PosgreSQL/PostGIS server to run the
-analysis.
-
-We provide 2 options to make it easy for the developpers to set it up:
-
-- a Docker compose file which spins up the server with all the required
-  extensions
-- a `configure` sub-command which helps configuring the server
+The analysis runs in pure Python, so there is nothing else to install or start.
+Changes to `core/pipeline/` are validated against the `results/**` baselines
+with `just validate-parity`; see `specs/0003-sql-to-python-migration/` for how
+that corpus works and `findings.md` for why the rules are what they are.
 
 ## Serving the documentation site
 
