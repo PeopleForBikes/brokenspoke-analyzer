@@ -105,6 +105,10 @@ setup:
 list-outdated:
     uv pip list --outdated
 
+# Compare the Python pipeline against the SQL pipeline's results.
+validate-parity *cities:
+    uv run python utils/validate_parity.py {{ cities }}
+
 # Generate the e2e test files and documentation.
 test-e2e-prepare:
     xan sort -s country,region,city {{ e2e_cities_csv }}  -o {{ e2e_cities_csv }}
