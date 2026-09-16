@@ -46,10 +46,58 @@ grows with every week the workspace branch moves underneath this one.
 Management reviewed the risk/benefit in September 2026 and accepted it, on the
 evidence that 14 of 15 corpus cities reproduce 3.2.5 exactly and that the
 remaining deviation is 3 road segments traced to an `osm2pgrouting` import
-artifact (findings.md §1.26, requirements.md §6.1a). The deciding factor was
-run time: the analysis stage is roughly 20-50x faster without the database
-round trip, with Washington DC's measured comparison (NFR-PERF-1) still to
-come at the time of the decision.
+artifact (findings.md §1.26, requirements.md §6.1a).
+
+**What the change buys.** First and foremost it removes a dependency stack:
+Docker, Docker Compose, PostgreSQL/PostGIS/pgRouting, `osm2pgrouting`,
+`osm2pgsql`, `psql`, `pgsql2shp` and 78 SQL scripts all go, and an analysis
+becomes a single `bna run` on a machine with Python and `osmium` installed.
+That was the goal the spec was written for (requirements.md §1, NFR-DEP-1),
+and it is unaffected by the numbers below.
+
+**What it does not buy, as first presented.** The decision was initially
+framed on an estimated 20-50x speedup. That figure was an extrapolation from
+Washington DC's ~4 h SQL run against an *unmeasured* Python estimate, and the
+first head-to-head measurement on the corpus does not support it.
+`import` + `compute` + `export` on 3.2.5 (PostGIS under Docker Desktop on
+macOS, `prepare` already done) against the Python pipeline on the same
+machine, 2026-09-16:
+
+| City | SQL (3.2.5) | Python | Speedup |
+| --- | --- | --- | --- |
+| ancienne-lorette | 15.4 s | 4.4 s | 3.5x |
+| rehoboth beach | 18.8 s | 3.9 s | 4.8x |
+| santa rosa | 24.4 s | 3.5 s | 7.1x |
+| provincetown | 25.0 s | 7.3 s | 3.4x |
+| jackson | 27.1 s | 9.6 s | 2.8x |
+| chambéry | 32.7 s | 41.5 s | 0.8x |
+| crested butte | 34.0 s | 4.6 s | 7.3x |
+| orange | 35.5 s | 21.0 s | 1.7x |
+| cañon city | 41.3 s | 11.8 s | 3.5x |
+| ypsilanti | 50.0 s | 30.0 s | 1.7x |
+| alvarado | 75.1 s | 16.7 s | 4.5x |
+| arcata | 77.4 s | 31.1 s | 2.5x |
+| st. louis park | 105.0 s | 66.1 s | 1.6x |
+| flagstaff | 131.4 s | 78.2 s | 1.7x |
+| san juan | 451.2 s | 121.7 s | 3.7x |
+| **total** | **19.1 min** | **7.5 min** | **2.5x** |
+
+**Measured: 2.5x overall, median 3.4x, range 0.8x-7.3x.** Two caveats pull in
+opposite directions: the Python timings ran on warm caches (clipped extract,
+protobuf and area index already on disk), so a cold run is somewhat slower;
+and PostGIS under Docker Desktop on macOS is a slow way to run Postgres, so on
+a Linux server the SQL side would look better and the ratio smaller.
+
+The speedup grows with census-block count rather than way count -- San Juan,
+the most block-heavy city, is 3.7x while the medium cities sit at 1.6-1.7x --
+because the SQL pipeline's per-block `pgr_drivingdistance` is what made
+Washington DC take four hours. DC and Valencia are being measured separately
+(task 10.3) and are the only cities where the old cost actually hurt.
+
+Against the bar the spec set -- **NFR-PERF-1, no worse than 2x slower** --
+every corpus city passes, Chambéry included. The migration met its own
+requirement; it did not meet a number that was never in the requirements, and
+the record above is the correction.
 
 ## Overview
 
