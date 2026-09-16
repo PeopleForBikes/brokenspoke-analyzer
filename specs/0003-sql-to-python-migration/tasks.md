@@ -58,44 +58,55 @@ and it is unaffected by the numbers below.
 **What it does not buy, as first presented.** The decision was initially
 framed on an estimated 20-50x speedup. That figure was an extrapolation from
 Washington DC's ~4 h SQL run against an *unmeasured* Python estimate, and the
-first head-to-head measurement on the corpus does not support it.
-`import` + `compute` + `export` on 3.2.5 (PostGIS under Docker Desktop on
-macOS, `prepare` already done) against the Python pipeline on the same
-machine, 2026-09-16:
+head-to-head measurement on the corpus does not support it. `import` +
+`compute` + `export` on 3.2.5 (PostGIS under Docker Desktop on macOS,
+`prepare` already done) against the Python pipeline on the same machine,
+2026-09-16. The first measurement prompted a profile; the second column is
+after acting on it (see below):
 
-| City | SQL (3.2.5) | Python | Speedup |
-| --- | --- | --- | --- |
-| ancienne-lorette | 15.4 s | 4.4 s | 3.5x |
-| rehoboth beach | 18.8 s | 3.9 s | 4.8x |
-| santa rosa | 24.4 s | 3.5 s | 7.1x |
-| provincetown | 25.0 s | 7.3 s | 3.4x |
-| jackson | 27.1 s | 9.6 s | 2.8x |
-| chambéry | 32.7 s | 41.5 s | 0.8x |
-| crested butte | 34.0 s | 4.6 s | 7.3x |
-| orange | 35.5 s | 21.0 s | 1.7x |
-| cañon city | 41.3 s | 11.8 s | 3.5x |
-| ypsilanti | 50.0 s | 30.0 s | 1.7x |
-| alvarado | 75.1 s | 16.7 s | 4.5x |
-| arcata | 77.4 s | 31.1 s | 2.5x |
-| st. louis park | 105.0 s | 66.1 s | 1.6x |
-| flagstaff | 131.4 s | 78.2 s | 1.7x |
-| san juan | 451.2 s | 121.7 s | 3.7x |
-| **total** | **19.1 min** | **7.5 min** | **2.5x** |
+| City | SQL (3.2.5) | Python (first) | Python (profiled) | Speedup |
+| --- | --- | --- | --- | --- |
+| ancienne-lorette | 15.4 s | 4.4 s | 1.3 s | 12.1x |
+| rehoboth beach | 18.8 s | 3.9 s | 1.7 s | 11.0x |
+| santa rosa | 24.4 s | 3.5 s | 2.8 s | 8.8x |
+| provincetown | 25.0 s | 7.3 s | 4.1 s | 6.2x |
+| jackson | 27.1 s | 9.6 s | 3.7 s | 7.3x |
+| chambéry | 32.7 s | 41.5 s | 6.8 s | 4.8x |
+| crested butte | 34.0 s | 4.6 s | 3.9 s | 8.7x |
+| orange | 35.5 s | 21.0 s | 4.9 s | 7.3x |
+| cañon city | 41.3 s | 11.8 s | 7.0 s | 5.9x |
+| ypsilanti | 50.0 s | 30.0 s | 9.6 s | 5.2x |
+| alvarado | 75.1 s | 16.7 s | 15.4 s | 4.9x |
+| arcata | 77.4 s | 31.1 s | 18.8 s | 4.1x |
+| st. louis park | 105.0 s | 66.1 s | 17.5 s | 6.0x |
+| flagstaff | 131.4 s | 78.2 s | 21.5 s | 6.1x |
+| san juan | 451.2 s | 121.7 s | 49.3 s | 9.2x |
+| **total** | **19.1 min** | **7.5 min** | **2.8 min** | **6.8x** |
 
-**Measured: 2.5x overall, median 3.4x, range 0.8x-7.3x.** Two caveats pull in
-opposite directions: the Python timings ran on warm caches (clipped extract,
-protobuf and area index already on disk), so a cold run is somewhat slower;
-and PostGIS under Docker Desktop on macOS is a slow way to run Postgres, so on
-a Linux server the SQL side would look better and the ratio smaller.
+**Measured: 6.8x overall, median 6.2x, range 4.1x-12.1x.** Two caveats pull
+in opposite directions: the Python timings ran on warm caches (clipped
+extract, protobuf and area index already on disk), so a cold run is somewhat
+slower; and PostGIS under Docker Desktop on macOS is a slow way to run
+Postgres, so on a Linux server the SQL side would look better and the ratio
+smaller.
 
-The speedup grows with census-block count rather than way count -- San Juan,
-the most block-heavy city, is 3.7x while the medium cities sit at 1.6-1.7x --
-because the SQL pipeline's per-block `pgr_drivingdistance` is what made
-Washington DC take four hours. DC and Valencia are being measured separately
-(task 10.3) and are the only cities where the old cost actually hurt.
+**What the profile found.** The first measurement (2.5x overall, Chambéry
+*slower* than SQL at 0.8x) came from a single hot spot: a per-stage profile of
+Chambéry put 92% of the run in `ingest.split_ways_at_intersections`, and all
+of that in pandas row-by-row indexing (`.loc[row, col]` per node and a
+`.iloc[0]` per tag per segment on a mixed-dtype frame -- 712k row lookups).
+Every analysis stage together -- features, stress, network, scoring, export --
+took under 10 s. Pulling each way's columns out as lists once removed it;
+the parity gate is unchanged (14 PASS, Chambéry EXCEPT) and no city is now
+below 4x. Ingest is the only stage that was ever slow; the ones the spec
+worried about (`network.py`'s reachability, NFR-PERF-1) were never the cost.
+
+DC and Valencia are being measured separately (task 10.3): DC is where the SQL
+pipeline's per-block `pgr_drivingdistance` made a run take four hours, and the
+Python pipeline's per-block cost was already the cheap part before the fix.
 
 Against the bar the spec set -- **NFR-PERF-1, no worse than 2x slower** --
-every corpus city passes, Chambéry included. The migration met its own
+every corpus city passes with room to spare. The migration met its own
 requirement; it did not meet a number that was never in the requirements, and
 the record above is the correction.
 
@@ -775,8 +786,11 @@ retail=15, recreation=15, transit=15`, requirements.md §7 open
             set must match exactly._
 
   - [ ] 10.3 Manual maintainer validation — **stretch goal, not required**
-        (**Valencia: done, and it paid for itself.** Washington DC: not
-        attempted — it still needs a ~4h baseline run.)
+        (**Valencia: done, and it paid for itself.** Washington DC: baseline
+        and SQL timing being run by the maintainer; the corpus NFR-PERF-1
+        evidence is in "Risk acceptance" above -- 4.1x-12.1x faster after the
+        ingest fix -- and the DC and Valencia SQL timings slot into that table
+        when they land.)
         (requirements.md §7.4a; not blocking, best-effort — pursue after task 11
         once the codebase is stable, not as part of this gate, and only if time
         permits): - Washington DC: generate a `results/**` baseline (~4h to

@@ -806,32 +806,33 @@ def split_ways_at_intersections(
     logger.debug(f"{len(shared):,} intersection nodes")
 
     segments = []
+    tag_columns = [tag for tag in OSM_WAY_TAGS if tag in edges.columns]
     for way_id, group in edges.groupby("id", sort=False):
-        run_start = 0
-        rows = group.reset_index(drop=True)
+        # Pull the columns out once per way: indexing a mixed-dtype frame row
+        # by row is what dominated the whole pipeline's run time.
+        sources = group["u"].tolist()
+        targets = group["v"].tolist()
+        geometries = group.geometry.tolist()
+        # Every sub-edge of a way carries the way's tags, so read them once.
+        first = group.iloc[0]
+        tags = {tag: first[tag] for tag in tag_columns}
         # A node the way itself visits twice (a loop closing on itself) is an
         # intersection just as much as one shared with another way, and must be
         # cut at: leaving it joined produces a self-touching ring that cannot be
         # merged into a single LineString.
-        sequence = [rows.loc[0, "u"], *rows["v"].tolist()]
-        visits = collections.Counter(sequence)
+        visits = collections.Counter([sources[0], *targets])
         revisited = {node for node, count in visits.items() if count > 1}
-        for position in range(len(rows)):
-            at_end = position == len(rows) - 1
-            node = rows.loc[position, "v"]
-            if at_end or node in shared or node in revisited:
-                chunk = rows.iloc[run_start : position + 1]
+        run_start = 0
+        last = len(targets) - 1
+        for position, node in enumerate(targets):
+            if position == last or node in shared or node in revisited:
                 segments.append(
                     {
                         "osm_id": way_id,
-                        "intersection_from": chunk.iloc[0]["u"],
-                        "intersection_to": chunk.iloc[-1]["v"],
-                        "geometry": _merge_chunk(chunk.geometry.tolist()),
-                        **{
-                            tag: chunk.iloc[0][tag]
-                            for tag in OSM_WAY_TAGS
-                            if tag in chunk.columns
-                        },
+                        "intersection_from": sources[run_start],
+                        "intersection_to": node,
+                        "geometry": _merge_chunk(geometries[run_start : position + 1]),
+                        **tags,
                     },
                 )
                 run_start = position + 1
