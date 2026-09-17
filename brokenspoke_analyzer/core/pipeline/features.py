@@ -204,10 +204,12 @@ def _leading_int(values: pd.Series) -> pd.Series:
 def _round_half_away(values: pd.Series) -> pd.Series:
     """Round to a nullable integer, half away from zero.
 
-    PostgreSQL rounds half away from zero when a float is stored in an `INT`
-    column; NumPy rounds half to even. Several `neighborhood_ways` columns are
-    declared `INT` while the SQL computes them as floats, so the rounding
-    happens implicitly there and must happen explicitly here.
+    PostgreSQL rounds half away from zero when a NUMERIC value is stored in an
+    `INT` column, or passed to `round()`; NumPy rounds half to even. Use this
+    where the SQL expression was NUMERIC -- an integer divided by a decimal
+    literal, a `SUM` over a NUMERIC column. Where it was FLOAT (`::FLOAT`,
+    `ST_Length`, `degrees()`), use :func:`_round_half_even` instead
+    (findings.md §1.1).
 
     Parameters
     ----------
@@ -227,6 +229,33 @@ def _round_half_away(values: pd.Series) -> pd.Series:
     """
     rounded = np.floor(np.abs(values) + 0.5) * np.sign(values)
     return rounded.astype("Int64")
+
+
+def _round_half_even(values: pd.Series) -> pd.Series:
+    """Round to a nullable integer, half to even.
+
+    PostgreSQL casts a FLOAT to `INT` with C's `rint()`, which rounds half to
+    even -- so `22.5::FLOAT` stored in an `INT` column reads back as 22, while
+    `22.5::NUMERIC` reads back as 23. This is the FLOAT half; see
+    :func:`_round_half_away` for the NUMERIC one.
+
+    Parameters
+    ----------
+    values
+        Float values, possibly containing NaN.
+
+    Returns
+    -------
+    pandas.Series
+        Nullable `Int64` values.
+
+    Examples
+    --------
+    >>> import numpy as np, pandas as pd
+    >>> _round_half_even(pd.Series([8.2, 9.84, 2.5, 3.5, -2.5, np.nan])).to_list()
+    [8, 10, 2, 4, -2, <NA>]
+    """
+    return values.round().astype("Int64")
 
 
 def derive_speed_limit(ways: gpd.GeoDataFrame) -> pd.Series:
@@ -457,8 +486,9 @@ def derive_width_ft(ways: gpd.GeoDataFrame) -> pd.Series:
     # rounded on assignment and every later reader sees the integer -- notably
     # `functional_class.sql`'s `COALESCE(width_ft, 0) >= 8` footway test, which
     # a 7.6 ft path passes once rounded. Keeping the float here would change
-    # that classification.
-    return _round_half_away(result)
+    # that classification. Every pass casts `::FLOAT`, so a half rounds to
+    # even: `22'6"` is 22 ft, not 23.
+    return _round_half_even(result)
 
 
 def _access_permits_routing(ways: gpd.GeoDataFrame) -> pd.Series:

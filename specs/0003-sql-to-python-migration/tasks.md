@@ -13,7 +13,9 @@ The pipeline runs in pure Python with no database;
 `brokenspoke_analyzer/ scripts/sql/` and the PostGIS/pgRouting runtime are
 deleted. The pre-ship gate is 14 of 15 corpus cities at exact parity plus one
 documented deviation (requirements.md §6.1a), and it still passes after the
-deletion.
+deletion. The stretch validation (10.3) closed on 2026-09-16 with
+**Washington DC at full parity in 5 minutes against 3.2.5's 3 h 37 min**;
+what it found on the way is in findings.md §1.28-1.29, §3.12 and §5a.4.
 
 ### Branch point and release
 
@@ -81,9 +83,12 @@ after acting on it (see below):
 | st. louis park | 105.0 s | 66.1 s | 17.5 s | 6.0x |
 | flagstaff | 131.4 s | 78.2 s | 21.5 s | 6.1x |
 | san juan | 451.2 s | 121.7 s | 49.3 s | 9.2x |
-| **total** | **19.1 min** | **7.5 min** | **2.8 min** | **6.8x** |
+| **corpus total** | **19.1 min** | **7.5 min** | **2.8 min** | **6.8x** |
+| valencia (XL) | 283.5 s | -- | 44.2 s | 6.4x |
+| **washington dc (XXL)** | **3 h 37 min** | -- | **5.2 min** | **43.8x** |
 
-**Measured: 6.8x overall, median 6.2x, range 4.1x-12.1x.** Two caveats pull
+**Measured on the corpus: 6.8x overall, median 6.2x, range 4.1x-12.1x. On
+Washington DC, the city the estimate was made for: 43.8x.** Two caveats pull
 in opposite directions: the Python timings ran on warm caches (clipped
 extract, protobuf and area index already on disk), so a cold run is somewhat
 slower; and PostGIS under Docker Desktop on macOS is a slow way to run
@@ -101,9 +106,13 @@ the parity gate is unchanged (14 PASS, Chambéry EXCEPT) and no city is now
 below 4x. Ingest is the only stage that was ever slow; the ones the spec
 worried about (`network.py`'s reachability, NFR-PERF-1) were never the cost.
 
-DC and Valencia are being measured separately (task 10.3): DC is where the SQL
-pipeline's per-block `pgr_drivingdistance` made a run take four hours, and the
-Python pipeline's per-block cost was already the cheap part before the fix.
+DC is where the SQL pipeline's per-block `pgr_drivingdistance` made a run
+take nearly four hours, and the Python pipeline's per-block cost is the cheap
+part: the whole city runs in five minutes. The speedup grows with block count
+(DC has 5,908 blocks against San Juan's 1,212), which is why the corpus
+cities sit at 4-12x and DC at 44x. The original 20-50x figure was right for
+the one city it was extrapolated from and wrong as a general claim; both
+numbers are on record.
 
 Against the bar the spec set -- **NFR-PERF-1, no worse than 2x slower** --
 every corpus city passes with room to spare. The migration met its own
@@ -746,10 +755,11 @@ retail=15, recreation=15, transit=15`, requirements.md §7 open
 
 - [x] 10. Automated pre-ship gate (`XS`/`S`/`M` corpus) — **PASSES.**
 
-      **15 of 15 cities**: 14 at exact parity across all seven dimensions and
+      **15 of 15 cities**: 14 at exact parity across all eight dimensions
+      (the seven below plus `destinations`, added after DC -- see 10.3) and
       every published column, and Chambéry within a documented deviation
-      (requirements.md §6.1a, findings.md §1.26). The corpus runs in about
-      **7.5 minutes** end to end, so it is cheap to repeat after every change.
+      (requirements.md §6.1a, findings.md §1.26). The corpus runs in under
+      **3 minutes** end to end, so it is cheap to repeat after every change.
 
           `just validate-parity --size XS --size S --size M` reproduces it, and
           exits non-zero on anything outside the recorded exception.
@@ -785,26 +795,33 @@ retail=15, recreation=15, transit=15`, requirements.md §7 open
             -- but any *other* difference there still fails, since the accepted
             set must match exactly._
 
-  - [ ] 10.3 Manual maintainer validation — **stretch goal, not required**
-        (**Valencia: done, and it paid for itself.** Washington DC: baseline
-        and SQL timing being run by the maintainer; the corpus NFR-PERF-1
-        evidence is in "Risk acceptance" above -- 4.1x-12.1x faster after the
-        ingest fix -- and the DC and Valencia SQL timings slot into that table
-        when they land.)
-        (requirements.md §7.4a; not blocking, best-effort — pursue after task 11
-        once the codebase is stable, not as part of this gate, and only if time
-        permits): - Washington DC: generate a `results/**` baseline (~4h to
-        process, not otherwise required by the pre-implementation gate), run
-        `just validate-parity washington` against it, and confirm its wall-clock
-        run time is within the 2x ceiling of the current SQL/PostGIS pipeline on
-        the same reference hardware (NFR-PERF-1); profile `network.py`'s
-        reachability stage first if it regresses, per requirements.md §7 open
-        question #4. - Valencia: its `results/**` baseline already exists
-        (generated after requirements.md's initial approval), so run
-        `just validate-parity valencia` against it for a parity check (no
-        NFR-PERF-1 ceiling applies — Valencia was never the perf-binding
-        city). - File a follow-up issue for any regression found in either city
-        instead of blocking the migration on it.
+  - [x] 10.3 Manual maintainer validation — **DONE, both cities, and it
+        paid for itself twice** (requirements.md §7.4a; stretch goal).
+
+        **Washington DC (XXL): PASS on every dimension** -- 100,234 ways,
+        87,625 intersections, 5,908 blocks, 3,845,313 block pairs, 2,175
+        destinations, all scores -- against a fresh 3.2.5 baseline the
+        maintainer ran overnight (2026-09-16). Wall clock **5.2 min against
+        3 h 37 min** on 3.2.5 (43.8x; NFR-PERF-1's 2x ceiling cleared by a
+        wide margin). DC is where the original 20-50x estimate came from, and
+        it is the one city where it was right.
+
+        **Valencia (XL): two residuals, both recorded, neither a rule** --
+        findings.md §5a.3 (one segment at a pedestrian plaza) and §5a.4 (a
+        transit cluster whose centroid lies exactly on the boundary line).
+        Wall clock 44 s against 283 s (6.2x).
+
+        _What DC found, that fifteen corpus cities had not_ (findings.md
+        §1.1, §1.28, §1.29, §3.12): the FLOAT-vs-NUMERIC rounding mode on
+        INT columns (`22'6"` is 22 ft, not 23); `traffic_signals:direction`
+        missing from the way-tag list; retail's `blockid20` testing the
+        polygon alone; and -- the largest -- the **destination layers were
+        never compared**. Every `access_*.sql` computes a per-destination
+        population shed (`pop_low_stress`, `pop_high_stress`, `pop_score`)
+        and publishes it with the centroid, and the pipeline had neither. The
+        harness now has an eighth dimension, `destinations`, covering all 13
+        layers, and the corpus gate is green on it: 14 PASS + Chambéry
+        EXCEPT._
   - _Requirements: NFR-VALIDATION-1, NFR-VALIDATION-2, NFR-PERF-1, NFR-PARITY-1,
     NFR-PARITY-2, NFR-PARITY-3_
 

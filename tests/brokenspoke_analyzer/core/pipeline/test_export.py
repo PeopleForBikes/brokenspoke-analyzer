@@ -25,6 +25,66 @@ def layer(**columns: object) -> gpd.GeoDataFrame:
     )
 
 
+def destination(**columns: object) -> gpd.GeoDataFrame:
+    """Build a one-row destination as `scoring.extract_destinations` shapes it."""
+    return layer(
+        osm_id=None,
+        name=None,
+        blockid20=["b1"],
+        pop_low_stress=None,
+        pop_high_stress=None,
+        pop_score=None,
+    ).assign(**{k: [v] for k, v in columns.items()})
+
+
+class TestDestinationLayer:
+    """Test the shape each destination category is published in."""
+
+    def polygon_destination(self) -> gpd.GeoDataFrame:
+        """One school mapped as a square, with a shed."""
+        return gpd.GeoDataFrame(
+            {
+                "osm_id": pd.array([9], dtype="Int64"),
+                "name": pd.array(["Elm Primary"], dtype="string"),
+                "blockid20": [["b1", "b2"]],
+                "pop_low_stress": pd.array([120], dtype="Int64"),
+                "pop_high_stress": pd.array([480], dtype="Int64"),
+                "pop_score": [0.25],
+                "geometry": [shapely.box(0, 0, 10, 10)],
+            },
+            geometry="geometry",
+            crs=f"EPSG:{UTM13N}",
+        )
+
+    def test_publishes_the_centroid_not_the_polygon(self) -> None:
+        """`ogr2ogr ... select *` took `geom_pt`, the first geometry column."""
+        got = export._destination_layer(self.polygon_destination(), "school_name")
+        assert got.geometry.iloc[0].equals(shapely.Point(5, 5))
+
+    def test_columns_follow_the_table_definition(self) -> None:
+        """A serial `id`, blocks, OSM id and name, then the population shed."""
+        got = export._destination_layer(self.polygon_destination(), "school_name")
+        assert list(got.columns) == [
+            "id",
+            "blockid20",
+            "osm_id",
+            "school_name",
+            "pop_low_stress",
+            "pop_high_stress",
+            "pop_score",
+            "geometry",
+        ]
+        assert got["id"].iloc[0] == 1
+        assert got["school_name"].iloc[0] == "Elm Primary"
+        assert got["pop_score"].iloc[0] == 0.25
+
+    def test_retail_has_no_id_or_name(self) -> None:
+        """Retail is clustered from the start; its table records neither."""
+        got = export._destination_layer(self.polygon_destination(), None)
+        assert "osm_id" not in got.columns
+        assert not any(c.endswith("_name") for c in got.columns)
+
+
 class TestColumnOrdering:
     """Test that the published schema is preserved."""
 
@@ -86,7 +146,7 @@ class TestExportResults:
             "census_blocks": layer(geoid20="b1", pop20=10),
             "intersections": layer(osm_id=5, legs=3),
             "boundary": layer(NAME="Town"),
-            "destinations": {"schools": layer(osm_id=9)},
+            "destinations": {"schools": destination(osm_id=9, name="Elm Primary")},
             "mileage": pd.DataFrame({"feature_type": ["lane"], "total_mileage": [1.0]}),
         }
 

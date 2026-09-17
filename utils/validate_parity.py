@@ -52,6 +52,7 @@ from brokenspoke_analyzer.cli import (
 )
 from brokenspoke_analyzer.core.pipeline import (
     errors,
+    export,
     orchestrator,
 )
 
@@ -87,6 +88,8 @@ DIMENSIONS = (
 IGNORED_COLUMNS = frozenset(
     {
         "gid",
+        # The destination tables' serial primary key.
+        "id",
         "tdg_id",
         "tag_id",
         "road_id",
@@ -631,6 +634,67 @@ def run_city(
     return city_output
 
 
+def _normalise_block_lists(frame: pd.DataFrame) -> pd.DataFrame:
+    """Make `blockid20` arrays comparable as text.
+
+    The SQL built each array with `array((SELECT ...))`, in whatever order
+    the scan returned, and exported the ids zero-padded; the Python pipeline
+    sorts them and may carry them unpadded. Neither is a difference.
+    """
+    if "blockid20" not in frame.columns:
+        return frame
+
+    def normalise(value: object) -> object:
+        if not isinstance(value, typing.Iterable) or isinstance(value, str):
+            return value
+        return "|".join(sorted(str(v).strip().lstrip("0") for v in value))
+
+    return frame.assign(blockid20=frame["blockid20"].map(normalise))
+
+
+def compare_destinations(
+    reference_dir: pathlib.Path,
+    actual_dir: pathlib.Path,
+) -> DimensionResult:
+    """Compare every published destination layer, as one dimension.
+
+    Each layer is paired on its point geometry (the published centroid) and
+    the OSM id where the category records one, then compared column by
+    column: the blocks it sits in, its name, and the population shed
+    (`pop_low_stress`, `pop_high_stress`, `pop_score`). Differences are
+    reported per layer.
+
+    Returns
+    -------
+    DimensionResult
+        `pass`, `fail`, or `skip` when no layer exists on either side.
+    """
+    result = DimensionResult("destinations", "skip")
+    for layer in export.DESTINATION_LAYERS:
+        reference, actual = load_pair(reference_dir, actual_dir, layer)
+        if reference is not None:
+            reference = _normalise_block_lists(reference)
+        if actual is not None:
+            actual = _normalise_block_lists(actual)
+        compared = compare_dimension(layer, "id", reference, actual, spatial=True)
+        if compared.status == "skip":
+            continue
+        result.status = "pass" if result.status == "skip" else result.status
+        result.reference_rows += compared.reference_rows
+        result.actual_rows += compared.actual_rows
+        for difference in compared.differences:
+            result.differences.append(
+                Difference(
+                    f"{layer}.{difference.column}",
+                    difference.rows,
+                    difference.detail,
+                ),
+            )
+    if result.differences:
+        result.status = "fail"
+    return result
+
+
 def compare_city(
     row: dict[str, str],
     data_dir: pathlib.Path,
@@ -668,6 +732,7 @@ def compare_city(
         result.dimensions.append(
             compare_dimension(name, key, reference, actual, spatial=spatial),
         )
+    result.dimensions.append(compare_destinations(result.reference, actual_dir))
 
     deviation = KNOWN_DEVIATIONS.get(row["city"].casefold())
     if deviation and not result.ok:

@@ -21,15 +21,38 @@ changes.
 
 `prepare_tables.sql` declares `width_ft`, `speed_limit`, the four lane counts,
 and `xwalk` as `INT` while the scripts compute them as floats. PostgreSQL rounds
-(half away from zero) on assignment, so **every later reader sees the rounded
-integer**.
+on assignment, so **every later reader sees the rounded integer**.
 
 This is not cosmetic. `functional_class.sql` tests `COALESCE(width_ft, 0) >= 8`
 on a footway — and a 7.6 ft path rounds to 8 and _qualifies_. Keeping the float
 would silently reclassify those roads.
 
-Encoded as `features._round_half_away()`. NumPy rounds half-to-even, so the
-naive `round()` is wrong in both directions.
+**And the rounding mode depends on the expression's type, not the column's.**
+PostgreSQL rounds a NUMERIC half away from zero, but casts a FLOAT to INT with
+C's `rint()`, which rounds half to even. So `22.5::NUMERIC` stores as 23 and
+`22.5::FLOAT` stores as 22. The first version of this finding said "half away"
+for every INT column and was wrong for the FLOAT ones; it took Washington DC to
+show it — Canal Road is tagged `width=22'6"`, `width_ft.sql` computes
+`substring(...)::FLOAT + ...::FLOAT / 12` = 22.5, and 3.2.5 published 22. No
+corpus city had a width on an exact half.
+
+Which is which, script by script:
+
+| Expression                                      | Type    | Rounding  | Encoded as                   |
+| ----------------------------------------------- | ------- | --------- | ---------------------------- |
+| `width_ft.sql` (every pass casts `::FLOAT`)     | FLOAT   | half-even | `features._round_half_even`  |
+| `build_network.sql` `degrees(ST_Azimuth(...))`  | FLOAT   | half-even | `network._round_half_even`   |
+| `build_network.sql` `ST_Length(...)`            | FLOAT   | half-even | `network._round_half_even`   |
+| `speed_limit.sql` `ROUND(x / 1.609 / 5) * 5`    | NUMERIC | half-away | inline in `derive_speed_limit` |
+| `access_*.sql` `SUM(pop20)` (§1.27)             | NUMERIC | half-away | `features._round_half_away`  |
+
+`1.609` is a NUMERIC literal, so the speed-limit division is NUMERIC and its
+`ROUND()` is half-away; `SUM()` over a NUMERIC column is NUMERIC (the
+population shapefile's `POP20` is a `N 24.15` field, which `shp2pgsql` loads as
+NUMERIC). Note also that `build_network.sql` stores *each azimuth* as an
+INTEGER before subtracting them, so the turn angle is a difference of two
+rounded values, not a rounded difference: 10.4° and 20.6° give 21 − 10 = 11,
+not round(10.2) = 10.
 
 ### 1.2 Integer division in `link_cost` — the single largest parity bug found
 
@@ -423,6 +446,47 @@ Worth the reminder that a rule can be exactly right on 15 cities and still be
 wrong: the corpus had no city with fractional population until an `XL`
 manual run added one (tasks.md 10.3).
 
+### 1.28 `traffic_signals:direction` is a way tag the point rules read
+
+`signalized.sql`'s second and third rules read `traffic_signals:direction` from
+`neighborhood_osm_full_line` -- the *way* table -- and flag the way's
+`intersection_to` (`forward`) or `intersection_from` (`backward`), with no leg
+count condition. It is how a mid-block signal between two consecutive ways of
+the same street gets recorded, since that node has two legs and every other
+rule demands more than two.
+
+`pfb.style` lists it as a `way` column and the first transcription of that
+list into `ingest.OSM_WAY_TAGS` (§2.2) missed it, so the column never reached
+`derive_intersection_flags` and the rule matched nothing. No corpus city had
+the tag on a way; DC's Maine Avenue Southwest did. The frozen list in
+`test_ingest.py` was transcribed from the same reading and missed it too --
+a test that copies the source it checks proves only that the copy is faithful.
+
+### 1.29 Every destination table carries a population shed, and it is published
+
+Each `connectivity/destinations/*.sql` table has `pop_low_stress`,
+`pop_high_stress` and `pop_score` columns, and the second half of every
+`access_*.sql` fills them: for each destination, the population of every block
+connected to *any* of the blocks the destination sits in (`SUM(MAX(pop20))
+GROUP BY geoid20`, so a block reaching two of its blocks counts once), over
+each network, for destinations inside the boundary. `pop_score` is
+`pop_low_stress::FLOAT / pop_high_stress` on the stored INT columns (§1.27
+applies: NUMERIC sum, half-away).
+
+Two details of the *export*: the tables have two geometry columns, `geom_pt`
+and `geom_poly`, and `ogr2ogr ... -sql "select * from <table>"` writes the
+first, so the published GeoJSON is the **centroid**, never the polygon; and a
+cluster row (every retail row, a park or transit cluster) has no `osm_id` and
+no name -- the SQL inserts it with its geometry alone.
+
+The Python pipeline computed none of this and published polygons with two
+columns. It went unnoticed because the parity harness compared seven files
+and the destination layers were not among them -- the same lesson as §1.27
+and §1.28, from the other side: **the gate only proves what it checks**.
+Encoded as `scoring.destination_population_shed`, `export._destination_layer`,
+and a `destinations` dimension in `validate_parity.py` that pairs each layer's
+rows on the published point.
+
 ---
 
 ## 2. Python and library traps
@@ -661,6 +725,22 @@ tagged `highway=motorway_junction` mid-way, and a path through a node tagged
 This sits alongside §3.1, not instead of it: the cut set is the union of "shared
 by 2+ ways of any kind" and "carries a configured `highway` value".
 
+### 3.12 Retail is the one category whose blocks are the polygon's alone
+
+§3.10 says a destination belongs to the block its centroid falls in as well as
+the blocks its shape touches, because every `connectivity/destinations/*.sql`
+sets `blockid20` with `ST_Intersects(geom_poly, cb.geom) OR
+ST_Intersects(geom_pt, cb.geom)`. Every script but one: `retail.sql` tests
+`geom_poly` only. There is no comment saying why; most likely the `OR` was
+added to the twelve scripts that insert points as well as polygons, and retail
+-- which buffers its points and clusters everything -- was never touched.
+
+Applied uniformly it over-credits: a DC retail cluster of a corner shop and two
+liquor stores has a centroid 3.8 m outside all three parts, in a block
+`retail.sql` never listed. Twenty blocks gained a reachable retail destination
+and the city's retail score moved from 45.58 to 45.6. Encoded as
+`DestinationRule.centroid_touches_blocks`, off for `RETAIL_RULE` alone.
+
 ---
 
 ## 4. Method — what actually worked
@@ -765,6 +845,20 @@ intersection leg counts, and 0.04 miles on the high-stress total.
 Valencia is an `XL` city -- outside every automated corpus, and its manual
 pass is explicitly best-effort (requirements.md §7.4a).
 
+### 5a.4 Valencia: one transit cluster sitting exactly on the boundary line
+
+The `destinations` dimension (§1.29) shows one more Valencia difference: the
+transit cluster at (-0.32531, 39.44976) has a population shed here and NULLs
+in the baseline. `access_transit.sql` only fills the shed where
+`ST_Intersects(geom_pt, boundary)`, and this point is a coin flip: the cluster
+is two `public_transport=stop_position` nodes (`9466788241`, `9466788251`)
+that are both vertices of the boundary way itself, so its centroid lies
+mathematically **on** the boundary edge. PostGIS's transform of the boundary
+put it a hair outside, pyproj's a hair inside. There is no rule to reproduce;
+either answer is a rounding accident, and the pipeline's is the more
+defensible one (the stops are in the city). Cost: one destination's
+`pop_*` columns; no score reads them.
+
 ---
 
 ## 6. Where each finding is enforced
@@ -773,7 +867,7 @@ Findings are pinned by tests so they cannot be "tidied away" later:
 
 | Finding                        | Enforced by                                                                             |
 | ------------------------------ | --------------------------------------------------------------------------------------- |
-| 1.1 INT column rounding        | `test_features.py::TestRoundHalfAway`, `TestDeriveWidthFt`                              |
+| 1.1 INT column rounding        | `test_features.py::TestRoundHalfAway`, `TestRoundHalfEven`, `TestDeriveWidthFt`; `test_network.py::TestLinkCost`, `test_turn_angle_rounds_each_azimuth_first` |
 | 1.2 integer division           | `test_network.py::TestLinkCost`                                                         |
 | 1.3 `greatest()` NULLs         | `test_network.py::TestGreatest`                                                         |
 | 1.5 dead "both" pass           | `test_features.py::TestDeriveParking`                                                   |
@@ -793,6 +887,8 @@ Findings are pinned by tests so they cannot be "tidied away" later:
 | 1.24 transit clustering        | `test_scoring.py::TestTransitClustering`                                                |
 | 1.25 implied one-way           | `test_export.py::TestOnewayLabels`                                                      |
 | 1.26 chunk-boundary edge loss  | _deliberately not reproduced_ — requirements.md §6.1a                                   |
+| 1.28 way-tagged signals        | `test_ingest.py::test_way_tags_cover_pfb_style`, `test_features.py::TestIntersectionFlags` |
+| 1.29 destination sheds         | `test_scoring.py::TestDestinationPopulationShed`, `test_export.py::TestDestinationLayer`, harness `destinations` dimension |
 | 2.1 NULL propagation           | `test_features.py::TestNullSafeComparison`                                              |
 | 2.2 unrequested tags           | `test_ingest.py::test_way_tags_cover_pfb_style`                                         |
 | 2.3 buffer vs distance         | `test_features.py::test_uses_true_distance_not_an_approximated_buffer`                  |
@@ -808,6 +904,7 @@ Findings are pinned by tests so they cannot be "tidied away" later:
 | 3.9 unclosed ways are lines    | `test_scoring.py::TestDestinationGeometryKinds`                                         |
 | 3.10 centroid block            | `test_scoring.py::TestBlocksTouched`                                                    |
 | 3.11 tagged cut nodes          | `test_ingest.py::TestSharedNodes`                                                       |
+| 3.12 retail block rule         | `test_scoring.py::TestBlocksTouched`                                                    |
 | export schema contract         | `test_export.py::TestColumnOrdering`                                                    |
 | jobs keyed on workplace        | `test_scoring.py::TestBlockJobs`                                                        |
 | category renormalisation       | `test_scoring.py::TestCategoryScores`                                                   |

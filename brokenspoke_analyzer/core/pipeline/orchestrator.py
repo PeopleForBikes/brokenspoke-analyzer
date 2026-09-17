@@ -248,7 +248,19 @@ def _score(
     destinations: dict[str, gpd.GeoDataFrame] = {}
     for rule in (*scoring.DESTINATION_RULES, scoring.RETAIL_RULE):
         found = scoring.extract_destinations(osm_features, blocks, rule)
-        destinations[rule.name] = found
+        # Each published destination carries the population that can reach
+        # it; retail is the one category tested against the boundary by its
+        # cluster polygon rather than its centroid.
+        shed = scoring.destination_population_shed(
+            found,
+            blocks,
+            connected,
+            boundary,
+            within_boundary_by="polygon" if rule is scoring.RETAIL_RULE else "point",
+        )
+        destinations[rule.name] = found.assign(
+            **{name: shed[name].to_numpy() for name in shed.columns},
+        )
         counts = scoring.count_reachable(blocks, found, connected)
         access = weights.get(rule.name, config.Access(rule.name))
         blocks[f"{rule.name}_low_stress"] = counts["low_stress"].to_numpy()

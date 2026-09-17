@@ -89,8 +89,11 @@ class TestDeriveWidthFt:
             # 3 m = 9.84 ft, rounded to the INT column's 10.
             ("3 m", 10),
             ("12'", 12),
-            # 12.5 rounds away from zero, to 13 rather than NumPy's 12.
-            ("12'6\"", 13),
+            # The SQL casts `::FLOAT`, and a FLOAT half rounds to even on
+            # its way into the INT column: 12.5 is 12 (DC's Canal Road,
+            # `22'6"`, came out 22 in 3.2.5), while 13.5 is 14.
+            ("12'6\"", 12),
+            ("13'6\"", 14),
             ("2.5", 8),
             ("0.5", 2),
         ],
@@ -323,8 +326,23 @@ class TestDropOrphans:
         assert len(features.drop_orphans(frame)) == 4
 
 
+class TestRoundHalfEven:
+    """Test the FLOAT-to-INT rounding PostgreSQL applies on assignment."""
+
+    def test_rounds_half_to_even(self) -> None:
+        """A FLOAT half goes to the even neighbour, as C's `rint()` does."""
+        values = pd.Series([2.5, 3.5, -2.5, 8.2, 9.84])
+        assert list(features._round_half_even(values)) == [2, 4, -2, 8, 10]
+
+    def test_preserves_nulls(self) -> None:
+        """A missing value stays missing rather than becoming 0."""
+        result = features._round_half_even(pd.Series([float("nan"), 1.2]))
+        assert pd.isna(result.iloc[0])
+        assert result.iloc[1] == 1
+
+
 class TestRoundHalfAway:
-    """Test the PostgreSQL-compatible rounding used for `INT` columns."""
+    """Test the NUMERIC-to-INT rounding PostgreSQL applies on assignment."""
 
     def test_rounds_half_away_from_zero(self) -> None:
         """2.5 rounds to 3, not to 2 as NumPy's half-to-even would."""
@@ -755,6 +773,55 @@ class TestIntersectionLegs:
         """`int_id IN (from, to)` matches a self-looping road a single time."""
         frame = ways([{"road_id": 1, "intersection_from": "x", "intersection_to": "x"}])
         assert features.derive_intersection_legs(frame, ["x"]).loc["x"] == 1
+
+
+class TestIntersectionFlags:
+    """Test `signalized.sql`."""
+
+    @staticmethod
+    def intersections(ids: list[str]) -> gpd.GeoDataFrame:
+        """Build one intersection per id, far enough apart not to interact."""
+        return gpd.GeoDataFrame(
+            {"osm_id": ids},
+            geometry=[shapely.Point(index * 1000, 0) for index in range(len(ids))],
+            crs=f"EPSG:{UTM13N}",
+        )
+
+    @staticmethod
+    def no_points() -> gpd.GeoDataFrame:
+        """An extract with no tagged nodes at all."""
+        return gpd.GeoDataFrame({"id": []}, geometry=[], crs=f"EPSG:{UTM13N}")
+
+    def test_way_direction_signals_the_end_it_points_to(self) -> None:
+        """`traffic_signals:direction` on a way flags one of its two ends.
+
+        `forward` flags `intersection_to`, `backward` flags
+        `intersection_from`, whatever the leg count: this is the rule that
+        signals a mid-block light between two consecutive ways of the same
+        street (DC's Maine Avenue, findings.md §1.28).
+        """
+        roads = ways(
+            [
+                {
+                    "road_id": 1,
+                    "intersection_from": "a",
+                    "intersection_to": "b",
+                    "traffic_signals:direction": "forward",
+                },
+                {
+                    "road_id": 2,
+                    "intersection_from": "b",
+                    "intersection_to": "c",
+                    "traffic_signals:direction": "backward",
+                },
+                {"road_id": 3, "intersection_from": "c", "intersection_to": "d"},
+            ],
+        )
+        flags = features.derive_intersection_flags(
+            self.intersections(["a", "b", "c", "d"]), roads, self.no_points()
+        )
+        assert flags["signalized"].tolist() == [False, True, False, False]
+        assert flags["legs"].tolist() == [1, 2, 2, 1]
 
 
 class TestCalculateMileage:

@@ -32,6 +32,7 @@ from brokenspoke_analyzer.core.pipeline import config
 from brokenspoke_analyzer.core.pipeline.features import (
     _column,
     _eq,
+    _round_half_away,
     _text,
 )
 from brokenspoke_analyzer.core.pipeline.network import (
@@ -105,6 +106,10 @@ class DestinationRule:
         where it does not: `transit.sql` clusters its *points* at the
         tolerance while keeping every polygon a destination of its own,
         subject only to the subarea delete (findings.md §1.24).
+    centroid_touches_blocks
+        Whether the destination also belongs to the block its centroid falls
+        in (findings.md §3.10). Every script tests `geom_poly OR geom_pt`
+        except `retail.sql`, which tests the polygon alone (§3.12).
     """
 
     name: str
@@ -115,6 +120,7 @@ class DestinationRule:
     point_exclusion_distance: int = 0
     cluster_points: bool = False
     cluster_polygons: bool = True
+    centroid_touches_blocks: bool = True
 
 
 def _transit_matches(features: gpd.GeoDataFrame) -> pd.Series:
@@ -244,6 +250,7 @@ RETAIL_RULE = DestinationRule(
     ),
     tolerance=50,
     point_buffer=10,
+    centroid_touches_blocks=False,
 )
 
 
@@ -407,15 +414,14 @@ def _cluster_points(points: gpd.GeoDataFrame, tolerance: int) -> gpd.GeoDataFram
     `transit.sql` is the only script that clusters its points, with
     `ST_Centroid(ST_CollectionExtract(unnest(ST_ClusterWithin(...)), 1))`.
     """
-    if points.empty or len(points) == 1:
+    if points.empty:
         return points
-    clusters = cluster_within(points.geometry, tolerance)
+    # The SQL inserts a cluster with only its geometry: it has no `osm_id`
+    # and no name, even when it is a single stop with nothing to merge.
+    clusters = [[0]] if len(points) == 1 else cluster_within(points.geometry, tolerance)
     shapes = points.geometry.to_numpy()
     return gpd.GeoDataFrame(
         {
-            "id": [points["id"].to_numpy()[members[0]] for members in clusters]
-            if "id" in points.columns
-            else np.arange(len(clusters)),
             "geometry": [
                 shapely.MultiPoint([shapes[member] for member in members]).centroid
                 for members in clusters
@@ -484,7 +490,7 @@ def extract_destinations(
     """
     if features.empty:
         return gpd.GeoDataFrame(
-            {"osm_id": [], "blockid20": [], "geometry": []},
+            {"osm_id": [], "name": [], "blockid20": [], "geometry": []},
             geometry="geometry",
             crs=census_blocks.crs,
         )  # ty:ignore[no-matching-overload]
@@ -552,17 +558,33 @@ def extract_destinations(
     destinations = pd.concat([polygons, points])
     if destinations.empty:
         return gpd.GeoDataFrame(
-            {"osm_id": [], "blockid20": [], "geometry": []},
+            {"osm_id": [], "name": [], "blockid20": [], "geometry": []},
             geometry="geometry",
             crs=census_blocks.crs,
         )  # ty:ignore[no-matching-overload]
 
-    blocks = _blocks_touched(destinations, census_blocks)
+    blocks = _blocks_touched(
+        destinations,
+        census_blocks,
+        with_centroid=rule.centroid_touches_blocks,
+    )
+    # A destination taken from one OSM feature keeps its id and name; a
+    # cluster has neither (the SQL inserts only its geometry). Both columns
+    # are published, so their nulls matter.
     result = gpd.GeoDataFrame(
         {
-            "osm_id": destinations["id"].to_numpy()
-            if "id" in destinations.columns
-            else np.arange(len(destinations)),
+            "osm_id": pd.array(
+                destinations["id"].to_numpy()
+                if "id" in destinations.columns
+                else [pd.NA] * len(destinations),
+                dtype="Int64",
+            ),
+            "name": pd.array(
+                destinations["name"].to_numpy()
+                if "name" in destinations.columns
+                else [pd.NA] * len(destinations),
+                dtype="string",
+            ),
             "blockid20": blocks,
             "geometry": destinations.geometry.to_numpy(),
         },
@@ -576,6 +598,8 @@ def extract_destinations(
 def _blocks_touched(
     destinations: gpd.GeoDataFrame,
     census_blocks: gpd.GeoDataFrame,
+    *,
+    with_centroid: bool = True,
 ) -> list[list[str]]:
     """List the census blocks each destination belongs to.
 
@@ -584,12 +608,15 @@ def _blocks_touched(
     where `geom_pt` is the polygon's centroid. A cluster wrapped around a
     block -- a park either side of a street -- has a centroid that lands in a
     block none of its parts touch, and that block counts too
-    (findings.md §3.10).
+    (findings.md §3.10). `retail.sql` alone tests the polygon only
+    (`with_centroid=False`, §3.12).
     """
     shapes = destinations[["geometry"]].reset_index(drop=True)
-    centroids = shapes.set_geometry(shapes.geometry.centroid)
+    tested = [shapes]
+    if with_centroid:
+        tested.append(shapes.set_geometry(shapes.geometry.centroid))
     grouped: dict[int, set[str]] = {}
-    for frame in (shapes, centroids):
+    for frame in tested:
         joined = gpd.sjoin(
             frame,
             census_blocks[["geoid20", "geometry"]],
@@ -675,6 +702,115 @@ def count_reachable(
     counts["high_stress"] = high_column
     counts["low_stress"] = low_column
     return counts
+
+
+def destination_population_shed(
+    destinations: gpd.GeoDataFrame,
+    census_blocks: gpd.GeoDataFrame,
+    connected: pd.DataFrame,
+    boundary: gpd.GeoDataFrame,
+    *,
+    within_boundary_by: str = "point",
+) -> pd.DataFrame:
+    """Total the population that can reach each destination, by network.
+
+    Reproduce the second half of every `access_*.sql`, the per-destination
+    mirror of :func:`shed_totals`: for each destination, the population of
+    every block connected to *any* of the blocks it sits in, each block
+    counted once (`MAX(cb.pop20) ... GROUP BY cb.geoid20`), over the
+    unrestricted network and over the low-stress one. `pop_score` is their
+    ratio.
+
+    Only destinations inside the boundary get a shed; the SQL tests the
+    centroid against the boundary for every category except retail, which
+    tests the cluster polygon. Every other destination keeps NULLs, as does
+    one whose blocks no block connects to (`SUM()` over no rows).
+
+    Parameters
+    ----------
+    destinations
+        One category's destinations, with `blockid20`.
+    census_blocks
+        The retained blocks, with `pop20`.
+    connected
+        Block pairs from `network.connected_census_blocks`.
+    boundary
+        The analysis boundary, same CRS.
+    within_boundary_by
+        `"point"` to test the destination's centroid against the boundary,
+        `"polygon"` to test its whole geometry.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Columns `pop_low_stress`, `pop_high_stress` (nullable integers) and
+        `pop_score`.
+    """
+    low = np.full(len(destinations), np.nan)
+    high = np.full(len(destinations), np.nan)
+    if not destinations.empty and not connected.empty:
+        population = (
+            pd.to_numeric(_column(census_blocks, "pop20"), errors="coerce")
+            .fillna(0)
+            .to_numpy()
+        )
+        position_of_geoid = {
+            str(geoid): position
+            for position, geoid in enumerate(census_blocks["geoid20"])
+        }
+        # Every source block connected to each target block, by network.
+        sources_high: dict[str, set[int]] = {}
+        sources_low: dict[str, set[int]] = {}
+        for source, target, is_low in zip(
+            connected["source_blockid20"],
+            connected["target_blockid20"],
+            connected["low_stress"],
+            strict=True,
+        ):
+            position = position_of_geoid.get(str(source))
+            if position is None:
+                continue
+            sources_high.setdefault(str(target), set()).add(position)
+            if is_low:
+                sources_low.setdefault(str(target), set()).add(position)
+
+        shape = (
+            destinations.geometry
+            if within_boundary_by == "polygon"
+            else destinations.geometry.centroid
+        )
+        inside = shape.intersects(boundary.geometry.union_all()).to_numpy()
+        for position, blockids in enumerate(destinations["blockid20"]):
+            if not inside[position]:
+                continue
+            reached_high: set[int] = set()
+            reached_low: set[int] = set()
+            for geoid in blockids:
+                reached_high |= sources_high.get(geoid, set())
+                reached_low |= sources_low.get(geoid, set())
+            if reached_high:
+                high[position] = population[list(reached_high)].sum()
+            if reached_low:
+                low[position] = population[list(reached_low)].sum()
+
+    # The totals land in INT columns first -- a NUMERIC sum, so a half rounds
+    # away from zero (findings.md §1.27) -- and the score is computed from the
+    # stored integers: `WHEN pop_high_stress IS NULL THEN NULL WHEN
+    # pop_high_stress = 0 THEN 0 ELSE pop_low_stress::FLOAT /
+    # pop_high_stress`. A destination reached over the unrestricted network
+    # but by nobody on the low-stress one has a NULL low total, which the
+    # division carries through as NULL.
+    low_int = _round_half_away(pd.Series(low, index=destinations.index))
+    high_int = _round_half_away(pd.Series(high, index=destinations.index))
+    low_float = low_int.astype("float64").to_numpy()
+    high_float = high_int.astype("float64").to_numpy()
+    with np.errstate(divide="ignore", invalid="ignore"):
+        score = np.where(high_float == 0, 0.0, low_float / high_float)
+    score = np.where(np.isnan(high_float), np.nan, score)
+    return pd.DataFrame(
+        {"pop_low_stress": low_int, "pop_high_stress": high_int, "pop_score": score},
+        index=destinations.index,
+    )
 
 
 def destination_score(

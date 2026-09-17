@@ -395,6 +395,87 @@ class TestShedTotals:
         assert pd.isna(score.iloc[2])
 
 
+class TestDestinationPopulationShed:
+    """Test the population that can reach each published destination."""
+
+    def blocks(self) -> gpd.GeoDataFrame:
+        """Three blocks in a row, fractional populations like Valencia's."""
+        return gpd.GeoDataFrame(
+            {
+                "geoid20": ["a", "b", "c"],
+                "pop20": [10.5, 20, 30],
+                "geometry": [shapely.box(i * 10, 0, i * 10 + 10, 10) for i in range(3)],
+            },
+            geometry="geometry",
+            crs=f"EPSG:{UTM13N}",
+        )
+
+    def boundary(self) -> gpd.GeoDataFrame:
+        """A boundary covering the first two blocks only."""
+        return gpd.GeoDataFrame(
+            {"geometry": [shapely.box(0, 0, 20, 10)]},
+            geometry="geometry",
+            crs=f"EPSG:{UTM13N}",
+        )
+
+    def connected(self) -> pd.DataFrame:
+        """`a` and `b` reach `b`; `a` reaches `c`; only `b` reaches it comfortably."""
+        return pd.DataFrame(
+            {
+                "source_blockid20": ["a", "b", "a", "c"],
+                "target_blockid20": ["b", "b", "c", "c"],
+                "low_stress": [False, True, False, True],
+            },
+        )
+
+    def destinations(self, *points: tuple[float, float]) -> gpd.GeoDataFrame:
+        """One point destination per coordinate, in the block it sits in."""
+        return gpd.GeoDataFrame(
+            {
+                "osm_id": pd.array(range(len(points)), dtype="Int64"),
+                "name": pd.array([None] * len(points), dtype="string"),
+                "blockid20": [[["a", "b", "c"][int(x // 10)]] for x, _ in points],
+                "geometry": [shapely.Point(x, y) for x, y in points],
+            },
+            geometry="geometry",
+            crs=f"EPSG:{UTM13N}",
+        )
+
+    def shed(self, *points: tuple[float, float]) -> pd.DataFrame:
+        """Run the shed on the fixtures."""
+        return scoring.destination_population_shed(
+            self.destinations(*points),
+            self.blocks(),
+            self.connected(),
+            self.boundary(),
+        )
+
+    def test_sums_each_source_block_once_by_network(self) -> None:
+        """A destination in `b` is reached by `a` and `b`; comfortably by `b`."""
+        got = self.shed((15, 5))
+        # 10.5 + 20 = 30.5, a NUMERIC sum, rounds away from zero into the INT.
+        assert got["pop_high_stress"].iloc[0] == 31
+        assert got["pop_low_stress"].iloc[0] == 20
+        assert got["pop_score"].iloc[0] == 20 / 31
+
+    def test_outside_the_boundary_is_null(self) -> None:
+        """The SQL only sets a shed where the point is inside the boundary."""
+        got = self.shed((25, 5))
+        assert pd.isna(got["pop_high_stress"].iloc[0])
+        assert pd.isna(got["pop_score"].iloc[0])
+
+    def test_unreached_is_null_not_zero(self) -> None:
+        """`SUM()` over no rows is NULL; a block nobody connects to stays NULL."""
+        got = self.shed((5, 5))
+        assert pd.isna(got["pop_high_stress"].iloc[0])
+        assert pd.isna(got["pop_score"].iloc[0])
+
+    def test_score_uses_the_stored_integers(self) -> None:
+        """`pop_low_stress::FLOAT / pop_high_stress` divides the INT columns."""
+        got = self.shed((15, 5))
+        assert got["pop_score"].iloc[0] != 20 / 30.5
+
+
 class TestRoundHalfUp:
     """Test the PostgreSQL rounding rule."""
 
@@ -690,6 +771,15 @@ class TestBlocksTouched:
         )
         assert not horseshoe.intersects(middle.geometry.iloc[0])
         assert scoring._blocks_touched(destinations, middle) == [["gap"]]
+        # `retail.sql` tests the polygon alone (findings.md §3.12).
+        assert scoring._blocks_touched(destinations, middle, with_centroid=False) == [
+            []
+        ]
+
+    def test_retail_is_the_one_category_without_the_centroid_rule(self) -> None:
+        """Its `blockid20` clause has no `geom_pt` test; DC showed it."""
+        assert not scoring.RETAIL_RULE.centroid_touches_blocks
+        assert all(rule.centroid_touches_blocks for rule in scoring.DESTINATION_RULES)
 
 
 class TestWholePopulationMembers:
@@ -748,6 +838,30 @@ class TestTransitClustering:
             crs=f"EPSG:{UTM13N}",
         )
         assert len(scoring.extract_destinations(frame, blocks(1), rule)) == 1
+
+    def test_a_clustered_point_has_no_id_even_alone(self) -> None:
+        """`transit.sql` inserts every point cluster with its geometry only.
+
+        A lone stop still goes through `ST_ClusterWithin`, so it loses its
+        `osm_id` and name like any other cluster; the first version kept them
+        for a single point and five corpus cities published one stop too many
+        with an id.
+        """
+        rule = next(r for r in scoring.DESTINATION_RULES if r.name == "transit")
+        frame = gpd.GeoDataFrame(
+            {
+                "id": [1],
+                "name": ["Main St"],
+                "amenity": ["bus_station"],
+                "geometry": [shapely.Point(0, 0)],
+            },
+            geometry="geometry",
+            crs=f"EPSG:{UTM13N}",
+        )
+        got = scoring.extract_destinations(frame, blocks(1), rule)
+        assert len(got) == 1
+        assert pd.isna(got["osm_id"].iloc[0])
+        assert pd.isna(got["name"].iloc[0])
 
 
 class TestIntShedTotals:

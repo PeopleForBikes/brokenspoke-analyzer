@@ -16,6 +16,7 @@ import pathlib
 import typing
 
 import geopandas as gpd
+import numpy as np
 import pandas as pd
 from loguru import logger
 
@@ -142,28 +143,81 @@ INTERSECTION_COLUMNS = (
     "island",
 )
 
-# The destination categories exported as their own GeoJSON layer.
-DESTINATION_LAYERS = (
-    "colleges",
-    "community_centers",
-    "dentists",
-    "doctors",
-    "hospitals",
-    "parks",
-    "pharmacies",
-    "retail",
-    "schools",
-    "social_services",
-    "supermarkets",
-    "transit",
-    "universities",
-)
+# The destination categories exported as their own GeoJSON layer, with the
+# name each `connectivity/destinations/*.sql` table gave its `name` column.
+# Retail is clustered from the outset and its table has neither an `osm_id`
+# nor a name.
+DESTINATION_LAYERS: dict[str, str | None] = {
+    "colleges": "college_name",
+    "community_centers": "center_name",
+    "dentists": "dentists_name",
+    "doctors": "doctors_name",
+    "hospitals": "hospital_name",
+    "parks": "park_name",
+    "pharmacies": "pharmacy_name",
+    "retail": None,
+    "schools": "school_name",
+    "social_services": "service_name",
+    "supermarkets": "supermarket_name",
+    "transit": "transit_name",
+    "universities": "college_name",
+}
+
+# The population shed every destination table carries.
+DESTINATION_SHED_COLUMNS = ("pop_low_stress", "pop_high_stress", "pop_score")
 
 # Layers written as both shapefile and GeoJSON, versus GeoJSON only.
 SHAPEFILE_LAYERS = ("census_blocks", "ways")
 
 # Exports are published in EPSG:4326 regardless of the analysis CRS.
 EXPORT_CRS = 4326
+
+
+def _destination_layer(
+    frame: gpd.GeoDataFrame,
+    name_column: str | None,
+) -> gpd.GeoDataFrame:
+    """Shape one destination category the way its SQL table was published.
+
+    Each `generated.neighborhood_<category>` table carried two geometries,
+    `geom_pt` and `geom_poly`, and the GeoJSON export (`ogr2ogr ... select
+    *`) took the first: the published geometry is the centroid, never the
+    polygon. The columns follow the table definition: a serial `id`, the
+    blocks, the OSM id and name where the category records them, then the
+    population shed.
+
+    Parameters
+    ----------
+    frame
+        One category's destinations, from `scoring.extract_destinations`
+        with the shed attached.
+    name_column
+        The table's name for the `name` column, or None for a category that
+        records neither `osm_id` nor a name.
+
+    Returns
+    -------
+    geopandas.GeoDataFrame
+        The layer as published.
+    """
+    columns: dict[str, typing.Any] = {"id": np.arange(1, len(frame) + 1)}
+    # `array((SELECT ...))` over no blocks is an empty array, which `ogr2ogr`
+    # wrote as a null property; and a nullable string must reach the writer
+    # as None, not as pandas' `<NA>` sentinel spelled out.
+    columns["blockid20"] = [
+        list(blocks) if len(blocks) else None for blocks in frame["blockid20"]
+    ]
+    if name_column is not None:
+        columns["osm_id"] = frame["osm_id"].to_numpy()
+        names = frame["name"].astype(object)
+        columns[name_column] = names.where(names.notna(), None).to_numpy()
+    for column in DESTINATION_SHED_COLUMNS:
+        columns[column] = frame[column].to_numpy()
+    return gpd.GeoDataFrame(
+        columns,
+        geometry=frame.geometry.centroid.to_numpy(),
+        crs=frame.crs,
+    )  # ty:ignore[no-matching-overload]
 
 
 def _with_gid(frame: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -489,7 +543,11 @@ def export_results(
 
     for name, frame in (results.get("destinations") or {}).items():
         if name in DESTINATION_LAYERS:
-            written += write_layer(frame, export_dir, name)
+            written += write_layer(
+                _destination_layer(frame, DESTINATION_LAYERS[name]),
+                export_dir,
+                name,
+            )
 
     for key, name in (
         ("connected", "connected_census_blocks"),

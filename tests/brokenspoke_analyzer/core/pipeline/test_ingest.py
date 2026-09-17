@@ -172,6 +172,10 @@ class TestTagCoverage:
             "service",
             "surface",
             "tracktype",
+            # The one way-only tag `signalized.sql` reads from the line
+            # table. Missed on the first transcription: DC's Maine Avenue
+            # lost a signal (findings.md §1.28).
+            "traffic_signals:direction",
             "tunnel",
             "turn:lanes",
             "turn:lanes:backward",

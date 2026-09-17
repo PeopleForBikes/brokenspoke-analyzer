@@ -53,6 +53,11 @@ class TestLinkCost:
         """Equal lengths give exactly half their sum."""
         assert network._link_cost(20.0, 20.0) == 20
 
+    def test_half_lengths_round_to_even(self) -> None:
+        """`ST_Length` is FLOAT, so a half rounds to even into the INTEGER."""
+        # 10.5 -> 10 and 11.5 -> 12, then (10 + 12) // 2 == 11.
+        assert network._link_cost(10.5, 11.5) == 11
+
 
 class TestGreatest:
     """Test the NULL-skipping `greatest()`."""
@@ -123,6 +128,33 @@ class TestBuildNetwork:
         assert len(links) == 2
         # Each link costs half of each 100 m road.
         assert set(links["link_cost"]) == {100}
+
+    def test_turn_angle_rounds_each_azimuth_first(self) -> None:
+        """The azimuths are INTEGER columns; the difference is of integers.
+
+        Source azimuth 10.4 and target azimuth 20.6 differ by 10.2, which
+        rounds to 10 -- but the SQL stores 10 and 21 and subtracts those,
+        giving 11.
+        """
+
+        def toward(degrees: float) -> tuple[float, float]:
+            radians = math.radians(degrees)
+            return (100 * math.sin(radians), 100 * math.cos(radians))
+
+        source = {
+            "int_to": 1,
+            "start": (0.0, 0.0),
+            "end": toward(10.4),
+            "mid": (0.0, 0.0),
+        }
+        target = {
+            "int_to": 2,
+            "start": (0.0, 0.0),
+            "end": (0.0, 0.0),
+            "mid": toward(20.6),
+        }
+        _, angle = network._turn_order_key(source, target, 1)
+        assert angle == 11
 
     def test_one_way_blocks_the_reverse_turn(self) -> None:
         """A one-way road cannot be entered from its far end."""

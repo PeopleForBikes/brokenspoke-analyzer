@@ -49,6 +49,7 @@ pip-log.txt
 profile.svg
 results/
 results/*
+results-parity/
 reviews/
 sdist/
 target/

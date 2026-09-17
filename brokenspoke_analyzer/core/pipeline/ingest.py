@@ -130,6 +130,7 @@ OSM_WAY_TAGS = (
     "service",
     "surface",
     "tracktype",
+    "traffic_signals:direction",
     "tunnel",
     "turn:lanes",
     "turn:lanes:backward",
@@ -331,6 +332,12 @@ def read_destinations(protobuf: pathlib.Path) -> gpd.GeoDataFrame:
         found.explode(index_parts=False).reset_index(drop=True),
         crs=found.crs,
     )  # ty:ignore[no-matching-overload]
+    # `osm2pgsql` gives a relation's polygon a *negative* `osm_id` -- the
+    # relation id negated -- so that it cannot collide with a way's. The
+    # published destination tables carry that id as is.
+    if "osm_type" in found.columns:
+        sign = np.where(found["osm_type"].to_numpy() == "relation", -1, 1)
+        found["id"] = found["id"].astype("int64") * sign
     logger.debug(f"read {len(found):,} destination candidates")
     return found
 

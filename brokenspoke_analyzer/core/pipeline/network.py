@@ -79,9 +79,19 @@ def _greatest(*values: typing.Any) -> int:
     return max(present) if present else NULL_STRESS
 
 
-def _round_half_away(value: float) -> int:
-    """Round half away from zero, as PostgreSQL's `round()` does."""
-    return int(math.floor(abs(value) + 0.5) * (1 if value >= 0 else -1))
+def _round_half_even(value: float) -> int:
+    """Round half to even, as PostgreSQL does when storing a FLOAT in an INT.
+
+    `build_network.sql` declares the azimuths and road lengths `INTEGER` and
+    fills them from `degrees(ST_Azimuth(...))` and `ST_Length(...)`, both
+    FLOAT, so the cast goes through C's `rint()` (findings.md §1.1).
+
+    Examples
+    --------
+    >>> _round_half_even(2.5), _round_half_even(3.5), _round_half_even(2.4)
+    (2, 4, 2)
+    """
+    return round(value)
 
 
 def _azimuth(origin: tuple[float, float], target: tuple[float, float]) -> float:
@@ -215,15 +225,17 @@ def _turn_order_key(
     """
     source_dir = "ft" if int_id == source["int_to"] else "tf"
     tip = source["start"] if source_dir == "tf" else source["end"]
-    source_azimuth = _azimuth(source["mid"], tip)
+    # Each azimuth lands in an INTEGER column before the subtraction, so it
+    # is rounded on its own, not the difference.
+    source_azimuth = _round_half_even(_azimuth(source["mid"], tip))
 
     target_dir = "ft" if int_id == target["int_to"] else "tf"
     tail = target["start"] if target_dir == "tf" else target["end"]
-    target_azimuth = _azimuth(tail, target["mid"])
+    target_azimuth = _round_half_even(_azimuth(tail, target["mid"]))
 
-    angle = _round_half_away(
-        (target_azimuth - source_azimuth + FULL_CIRCLE_DEGREES) % FULL_CIRCLE_DEGREES,
-    )
+    angle = (
+        target_azimuth - source_azimuth + FULL_CIRCLE_DEGREES
+    ) % FULL_CIRCLE_DEGREES
     radians = math.radians(angle)
     positive = math.sin(radians) > 0
     tie = math.cos(radians) if positive else -math.cos(radians)
@@ -311,7 +323,7 @@ def _link_cost(source_length: float, target_length: float) -> int:
     >>> _link_cost(11.0, 12.0)
     11
     """
-    return (_round_half_away(source_length) + _round_half_away(target_length)) // 2
+    return (_round_half_even(source_length) + _round_half_even(target_length)) // 2
 
 
 def _build_links(
