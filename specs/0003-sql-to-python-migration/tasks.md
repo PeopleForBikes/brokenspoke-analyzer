@@ -67,26 +67,26 @@ head-to-head measurement on the corpus does not support it. `import` +
 2026-09-16. The first measurement prompted a profile; the second column is
 after acting on it (see below):
 
-| City | SQL (3.2.5) | Python (first) | Python (profiled) | Speedup |
-| --- | --- | --- | --- | --- |
-| ancienne-lorette | 15.4 s | 4.4 s | 1.3 s | 12.1x |
-| rehoboth beach | 18.8 s | 3.9 s | 1.7 s | 11.0x |
-| santa rosa | 24.4 s | 3.5 s | 2.8 s | 8.8x |
-| provincetown | 25.0 s | 7.3 s | 4.1 s | 6.2x |
-| jackson | 27.1 s | 9.6 s | 3.7 s | 7.3x |
-| chambéry | 32.7 s | 41.5 s | 6.8 s | 4.8x |
-| crested butte | 34.0 s | 4.6 s | 3.9 s | 8.7x |
-| orange | 35.5 s | 21.0 s | 4.9 s | 7.3x |
-| cañon city | 41.3 s | 11.8 s | 7.0 s | 5.9x |
-| ypsilanti | 50.0 s | 30.0 s | 9.6 s | 5.2x |
-| alvarado | 75.1 s | 16.7 s | 15.4 s | 4.9x |
-| arcata | 77.4 s | 31.1 s | 18.8 s | 4.1x |
-| st. louis park | 105.0 s | 66.1 s | 17.5 s | 6.0x |
-| flagstaff | 131.4 s | 78.2 s | 21.5 s | 6.1x |
-| san juan | 451.2 s | 121.7 s | 49.3 s | 9.2x |
-| **corpus total** | **19.1 min** | **7.5 min** | **2.8 min** | **6.8x** |
-| valencia (XL) | 283.5 s | -- | 44.2 s | 6.4x |
-| **washington dc (XXL)** | **3 h 37 min** | -- | **5.2 min** | **43.8x** |
+| City                    | Size | SQL (3.2.5)  | Python, first | Python, profiled | Speedup   |
+| ----------------------- | ---- | ------------ | ------------- | ---------------- | --------- |
+| ancienne-lorette        | XS   | 15.4 s       | 4.4 s         | 1.3 s            | 12.1x     |
+| rehoboth beach          | XS   | 18.8 s       | 3.9 s         | 1.7 s            | 11.0x     |
+| santa rosa              | XS   | 24.4 s       | 3.5 s         | 2.8 s            | 8.8x      |
+| provincetown            | XS   | 25.0 s       | 7.3 s         | 4.1 s            | 6.2x      |
+| jackson                 | S    | 27.1 s       | 9.6 s         | 3.7 s            | 7.3x      |
+| chambéry                | M    | 32.7 s       | 41.5 s        | 6.8 s            | 4.8x      |
+| crested butte           | XS   | 34.0 s       | 4.6 s         | 3.9 s            | 8.7x      |
+| orange                  | XS   | 35.5 s       | 21.0 s        | 4.9 s            | 7.3x      |
+| cañon city              | S    | 41.3 s       | 11.8 s        | 7.0 s            | 5.9x      |
+| ypsilanti               | S    | 50.0 s       | 30.0 s        | 9.6 s            | 5.2x      |
+| alvarado                | S    | 75.1 s       | 16.7 s        | 15.4 s           | 4.9x      |
+| arcata                  | M    | 77.4 s       | 31.1 s        | 18.8 s           | 4.1x      |
+| st. louis park          | M    | 105.0 s      | 66.1 s        | 17.5 s           | 6.0x      |
+| flagstaff               | M    | 131.4 s      | 78.2 s        | 21.5 s           | 6.1x      |
+| san juan                | S    | 451.2 s      | 121.7 s       | 49.3 s           | 9.2x      |
+| **corpus total**        |      | **19.1 min** | **7.5 min**   | **2.8 min**      | **6.8x**  |
+| valencia                | XL   | 283.5 s      | not measured  | 44.2 s           | 6.4x      |
+| **washington dc**       | XXL  | **3 h 37 m** | not measured  | **5.2 min**      | **43.8x** |
 
 **Measured on the corpus: 6.8x overall, median 6.2x, range 4.1x-12.1x. On
 Washington DC, the city the estimate was made for: 43.8x.** Two caveats pull
@@ -107,13 +107,29 @@ the parity gate is unchanged (14 PASS, Chambéry EXCEPT) and no city is now
 below 4x. Ingest is the only stage that was ever slow; the ones the spec
 worried about (`network.py`'s reachability, NFR-PERF-1) were never the cost.
 
-DC is where the SQL pipeline's per-block `pgr_drivingdistance` made a run
-take nearly four hours, and the Python pipeline's per-block cost is the cheap
-part: the whole city runs in five minutes. The speedup grows with block count
-(DC has 5,908 blocks against San Juan's 1,212), which is why the corpus
-cities sit at 4-12x and DC at 44x. The original 20-50x figure was right for
-the one city it was extrapolated from and wrong as a general claim; both
-numbers are on record.
+**Why DC gets 44x and a small city gets 6x.** The two pipelines do the same
+work in every stage but one. In `reachable_roads_*_calc.sql` the SQL computes
+each census block's shed with `PGR_DRIVINGDISTANCE`, which takes the network
+as a *SQL string* and executes it on every call: for each block, PostgreSQL
+re-reads the whole `neighborhood_ways_net_link` table, pgRouting rebuilds its
+in-memory graph from it, runs one Dijkstra, and throws the graph away. That is
+`blocks × network` work, twice (low stress and high stress), and the eight
+"threads" in `compute.py` are eight sequential `psql` runs over hash-partitioned
+blocks, not parallelism. `network.py` builds each stress graph **once** and
+runs `networkx.multi_source_dijkstra_path_length` per block on it, which is
+`network + blocks × shed` -- so the per-block cost is a search over the roads
+within trip distance, not a rebuild of the city. The ratio between the two
+grows with the number of blocks: Crested Butte has 106 blocks and the rebuild
+is a rounding error; DC has 5,908 blocks on a 100,000-way network. The SQL
+run was not timed stage by stage, but its log brackets it: import took 70 s,
+export a few minutes, and `compute` 3 h 35 min -- and reachability is the
+only part of `compute` whose cost is `blocks × network`. Every other stage
+is within a small factor either way, which is why the corpus, where blocks
+are few, sits at 4-12x, and why the original 20-50x figure was right for the
+one city it was extrapolated from and wrong as a general claim. Both numbers
+are on record. (The per-block search is also where most of DC's remaining
+five minutes go, so a further speedup, if ever wanted, lives there -- a
+contracted graph or a compiled Dijkstra -- not in the ingest fix above.)
 
 Against the bar the spec set -- **NFR-PERF-1, no worse than 2x slower** --
 every corpus city passes with room to spare. The migration met its own
