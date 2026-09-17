@@ -56,27 +56,13 @@ WAYS_COLUMNS = (
     "xwalk",
 )
 
-# Column order for `census_blocks`: the shapefile's own fields first, then the
-# score columns in the order `census_blocks.sql` adds them.
-CENSUS_BLOCK_COLUMNS = (
-    "gid",
-    "statefp20",
-    "countyfp20",
-    "tractce20",
-    "blockce20",
-    "geoid20",
-    "name20",
-    "mtfcc20",
-    "ur20",
-    "uace20",
-    "uatype20",
-    "funcstat20",
-    "aland20",
-    "awater20",
-    "intptlat20",
-    "intptlon20",
-    "housing20",
-    "pop20",
+# `census_blocks` is the population shapefile's own fields -- whatever they
+# are, in the shapefile's order, lower-cased -- followed by the columns
+# `census_blocks.sql` adds, in the order it adds them. A US city's TIGER
+# blocks bring seventeen fields; a synthetic international grid brings two
+# (`pop20`, `geoid20`), and the published file has only those, because
+# `shp2pgsql` only ever created the columns it was given.
+CENSUS_BLOCK_DERIVED_COLUMNS = (
     "road_ids",
     "pop_low_stress",
     "pop_high_stress",
@@ -369,17 +355,31 @@ def _oneway_labels(
     return labels.fillna(ONEWAY_ABSENT).astype(object)
 
 
-def _postgres_csv(frame: pd.DataFrame) -> pd.DataFrame:
+# `NUMERIC(16, 4)` columns, spelled with all four decimals as PostgreSQL does.
+NUMERIC_COLUMNS = {
+    "overall_scores": ("score_original", "score_normalized"),
+    "score_inputs": ("score",),
+}
+
+
+def _postgres_csv(
+    frame: pd.DataFrame,
+    numeric: typing.Sequence[str] = (),
+) -> pd.DataFrame:
     """Spell a CSV the way `COPY ... TO` spelled it.
 
-    Two habits of the PostgreSQL text format are part of what downstream
-    consumers parse: booleans are `t`/`f`, and an `INTEGER` column never grows
-    a `.0`. pandas writes `True` and `730.0` unless told otherwise.
+    Three habits of the PostgreSQL text format are part of what downstream
+    consumers parse: booleans are `t`/`f` (and a NULL boolean is empty), an
+    `INTEGER` column never grows a `.0`, and a `NUMERIC(16, 4)` keeps its
+    four decimals -- `0.1420`, not `0.142`. pandas writes `True`, `730.0`
+    and `0.142` unless told otherwise.
 
     Parameters
     ----------
     frame
         The frame about to be written.
+    numeric
+        The `NUMERIC(16, 4)` columns.
 
     Returns
     -------
@@ -392,12 +392,19 @@ def _postgres_csv(frame: pd.DataFrame) -> pd.DataFrame:
        a  b
     0  t  1
     1  f  2
+    >>> _postgres_csv(pd.DataFrame({"s": [0.142, None]}), numeric=["s"])["s"].tolist()
+    ['0.1420', '']
     """
     result = frame.copy()
     for column in result.columns:
         values = result[column]
-        if pd.api.types.is_bool_dtype(values):
-            result[column] = values.map({True: "t", False: "f"})
+        if column in numeric:
+            result[column] = [
+                "" if pd.isna(value) else f"{value:.4f}" for value in values
+            ]
+        elif pd.api.types.is_bool_dtype(values):
+            result[column] = values.map({True: "t", False: "f"}).astype(object)
+            result[column] = result[column].where(values.notna(), "")
         elif pd.api.types.is_float_dtype(values) and (values.dropna() % 1 == 0).all():
             result[column] = values.astype("Int64")
     return result
@@ -519,7 +526,19 @@ def export_results(
     blocks = results.get("census_blocks")
     if blocks is not None:
         written += write_layer(
-            _ordered(_with_gid(blocks), CENSUS_BLOCK_COLUMNS),
+            _ordered(
+                _with_gid(blocks),
+                (
+                    "gid",
+                    *(
+                        column
+                        for column in blocks.columns
+                        if column not in CENSUS_BLOCK_DERIVED_COLUMNS
+                        and column != "geometry"
+                    ),
+                    *CENSUS_BLOCK_DERIVED_COLUMNS,
+                ),
+            ),
             export_dir,
             "census_blocks",
             shapefile=True,
@@ -558,7 +577,11 @@ def export_results(
     ):
         frame = results.get(key)
         if frame is not None:
-            written += write_layer(_postgres_csv(frame), export_dir, name)
+            written += write_layer(
+                _postgres_csv(frame, numeric=NUMERIC_COLUMNS.get(name, ())),
+                export_dir,
+                name,
+            )
 
     logger.info(f"exported {len(written):,} files to {export_dir}")
     return written

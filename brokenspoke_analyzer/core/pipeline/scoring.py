@@ -28,7 +28,10 @@ import pandas as pd
 import shapely
 from loguru import logger
 
-from brokenspoke_analyzer.core.pipeline import config
+from brokenspoke_analyzer.core.pipeline import (
+    config,
+    score_inputs,
+)
 from brokenspoke_analyzer.core.pipeline.features import (
     _column,
     _eq,
@@ -981,6 +984,13 @@ OVERALL_SCORE_ROWS = (
 # (findings.md §1.21).
 WHOLE_POPULATION_MEMBERS = frozenset({"pop", "emp"})
 
+# `overall_scores.sql`'s own wording for the three total rows.
+TOTAL_EXPLANATIONS = {
+    "population_total": "Total population of boundary",
+    "total_miles_low_stress": "Total low-stress miles",
+    "total_miles_high_stress": "Total high-stress miles",
+}
+
 # `NUMERIC(16, 4)` on `neighborhood_overall_scores`, and the reason
 # NFR-PARITY-1's tolerance is 1e-4.
 SCORE_DECIMALS = 4
@@ -1186,7 +1196,8 @@ def derive_overall_scores(
     Returns
     -------
     pandas.DataFrame
-        Columns `score_id`, `score_original`, `score_normalized`.
+        Columns `id`, `score_id`, `score_original`, `score_normalized`,
+        `human_explanation`, as `overall_scores.sql` left the table.
     """
     weights = weights or config.Score()
     scored = census_blocks[
@@ -1229,7 +1240,7 @@ def derive_overall_scores(
         category_values[category] = float(numerator / divisor) if divisor else math.nan
     rows.insert(5, ("opportunity", category_values["opportunity"]))
     rows.insert(12, ("core_services", category_values["core_services"]))
-    rows.insert(18, ("recreation", category_values["recreation"]))
+    rows.insert(17, ("recreation", category_values["recreation"]))
 
     # The city's headline score is not a rollup of the category scores at all:
     # it is the population-weighted mean of the *blocks'* own overall scores.
@@ -1260,6 +1271,15 @@ def derive_overall_scores(
     table["score_normalized"] = [
         _round_half_up(value, SCORE_DECIMALS) for value in normalized
     ]
+    # The member rows copy their explanation from `score_inputs`; the three
+    # totals have their own; the rollups have none.
+    explanations = {
+        score_id: score_inputs.flagged_explanation(member)
+        for score_id, member in OVERALL_SCORE_ROWS
+    }
+    explanations.update(TOTAL_EXPLANATIONS)
+    table.insert(0, "id", np.arange(1, len(table) + 1))
+    table["human_explanation"] = table["score_id"].map(explanations)
     return table
 
 

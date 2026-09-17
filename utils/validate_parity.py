@@ -72,6 +72,9 @@ ITERATION_CORPUS = ("XS", "S")
 # be paired on geometry because both pipelines assign their own ids.
 DIMENSIONS = (
     ("overall_scores", "score_id", False),
+    # `score_name` repeats ("Average score of access to population" is two
+    # rows), and the serial `id` is the insertion order, which is fixed.
+    ("score_inputs", "id", False),
     ("census_blocks", "geoid20", False),
     ("ways", "road_id", True),
     ("ways_intersections", "int_id", True),
@@ -595,6 +598,23 @@ def compare_dimension(
     shared = left.index.intersection(right.index)
     left = left.loc[shared].sort_index()
     right = right.loc[shared].sort_index()
+
+    # The schema is part of the contract (FR-EXPORT-1): a column one side
+    # lacks is a difference, not something to skip over.
+    missing = [
+        c for c in left.columns if c not in right.columns and c not in IGNORED_COLUMNS
+    ]
+    extra = [
+        c for c in right.columns if c not in left.columns and c not in IGNORED_COLUMNS
+    ]
+    if missing or extra:
+        result.differences.append(
+            Difference(
+                "(columns)",
+                len(missing) + len(extra),
+                f"missing {missing}, extra {extra}",
+            ),
+        )
 
     for column in left.columns:
         if column in IGNORED_COLUMNS or column not in right.columns:

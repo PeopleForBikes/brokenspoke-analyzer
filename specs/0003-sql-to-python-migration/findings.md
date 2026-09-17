@@ -205,10 +205,20 @@ category, each with explanatory prose. `overall_scores.sql` consumes it through
 `WHERE neighborhood_score_inputs.use_<x>`, and only 16 rows carry such a flag --
 all of them population-weighted averages of a per-block score.
 
-Implementing those 16 produced the entire headline score table. The other ~110
-rows matter only for `neighborhood_score_inputs.csv` file parity (NFR-PARITY-2),
-not for the BNA score itself. **Check which rows are actually consumed before
+Implementing those 16 produced the entire headline score table. The other 116
+rows matter only for `score_inputs.csv` file parity (NFR-PARITY-2), not for
+the BNA score itself. **Check which rows are actually consumed before
 transcribing a large reporting script.**
+
+They were done last (tasks.md 7.6), once the destination sheds they read
+existed (§1.29), and turned out to be four formulas repeated: every row is a
+block percentile, a block ratio, a shed ratio or a shed percentile. Two of
+the SQL's habits are reproduced rather than corrected: "Average score of low
+stress access to <x>" divides two `INT` sums, so it is integer division and
+publishes 0 in every city; and unlike `overall_scores.sql` there is no
+`COALESCE`, so a city without employment data publishes an empty
+`Average score of access to jobs`. The prose is carried verbatim in
+`score_inputs.py`, spelling inconsistencies included ("social_services").
 
 ### 1.14 A block always reaches its own roads, even high-stress ones
 
@@ -486,6 +496,24 @@ and §1.28, from the other side: **the gate only proves what it checks**.
 Encoded as `scoring.destination_population_shed`, `export._destination_layer`,
 and a `destinations` dimension in `validate_parity.py` that pairs each layer's
 rows on the published point.
+
+### 1.30 The harness compared values, not schemas
+
+Closing `score_inputs.csv` exposed that `overall_scores.csv` had been short
+two columns (`id`, `human_explanation`) and spelling `0.142` where 3.2.5
+wrote `0.1420` (`NUMERIC(16, 4)`), with `recreation` and `transit` in the
+wrong order -- and that non-US `census_blocks` files carried fifteen TIGER
+columns of NULLs that the baseline does not have, because `shp2pgsql` only
+created the columns the population shapefile brought (two, outside the US).
+None of it failed the gate: the harness paired rows on a key, compared the
+columns both sides had, and skipped the rest.
+
+FR-EXPORT-1 says the schema is the contract, so the harness now reports a
+column either side lacks as a difference, spells `NUMERIC(16, 4)` columns
+with their four decimals, and gates `score_inputs` as a dimension. With
+that, `score_inputs.csv` and `overall_scores.csv` are byte-identical to
+3.2.5's on every corpus city; the GeoJSON layers are equal by value (the
+writers differ in coordinate precision and whitespace).
 
 ---
 
@@ -857,7 +885,9 @@ mathematically **on** the boundary edge. PostGIS's transform of the boundary
 put it a hair outside, pyproj's a hair inside. There is no rule to reproduce;
 either answer is a rounding accident, and the pipeline's is the more
 defensible one (the stops are in the city). Cost: one destination's
-`pop_*` columns; no score reads them.
+`pop_*` columns, and through them the four transit shed rows of
+`score_inputs.csv` (ids 129-132, e.g. 0.7683 against 0.7660); no score
+reads either.
 
 ---
 
@@ -888,6 +918,7 @@ Findings are pinned by tests so they cannot be "tidied away" later:
 | 1.25 implied one-way           | `test_export.py::TestOnewayLabels`                                                      |
 | 1.26 chunk-boundary edge loss  | _deliberately not reproduced_ — requirements.md §6.1a                                   |
 | 1.28 way-tagged signals        | `test_ingest.py::test_way_tags_cover_pfb_style`, `test_features.py::TestIntersectionFlags` |
+| 1.13 / 1.30 score inputs       | `test_score_inputs.py`, harness `score_inputs` dimension and `(columns)` check              |
 | 1.29 destination sheds         | `test_scoring.py::TestDestinationPopulationShed`, `test_export.py::TestDestinationLayer`, harness `destinations` dimension |
 | 2.1 NULL propagation           | `test_features.py::TestNullSafeComparison`                                              |
 | 2.2 unrequested tags           | `test_ingest.py::test_way_tags_cover_pfb_style`                                         |

@@ -133,37 +133,42 @@ files:
 └── valencia-spain.shx
 ```
 
-You can then run the analysis with the following command:
+You can then run the analysis against the files already on disk:
 
 ```bash
-bna analyze spain valencia valencia-spain.shp valencia-spain.osm
+bna run spain valencia valencia --skip-prepare
 ```
 
-After several hours (7+ hours), the result will be generated in a subfolder of
-the `data` directory and will look like this:
+After a minute or so, the results are written to a calver subfolder of the
+`results` directory (`results/spain/valencia/valencia/<YY.MM[.N]>/`) and look
+like this:
 
 ```bash
 .
-├── neighborhood_census_blocks.geojson
-├── neighborhood_census_blocks.zip
-├── neighborhood_colleges.geojson
-├── neighborhood_community_centers.geojson
-├── neighborhood_connected_census_blocks.csv.zip
-├── neighborhood_dentists.geojson
-├── neighborhood_doctors.geojson
-├── neighborhood_hospitals.geojson
-├── neighborhood_overall_scores.csv
-├── neighborhood_parks.geojson
-├── neighborhood_pharmacies.geojson
-├── neighborhood_retail.geojson
-├── neighborhood_schools.geojson
-├── neighborhood_score_inputs.csv
-├── neighborhood_social_services.geojson
-├── neighborhood_supermarkets.geojson
-├── neighborhood_transit.geojson
-├── neighborhood_universities.geojson
-├── neighborhood_ways.zip
-└── residential_speed_limit.csv
+├── boundary.geojson
+├── census_blocks.geojson
+├── census_blocks.shp (+ .cpg .dbf .prj .shx)
+├── colleges.geojson
+├── community_centers.geojson
+├── connected_census_blocks.csv
+├── dentists.geojson
+├── doctors.geojson
+├── hospitals.geojson
+├── mileage.csv
+├── overall_scores.csv
+├── parks.geojson
+├── pharmacies.geojson
+├── residential_speed_limit.csv
+├── retail.geojson
+├── schools.geojson
+├── score_inputs.csv
+├── social_services.geojson
+├── supermarkets.geojson
+├── transit.geojson
+├── universities.geojson
+├── ways.geojson
+├── ways.shp (+ .cpg .dbf .prj .shx)
+└── ways_intersections.geojson
 ```
 
 [geofabrik.de]: https://download.geofabrik.de

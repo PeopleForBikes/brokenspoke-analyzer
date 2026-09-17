@@ -30,6 +30,7 @@ from brokenspoke_analyzer.core.pipeline import (
     features,
     ingest,
     network,
+    score_inputs,
     scoring,
     stress,
 )
@@ -203,6 +204,7 @@ def analyze(inputs: AnalysisInputs) -> dict[str, typing.Any]:
         inputs,
     )
     overall = scoring.derive_overall_scores(blocks, boundary, ways)
+    inputs_table = score_inputs.derive_score_inputs(blocks, boundary, destinations)
 
     return {
         "ways": ways,
@@ -212,6 +214,7 @@ def analyze(inputs: AnalysisInputs) -> dict[str, typing.Any]:
         "destinations": destinations,
         "connected": connected,
         "overall": overall,
+        "score_inputs": inputs_table,
         "mileage": features.calculate_mileage(ways),
         "residential_speed_limit": pd.DataFrame(
             [

@@ -58,8 +58,9 @@ export**, chained by `core/pipeline/orchestrator.py` and driven by `bna run`.
   per stage: `ingest.py` (OSM/census reading and the `osm2pgrouting`
   segmentation rule), `features.py` (per-way attributes), `stress.py` (segment
   and intersection stress), `network.py` (turn-expanded graph and reachability),
-  `scoring.py` (destinations, access, the headline scores), `export.py` (the
-  published file set), plus `config.py`, `errors.py` and `orchestrator.py`.
+  `scoring.py` (destinations, access, the headline scores), `score_inputs.py`
+  (the diagnostic score table), `export.py` (the published file set), plus
+  `config.py`, `errors.py` and `orchestrator.py`.
 - `brokenspoke_analyzer/core/` — supporting logic:
   - `downloader.py` / `datasource.py` / `analysis.py` — fetch OSM extracts, US
     Census boundary and jobs data (the `prepare` stage, unchanged by the

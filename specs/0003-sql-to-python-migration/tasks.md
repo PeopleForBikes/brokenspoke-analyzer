@@ -6,7 +6,8 @@ pure-Python pipeline, per `requirements.md` (WHAT) and `design.md` (HOW).
 
 ## Status
 
-**COMPLETE** (2026-09-13). All 12 tasks done. Depends on `requirements.md`
+**COMPLETE** (2026-09-13; last stretch item closed 2026-09-17). All 12 tasks
+done. Depends on `requirements.md`
 (status: APPROVED) and `design.md` (status: APPROVED).
 
 The pipeline runs in pure Python with no database;
@@ -592,10 +593,9 @@ is the only record.
             at all (§1.19), and the rollups read *rounded* inputs (§1.18) with
             PostgreSQL's half-away-from-zero rule (§1.20).
 
-          **Still open (not blocking):** `score_inputs.sql`'s ~110 *diagnostic*
-          rows, needed for `neighborhood_score_inputs.csv` file parity
-          (NFR-PARITY-2) but not for any score -- only 16 of its rows carry a
-          `use_*` flag and those are done (findings.md §1.13).
+          `score_inputs.sql`'s 116 *diagnostic* rows were deferred at first
+          (only 16 rows carry a `use_*` flag, findings.md §1.13) and closed in
+          7.6 once the destination sheds they read existed.
   - [x] 7.1 Implement per-destination-category access scoring (FR-ACCESS-1) for
         every category in requirements.md §2.5, using the
         low-stress-vs-high-stress reachability comparison logic from
@@ -628,11 +628,18 @@ retail=15, recreation=15, transit=15`, requirements.md §7 open
         population-weighting formula. _Done: `TestDestinationScore`,
         `TestStepScore`, `TestCategoryScores`, `TestBlockJobs`,
         `TestClusterWithin`._
-  - [ ] 7.6 `score_inputs.sql`'s remaining ~110 diagnostic rows, for
-        `score_inputs.csv` file parity (NFR-PARITY-2). Deferred: they feed no
-        score (findings.md §1.13), so they gate file-level parity only. The
-        parity harness reports the file as absent rather than silently passing
-        it.
+  - [x] 7.6 `score_inputs.sql`'s remaining diagnostic rows — **DONE**
+        (2026-09-17). All 132 rows are produced and `score_inputs.csv` is
+        **byte-identical** to 3.2.5's on every corpus city. The 116 rows
+        reduce to four formula kinds (block percentiles, block ratios --
+        some with integer division, reproduced --, shed ratios and shed
+        percentiles over the destination tables' population sheds from
+        §1.29) plus the 16 weighted rows already done; the prose is carried
+        verbatim in `core/pipeline/score_inputs.py`. Closing it also fixed
+        `overall_scores.csv`, which lacked its `id` and `human_explanation`
+        columns and the `NUMERIC(16, 4)` spelling, and had `recreation` and
+        `transit` swapped -- none of which the harness could see, so it now
+        checks column sets too (findings.md §1.30).
   - _Requirements: FR-ACCESS-1, FR-SCORE-1, FR-SCORE-2, FR-SCORE-3, NFR-TEST-1_
 
 - [x] 8.  Wire the new pipeline into the CLI and exporter — **DONE** (except the
@@ -641,11 +648,10 @@ retail=15, recreation=15, transit=15`, requirements.md §7 open
       Crested Butte end to end in about 5 seconds, writing the calver tree.
 
       `core/pipeline/export.py` writes the published file set from the
-      in-memory frames. **23 of 24 files are produced, and every layer the
-      parity harness compares is identical to the baseline** across the XS/S
-      corpus (task 9.3) -- schema, row set and values. The only missing file
-      is `score_inputs.csv`, which needs `score_inputs.sql`'s ~110 diagnostic
-      rows (task 7.6).
+      in-memory frames. **All 24 files are produced** (the last,
+      `score_inputs.csv`, in task 7.6), and every layer the parity harness
+      compares is identical to the baseline across the corpus -- schema, row
+      set and values.
 
           Three PostgreSQL spellings had to be reproduced here rather than in the
           analysis: booleans as `t`/`f` and `INTEGER` columns without a trailing
@@ -918,12 +924,9 @@ retail=15, recreation=15, transit=15`, requirements.md §7 open
 **The migration is complete.** Tasks 1-12 are done; what is left is optional or
 deferred, and none of it blocks shipping:
 
-1. **Task 10.3 — manual validation of Washington DC and Valencia**, a stretch
-   goal (requirements.md §7.4a). DC also carries the NFR-PERF-1 2x ceiling
-   check, which no automated corpus covers.
-2. **Task 7.6 — `score_inputs.sql`'s ~110 diagnostic rows**, the one published
-   file the new pipeline does not produce. It feeds no score (findings.md
-   §1.13), so it gates file-level parity only.
+1. ~~Task 10.3~~ — done 2026-09-16: DC at full parity, 43.8x faster.
+2. ~~Task 7.6~~ — done 2026-09-17; every published file is now produced
+   and gated.
 3. **findings.md §5a.2 — the baselines are gitignored.** `results/**` is the
    frozen ground truth for `just validate-parity`, but it lives on one machine.
    Either commit it or document how to regenerate it -- and note that
