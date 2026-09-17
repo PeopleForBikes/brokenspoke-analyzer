@@ -7,23 +7,23 @@ pure-Python pipeline, per `requirements.md` (WHAT) and `design.md` (HOW).
 ## Status
 
 **COMPLETE** (2026-09-13; last stretch item closed 2026-09-17). All 12 tasks
-done. Depends on `requirements.md`
-(status: APPROVED) and `design.md` (status: APPROVED).
+done. Depends on `requirements.md` (status: APPROVED) and `design.md` (status:
+APPROVED).
 
 The pipeline runs in pure Python with no database;
 `brokenspoke_analyzer/ scripts/sql/` and the PostGIS/pgRouting runtime are
 deleted. The pre-ship gate is 14 of 15 corpus cities at exact parity plus one
 documented deviation (requirements.md §6.1a), and it still passes after the
-deletion. The stretch validation (10.3) closed on 2026-09-16 with
-**Washington DC at full parity in 5 minutes against 3.2.5's 3 h 37 min**;
-what it found on the way is in findings.md §1.28-1.29, §3.12 and §5a.4.
+deletion. The stretch validation (10.3) closed on 2026-09-16 with **Washington
+DC at full parity in 5 minutes against 3.2.5's 3 h 37 min**; what it found on
+the way is in findings.md §1.28-1.29, §3.12 and §5a.4.
 
 ### Branch point and release
 
-This work was built on **3.2.5** (`feature/nosql`, branched at `8a1ec91`),
-which is also the version that produced every `results/**` baseline the parity
-evidence rests on (findings.md §5a.2). "Parity" throughout these documents
-means *parity with 3.2.5's SQL*.
+This work was built on **3.2.5** (`feature/nosql`, branched at `8a1ec91`), which
+is also the version that produced every `results/**` baseline the parity
+evidence rests on (findings.md §5a.2). "Parity" throughout these documents means
+_parity with 3.2.5's SQL_.
 
 It does **not** ship as 4.0.0. That release is the `uv` workspace split
 (`specs/0002-uv-workspace/`, branch `issues/1143/uv-workspace`), and management
@@ -33,13 +33,13 @@ as **5.0.0** and must first be rebased onto the workspace layout.
 Measured overlap between the two branches, to size that rebase: of the 96 files
 this work touches that the workspace split also moves, **90 are files deleted
 here** (78 SQL scripts plus the database-only CLI/core modules) and resolve as
-"stay deleted"; 6 more are moved *and* modified here. Only 7 files are edited by
+"stay deleted"; 6 more are moved _and_ modified here. Only 7 files are edited by
 both branches -- `pyproject.toml`, `justfile`, `Dockerfile`, `CLAUDE.md`,
-`CONTRIBUTING.md`, `utils/bna-batch.py` and `uv.lock` (regenerate that one).
-The deletions are deliberately confined to a single commit, so the rename/delete
+`CONTRIBUTING.md`, `utils/bna-batch.py` and `uv.lock` (regenerate that one). The
+deletions are deliberately confined to a single commit, so the rename/delete
 conflicts arise once rather than per commit, and
-`just validate-parity --size XS --size S --size M` re-verifies the rebase
-end to end in about 7.5 minutes.
+`just validate-parity --size XS --size S --size M` re-verifies the rebase end to
+end in about 7.5 minutes.
 
 **Rebase soon after 4.0.0 merges, not at release time** -- the conflict surface
 grows with every week the workspace branch moves underneath this one.
@@ -54,87 +54,85 @@ artifact (findings.md §1.26, requirements.md §6.1a).
 **What the change buys.** First and foremost it removes a dependency stack:
 Docker, Docker Compose, PostgreSQL/PostGIS/pgRouting, `osm2pgrouting`,
 `osm2pgsql`, `psql`, `pgsql2shp` and 78 SQL scripts all go, and an analysis
-becomes a single `bna run` on a machine with Python and `osmium` installed.
-That was the goal the spec was written for (requirements.md §1, NFR-DEP-1),
-and it is unaffected by the numbers below.
+becomes a single `bna run` on a machine with Python and `osmium` installed. That
+was the goal the spec was written for (requirements.md §1, NFR-DEP-1), and it is
+unaffected by the numbers below.
 
-**What it does not buy, as first presented.** The decision was initially
-framed on an estimated 20-50x speedup. That figure was an extrapolation from
-Washington DC's ~4 h SQL run against an *unmeasured* Python estimate, and the
-head-to-head measurement on the corpus does not support it. `import` +
-`compute` + `export` on 3.2.5 (PostGIS under Docker Desktop on macOS,
-`prepare` already done) against the Python pipeline on the same machine,
-2026-09-16. The first measurement prompted a profile; the second column is
-after acting on it (see below):
+**What it does not buy, as first presented.** The decision was initially framed
+on an estimated 20-50x speedup. That figure was an extrapolation from Washington
+DC's ~4 h SQL run against an _unmeasured_ Python estimate, and the head-to-head
+measurement on the corpus does not support it. `import` + `compute` + `export`
+on 3.2.5 (PostGIS under Docker Desktop on macOS, `prepare` already done) against
+the Python pipeline on the same machine, 2026-09-16. The first measurement
+prompted a profile; the second column is after acting on it (see below):
 
-| City                    | Size | SQL (3.2.5)  | Python, first | Python, profiled | Speedup   |
-| ----------------------- | ---- | ------------ | ------------- | ---------------- | --------- |
-| ancienne-lorette        | XS   | 15.4 s       | 4.4 s         | 1.3 s            | 12.1x     |
-| rehoboth beach          | XS   | 18.8 s       | 3.9 s         | 1.7 s            | 11.0x     |
-| santa rosa              | XS   | 24.4 s       | 3.5 s         | 2.8 s            | 8.8x      |
-| provincetown            | XS   | 25.0 s       | 7.3 s         | 4.1 s            | 6.2x      |
-| jackson                 | S    | 27.1 s       | 9.6 s         | 3.7 s            | 7.3x      |
-| chambéry                | M    | 32.7 s       | 41.5 s        | 6.8 s            | 4.8x      |
-| crested butte           | XS   | 34.0 s       | 4.6 s         | 3.9 s            | 8.7x      |
-| orange                  | XS   | 35.5 s       | 21.0 s        | 4.9 s            | 7.3x      |
-| cañon city              | S    | 41.3 s       | 11.8 s        | 7.0 s            | 5.9x      |
-| ypsilanti               | S    | 50.0 s       | 30.0 s        | 9.6 s            | 5.2x      |
-| alvarado                | S    | 75.1 s       | 16.7 s        | 15.4 s           | 4.9x      |
-| arcata                  | M    | 77.4 s       | 31.1 s        | 18.8 s           | 4.1x      |
-| st. louis park          | M    | 105.0 s      | 66.1 s        | 17.5 s           | 6.0x      |
-| flagstaff               | M    | 131.4 s      | 78.2 s        | 21.5 s           | 6.1x      |
-| san juan                | S    | 451.2 s      | 121.7 s       | 49.3 s           | 9.2x      |
-| **corpus total**        |      | **19.1 min** | **7.5 min**   | **2.8 min**      | **6.8x**  |
-| valencia                | XL   | 283.5 s      | not measured  | 44.2 s           | 6.4x      |
-| **washington dc**       | XXL  | **3 h 37 m** | not measured  | **5.2 min**      | **43.8x** |
+| City              | Size | SQL (3.2.5)  | Python, first | Python, profiled | Speedup   |
+| ----------------- | ---- | ------------ | ------------- | ---------------- | --------- |
+| ancienne-lorette  | XS   | 15.4 s       | 4.4 s         | 1.3 s            | 12.1x     |
+| rehoboth beach    | XS   | 18.8 s       | 3.9 s         | 1.7 s            | 11.0x     |
+| santa rosa        | XS   | 24.4 s       | 3.5 s         | 2.8 s            | 8.8x      |
+| provincetown      | XS   | 25.0 s       | 7.3 s         | 4.1 s            | 6.2x      |
+| jackson           | S    | 27.1 s       | 9.6 s         | 3.7 s            | 7.3x      |
+| chambéry          | M    | 32.7 s       | 41.5 s        | 6.8 s            | 4.8x      |
+| crested butte     | XS   | 34.0 s       | 4.6 s         | 3.9 s            | 8.7x      |
+| orange            | XS   | 35.5 s       | 21.0 s        | 4.9 s            | 7.3x      |
+| cañon city        | S    | 41.3 s       | 11.8 s        | 7.0 s            | 5.9x      |
+| ypsilanti         | S    | 50.0 s       | 30.0 s        | 9.6 s            | 5.2x      |
+| alvarado          | S    | 75.1 s       | 16.7 s        | 15.4 s           | 4.9x      |
+| arcata            | M    | 77.4 s       | 31.1 s        | 18.8 s           | 4.1x      |
+| st. louis park    | M    | 105.0 s      | 66.1 s        | 17.5 s           | 6.0x      |
+| flagstaff         | M    | 131.4 s      | 78.2 s        | 21.5 s           | 6.1x      |
+| san juan          | S    | 451.2 s      | 121.7 s       | 49.3 s           | 9.2x      |
+| **corpus total**  |      | **19.1 min** | **7.5 min**   | **2.8 min**      | **6.8x**  |
+| valencia          | XL   | 283.5 s      | not measured  | 44.2 s           | 6.4x      |
+| **washington dc** | XXL  | **3 h 37 m** | not measured  | **5.2 min**      | **43.8x** |
 
 **Measured on the corpus: 6.8x overall, median 6.2x, range 4.1x-12.1x. On
-Washington DC, the city the estimate was made for: 43.8x.** Two caveats pull
-in opposite directions: the Python timings ran on warm caches (clipped
-extract, protobuf and area index already on disk), so a cold run is somewhat
-slower; and PostGIS under Docker Desktop on macOS is a slow way to run
-Postgres, so on a Linux server the SQL side would look better and the ratio
-smaller.
+Washington DC, the city the estimate was made for: 43.8x.** Two caveats pull in
+opposite directions: the Python timings ran on warm caches (clipped extract,
+protobuf and area index already on disk), so a cold run is somewhat slower; and
+PostGIS under Docker Desktop on macOS is a slow way to run Postgres, so on a
+Linux server the SQL side would look better and the ratio smaller.
 
 **What the profile found.** The first measurement (2.5x overall, Chambéry
-*slower* than SQL at 0.8x) came from a single hot spot: a per-stage profile of
-Chambéry put 92% of the run in `ingest.split_ways_at_intersections`, and all
-of that in pandas row-by-row indexing (`.loc[row, col]` per node and a
-`.iloc[0]` per tag per segment on a mixed-dtype frame -- 712k row lookups).
-Every analysis stage together -- features, stress, network, scoring, export --
-took under 10 s. Pulling each way's columns out as lists once removed it;
-the parity gate is unchanged (14 PASS, Chambéry EXCEPT) and no city is now
-below 4x. Ingest is the only stage that was ever slow; the ones the spec
-worried about (`network.py`'s reachability, NFR-PERF-1) were never the cost.
+_slower_ than SQL at 0.8x) came from a single hot spot: a per-stage profile of
+Chambéry put 92% of the run in `ingest.split_ways_at_intersections`, and all of
+that in pandas row-by-row indexing (`.loc[row, col]` per node and a `.iloc[0]`
+per tag per segment on a mixed-dtype frame -- 712k row lookups). Every analysis
+stage together -- features, stress, network, scoring, export -- took under 10 s.
+Pulling each way's columns out as lists once removed it; the parity gate is
+unchanged (14 PASS, Chambéry EXCEPT) and no city is now below 4x. Ingest is the
+only stage that was ever slow; the ones the spec worried about (`network.py`'s
+reachability, NFR-PERF-1) were never the cost.
 
-**Why DC gets 44x and a small city gets 6x.** The two pipelines do the same
-work in every stage but one. In `reachable_roads_*_calc.sql` the SQL computes
-each census block's shed with `PGR_DRIVINGDISTANCE`, which takes the network
-as a *SQL string* and executes it on every call: for each block, PostgreSQL
-re-reads the whole `neighborhood_ways_net_link` table, pgRouting rebuilds its
-in-memory graph from it, runs one Dijkstra, and throws the graph away. That is
+**Why DC gets 44x and a small city gets 6x.** The two pipelines do the same work
+in every stage but one. In `reachable_roads_*_calc.sql` the SQL computes each
+census block's shed with `PGR_DRIVINGDISTANCE`, which takes the network as a
+_SQL string_ and executes it on every call: for each block, PostgreSQL re-reads
+the whole `neighborhood_ways_net_link` table, pgRouting rebuilds its in-memory
+graph from it, runs one Dijkstra, and throws the graph away. That is
 `blocks × network` work, twice (low stress and high stress), and the eight
 "threads" in `compute.py` are eight sequential `psql` runs over hash-partitioned
-blocks, not parallelism. `network.py` builds each stress graph **once** and
-runs `networkx.multi_source_dijkstra_path_length` per block on it, which is
+blocks, not parallelism. `network.py` builds each stress graph **once** and runs
+`networkx.multi_source_dijkstra_path_length` per block on it, which is
 `network + blocks × shed` -- so the per-block cost is a search over the roads
-within trip distance, not a rebuild of the city. The ratio between the two
-grows with the number of blocks: Crested Butte has 106 blocks and the rebuild
-is a rounding error; DC has 5,908 blocks on a 100,000-way network. The SQL
-run was not timed stage by stage, but its log brackets it: import took 70 s,
-export a few minutes, and `compute` 3 h 35 min -- and reachability is the
-only part of `compute` whose cost is `blocks × network`. Every other stage
-is within a small factor either way, which is why the corpus, where blocks
-are few, sits at 4-12x, and why the original 20-50x figure was right for the
-one city it was extrapolated from and wrong as a general claim. Both numbers
-are on record. (The per-block search is also where most of DC's remaining
-five minutes go, so a further speedup, if ever wanted, lives there -- a
-contracted graph or a compiled Dijkstra -- not in the ingest fix above.)
+within trip distance, not a rebuild of the city. The ratio between the two grows
+with the number of blocks: Crested Butte has 106 blocks and the rebuild is a
+rounding error; DC has 5,908 blocks on a 100,000-way network. The SQL run was
+not timed stage by stage, but its log brackets it: import took 70 s, export a
+few minutes, and `compute` 3 h 35 min -- and reachability is the only part of
+`compute` whose cost is `blocks × network`. Every other stage is within a small
+factor either way, which is why the corpus, where blocks are few, sits at 4-12x,
+and why the original 20-50x figure was right for the one city it was
+extrapolated from and wrong as a general claim. Both numbers are on record. (The
+per-block search is also where most of DC's remaining five minutes go, so a
+further speedup, if ever wanted, lives there -- a contracted graph or a compiled
+Dijkstra -- not in the ingest fix above.)
 
-Against the bar the spec set -- **NFR-PERF-1, no worse than 2x slower** --
-every corpus city passes with room to spare. The migration met its own
-requirement; it did not meet a number that was never in the requirements, and
-the record above is the correction.
+Against the bar the spec set -- **NFR-PERF-1, no worse than 2x slower** -- every
+corpus city passes with room to spare. The migration met its own requirement; it
+did not meet a number that was never in the requirements, and the record above
+is the correction.
 
 ## Overview
 
@@ -194,7 +192,7 @@ is the only record.
 ## Tasks
 
 - [x] 1. Benchmark spike: routing/reachability engine (design.md §3.4) — **DONE.
-     Outcome: `networkx`, not `scipy`** (design.md §3.3).
+      Outcome: `networkx`, not `scipy`** (design.md §3.3).
   - [x] 1.1 Write a throwaway spike script (not shipped, e.g.
         `utils/spike_routing_benchmark.py`) that builds a CSR adjacency matrix
         for a small synthetic graph and for one real corpus city. _Done; ran off
@@ -254,12 +252,12 @@ is the only record.
     access scoring.
 
 - [x] 3. `ingest.py` — OSM parsing and routable graph (FR-ING-1, FR-ING-2) —
-     **DONE.** Census block counts and populations match `results/**` exactly
-     for Crested Butte, Santa Rosa, and Ancienne-Lorette (US and non-US paths).
-     Two design corrections recorded in design.md §3.1: `pyrosm` cannot read
-     `prepare`'s OSM **XML** (converted via `osmium cat` first), and neither
-     `osmnx` nor `pyrosm` reproduces `osm2pgrouting`'s segmentation, so the
-     splitting rule is implemented here rather than taken from a library.
+      **DONE.** Census block counts and populations match `results/**` exactly
+      for Crested Butte, Santa Rosa, and Ancienne-Lorette (US and non-US paths).
+      Two design corrections recorded in design.md §3.1: `pyrosm` cannot read
+      `prepare`'s OSM **XML** (converted via `osmium cat` first), and neither
+      `osmnx` nor `pyrosm` reproduces `osm2pgrouting`'s segmentation, so the
+      splitting rule is implemented here rather than taken from a library.
   - [x] 3.0 **`prepare` is unchanged and is the input boundary for `ingest`.**
         `prepare` (`analysis.py`/`downloader.py`/ `datasource.py`) already works
         well and is explicitly out of scope for this migration (requirements.md
@@ -295,7 +293,7 @@ is the only record.
         topology (source/target, direction) on a hand-verified expected graph.
   - _Requirements: FR-ING-1, FR-ING-2, NFR-TEST-1_
 
-- [x] 4.  `features.py` — per-way attribute derivation (FR-FEAT-1) — **DONE.**
+- [x] 4. `features.py` — per-way attribute derivation (FR-FEAT-1) — **DONE.**
 
       The `ways` layer matches the baseline **exactly on all 15 `XS`/`S`/`M`
       corpus cities**: same rows, same geometry, and every one of the 30
@@ -434,13 +432,12 @@ is the only record.
   - _Requirements: FR-FEAT-1, FR-FEAT-2, NFR-TEST-1_
 
 - [x] 5. `stress.py` — stress classification (FR-STRESS-1) — **DONE.** Segment
-     stress matches 7 of 8 cities tested and intersection stress matches 7 of 7
-     (Chambéry differs only via its 4.5a rows).
+      stress matches 7 of 8 cities tested and intersection stress matches 7 of 7
+      (Chambéry differs only via its 4.5a rows).
 
-     Cities verified: Crested Butte, Santa Rosa, Jackson, Orange, St. Louis
-     Park, Arcata, Ypsilanti. See findings.md §1.9 for the residential
-     speed-default precedence, which decides every untagged residential
-     street's rating.
+  Cities verified: Crested Butte, Santa Rosa, Jackson, Orange, St. Louis Park,
+  Arcata, Ypsilanti. See findings.md §1.9 for the residential speed-default
+  precedence, which decides every untagged residential street's rating.
   - [x] 5.1 Transcribe `scripts/sql/stress/*.sql` rules into vectorized
         stress-rating derivation, covering every functional class
         (motorway/trunk, primary, secondary, tertiary, "lesser", link,
@@ -467,7 +464,7 @@ is the only record.
         in 5.1 (NFR-TEST-1).
   - _Requirements: FR-STRESS-1, NFR-TEST-1_
 
-- [x] 6.  `network.py` — graph build & reachability (FR-NET-1/2/3) — **DONE.**
+- [x] 6. `network.py` — graph build & reachability (FR-NET-1/2/3) — **DONE.**
       **6 of 8 cities reproduce `neighborhood_connected_census_blocks.csv`
       exactly** — every block pair, every low-stress flag, and every cost.
       Crested Butte and Cañon City differ on 0.2-0.3% of costs (mixed sign, so
@@ -574,7 +571,7 @@ is the only record.
         low-stress, included in high-stress), and a disconnected component.
   - _Requirements: FR-NET-1, FR-NET-2, FR-NET-3, NFR-PERF-1, NFR-TEST-1_
 
-- [x] 7.  `scoring.py` — access, category, and overall scoring — **DONE.**
+- [x] 7. `scoring.py` — access, category, and overall scoring — **DONE.**
 
       **Every scored column now matches the baseline on 10 of the 11 XS/S
       corpus cities** -- all 13 destination categories, all 17 access scores,
@@ -621,9 +618,9 @@ is the only record.
         for the 17 access scripts, which are byte-identical modulo the category
         name._
   - [x] 7.2 Implement category score combination (FR-SCORE-1) using the exact
-        weights from `Score` (`people=15, opportunity=20, core_services=20,
-retail=15, recreation=15, transit=15`, requirements.md §7 open
-        question #2) and the "drop categories with no
+        weights from `Score`
+        (`people=15, opportunity=20, core_services=20, retail=15, recreation=15, transit=15`,
+        requirements.md §7 open question #2) and the "drop categories with no
         reachable destinations, renormalize remaining weights" logic from
         `category_scores.sql`/`overall_scores.sql`. _Done:
         `scoring.derive_category_scores()`; the divisor counts only members the
@@ -646,19 +643,19 @@ retail=15, recreation=15, transit=15`, requirements.md §7 open
         `TestClusterWithin`._
   - [x] 7.6 `score_inputs.sql`'s remaining diagnostic rows — **DONE**
         (2026-09-17). All 132 rows are produced and `score_inputs.csv` is
-        **byte-identical** to 3.2.5's on every corpus city. The 116 rows
-        reduce to four formula kinds (block percentiles, block ratios --
-        some with integer division, reproduced --, shed ratios and shed
-        percentiles over the destination tables' population sheds from
-        §1.29) plus the 16 weighted rows already done; the prose is carried
-        verbatim in `core/pipeline/score_inputs.py`. Closing it also fixed
+        **byte-identical** to 3.2.5's on every corpus city. The 116 rows reduce
+        to four formula kinds (block percentiles, block ratios -- some with
+        integer division, reproduced --, shed ratios and shed percentiles over
+        the destination tables' population sheds from §1.29) plus the 16
+        weighted rows already done; the prose is carried verbatim in
+        `core/pipeline/score_inputs.py`. Closing it also fixed
         `overall_scores.csv`, which lacked its `id` and `human_explanation`
         columns and the `NUMERIC(16, 4)` spelling, and had `recreation` and
         `transit` swapped -- none of which the harness could see, so it now
         checks column sets too (findings.md §1.30).
   - _Requirements: FR-ACCESS-1, FR-SCORE-1, FR-SCORE-2, FR-SCORE-3, NFR-TEST-1_
 
-- [x] 8.  Wire the new pipeline into the CLI and exporter — **DONE** (except the
+- [x] 8. Wire the new pipeline into the CLI and exporter — **DONE** (except the
       prose docs, deliberately deferred to task 11.5). `bna run` now runs the
       whole analysis with **no `DATABASE_URL`, no PostGIS and no Docker** --
       Crested Butte end to end in about 5 seconds, writing the calver tree.
@@ -721,8 +718,8 @@ retail=15, recreation=15, transit=15`, requirements.md §7 open
   - _Requirements: FR-EXPORT-1, NFR-DEP-1, NFR-ASYNC-1_
 
 - [x] 9. Checkpoint — iteration-phase parity validation — **DONE.**
-     `utils/validate_parity.py` + `just validate-parity`; **all 11 XS/S cities
-     at full parity on all seven dimensions** (see 9.3).
+      `utils/validate_parity.py` + `just validate-parity`; **all 11 XS/S cities
+      at full parity on all seven dimensions** (see 9.3).
   - [x] 9.1 Implement `utils/validate_parity.py` (design.md §5): run the new
         pipeline per corpus city, compare against checked-in `results/**` per
         NFR-PARITY-1/2/3 (absolute `1e-4` on raw scores, exact match at display
@@ -817,8 +814,8 @@ retail=15, recreation=15, transit=15`, requirements.md §7 open
             -- but any *other* difference there still fails, since the accepted
             set must match exactly._
 
-  - [x] 10.3 Manual maintainer validation — **DONE, both cities, and it
-        paid for itself twice** (requirements.md §7.4a; stretch goal).
+  - [x] 10.3 Manual maintainer validation — **DONE, both cities, and it paid for
+        itself twice** (requirements.md §7.4a; stretch goal).
 
         **Washington DC (XXL): PASS on every dimension** -- 100,234 ways,
         87,625 intersections, 5,908 blocks, 3,845,313 block pairs, 2,175
@@ -844,6 +841,7 @@ retail=15, recreation=15, transit=15`, requirements.md §7 open
         harness now has an eighth dimension, `destinations`, covering all 13
         layers, and the corpus gate is green on it: 14 PASS + Chambéry
         EXCEPT._
+
   - _Requirements: NFR-VALIDATION-1, NFR-VALIDATION-2, NFR-PERF-1, NFR-PARITY-1,
     NFR-PARITY-2, NFR-PARITY-3_
 
@@ -941,8 +939,8 @@ retail=15, recreation=15, transit=15`, requirements.md §7 open
 deferred, and none of it blocks shipping:
 
 1. ~~Task 10.3~~ — done 2026-09-16: DC at full parity, 43.8x faster.
-2. ~~Task 7.6~~ — done 2026-09-17; every published file is now produced
-   and gated.
+2. ~~Task 7.6~~ — done 2026-09-17; every published file is now produced and
+   gated.
 3. ~~findings.md §5a.2~~ — decided 2026-09-17: the baselines stay out of git
    (generated output); §5a.2 documents how to regenerate them from `8a1ec91`,
    which is also the procedure for adding a test city.
