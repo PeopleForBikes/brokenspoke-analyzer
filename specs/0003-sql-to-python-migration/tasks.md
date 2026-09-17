@@ -927,11 +927,9 @@ deferred, and none of it blocks shipping:
 1. ~~Task 10.3~~ — done 2026-09-16: DC at full parity, 43.8x faster.
 2. ~~Task 7.6~~ — done 2026-09-17; every published file is now produced
    and gated.
-3. **findings.md §5a.2 — the baselines are gitignored.** `results/**` is the
-   frozen ground truth for `just validate-parity`, but it lives on one machine.
-   Either commit it or document how to regenerate it -- and note that
-   regenerating now requires checking out a pre-deletion commit, since the SQL
-   that produced it is gone.
+3. ~~findings.md §5a.2~~ — decided 2026-09-17: the baselines stay out of git
+   (generated output); §5a.2 documents how to regenerate them from `8a1ec91`,
+   which is also the procedure for adding a test city.
 4. Keep `findings.md` alive: it is the only remaining record of why the pipeline
    behaves as it does, and CLAUDE.md now points contributors at it before they
    change a rule.

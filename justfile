@@ -116,6 +116,5 @@ nono-claude-danger profile="claude":
     nono run \
     --allow-cwd \
     --allow-domain github.com \
-    --open-port 5432 \
     --profile {{ profile }} \
     -- claude --dangerously-skip-permissions
