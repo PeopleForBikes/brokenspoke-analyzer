@@ -39,8 +39,8 @@ eggs/
 env/
 examples/data/
 htmlcov/
-lib/
-lib64/
+/lib/
+/lib64/
 nosetests.xml
 osm_cache/
 parts/

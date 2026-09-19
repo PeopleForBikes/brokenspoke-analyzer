@@ -5,7 +5,7 @@
       "type": "debugpy",
       "justMyCode": false,
       "request": "launch",
-      "program": "brokenspoke_analyzer/main.py",
+      "module": "brokenspoke_analyzer_cli",
       "console": "integratedTerminal",
       "args": [
         "run",
