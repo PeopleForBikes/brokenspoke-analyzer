@@ -36,7 +36,8 @@ stage-by-stage against Aspen, CO. It is small (0 stars/forks, 32 commits) but
 structurally serious:
 
 - **Pipeline shape**: 11 stages —
-  `parse → census → jobs → attributes → segment → stress → graph → connectivity → destinations → scores → neighborhood`
+  `parse → census → jobs → attributes → segment → stress → graph → connectivity
+→ destinations → scores → neighborhood`
   — closely mirroring our own stage breakdown in §2.
 - **Routing/reachability**: builds CSR (compressed sparse row) adjacency
   matrices with `scipy.sparse` and reachability via `scipy.sparse.csgraph`
@@ -373,7 +374,7 @@ pre-design decision, and is not blocking.
    `XL`, hours per run) but is now eligible for the same manual, stretch-goal
    validation as Washington DC (§7.4a). Washington DC (`XXL`) still has **no
    checked-in `results/**` directory** and, given it takes ~4 hours to process,
-   generating one is **not** a precondition for starting implementation — its
+   generating one is **not\*\* a precondition for starting implementation — its
    manual post-migration validation pass (NFR-VALIDATION-2, NFR-PERF-1) remains
    a stretch goal (§7.4a).
 
@@ -406,41 +407,49 @@ approval), so a manual `just validate-parity valencia` pass is possible, but —
 like Washington DC — it stays out of the automated `XS`/`S`/`M` gate (still
 `XL`, hours per run) and is not required to ship. Both are explicitly stretch
 goals: pursue them if time permits after task 10 (the `XS`/`S`/`M` automated
-gate) passes, but do not block or delay shipping on either. 5. **Routing engine
-choice** — `networkx` vs `igraph`/`graph-tool` vs `scipy.sparse.csgraph` (the
-approach `bikescore-bna` uses, §1a) vs other, to be settled in design.md via a
-benchmark (see design.md plan). `scipy` is already a transitive dependency via
-`rasterio`/`geopandas` and the CSR-matrix approach avoids adding a new
-graph-library dependency at all — a strong candidate, but must still be
-benchmarked, not assumed. 6. ~~Streetlight data availability~~ — RESOLVED.
-`features/streetlight/*.sql` (`streetlight_gates.sql`,
-`streetlight_destinations.sql`) is never invoked from any Python `core/`/`cli/`
-code today (no references outside `scripts/sql/`) — it is dead code in the
-current pipeline. **Decision: out of scope for this migration.** Not ported, not
-validated. If Streetlight support is wanted in the future, it's a separate
-feature built fresh against the new Python pipeline, not a parity requirement
-here. 7. ~~Removal of `scripts/sql/**` and PostGIS-related code~~ — RESOLVED.
-Hard deletion once parity is achieved and the migration ships — no
-kept-but-unused fallback, no dual-path runtime toggle (consistent with the
-big-bang delivery decision already recorded in §1).
-`just compose-up`/`compose-down`/`docker-build` recipes and the `DATABASE_URL`
-requirement are removed in the same change. 8. ~~`bikescore-bna` licensing~~ —
-RESOLVED. Its `pyproject.toml` declares `license = { text = "MIT" }` with a
-matching `License :: OSI Approved :: MIT License` classifier — sufficient
-grounds to treat it as MIT-licensed even though no standalone `LICENSE` file is
-present in the repo (a packaging gap, not an ambiguous-terms one). Direct code
-reuse (adapted or verbatim, with attribution per MIT terms) is permitted under
-FR-REF-1; still confirm no-`LICENSE`-file gap doesn't cause friction if this
-ever needs legal sign-off for a redistribution question, but it does not block
-design/implementation work. 9. **Library research beyond current choices** — the
-team already likes `geopandas`/`pyrosm`/`osmnx`/`shapely`/`numpy` but wants a
-deliberate comparison rather than defaulting to them. design.md must include a
-short library-selection section per pipeline concern (OSM ingestion, tabular
-processing, routing/reachability, geometry) that at minimum compares our current
-choices against what `bikescore-bna` uses (`osmium`/`pyosmium`, `polars`,
-`scipy.sparse.csgraph`) plus any other credible alternative, on:
-correctness/parity risk, performance, maintenance burden (new dependency vs.
-already-adopted), and fit with NFR-ASYNC-1.
+gate) passes, but do not block or delay shipping on either.
+
+5. **Routing engine
+   choice** — `networkx` vs `igraph`/`graph-tool` vs `scipy.sparse.csgraph` (the
+   approach `bikescore-bna` uses, §1a) vs other, to be settled in design.md via a
+   benchmark (see design.md plan). `scipy` is already a transitive dependency via
+   `rasterio`/`geopandas` and the CSR-matrix approach avoids adding a new
+   graph-library dependency at all — a strong candidate, but must still be
+   benchmarked, not assumed.
+
+6. ~~Streetlight data availability~~ — RESOLVED.
+   `features/streetlight/*.sql` (`streetlight_gates.sql`,
+   `streetlight_destinations.sql`) is never invoked from any Python `core/`/`cli/`
+   code today (no references outside `scripts/sql/`) — it is dead code in the
+   current pipeline. **Decision: out of scope for this migration.** Not ported, not
+   validated. If Streetlight support is wanted in the future, it's a separate
+   feature built fresh against the new Python pipeline, not a parity requirement
+   here.
+7. ~~Removal of `scripts/sql/**` and PostGIS-related code~~ — RESOLVED.
+   Hard deletion once parity is achieved and the migration ships — no
+   kept-but-unused fallback, no dual-path runtime toggle (consistent with the
+   big-bang delivery decision already recorded in §1).
+   `just compose-up`/`compose-down`/`docker-build` recipes and the `DATABASE_URL`
+   requirement are removed in the same change.
+8. ~~`bikescore-bna` licensing~~ —
+   RESOLVED. Its `pyproject.toml` declares `license = { text = "MIT" }` with a
+   matching `License :: OSI Approved :: MIT License` classifier — sufficient
+   grounds to treat it as MIT-licensed even though no standalone `LICENSE` file is
+   present in the repo (a packaging gap, not an ambiguous-terms one). Direct code
+   reuse (adapted or verbatim, with attribution per MIT terms) is permitted under
+   FR-REF-1; still confirm no-`LICENSE`-file gap doesn't cause friction if this
+   ever needs legal sign-off for a redistribution question, but it does not block
+   design/implementation work.
+
+9. **Library research beyond current choices** — the
+   team already likes `geopandas`/`pyrosm`/`osmnx`/`shapely`/`numpy` but wants a
+   deliberate comparison rather than defaulting to them. design.md must include a
+   short library-selection section per pipeline concern (OSM ingestion, tabular
+   processing, routing/reachability, geometry) that at minimum compares our current
+   choices against what `bikescore-bna` uses (`osmium`/`pyosmium`, `polars`,
+   `scipy.sparse.csgraph`) plus any other credible alternative, on:
+   correctness/parity risk, performance, maintenance burden (new dependency vs.
+   already-adopted), and fit with NFR-ASYNC-1.
 
 ## 8. Glossary
 
