@@ -113,6 +113,10 @@ test-e2e-prepare:
     uv run integration/x.py {{ e2e_cities_csv }} {{ e2e_test_dir }}/README.j2
     npx --yes prettier --write --prose-wrap always {{ e2e_test_dir }}/README.md
 
+# Use nono sandbox to login with Claude.
+nono-claude-login:
+    nono run --profile nolabs-ai/claude --allow-launch-services -- claude login
+
 # Use nono sandbox for Claude.
 nono-claude profile="claude":
     nono run --allow-cwd --profile {{ profile }} -- claude

@@ -106,7 +106,12 @@ async def _run_downloads(
                 console.log(f"Downloading Worldpop data for {country.name}")
                 try:
                     await bna_store.download_worldpop(
-                        session, country.alpha_3, 2026, cache_only=cache_only
+                        session,
+                        country.alpha_3,
+                        2026,
+                        # Unused: prepare() only runs when cache_only=False
+                        pathlib.Path(),
+                        cache_only=cache_only,
                     )
                 except aiohttp.ClientResponseError as e:
                     console.log(

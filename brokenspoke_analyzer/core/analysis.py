@@ -121,8 +121,11 @@ def derive_state_info(state: str | None) -> tuple[str, str, bool]:
     try:
         if not state:
             raise ValueError("no 'state' was provided")  # noqa: TRY301
-        run_import_jobs = True
         state_abbrev, state_fips = state_info(state)
+
+        # The US Census Bureau never collected employment data for the following
+        # FIPS codes, so we are just skipping them.
+        run_import_jobs = state_fips not in {"60", "66", "69", "72", "78"}
     except ValueError:
         run_import_jobs = False
         state_abbrev, state_fips = (

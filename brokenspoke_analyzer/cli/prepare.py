@@ -181,11 +181,11 @@ async def prepare_(  # noqa: PLR0915
                 console.log(f"[green]Fetching WorldPop ({worldpop_year}) data...")
                 with console.status("Downloading..."):
                     await bna_store.download_worldpop(
-                        session, country_iso, worldpop_year
+                        session, country_iso, worldpop_year, polygon_file
                     )
         # Change the speed limit.
         console.log(
-            f"[green]Adjusting default city speed limit to {city_speed_limit} km/h...",
+            f"[green]Adjusting default city speed limit to {city_speed_limit} mph...",
         )
         analysis.change_speed_limit(data_dir, city, state_abbrev, city_speed_limit)
     else:
