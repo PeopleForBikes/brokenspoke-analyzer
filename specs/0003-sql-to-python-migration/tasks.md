@@ -20,10 +20,14 @@ the way is in findings.md §1.28-1.29, §3.12 and §5a.4.
 
 ### Branch point and release
 
-This work was built on **3.2.5** (`feature/nosql`, branched at `8a1ec91`), which
-is also the version that produced every `results/**` baseline the parity
-evidence rests on (findings.md §5a.2). "Parity" throughout these documents means
-_parity with 3.2.5's SQL_.
+This work was built on **3.2.5**, which is also the version that produced every
+`results/**` baseline the parity evidence rests on (findings.md §5a.2).
+"Parity" throughout these documents means _parity with 3.2.5's SQL_.
+
+The branch point -- 3.2.5 plus this spec, the last commit that still has the
+SQL pipeline -- is tagged **`sql-baseline-3.2.5`** (originally `8a1ec91`).
+`feature/nosql` is rebased onto newer bases over time, which rewrites its
+commits, so the tag is the durable name: use it, not a SHA.
 
 It does **not** ship as 4.0.0. That release is the `uv` workspace split
 (`specs/0002-uv-workspace/`, branch `issues/1143/uv-workspace`), and management
@@ -942,8 +946,9 @@ deferred, and none of it blocks shipping:
 2. ~~Task 7.6~~ — done 2026-09-17; every published file is now produced and
    gated.
 3. ~~findings.md §5a.2~~ — decided 2026-09-17: the baselines stay out of git
-   (generated output); §5a.2 documents how to regenerate them from `8a1ec91`,
-   which is also the procedure for adding a test city.
+   (generated output); §5a.2 documents how to regenerate them from the
+   `sql-baseline-3.2.5` tag, which is also the procedure for adding a test
+   city.
 4. Keep `findings.md` alive: it is the only remaining record of why the pipeline
    behaves as it does, and CLAUDE.md now points contributors at it before they
    change a rule.

@@ -846,18 +846,21 @@ repo pins them and a fresh clone has no ground truth at all.
 maintainer does not want generated output committed. So parity validation has a
 local prerequisite, and this is how to meet it:
 
-1. Check out `8a1ec91` (3.2.5 plus the spec -- the last commit with the SQL
-   pipeline), start its PostGIS stack (`just compose-up` there) and run
-   `bna run` for each city you need, which writes
-   `results/<country>/<region>/ <city>/<calver>/`. Budget a few minutes per
-   corpus city, ~5 min for Valencia and ~3.5 h for Washington DC.
-2. Check this branch out again; `results/` is untouched by the switch.
+1. Check out the **`sql-baseline-3.2.5`** tag (3.2.5 plus the spec -- the last
+   commit with the SQL pipeline): `git switch --detach sql-baseline-3.2.5`,
+   then `just setup`, since its dependencies are the SQL-era ones. Start its
+   PostGIS stack (`just compose-up`) and run `bna run` for each city you need,
+   which writes `results/<country>/<region>/<city>/<calver>/`. Budget a few
+   minutes per corpus city, ~5 min for Valencia and ~3.5 h for Washington DC.
+   `just compose-down` when done.
+2. Switch back to this branch and `just setup` again; `results/` is untouched
+   by the switch (it is ignored, and no commit tracks it).
 3. `just validate-parity --size XS --size S --size M` (or name cities).
 
 The harness picks the newest calver directory per city, so a re-run simply adds
 a version. **Adding a test city** means adding its row to
 `integration/e2e-cities.csv` and producing its baseline the same way -- the SQL
-pipeline is the only thing that can, and it only exists at `8a1ec91`. Every city
+pipeline is the only thing that can, and it only exists at that tag. Every city
 in `results/` on the maintainer's machine as of this writing was produced by
 3.2.5.
 
