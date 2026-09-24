@@ -213,7 +213,7 @@ They were done last (tasks.md 7.6), once the destination sheds they read existed
 (§1.29), and turned out to be four formulas repeated: every row is a block
 percentile, a block ratio, a shed ratio or a shed percentile. Two of the SQL's
 habits are reproduced rather than corrected: "Average score of low stress access
-to <x>" divides two `INT` sums, so it is integer division and publishes 0 in
+to `<x>`" divides two `INT` sums, so it is integer division and publishes 0 in
 every city; and unlike `overall_scores.sql` there is no `COALESCE`, so a city
 without employment data publishes an empty `Average score of access to jobs`.
 The prose is carried verbatim in `score_inputs.py`, spelling inconsistencies

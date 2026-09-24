@@ -618,8 +618,8 @@ is the only record.
         for the 17 access scripts, which are byte-identical modulo the category
         name._
   - [x] 7.2 Implement category score combination (FR-SCORE-1) using the exact
-        weights from `Score`
-        (`people=15, opportunity=20, core_services=20, retail=15, recreation=15, transit=15`,
+        weights from `Score` (`people=15`, `opportunity=20`,
+        `core_services=20`, `retail=15`, `recreation=15`, `transit=15`;
         requirements.md §7 open question #2) and the "drop categories with no
         reachable destinations, renormalize remaining weights" logic from
         `category_scores.sql`/`overall_scores.sql`. _Done:

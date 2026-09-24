@@ -133,6 +133,12 @@ start beforehand.
 Pass `--skip-prepare` to re-run the analysis against files already downloaded
 into the data directory.
 
+The results are written to
+`<export_dir>/<country>/<region>/<city>/<calver_version>` (`./results` by
+default), following the PeopleForBikes [calver] scheme `YY.0M[.MINOR]`: a
+re-run in the same month adds a new minor version rather than overwriting the
+previous results.
+
 ```bash
 bna run "united states" "santa rosa" "new mexico" 3570670
 ```
