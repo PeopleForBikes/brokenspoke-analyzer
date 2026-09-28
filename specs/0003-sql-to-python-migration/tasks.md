@@ -21,11 +21,11 @@ the way is in findings.md §1.28-1.29, §3.12 and §5a.4.
 ### Branch point and release
 
 This work was built on **3.2.5**, which is also the version that produced every
-`results/**` baseline the parity evidence rests on (findings.md §5a.2).
-"Parity" throughout these documents means _parity with 3.2.5's SQL_.
+`results/**` baseline the parity evidence rests on (findings.md §5a.2). "Parity"
+throughout these documents means _parity with 3.2.5's SQL_.
 
-The branch point -- 3.2.5 plus this spec, the last commit that still has the
-SQL pipeline -- is tagged **`sql-baseline-3.2.5`** (originally `8a1ec91`).
+The branch point -- 3.2.5 plus this spec, the last commit that still has the SQL
+pipeline -- is tagged **`sql-baseline-3.2.5`** (originally `8a1ec91`).
 `feature/nosql` is rebased onto newer bases over time, which rewrites its
 commits, so the tag is the durable name: use it, not a SHA.
 
@@ -622,10 +622,10 @@ is the only record.
         for the 17 access scripts, which are byte-identical modulo the category
         name._
   - [x] 7.2 Implement category score combination (FR-SCORE-1) using the exact
-        weights from `Score` (`people=15`, `opportunity=20`,
-        `core_services=20`, `retail=15`, `recreation=15`, `transit=15`;
-        requirements.md §7 open question #2) and the "drop categories with no
-        reachable destinations, renormalize remaining weights" logic from
+        weights from `Score` (`people=15`, `opportunity=20`, `core_services=20`,
+        `retail=15`, `recreation=15`, `transit=15`; requirements.md §7 open
+        question #2) and the "drop categories with no reachable destinations,
+        renormalize remaining weights" logic from
         `category_scores.sql`/`overall_scores.sql`. _Done:
         `scoring.derive_category_scores()`; the divisor counts only members the
         city actually has._
@@ -947,8 +947,7 @@ deferred, and none of it blocks shipping:
    gated.
 3. ~~findings.md §5a.2~~ — decided 2026-09-17: the baselines stay out of git
    (generated output); §5a.2 documents how to regenerate them from the
-   `sql-baseline-3.2.5` tag, which is also the procedure for adding a test
-   city.
+   `sql-baseline-3.2.5` tag, which is also the procedure for adding a test city.
 4. Keep `findings.md` alive: it is the only remaining record of why the pipeline
    behaves as it does, and CLAUDE.md now points contributors at it before they
    change a rule.

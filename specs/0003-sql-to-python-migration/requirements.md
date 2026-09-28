@@ -35,9 +35,9 @@ server, "value-for-value parity" with the SQL reference, validated
 stage-by-stage against Aspen, CO. It is small (0 stars/forks, 32 commits) but
 structurally serious:
 
-- **Pipeline shape**: 11 stages — `parse → census → jobs → attributes →
-  segment → stress → graph → connectivity → destinations → scores →
-  neighborhood` — closely mirroring our own stage breakdown in §2.
+- **Pipeline shape**: 11 stages —
+  `parse → census → jobs → attributes → segment → stress → graph → connectivity → destinations → scores → neighborhood`
+  — closely mirroring our own stage breakdown in §2.
 - **Routing/reachability**: builds CSR (compressed sparse row) adjacency
   matrices with `scipy.sparse` and reachability via `scipy.sparse.csgraph`
   Dijkstra, rather than `networkx` or `igraph`. This is a concrete, working

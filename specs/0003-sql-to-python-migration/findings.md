@@ -847,14 +847,14 @@ maintainer does not want generated output committed. So parity validation has a
 local prerequisite, and this is how to meet it:
 
 1. Check out the **`sql-baseline-3.2.5`** tag (3.2.5 plus the spec -- the last
-   commit with the SQL pipeline): `git switch --detach sql-baseline-3.2.5`,
-   then `just setup`, since its dependencies are the SQL-era ones. Start its
-   PostGIS stack (`just compose-up`) and run `bna run` for each city you need,
-   which writes `results/<country>/<region>/<city>/<calver>/`. Budget a few
-   minutes per corpus city, ~5 min for Valencia and ~3.5 h for Washington DC.
+   commit with the SQL pipeline): `git switch --detach sql-baseline-3.2.5`, then
+   `just setup`, since its dependencies are the SQL-era ones. Start its PostGIS
+   stack (`just compose-up`) and run `bna run` for each city you need, which
+   writes `results/<country>/<region>/<city>/<calver>/`. Budget a few minutes
+   per corpus city, ~5 min for Valencia and ~3.5 h for Washington DC.
    `just compose-down` when done.
-2. Switch back to this branch and `just setup` again; `results/` is untouched
-   by the switch (it is ignored, and no commit tracks it).
+2. Switch back to this branch and `just setup` again; `results/` is untouched by
+   the switch (it is ignored, and no commit tracks it).
 3. `just validate-parity --size XS --size S --size M` (or name cities).
 
 The harness picks the newest calver directory per city, so a re-run simply adds
