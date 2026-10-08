@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed the default `--city-speed-limit` overriding the city and state speed
+  limits, so they are used again when the flag is not set. [#????]
+
 ## [3.2.5] - 2026-0904
 
 ### Fixed
