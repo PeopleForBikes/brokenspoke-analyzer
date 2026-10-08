@@ -5,6 +5,51 @@
 DRAFT. Open questions are listed in the last section and must be resolved before
 this document is approved.
 
+## Plain-Language Summary: How we identify protected bike lanes in OpenStreetMap
+
+Many protected bike lanes and side paths are mapped in OpenStreetMap as their
+own separate "bike path" lines, not as part of the street. Until now, the BNA
+counted every one of those as an off-street trail. We now check where each bike
+path actually runs, and count it as a protected lane/side path wherever it gives
+people an alternative to riding on a street.
+
+**A stretch of bike path counts when it:**
+
+- **Runs right alongside a street,** within about 15 meters (50 feet) of the
+  street's centerline. That's close enough to include curb-side protected lanes
+  and side paths set back behind a grass or tree strip, on streets up to about
+  four lanes wide.
+- **Follows the street,** roughly in the same direction (within about 20°). This
+  keeps out paths that just cross a street, including ones that pass under a
+  bridge at a shallow angle.
+- **Stays alongside it for a while,** at least 60 meters (about 200 feet). This
+  keeps out the short bits where a path meets or crosses a street.
+
+**What's included:**
+
+- Protected bike lanes and side paths along any regular street, from
+  neighborhood streets to major arterials.
+- The parts of trails that run alongside a street. A trail can be partly
+  "protected lane" (where it follows a road) and partly "trail" (where it heads
+  off on its own).
+- Paths shared with pedestrians.
+
+**What's not included:**
+
+- Paths along freeways and expressways, and their ramps.
+- Paths mapped as general "paths" rather than "bike paths". The path must be
+  mapped as ‘highway’ = ‘cycleway’ to be included.
+- Trails, or parts of trails, that don't follow a street.
+
+**How it's counted:** protected lane mileage is counted per direction of travel,
+like the BNA's other bike lanes. A two-way path counts twice, a one-way path
+once. These miles are counted as protected lanes instead of off-street paths,
+never as both.
+
+**Known gaps:** very short pieces of a path (for example, where mappers split a
+path at a roundabout) can be missed or picked up inconsistently. These are a
+small share of total mileage.
+
 ## Introduction
 
 Protected bike lanes are often mapped in OpenStreetMap (OSM) as separate
@@ -14,21 +59,23 @@ classifies every `highway=cycleway` as an off-street path
 That means we cannot report PBL mileage, which is a deliverable for the end
 of 2026.
 
-This feature detects `highway=cycleway` ways that run close alongside a road and
-labels them as protected lanes (`ft_bike_infra`/`tf_bike_infra = 'track'`), so
-that they are counted as `track` in the mileage table instead of `path`.
+This feature detects the parts of `highway=cycleway` ways that run parallel to a
+road, offering an alternative to riding on the road itself, and labels them as
+protected lanes (`ft_bike_infra`/`tf_bike_infra = 'track'`). They are then
+counted as `track` in the mileage table instead of `path`. This includes
+curb-side PBLs, side paths set back from the road, and the parts of trails that
+run alongside a road.
 
 It replaces the approach drafted on the `pbl-methodology` branch, which tested
-each segment separately against a single 10 m distance with no parallel-ness
-check. A test on Bend, OR showed that approach labels road crossings on trails
-as PBLs, catches side paths set back from the road, misses parts of real PBLs
-near intersections, and gives different labels to segments of the same OSM way.
-See the Background section.
+each segment separately with no parallel-ness check. A test on Bend, OR showed
+that approach labels road crossings on trails as PBLs, gives different labels to
+segments of the same OSM way, and counts one-way PBLs in both directions. See
+the Background section.
 
 ### In scope
 
-- Detecting PBLs among `highway=cycleway` ways, using geometry relative to car
-  roads plus OSM tags.
+- Detecting the parts of `highway=cycleway` ways that run parallel to a road,
+  using geometry relative to car roads.
 - Setting `ft_bike_infra`/`tf_bike_infra` on detected segments, with the correct
   direction.
 - Fixing mileage so a detected PBL is counted as `track` only, not also as
@@ -46,30 +93,29 @@ See the Background section.
   `highway=path` ways always remain paths.
 - Reporting PBL mileage separately from on-street `cycleway=track` mileage. Both
   are combined in the `track` total.
+- Excluding cycleways by tag (name, `foot`, `segregated`, `operator`, etc.).
 
 ## Glossary
 
-- **PBL (protected bike lane)**: a bikeway close alongside a road, physically
-  separated from motor traffic. Whether side paths set farther back from the
-  road also count is Open Question 1.
+- **PBL (protected bike lane)**: for this feature, any part of a separated
+  cycleway that runs parallel to a road, offering an alternative to riding on
+  the road itself. This includes curb-side PBLs, side paths set back from the
+  road, and the parts of trails that run alongside a road.
 - **Cycleway way**: one OSM way tagged `highway=cycleway`, identified by its
   `osm_id`, with its full geometry from `neighborhood_osm_full_line`.
 - **Segment**: one row of `neighborhood_ways`. The import splits each OSM way
   into segments at intersections; all segments of a way share its `osm_id`.
 - **Car road**: a road segment used as the reference for detection, selected by
   the allow-list in Requirement 2.
-- **Road buffer**: the area within `pbl_outer_buffer_m` meters of any car road,
-  merged into one shape.
+- **Road buffer**: the area within `pbl_buffer_m` meters of any car road, merged
+  into one shape.
 - **Overlap piece**: one continuous part of a cycleway way that lies inside the
   road buffer.
-- **Parallel stretch**: an overlap piece at least `pbl_min_piece_m` meters long.
-  A cycleway crossing a road produces a short piece (about 2 ×
-  `pbl_outer_buffer_m` ÷ sin(angle)); a cycleway running alongside a road
-  produces a long one.
-- **Stretch distance**: the median distance from points along a parallel stretch
-  to the nearest car road's centerline.
-- **PBL stretch**: a parallel stretch whose stretch distance is at most
-  `pbl_core_distance_m`.
+- **Parallel stretch**: an overlap piece at least `pbl_min_piece_m` meters long
+  whose median angle to the nearest car road is at most `pbl_max_angle_deg`. A
+  cycleway crossing a road produces a short piece (about 2 × `pbl_buffer_m` ÷
+  sin(angle)) at a steep angle; a cycleway running alongside a road produces a
+  long piece at a small angle.
 - **One-way variant**: any tag combination that marks a cycleway as carrying
   bikes in one direction only. See Requirement 5.
 
@@ -90,8 +136,8 @@ detection, so that roads, crossings and footways are not affected.
 
 ### Requirement 2: Car-road reference set
 
-**User Story:** As an analyst, I want PBLs detected only along streets people
-ride beside, so that paths next to freeways are not counted as PBLs.
+**User Story:** As an analyst, I want PBLs detected along streets people would
+otherwise ride on, so that paths next to freeways are not counted as PBLs.
 
 #### Acceptance Criteria
 
@@ -108,13 +154,12 @@ ride beside, so that paths next to freeways are not counted as PBLs.
 4. WHERE a cycleway runs parallel only to roads outside the allow-list, the
    system SHALL NOT label it as a PBL.
 
-### Requirement 3: PBL stretches
+### Requirement 3: Parallel stretches
 
-**User Story:** As an analyst, I want each stretch where a cycleway runs
-alongside a road judged by how close it typically is, so that road crossings and
-set-back side paths are ignored, real PBLs are detected even where they drift
-away from the road near intersections, and labels do not depend on where the
-import splits a way.
+**User Story:** As an analyst, I want the parts of a cycleway that run alongside
+a road detected on the whole OSM way, so that road crossings are ignored, only
+the parallel parts are counted, and labels do not depend on where the import
+splits a way.
 
 #### Acceptance Criteria
 
@@ -126,33 +171,31 @@ import splits a way.
 3. WHEN a cycleway way crosses a road at an angle, the system SHALL NOT treat
    the crossing as a parallel stretch, provided the overlap piece is shorter
    than `pbl_min_piece_m`.
-4. The system SHALL compute each parallel stretch's stretch distance from points
-   sampled along it at regular intervals.
-5. WHEN a parallel stretch's stretch distance is at most `pbl_core_distance_m`,
-   the system SHALL treat the whole stretch as a PBL stretch, including parts
-   farther from the road than `pbl_core_distance_m` (for example near
-   intersections where the road widens).
-6. WHEN a parallel stretch's stretch distance is greater than
-   `pbl_core_distance_m`, the system SHALL NOT treat any part of it as a PBL
-   stretch.
-7. WHEN a cycleway way runs alongside a road for only part of its length, the
-   system SHALL judge only that part (for example, the geometry of way
-   1354189308 in Providence, RI, before any tag exclusions are applied).
+4. The system SHALL compute the angle between each overlap piece and the nearest
+   car road at points sampled along the piece, and SHALL treat the piece as a
+   parallel stretch only if the median angle is at most `pbl_max_angle_deg`.
+   This excludes paths that cross a road at a shallow angle, such as a trail
+   passing under a road bridge (way 39947864 under SW Reed Market Road in Bend,
+   OR), without relying on `bridge` or `tunnel` tags.
+5. WHEN a cycleway way runs alongside a road for only part of its length, the
+   system SHALL detect only that part (for example way 1354189308 in Providence,
+   RI, or the part of Haul Road Trail 297308987 in Bend, OR along Colorado
+   Avenue).
 
 ### Requirement 4: Segment labeling
 
 **User Story:** As an analyst, I want each segment labeled by how much of it
-lies in a PBL stretch, so that partial PBLs are handled and short stubs are not
-labeled.
+lies in a parallel stretch, so that partial PBLs are handled and short stubs are
+not labeled.
 
 #### Acceptance Criteria
 
 1. WHEN at least `pbl_segment_share` of a candidate segment's length lies within
-   PBL stretches, the system SHALL label that segment as a PBL.
+   parallel stretches, the system SHALL label that segment as a PBL.
 2. WHEN less than `pbl_segment_share` of a candidate segment's length lies
-   within PBL stretches, the system SHALL leave that segment as a path.
-3. WHERE a cycleway way lies entirely within one PBL stretch, the system SHALL
-   give all of its segments the same label.
+   within parallel stretches, the system SHALL leave that segment as a path.
+3. WHERE a cycleway way lies entirely within one parallel stretch, the system
+   SHALL give all of its segments the same label.
 
 ### Requirement 5: Direction
 
@@ -175,16 +218,18 @@ counted in both directions, so that PBL mileage is not overstated.
    `oneway=yes` with `oneway:bicycle=no`), the system SHALL treat the PBL as
    two-way.
 
-### Requirement 6: Exclusions by tag
+### Requirement 6: No exclusions by tag
 
-**User Story:** As an analyst, I want trails that happen to run beside a road to
-stay trails.
+**User Story:** As an analyst, I want every path that parallels a road counted,
+whatever it is called or whoever uses it, so that all alternatives to riding on
+the road are included.
 
 #### Acceptance Criteria
 
-1. The system SHALL NOT label a cycleway way as a PBL when it matches an
-   exclusion rule.
-2. The exclusion rules are TO BE DECIDED (see Open Questions 1 and 2).
+1. The system SHALL NOT exclude a cycleway from PBL detection based on its name
+   (for example names containing "Trail").
+2. The system SHALL NOT exclude a cycleway from PBL detection based on shared
+   use with pedestrians (`foot`, `pedestrian`, `segregated`).
 
 ### Requirement 7: Mileage
 
@@ -225,14 +270,23 @@ editing the SQL logic.
 
 #### Acceptance Criteria
 
-1. The system SHALL define `pbl_outer_buffer_m`, `pbl_min_piece_m`,
-   `pbl_core_distance_m` and `pbl_segment_share` once, alongside the other
+1. The system SHALL define `pbl_buffer_m`, `pbl_min_piece_m`,
+   `pbl_segment_share` and `pbl_max_angle_deg` once, alongside the other
    internal analysis constants, and pass them to the SQL as parameters.
 2. The system SHALL NOT hard-code these values in the SQL.
 3. The system SHALL NOT add command-line options for these values in this
    iteration.
-4. The defaults SHALL be decided before approval (see Open Question 3). The Bend
-   prototype used 12 m, 60 m, 7 m and 0.5.
+4. The starting defaults SHALL be:
+
+   | Parameter           | Default | Reason                                                                                                                                                        |
+   | ------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+   | `pbl_buffer_m`      | 15 m    | Covers a 10-12 ft sidepath with a standard street buffer (about 5 ft) along roads of up to about four lanes, measured from road centerline to path centerline |
+   | `pbl_min_piece_m`   | 60 m    | Ignores short pieces where a path meets or crosses a road                                                                                                     |
+   | `pbl_segment_share` | 0.5     | A segment counts when most of it lies in a parallel stretch                                                                                                   |
+   | `pbl_max_angle_deg` | 20°     | Ignores paths that cross a road at a shallow angle                                                                                                            |
+
+5. The system SHALL use one value of each parameter for all roads. Values that
+   vary by road class are out of scope, to keep the method simple.
 
 ### Requirement 10: Performance
 
@@ -257,59 +311,72 @@ trust the method before it ships.
 2. A validation query or test SHALL report, per OSM way, the number of segments
    and the number labeled `track`. This is how mixed labels are detected.
 
-| Way                   | Place          | Expected                                   |
-| --------------------- | -------------- | ------------------------------------------ |
-| 1480451437            | Bend, OR       | PBL, one-way `ft` (raised, NE Olney Ave)   |
-| 1480451438            | Bend, OR       | PBL, one-way `ft` (NE Olney Ave)           |
-| 1474322573            | Bend, OR       | PBL, one-way `ft` (NE Franklin Ave)        |
-| 1092208840            | Portland, OR   | PBL, two-way (SW Naito Parkway)            |
-| 1354189308            | Providence, RI | PBL along the road, path after \*          |
-| 532649750             | Bend, OR       | Path (Larkspur Trail)                      |
-| 935195280             | Bend, OR       | Path (Deschutes River Trail)               |
-| 277177723             | Bend, OR       | Path (side path along Green Lakes Loop) \* |
-| 297308987             | Bend, OR       | Path (Haul Road Trail) \*                  |
-| 1499802408            | Bend, OR       | Path (Haul Road Trail) \*                  |
-| 416137820             | Bend, OR       | Path (Coyner Trail) †                      |
-| 1497195035-1497195040 | Bend, OR       | Side paths: to be decided \*               |
-
-\* Depends on Open Question 1. † Depends on Open Question 2.
+| Way                   | Place          | Expected                                       |
+| --------------------- | -------------- | ---------------------------------------------- |
+| 1480451437            | Bend, OR       | PBL, one-way `ft` (raised, NE Olney Ave)       |
+| 1480451438            | Bend, OR       | PBL, one-way `ft` (NE Olney Ave)               |
+| 1474322573            | Bend, OR       | PBL, one-way `ft` (NE Franklin Ave)            |
+| 1092208840            | Portland, OR   | PBL, two-way (SW Naito Parkway)                |
+| 1354189308            | Providence, RI | PBL along the road, path after                 |
+| 1497195035-1497195040 | Bend, OR       | PBL where parallel (side paths)                |
+| 277177723             | Bend, OR       | PBL where parallel (side path)                 |
+| 297308987             | Bend, OR       | PBL along Colorado Ave, path elsewhere (trail) |
+| 416137820             | Bend, OR       | PBL along NE 9th/10th, path elsewhere (trail)  |
+| 532649750             | Bend, OR       | Path (Larkspur Trail, only crosses roads)      |
+| 935195280             | Bend, OR       | Path (Deschutes River Trail, only crosses)     |
+| 39947864              | Bend, OR       | Path (passes under SW Reed Market Rd bridge)   |
 
 ## Background: Bend, OR test (2026-10-05)
 
-### Distance from the road separates PBLs from side paths
+### Problems with the `pbl-methodology` approach
+
+- 68 OSM ways (20.4 mi) got different labels on different segments.
+- Road crossings on trails were labeled as PBLs: 231 of the 262 ways labeled
+  entirely `track` were shorter than 25 m.
+- One-way PBLs were counted in both directions (for example NE Franklin Ave,
+  `oneway=yes`).
+- Parts of real PBLs near intersections were missed (for example the end of
+  1480451437, up to 10.8 m from the road centerline).
+
+### Distance from the road
 
 Median distance from each cycleway to the nearest road centerline:
 
-| Way                                   | Judged as | Median distance |
+| Way                                   | Kind      | Median distance |
 | ------------------------------------- | --------- | --------------- |
-| SW Naito Pkwy, Portland (1092208840)  | PBL       | 4.6 m           |
-| NE Olney Ave (1480451437, 1480451438) | PBL       | 4.7-5.2 m       |
-| NE Franklin Ave (1474322573)          | PBL       | 5.0 m           |
-| Haul Road Trail (1499802408)          | path      | 8.2 m           |
-| 277177723 (Green Lakes Loop)          | path      | 9.4 m           |
-| Side-path cluster (1497195035-40)     | either    | 9.9-10.5 m      |
-| Haul Road Trail (297308987)           | path      | 10.7 m          |
+| SW Naito Pkwy, Portland (1092208840)  | curb-side | 4.6 m           |
+| NE Olney Ave (1480451437, 1480451438) | curb-side | 4.7-5.2 m       |
+| NE Franklin Ave (1474322573)          | curb-side | 5.0 m           |
+| Haul Road Trail (1499802408)          | side path | 8.2 m           |
+| 277177723 (Green Lakes Loop)          | side path | 9.4 m           |
+| Side-path cluster (1497195035-40)     | side path | 9.9-10.5 m      |
+| Haul Road Trail (297308987)           | side path | 10.7 m          |
 
-Real PBLs drift farther from the centerline near intersections: parts of Olney
-sit 7-10 m away. A single distance therefore either misses parts of real PBLs
-(about 7 m) or catches side paths (10-12 m). This is why Requirement 3 uses two
-thresholds: a looser buffer to find the stretches, and a tighter typical
-distance to decide whether each stretch is a PBL.
+Curb-side PBLs drift up to about 10 m from the centerline near intersections,
+and side paths sit 8-11 m away, with some stretches farther (up to about 16 m on
+297308987). Because side paths count, the buffer must be wide enough to include
+them.
 
-### Results
+A sidepath's distance from the road centerline is roughly half the road width,
+plus the street buffer, plus half the path width. With a 5 ft (1.5 m) buffer and
+a 10-12 ft path, that is about 8.5-10 m on a two-lane street, 12-14 m on a
+four-lane arterial and 15-17 m on a six-lane arterial. These typical dimensions
+come from general bikeway design guidance and should be checked against the
+NACTO Urban Bikeway Design Guide.
 
-| Measure                                    | `pbl-methodology`  | Prototype |
-| ------------------------------------------ | ------------------ | --------- |
-| OSM ways with mixed segment labels         | 68                 | 7         |
-| OSM ways labeled entirely `track`          | 262 (mostly stubs) | 14        |
-| Reference PBLs fully labeled, correct dir. | 0 of 3             | 3 of 3    |
-| Reference paths and side paths left alone  | 1 of 10            | 9 of 10   |
-| Directional `track` miles from cycleways   | 13.0               | 5.0       |
-| Run time                                   | n/a                | ~2 s      |
+### Results (2026-10-06)
 
-The prototype used 12 m, 60 m, 7 m and 0.5. Remaining false positives are ways
-named as trails (Coyner Trail, Discovery Trail, Cascade Highlands Connector),
-mostly along residential streets; see Open Question 2.
+| Bend, OR                          | 12 m | 15 m | 15 m + angle check |
+| --------------------------------- | ---- | ---- | ------------------ |
+| OSM ways with any PBL             | 58   | 66   | 64                 |
+| OSM ways with mixed labels        | 24   | 22   | 21                 |
+| Directional `track` miles         | 21.2 | 25.7 | 25.5               |
+| Side-path cluster fully detected  | no   | yes  | yes                |
+| Reed Market bridge false positive | yes  | yes  | no                 |
+
+All runs used a 60 m minimum stretch and a 0.5 segment share, and each took 2-4
+seconds. Olney Avenue and Franklin Avenue were fully detected, one-way `ft`
+only, in every run.
 
 ## Known Limitations
 
@@ -320,32 +387,31 @@ mostly along residential streets; see Open Question 2.
 - **Roundabouts.** Cycleways circling a roundabout are made of many short OSM
   ways (for example 1206052645-1206052656 around the Newport Avenue roundabout
   in Bend), so some pieces may be labeled PBL and others path. This appears to
-  be rare, and the correct label for roundabout cycleways is undecided.
+  be rare.
 
 ## Open Questions
 
-1. **Side paths and shared-use paths.** Should side paths set back from the road
-   count as PBLs? With the prototype defaults they do not (they sit 8-11 m from
-   the road centerline). A colleague considers Providence way 1354189308 a PBL.
-   Separately, should cycleways tagged `foot=designated` or
-   `pedestrian=designated` with `segregated=no` be excluded? Note that one piece
-   of NE Franklin Ave (1474322575), a confirmed PBL, is tagged `foot=yes` and
-   `segregated=no`. Owner: Grace and colleague.
-2. **Trail signals.** The remaining false positives are named as trails and
-   mostly run along residential streets. Options: drop `residential` from the
-   road allow-list (all confirmed PBLs are on secondary or tertiary roads),
-   treat names containing "Trail" as trails, lower `pbl_core_distance_m`
-   slightly, or use an `operator` that is a parks department (this tag is not
-   imported today).
-3. **Defaults.** What are the default values for the four parameters? They
-   should be checked on at least one more city besides Bend, ideally one with
-   many PBLs (for example Portland).
+1. **Defaults.** Do the starting defaults in Requirement 9 hold up in the test
+   cities: Providence, RI; Philadelphia, PA; Portland, OR; Bend, OR; Bozeman,
+   MT; and Madison, WI?
 
 ## Resolved Questions
 
-- **Two thresholds:** a single distance cannot separate real PBLs from side
-  paths (see Background), so stretches are found with a looser buffer and judged
-  by their typical distance.
+- **Definition (2026-10-06):** any part of a cycleway that runs parallel to a
+  road counts as a PBL, because it offers an alternative to riding on the road.
+  Side paths and the parallel parts of trails are included.
+- **No tag exclusions:** cycleways are not excluded by name (such as "Trail") or
+  by shared use with pedestrians.
+- **Simplicity:** one buffer for all roads, rather than a buffer that varies by
+  road class. A trail passing under a bridge is excluded by the angle check, not
+  by `bridge` tags, because mappers often leave cycleway bridges untagged.
+- **Test cities:** Providence, RI; Philadelphia, PA; Portland, OR; Bend, OR;
+  Bozeman, MT; and Madison, WI.
+- **Residential streets** count: a path alongside a residential street is still
+  an alternative to riding on it.
+- **Single threshold:** because side paths count, there is no need to separate
+  curb-side PBLs from side paths. A two-threshold variant tested in Bend is
+  therefore not needed.
 - **No chaining:** cycleway ways are not joined into chains before detection, to
   keep the run fast and the logic simple (see Known Limitations).
 - **Trunk roads:** `trunk` and `trunk_link` are excluded from the road buffer,
