@@ -84,7 +84,8 @@ the Background section.
 - Setting `ft_bike_infra`/`tf_bike_infra` on detected segments, with the correct
   direction.
 - Fixing mileage so a detected PBL is counted as `track` only, not also as
-  `path`.
+  `path`, and counting only the length inside the city boundary for all mileage
+  categories.
 - Making the detection thresholds adjustable.
 
 ### Out of scope
@@ -234,9 +235,10 @@ counted in both directions, so that PBL mileage is not overstated.
 3. WHEN a detected PBL has a one-way variant against the direction the way is
    drawn (for example `oneway=-1`), the system SHALL set only `tf_bike_infra` to
    `'track'`.
-4. The system SHALL recognise every one-way variant, including at least `oneway`
-   and `oneway:bicycle` with the values `yes`, `1`, `true` and `-1`. The full
-   list SHALL be defined in design.md.
+4. The system SHALL interpret one-way tags the same way as the rest of the BNA:
+   `oneway` = `yes` or `1` means one-way in the drawn direction, `oneway = -1`
+   means one-way against it, and `oneway:bicycle = no` makes a way two-way for
+   bikes.
 5. WHEN both a one-way tag and a two-way override are present (for example
    `oneway=yes` with `oneway:bicycle=no`), the system SHALL treat the PBL as
    two-way.
@@ -268,6 +270,12 @@ and the mileage table can be trusted.
 2. The system SHALL NOT count a detected PBL segment in the `path` mileage.
 3. The system SHALL continue to count undetected candidate segments in the
    `path` mileage, once per segment.
+4. The system SHALL count only the part of each segment that lies inside the
+   city boundary, for every mileage category (`track`, `path`, `lane`,
+   `buffered_lane`, `sharrow`). The import keeps whole OSM ways that touch the
+   city, so without this, segments mostly outside the city are counted in full
+   (for example Bend cycleway 143517588, where one 1,168 m segment has only 34 m
+   inside the city).
 
 ### Requirement 8: No side effects on routing, scoring or outputs
 
@@ -501,5 +509,9 @@ at 15 m) but removed most gaps at crossings and in finely split trails.
   `concrete`, `concrete:plates`, `concrete:lanes`, `paving_stones` or
   `chipseal`). Unpaved or untagged-surface paths are not (for example the
   unpaved Waterline Trail in Bend).
+- **Mileage inside the boundary (2026-10-13):** because this change already
+  edits `calculate_mileage.sql`, it also limits all mileage to the length inside
+  the city boundary, in line with the policy that ratings only consider what is
+  inside a city.
 - **Separate reporting:** PBL mileage is not reported separately; it is part of
   the `track` total.
