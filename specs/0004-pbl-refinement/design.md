@@ -232,8 +232,8 @@ manual scripts run on real cities.
 3. **Match the tested results.** The implementation should give the same labels
    as the method tested on the six cities. A segment-by-segment comparison for
    at least Bend and Philadelphia should show no differences other than the
-   intended ones (`oneway = true` is not treated as one-way, `ST_MakeValid` is
-   applied, and gap fill is skipped on closed loops).
+   intended ones (`ST_MakeValid` is applied, and gap fill is skipped on closed
+   loops).
 4. **Correctness properties.** Queries on a finished run that check:
    non-candidate segments have unchanged labels; stress values and
    `functional_class` are identical with and without the change; no segment is
