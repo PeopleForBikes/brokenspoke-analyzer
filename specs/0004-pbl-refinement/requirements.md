@@ -37,10 +37,12 @@ people an alternative to riding on a street.
   off on its own).
 - Paths shared with pedestrians.
 - Paved general "paths" that are open to bikes, not only "bike paths".
+- Paths along highways and freeways, including near their ramps, since they
+  offer a route along the same corridor (for example the SR 520 Trail in the
+  Seattle area).
 
 **What's not included:**
 
-- Paths along freeways and expressways, and their ramps.
 - Unpaved paths, and general "paths" not marked as open to bikes. To be
   included, a path must be mapped as `highway=cycleway`, or as `highway=path`
   with `bicycle=yes` or `bicycle=designated` and a paved surface.
@@ -105,8 +107,9 @@ the Background section.
 
 - **PBL (protected bike lane)**: for this feature, any part of a separated
   cycleway that runs parallel to a road, offering an alternative to riding on
-  the road itself. This includes curb-side PBLs, side paths set back from the
-  road, and the parts of trails that run alongside a road.
+  the road itself or a route along its corridor. This includes curb-side PBLs,
+  side paths set back from the road, paths along highways and freeways, and the
+  parts of trails that run alongside a road.
 - **Candidate way**: one OSM way that meets Requirement 1, identified by its
   `osm_id`, with its full geometry from `neighborhood_osm_full_line`.
 - **Chain**: candidate ways joined end to end where they connect (merged into
@@ -151,22 +154,26 @@ detection, so that roads, footways and unpaved trails are not affected.
 
 ### Requirement 2: Car-road reference set
 
-**User Story:** As an analyst, I want PBLs detected along streets people would
-otherwise ride on, so that paths next to freeways are not counted as PBLs.
+**User Story:** As an analyst, I want PBLs detected along any road that carries
+motor traffic, including highways and freeways, so that every path along a road
+corridor is counted.
 
 #### Acceptance Criteria
 
 1. The system SHALL build the road buffer from segments in `neighborhood_ways`
    whose `functional_class`, as set by `functional_class.sql`, is one of:
-   `primary`, `primary_link`, `secondary`, `secondary_link`, `tertiary`,
-   `tertiary_link`, `residential` or `unclassified`.
+   `motorway`, `motorway_link`, `trunk`, `trunk_link`, `primary`,
+   `primary_link`, `secondary`, `secondary_link`, `tertiary`, `tertiary_link`,
+   `residential` or `unclassified`.
 2. The system SHALL use this allow-list, so that any other road type (for
    example `construction`, `proposed`, `corridor` or `raceway`) is never part of
    the road buffer.
-3. The system SHALL NOT include `motorway`, `motorway_link`, `trunk`,
-   `trunk_link` or `living_street` in the road buffer, although
-   `functional_class.sql` keeps them as roads.
-4. WHERE a cycleway runs parallel only to roads outside the allow-list, the
+3. The system SHALL NOT include `living_street` in the road buffer, although
+   `functional_class.sql` keeps it as a road.
+4. WHEN a path runs alongside a highway or freeway (for example the SR 520
+   Trail, way 47283428, about 14 m from SR 520 in the Seattle area), the system
+   SHALL detect it like any other road.
+5. WHERE a cycleway runs parallel only to roads outside the allow-list, the
    system SHALL NOT label it as a PBL.
 
 ### Requirement 3: Parallel stretches
@@ -493,8 +500,10 @@ at 15 m) but removed most gaps at crossings and in finely split trails.
   was dropped to keep the method simple.
 - **Segment rule (2026-10-08):** a segment is labeled by where at least half of
   it lies. This is fixed rather than adjustable.
-- **Trunk roads:** `trunk` and `trunk_link` are excluded from the road buffer,
-  like motorways, because a PBL along them would be unusual.
+- **Highways and freeways (2026-10-14):** `motorway`, `motorway_link`, `trunk`
+  and `trunk_link` are included in the road buffer. A path along a highway
+  offers a route along the same corridor (for example the SR 520 Trail). This
+  reverses the earlier decision to exclude them.
 - **Allow-list:** car roads are chosen by naming the types that count, reusing
   the road types and access rules of `functional_class.sql`, instead of
   excluding types. In Bend, the old exclusion approach let in `construction`,
