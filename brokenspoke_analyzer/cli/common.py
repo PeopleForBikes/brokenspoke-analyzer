@@ -106,13 +106,7 @@ Retries = Annotated[
 ]
 SpeedLimit = Annotated[
     int | None,
-    typer.Option(
-        help=(
-            "override the default city speed limit (in mph); when not set, US "
-            "cities use their city or state default and other cities use "
-            f"{DEFAULT_CITY_SPEED_LIMIT} mph"
-        )
-    ),
+    typer.Option(help="override the city default speed limit (in mph)"),
 ]
 State = Annotated[str | None, typer.Argument(help="US state")]
 WithBundle = Annotated[bool, typer.Option(help="bundle all the files in a zip archive")]
