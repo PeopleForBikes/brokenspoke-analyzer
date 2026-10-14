@@ -33,7 +33,7 @@ def prepare_cmd(
     block_population: common.BlockPopulation = common.DEFAULT_BLOCK_POPULATION,
     block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
     cache_dir: common.CacheDir = None,
-    city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
+    city_speed_limit: common.SpeedLimit = None,
     data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
     fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
     lodes_year: common.LODESYear = None,
@@ -47,8 +47,6 @@ def prepare_cmd(
     # Make MyPy happy.
     if not data_dir:
         raise ValueError("`data_dir` must be set")
-    if not city_speed_limit:
-        raise ValueError("`city_speed_limit` must be set")
     if not block_size:
         raise ValueError("`block_size` must be set")
     if not block_population:
@@ -92,7 +90,7 @@ async def prepare_(  # noqa: PLR0915
     block_population: int,
     block_size: int,
     cache_dir: pathlib.Path | None,
-    city_speed_limit: int,
+    city_speed_limit: int | None,
     city: str,
     country: str,
     data_dir: pathlib.Path,
@@ -184,10 +182,11 @@ async def prepare_(  # noqa: PLR0915
                         session, country_iso, worldpop_year, polygon_file
                     )
         # Change the speed limit.
+        city_speed = city_speed_limit or common.DEFAULT_CITY_SPEED_LIMIT
         console.log(
-            f"[green]Adjusting default city speed limit to {city_speed_limit} mph...",
+            f"[green]Adjusting default city speed limit to {city_speed} mph...",
         )
-        analysis.change_speed_limit(data_dir, city, state_abbrev, city_speed_limit)
+        analysis.change_speed_limit(data_dir, city, state_abbrev, city_speed)
     else:
         # Fetch the data.
         async with aiohttp.ClientSession() as session:

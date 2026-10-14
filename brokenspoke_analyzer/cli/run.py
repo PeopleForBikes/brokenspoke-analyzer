@@ -30,7 +30,7 @@ def run(
     block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
     cache_dir: common.CacheDir = None,
-    city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
+    city_speed_limit: common.SpeedLimit = None,
     data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
     lodes_year: common.LODESYear = None,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
