@@ -23,6 +23,9 @@ people an alternative to riding on a street.
 - **Follows the street,** roughly in the same direction (within about 20°). This
   keeps out paths that just cross a street, including ones that pass under a
   bridge at a shallow angle.
+- **Is at the same level as the street.** A path on a bridge is compared with
+  roads on bridges, and a path on the ground with roads on the ground. A freeway
+  passing overhead, or a road passing under a path bridge, doesn't count.
 - **Is judged as a whole path.** Bike paths that mappers split into short pieces
   are joined back together first, including their street crossings. If a side
   path dips away from the street for a short distance (up to 400 meters, about a
@@ -119,14 +122,16 @@ the Background section.
   into segments at intersections; all segments of a way share its `osm_id`.
 - **Car road**: a road segment used as the reference for detection, selected by
   the allow-list in Requirement 2.
+- **Level**: whether a way is on a bridge, in a tunnel, or on the ground, from
+  its OSM `bridge` and `tunnel` tags. `bridge=boardwalk` counts as ground.
 - **Road buffer**: the area within `pbl_buffer_m` meters of any car road, merged
-  into one shape.
+  into one shape per level.
 - **Overlap piece**: one continuous part of a chain that lies inside the road
-  buffer.
+  buffer for its own level.
 - **Parallel stretch**: an overlap piece whose median angle to the nearest car
-  road is at most `pbl_max_angle_deg`. A path crossing a road produces a piece
-  at a steep angle; a path running alongside a road produces a piece at a small
-  angle.
+  road at the same level is at most `pbl_max_angle_deg`. A path crossing a road
+  produces a piece at a steep angle; a path running alongside a road produces a
+  piece at a small angle.
 - **One-way variant**: any tag combination that marks a cycleway as carrying
   bikes in one direction only. See Requirement 5.
 
@@ -175,6 +180,12 @@ corridor is counted.
    SHALL detect it like any other road.
 5. WHERE a cycleway runs parallel only to roads outside the allow-list, the
    system SHALL NOT label it as a PBL.
+6. The system SHALL compare each part of a candidate way only with car roads at
+   the same level (see Glossary). A ground-level path SHALL NOT be detected
+   because of a road passing overhead (for example East Burnside Street paths,
+   ways 52233661 and 111662265, under I-205 in Portland, OR, are compared with
+   East Burnside Street, not I-205), and a path bridge SHALL NOT be detected
+   because of a road passing underneath.
 
 ### Requirement 3: Parallel stretches
 
@@ -189,15 +200,16 @@ mappers or the import split the path.
    connected candidate ways into chains, once per run, before finding parallel
    stretches. This applies the road-merging idea from the `pbl-methodology`
    branch to both roads and bike paths.
-2. The system SHALL identify each chain's overlap pieces with the road buffer.
+2. The system SHALL identify each chain's overlap pieces with the road buffer
+   for the same level.
 3. The system SHALL NOT apply a minimum length to overlap pieces; crossings are
    excluded by the angle check in criterion 4.
 4. The system SHALL compute the angle between each overlap piece and the nearest
-   car road at points sampled along the piece, and SHALL treat the piece as a
-   parallel stretch only if the median angle is at most `pbl_max_angle_deg`.
-   This excludes paths that cross a road at a shallow angle, such as a trail
-   passing under a road bridge (way 39947864 under SW Reed Market Road in Bend,
-   OR), without relying on `bridge` or `tunnel` tags.
+   car road at the same level, at points sampled along the piece, and SHALL
+   treat the piece as a parallel stretch only if the median angle is at most
+   `pbl_max_angle_deg`. This excludes paths that cross a road at a shallow
+   angle, including where the road or path is not tagged as a bridge (for
+   example way 39947864 under SW Reed Market Road in Bend, OR).
 5. WHEN a chain runs alongside a road for only part of its length, the system
    SHALL detect only that part (for example way 1354189308 in Providence, RI, or
    the part of Haul Road Trail 297308987 in Bend, OR along Colorado Avenue).
@@ -366,6 +378,12 @@ trust the method before it ships.
 | 748844480, 748844482  | Philadelphia   | PBL (East Coast Greenway crossings)            |
 | 132508834             | Philadelphia   | PBL (Schuylkill River Trail, Kelly Drive)      |
 | 206503757             | Philadelphia   | PBL (PNE Trail, paved `highway=path`)          |
+| 680608875             | Philadelphia   | PBL (Lincoln Drive Trail, `bridge=boardwalk`)  |
+| 1101812320            | Philadelphia   | Path (Delaware River Trail, under I-95)        |
+| 192545206             | Philadelphia   | Path (Grays Ferry Crescent)                    |
+| 52233661, 111662265   | Portland, OR   | PBL (East Burnside Street, under I-205)        |
+| 130668349             | Providence, RI | Path (path bridge)                             |
+| 90091980              | Providence, RI | Path (India Point Park Bridge)                 |
 
 ## Background: Bend, OR test (2026-10-05)
 
@@ -456,6 +474,19 @@ at 15 m) but removed most gaps at crossings and in finely split trails.
   the nearest road keeps changing, so some pieces may be labeled PBL and others
   path. Without a minimum stretch length, short roundabout pieces tend to be
   labeled PBL. This appears to be rare.
+- **Untagged bridges.** Levels come from OSM `bridge` and `tunnel` tags. A path
+  bridge or road bridge that mappers left untagged is treated as ground level,
+  so a path on an untagged bridge beside a tagged road bridge is not detected. A
+  ground-level path beside, not under, an elevated road is also not detected
+  (for example part of the Vera Katz Eastbank Esplanade, way 115809984, beside
+  the Marquam Bridge in Portland, OR), because OSM does not say whether the road
+  is beside or above the path.
+- **Second path beside a side path.** A path running just beyond a side path,
+  still within the buffer, is also labeled PBL (for example the Waterfront Park
+  Trail, ways 103611804 and 119557003, beyond the SW Naito Parkway side path in
+  Portland, OR). This was under 1% of PBL mileage in every test city. A rule
+  that only the path closest to the road counts was considered and not adopted:
+  it would also remove part of the Larkspur Trail in Bend, OR, which counts.
 - **Switchback ramps.** A ramp that zigzags beside a road (for example the ramp
   to the pedestrian bridge over I-195 along Portugal Parkway in Providence, RI)
   runs back and forth parallel to the road, so it may be labeled PBL. Adding a
@@ -476,8 +507,19 @@ at 15 m) but removed most gaps at crossings and in finely split trails.
 - **No tag exclusions:** cycleways are not excluded by name (such as "Trail") or
   by shared use with pedestrians.
 - **Simplicity:** one buffer for all roads, rather than a buffer that varies by
-  road class. A trail passing under a bridge is excluded by the angle check, not
-  by `bridge` tags, because mappers often leave cycleway bridges untagged.
+  road class.
+- **Levels (2026-10-15):** a path is compared only with roads at the same level
+  (bridge, tunnel or ground). Including highways made freeways passing overhead
+  the nearest road for paths beneath them, which failed the angle check (East
+  Burnside Street under I-205) or passed it wrongly (the Delaware River Trail
+  under I-95). Matching levels fixed these and still counts PBLs on bridges. The
+  angle check still excludes crossings where bridges are untagged. This replaces
+  the earlier decision not to use `bridge` tags. Physical PBL miles changed from
+  18.3 to 18.4 (Bozeman), 18.5 to 18.7 (Bend), 7.9 to 7.7 (Providence), 41.0 to
+  41.5 (Madison), 52.3 to 53.3 (Portland) and 44.2 to 43.9 (Philadelphia).
+- **Second paths (2026-10-15):** a path just beyond a side path is accepted as a
+  Known Limitation rather than adding a closest-path rule (see Known
+  Limitations).
 - **Test cities:** Providence, RI; Philadelphia, PA; Portland, OR; Bend, OR;
   Bozeman, MT; and Madison, WI.
 - **Residential streets** count: a path alongside a residential street is still

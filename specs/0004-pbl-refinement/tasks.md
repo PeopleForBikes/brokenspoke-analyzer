@@ -17,11 +17,12 @@ cities.
   - _Requirements: 9; design C1, C4_
 
 - [ ] 2. PBL detection at the end of `features/bike_infra.sql`
-  - [ ] 2.1 Road buffer from allow-listed roads, with `ST_MakeValid`
+  - [ ] 2.1 Road levels, and a road buffer per level from allow-listed roads,
+        with `ST_MakeValid`
     - _Requirements: 2_
-  - [ ] 2.2 Candidate selection and chains
+  - [ ] 2.2 Candidate selection, chains, and candidate ways with their level
     - _Requirements: 1, 3.1, 3.6_
-  - [ ] 2.3 Overlap pieces and the angle check
+  - [ ] 2.3 Overlap pieces and the angle check, at the same level
     - _Requirements: 3.2-3.5_
   - [ ] 2.4 Gap fill, skipping closed loops
     - _Requirements: 3.7_

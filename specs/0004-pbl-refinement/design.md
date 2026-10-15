@@ -13,14 +13,14 @@ It works only with data already in the database (`neighborhood_ways`,
 results in temporary tables, and writes its results only to the existing
 `ft_bike_infra` and `tf_bike_infra` columns.
 
-The step merges the allow-listed roads into one buffer and joins connected
-candidate bike paths into chains, both once per run. It then finds where each
-chain lies inside the buffer, keeps the pieces that run in the road's direction,
-fills short gaps between them, and labels each candidate segment by where at
-least half of its length lies. Direction comes from the one-way tags on the
-segment's OSM way. Three constants in `core/compute.py` (buffer, maximum angle,
-maximum gap) are passed into the SQL through the existing parameter-substitution
-runner.
+The step merges the allow-listed roads into one buffer per level (bridge, tunnel
+or ground) and joins connected candidate bike paths into chains, both once per
+run. It then finds where each chain lies inside the buffer for its own level,
+keeps the pieces that run in the road's direction, fills short gaps between
+them, and labels each candidate segment by where at least half of its length
+lies. Direction comes from the one-way tags on the segment's OSM way. Three
+constants in `core/compute.py` (buffer, maximum angle, maximum gap) are passed
+into the SQL through the existing parameter-substitution runner.
 
 `features/calculate_mileage.sql` changes in two ways: a segment labeled as a PBL
 is no longer also counted as `path`, and every category counts only the length
@@ -85,22 +85,34 @@ neighborhood_osm_full_line (candidates) ─► join into chains ┘
 ### C2. PBL detection (end of `features/bike_infra.sql`)
 
 The whole file runs in one database transaction, so the step uses temporary
-tables that disappear when it finishes. Six statements:
+tables that disappear when it finishes.
 
-1. **Road buffer** (`pbl_road_buf`): the union of
-   `ST_Buffer(geom, :pbl_buffer_m)` over allow-listed roads (Requirement 2),
-   split into tiles with `ST_Subdivide` and indexed.
-2. **Chains** (`pbl_chains`): `ST_LineMerge(ST_Union(way))` over candidate ways
+Each way's level comes from its tags in `neighborhood_osm_full_line`: `bridge`
+when `bridge` is set to anything other than `no` or `boardwalk`, otherwise
+`tunnel` when `tunnel` is set to anything other than `no`, otherwise `ground`.
+Road segments in `neighborhood_ways` take the level of their OSM way through
+`osm_id`.
+
+The step runs these statements:
+
+1. **Roads** (`pbl_roads`): allow-listed road segments (Requirement 2) with
+   their level, indexed.
+2. **Road buffer** (`pbl_road_buf`): the union of
+   `ST_Buffer(geom, :pbl_buffer_m)` over `pbl_roads`, one per level, split into
+   tiles with `ST_Subdivide` and indexed.
+3. **Chains** (`pbl_chains`): `ST_LineMerge(ST_Union(way))` over candidate ways
    in `neighborhood_osm_full_line` (Requirement 1), split into single lines and
-   indexed.
-3. **Overlap pieces** (`pbl_pieces`): each chain's intersection with the road
-   buffer, merged and split into continuous pieces.
-4. **Parallel stretches** (`pbl_stretch`): pieces whose median angle to the
-   nearest allow-listed road, sampled every 5 m along the piece, is at most
-   `:pbl_max_angle_deg`.
-5. **Gap fill**: for consecutive stretches on the same chain, add the part of
+   indexed. Each candidate way is also kept with its chain and level
+   (`pbl_cand`).
+4. **Overlap pieces** (`pbl_pieces`): each chain's candidate ways intersected
+   with the road buffer for the same level, merged per chain and level and split
+   into continuous pieces.
+5. **Parallel stretches** (`pbl_stretch`): pieces whose median angle to the
+   nearest road in `pbl_roads` at the same level, sampled every 5 m along the
+   piece, is at most `:pbl_max_angle_deg`.
+6. **Gap fill**: for consecutive stretches on the same chain, add the part of
    the chain between them when it is at most `:pbl_max_gap_m` long.
-6. **Labels**: `UPDATE neighborhood_ways` for candidate segments that have no
+7. **Labels**: `UPDATE neighborhood_ways` for candidate segments that have no
    existing `ft_bike_infra`/`tf_bike_infra` label, setting `'track'` when at
    least half of the segment lies within stretches (measured against the
    stretches buffered by 1 m, to absorb tiny geometry differences), in the
@@ -142,12 +154,14 @@ stays empty.
 
 **Temporary tables**, dropped at the end of the transaction:
 
-| Table          | Columns                                 | Purpose                                               |
-| -------------- | --------------------------------------- | ----------------------------------------------------- |
-| `pbl_road_buf` | `geom` (polygon)                        | Buffered allow-listed roads, tiled and indexed        |
-| `pbl_chains`   | `chain_id`, `geom` (line)               | Joined candidate bike paths, indexed                  |
-| `pbl_pieces`   | `piece_id`, `chain_id`, `geom`, `len_m` | Parts of chains inside the road buffer                |
-| `pbl_stretch`  | `piece_id`, `chain_id`, `geom`, `buf`   | Parallel stretches plus filled gaps, indexed on `buf` |
+| Table          | Columns                                          | Purpose                                                |
+| -------------- | ------------------------------------------------ | ------------------------------------------------------ |
+| `pbl_roads`    | `road_id`, `geom`, `level`                       | Allow-listed road segments with their level, indexed   |
+| `pbl_road_buf` | `level`, `geom` (polygon)                        | Buffered roads per level, tiled and indexed            |
+| `pbl_chains`   | `chain_id`, `geom` (line)                        | Joined candidate bike paths, indexed                   |
+| `pbl_cand`     | `chain_id`, `geom`, `level`                      | Candidate ways with their chain and level, indexed     |
+| `pbl_pieces`   | `piece_id`, `chain_id`, `level`, `geom`, `len_m` | Parts of chains inside the road buffer for their level |
+| `pbl_stretch`  | `piece_id`, `chain_id`, `geom`, `buf`            | Parallel stretches plus filled gaps, indexed on `buf`  |
 
 All geometries are in the same projected coordinate system as
 `neighborhood_ways` (a local UTM zone chosen for each city), so lengths and
