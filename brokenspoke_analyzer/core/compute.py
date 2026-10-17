@@ -80,7 +80,6 @@ def features(
         "lanes.sql",
         "park.sql",
         "bike_infra.sql",
-        "class_adjustments.sql",
         "legs.sql",
     ]
     for script in sql_scripts:
@@ -147,16 +146,17 @@ def stress(
     }
     execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
 
+    # Add low order stress function for residential and unclassified segments.
+    sql_script = sql_stress_script_dir / "stress_segments_lower_order_func.sql"
+    dbcore.execute_sql_file(engine, sql_script)
+
     # Residential.
     logger.info("Residential")
-    sql_script = sql_stress_script_dir / "stress_segments_lower_order_res.sql"
+    sql_script = sql_stress_script_dir / "stress_segments_lower_order.sql"
     bind_params = {
         "class": "residential",
+        "default_speed": city_default_speed or state_default_speed,
         "default_lanes": 1,
-        "default_parking": 1,
-        "default_roadway_width": 27,
-        "state_default": state_default_speed,
-        "city_default": city_default_speed,
     }
     execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
 
@@ -167,10 +167,9 @@ def stress(
         "class": "unclassified",
         "default_speed": 25,
         "default_lanes": 1,
-        "default_parking": 1,
-        "default_roadway_width": 27,
     }
     execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
+
     sql_scripts = [
         "stress_living_street.sql",
         "stress_track.sql",
