@@ -3,7 +3,8 @@
 ## Status
 
 DRAFT. Open questions are listed in the last section and must be resolved before
-this document is approved.
+this document is approved. The reasons behind each rule, the alternatives tested
+and the test results are in `decisions.md`.
 
 ## Plain-Language Summary: How we identify protected bike lanes in OpenStreetMap
 
@@ -58,9 +59,9 @@ like the BNA's other bike lanes. A two-way path counts twice, a one-way path
 once. These miles are counted as protected lanes instead of off-street paths,
 never as both.
 
-**Known gaps:** paths that circle a roundabout can be picked up inconsistently,
-because the path keeps changing direction relative to the roads around it. This
-is a small share of total mileage.
+**Known gaps:** a few kinds of paths are labeled inconsistently, such as paths
+circling a roundabout or park paths just under 20 meters from a wide road. They
+are a small share of total mileage; see Known Limitations.
 
 ## Introduction
 
@@ -79,10 +80,8 @@ the mileage table instead of `path`. This includes curb-side PBLs, side paths
 set back from the road, and the parts of trails that run alongside a road.
 
 It replaces the approach drafted on the `pbl-methodology` branch, which tested
-each segment separately with no parallel-ness check. A test on Bend, OR showed
-that approach labels road crossings on trails as PBLs, gives different labels to
-segments of the same OSM way, and counts one-way PBLs in both directions. See
-the Background section.
+each segment separately and labeled road crossings on trails as PBLs (see
+`decisions.md`).
 
 ### In scope
 
@@ -201,8 +200,7 @@ mappers or the import split the path.
 
 1. The system SHALL merge the car roads into one road buffer, and SHALL join
    connected candidate ways into chains, once per run, before finding parallel
-   stretches. This applies the road-merging idea from the `pbl-methodology`
-   branch to both roads and bike paths.
+   stretches.
 2. The system SHALL identify each chain's overlap pieces with the road buffer
    for the same level.
 3. The system SHALL NOT apply a minimum length to overlap pieces; crossings are
@@ -340,15 +338,14 @@ editing the SQL logic.
    iteration.
 4. The starting defaults SHALL be:
 
-   | Parameter            | Default | Reason                                                                                                                                 |
-   | -------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-   | `pbl_buffer_m`       | 20 m    | Best agreement with Philadelphia mappers' `is_sidepath` tags (93%); also covers side paths set back on wide arterials (see Background) |
-   | `pbl_max_angle_deg`  | 15°     | Ignores paths that cross a road at a shallow angle                                                                                     |
-   | `pbl_max_gap_m`      | 400 m   | Fills short gaps where a side path dips away from the road and comes back                                                              |
-   | `pbl_max_gap_dist_m` | 40 m    | Does not fill gaps where the path heads away from the road, for example behind houses                                                  |
+   | Parameter            | Default | Reason                                                                                                                        |
+   | -------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
+   | `pbl_buffer_m`       | 20 m    | Covers curb-side PBLs and side paths set back on wide arterials; best agreement with Philadelphia mappers' `is_sidepath` tags |
+   | `pbl_max_angle_deg`  | 15°     | Ignores paths that cross a road at a shallow angle                                                                            |
+   | `pbl_max_gap_m`      | 400 m   | Fills short gaps where a side path dips away from the road and comes back                                                     |
+   | `pbl_max_gap_dist_m` | 40 m    | Does not fill gaps where the path heads away from the road, for example behind houses                                         |
 
-5. The system SHALL use one value of each parameter for all roads. Values that
-   vary by road class are out of scope, to keep the method simple.
+5. The system SHALL use one value of each parameter for all roads.
 
 ### Requirement 10: Performance
 
@@ -359,7 +356,7 @@ editing the SQL logic.
 1. The system SHALL build the road buffer once per run, not once per segment or
    per way.
 2. For a city the size of Philadelphia, PA, the PBL detection step SHALL
-   complete in under 30 seconds. The prototype took about 9 seconds.
+   complete in under 30 seconds.
 
 ### Requirement 11: Validation
 
@@ -404,228 +401,43 @@ trust the method before it ships.
 | 1421068993                                     | Madison, WI    | Path behind houses (beyond 40 m); PBL only at the ends along Redan Dr and Rustic Pine Rd  |
 | 308498820                                      | Madison, WI    | Path (Capital City Path)                                                                  |
 
-## Background: Bend, OR test (2026-10-05)
-
-### Problems with the `pbl-methodology` approach
-
-- 68 OSM ways (20.4 mi) got different labels on different segments.
-- Road crossings on trails were labeled as PBLs: 231 of the 262 ways labeled
-  entirely `track` were shorter than 25 m.
-- One-way PBLs were counted in both directions (for example NE Franklin Ave,
-  `oneway=yes`).
-- Parts of real PBLs near intersections were missed (for example the end of
-  1480451437, up to 10.8 m from the road centerline).
-
-### Distance from the road
-
-Median distance from each cycleway to the nearest road centerline:
-
-| Way                                   | Kind      | Median distance |
-| ------------------------------------- | --------- | --------------- |
-| SW Naito Pkwy, Portland (1092208840)  | curb-side | 4.6 m           |
-| NE Olney Ave (1480451437, 1480451438) | curb-side | 4.7-5.2 m       |
-| NE Franklin Ave (1474322573)          | curb-side | 5.0 m           |
-| Haul Road Trail (1499802408)          | side path | 8.2 m           |
-| 277177723 (Green Lakes Loop)          | side path | 9.4 m           |
-| Side-path cluster (1497195035-40)     | side path | 9.9-10.5 m      |
-| Haul Road Trail (297308987)           | side path | 10.7 m          |
-
-Curb-side PBLs drift up to about 10 m from the centerline near intersections,
-and side paths sit 8-11 m away, with some stretches farther (up to about 16 m on
-297308987). Because side paths count, the buffer must be wide enough to include
-them.
-
-A sidepath's distance from the road centerline is roughly half the road width,
-plus the street buffer, plus half the path width. With a 5 ft (1.5 m) buffer and
-a 10-12 ft path, that is about 8.5-10 m on a two-lane street, 12-14 m on a
-four-lane arterial and 15-17 m on a six-lane arterial. These typical dimensions
-come from general bikeway design guidance and should be checked against the
-NACTO Urban Bikeway Design Guide.
-
-### Results (2026-10-06)
-
-| Bend, OR                          | 12 m | 15 m | 15 m + angle check |
-| --------------------------------- | ---- | ---- | ------------------ |
-| OSM ways with any PBL             | 58   | 66   | 64                 |
-| OSM ways with mixed labels        | 24   | 22   | 21                 |
-| Directional `track` miles         | 21.2 | 25.7 | 25.5               |
-| Side-path cluster fully detected  | no   | yes  | yes                |
-| Reed Market bridge false positive | yes  | yes  | no                 |
-
-All runs used a 60 m minimum stretch, and each took 2-4 seconds. Olney Avenue
-and Franklin Avenue were fully detected, one-way `ft` only, in every run.
-
-### Philadelphia: agreement with mappers' `is_sidepath` tags (2026-10-08)
-
-Philadelphia mappers tagged 770 of 912 cycleways with `is_sidepath=yes` (32.8
-mi) or `is_sidepath=no` (42.1 mi). Using chains, a 60 m minimum stretch and a
-20° angle:
-
-| Buffer | `yes` labeled PBL | `no` left as path | Overall agreement |
-| ------ | ----------------- | ----------------- | ----------------- |
-| 10 m   | 42%               | 99.8%             | 74.5%             |
-| 12 m   | 64%               | 99.7%             | 84.1%             |
-| 15 m   | 78%               | 98.5%             | 89.4%             |
-| 20 m   | 88%               | 97.5%             | 93.4%             |
-| 25 m   | 91%               | 96.2%             | 94.1%             |
-| 30 m   | 92%               | 95.0%             | 93.8%             |
-
-With chains, 400 m gap fill and a 20 m buffer, removing the 60 m minimum stretch
-left agreement unchanged (93.5%) and every reference way in Bend and
-Philadelphia unchanged. It added about 50 short pieces in Philadelphia (1.2
-physical miles) and 41 in Bend (1.5 km), including side-path pieces such as the
-Cascade Highlands Trail along Mount Washington Drive (266268195), and gap fill
-completed the Martin Luther King Jr. Drive Trail (12 of 12 segments).
-
-Most `no`-tagged paths labeled PBL at 20 m are stretches of trails that run
-alongside a road (for example Lincoln Drive Trail and the Manayunk Canal
-Towpath). Mappers tagged the whole trail `no`, but under this feature's
-definition those stretches count. Joining short pieces into chains raised
-Philadelphia's detected PBL mileage only slightly (28.1 to 30.1 physical miles
-at 15 m) but removed most gaps at crossings and in finely split trails.
-
 ## Known Limitations
 
 - **Roundabouts.** Cycleways circling a roundabout are made of many short OSM
-  ways (for example 1206052645-1206052656 around the Newport Avenue roundabout
-  in Bend, and the Schuylkill River Trail circle near Lloyd Hall in
-  Philadelphia). Chains stop where three or more paths meet, and the angle to
-  the nearest road keeps changing, so some pieces may be labeled PBL and others
-  path. Without a minimum stretch length, short roundabout pieces tend to be
-  labeled PBL. This appears to be rare.
-- **Untagged bridges.** Levels come from OSM `bridge` and `tunnel` tags. A path
-  bridge or road bridge that mappers left untagged is treated as ground level,
-  so a path on an untagged bridge beside a tagged road bridge is not detected. A
+  ways, and the angle to the nearest road keeps changing, so some pieces may be
+  labeled PBL and others path (for example around the Newport Avenue roundabout
+  in Bend, OR).
+- **Untagged bridges.** Levels come from OSM `bridge` and `tunnel` tags, so a
+  path on an untagged bridge beside a tagged road bridge is not detected. A
   ground-level path beside, not under, an elevated road is also not detected
   (for example part of the Vera Katz Eastbank Esplanade, way 115809984, beside
-  the Marquam Bridge in Portland, OR), because OSM does not say whether the road
-  is beside or above the path.
-- **Roads that change height without tags.** A road that climbs or drops beside
-  a path without a `bridge` or `tunnel` tag, such as a ramp on an embankment or
-  in a cut, is treated as ground level. For example, the last segment (about 90
-  m) of way 1354189308 in Providence, RI is labeled PBL because it runs 9-17 m
-  from, and parallel to, an on-ramp to the Huntington Expressway (RI 10), way
-  1084625129, with the expressway itself 13-15 m away. The ramp changes height
-  beside the path, but OSM maps it as an ordinary ground-level road. Removing
-  highway ramps from the road list was tested and not adopted: the stretch stays
-  PBL because of the expressway, and Portland, OR would lose about 3.4 mi of
-  real side paths along the I-205 Multi-Use Path.
+  the Marquam Bridge in Portland, OR).
+- **Roads that change height without tags.** A road that climbs or drops without
+  a `bridge` or `tunnel` tag, such as a ramp on an embankment, is treated as
+  ground level (for example the last segment of way 1354189308 in Providence,
+  RI, beside an on-ramp to the Huntington Expressway, way 1084625129).
 - **Second path beside a side path.** A path running just beyond a side path,
   still within the buffer, is also labeled PBL (for example the Waterfront Park
   Trail, ways 103611804 and 119557003, beyond the SW Naito Parkway side path in
-  Portland, OR). This was under 1% of PBL mileage in every test city. A rule
-  that only the path closest to the road counts was considered and not adopted:
-  it would also remove part of the Larkspur Trail in Bend, OR, which counts.
+  Portland, OR).
 - **Short pieces anchoring gap fill.** A short parallel piece, where a path
-  briefly comes close to a road, can anchor a gap fill and label the stretch
-  between as PBL when the gap stays within 40 m (for example two segments of the
-  Delaware River Trail, way 1101812320, past Richmond Street in Philadelphia). A
-  minimum stretch length for gap fill (10-30 m) and a rule that the gap be no
-  longer than the stretches on both sides were tested and not adopted: both
-  removed about as much real side path (for example NE 82nd Avenue in Portland,
-  OR) as wrongly filled length.
-- **Gap fill distance.** Gaps that stray more than 40 m from a road are not
-  filled, so some real dips become paths (for example parts of the Larkspur
-  Trail, way 434843594, and the West Bend Trail, way 266268202, in Bend, OR, and
-  of the I-205 Multi-Use Path in Portland, OR). These were judged acceptable as
-  trails. A rule allowing farther dips when both sides follow the same street
-  was tested and not adopted, to keep the method simple.
-- **Paths near the buffer edge.** A path set back just under 20 m from a wide
-  road can be labeled PBL even when it is a park path (for example the loop in
-  Farewell Bend Park, way 142063148, 18-19 m from SW Reed Market Road in Bend,
-  OR), and a side path just over 20 m from a freeway is not detected unless gap
-  fill reaches it (for example a 424 m segment of the West Beltline Bike Path,
-  way 572643454, 21-22 m from the West Beltline Highway in Madison, WI). A wider
-  buffer for freeways was considered and not adopted.
-- **Switchback ramps.** A ramp that zigzags beside a road (for example the ramp
-  to the pedestrian bridge over I-195 along Portugal Parkway in Providence, RI)
-  runs back and forth parallel to the road, so it may be labeled PBL. Adding a
-  rule against paths that double back was considered and not adopted, to keep
-  the method simple.
+  briefly comes close to a road, can anchor a gap fill within 40 m (for example
+  two segments of the Delaware River Trail, way 1101812320, past Richmond Street
+  in Philadelphia).
+- **Gap fill distance.** Some real dips stray more than 40 m from the road and
+  become paths (for example parts of the Larkspur Trail, way 434843594, and the
+  West Bend Trail, way 266268202, in Bend, OR).
+- **Paths near the buffer edge.** A park path just under 20 m from a wide road
+  can be labeled PBL (for example way 142063148, 18-19 m from SW Reed Market
+  Road in Bend, OR), and a side path just over 20 m from a freeway is missed
+  unless gap fill reaches it (for example part of the West Beltline Bike Path,
+  way 572643454, in Madison, WI).
+- **Switchback ramps.** A ramp that zigzags beside a road runs parallel to it,
+  so it may be labeled PBL (for example the ramp to the pedestrian bridge over
+  I-195 along Portugal Parkway in Providence, RI).
 
 ## Open Questions
 
-1. **Defaults.** Do the starting defaults in Requirement 9 hold up in the test
-   cities: Providence, RI; Philadelphia, PA; Portland, OR; Bend, OR; Bozeman,
-   MT; and Madison, WI?
-
-## Resolved Questions
-
-- **Definition (2026-10-06):** any part of a cycleway that runs parallel to a
-  road counts as a PBL, because it offers an alternative to riding on the road.
-  Side paths and the parallel parts of trails are included.
-- **No tag exclusions:** cycleways are not excluded by name (such as "Trail") or
-  by shared use with pedestrians.
-- **Simplicity:** one buffer for all roads, rather than a buffer that varies by
-  road class.
-- **Roads only (2026-10-16):** detection uses only roads and paths and their
-  tags. Other OSM features, such as buildings, walls or land use, are not used.
-- **Flat buffer ends (2026-10-16):** the road buffer covers the area beside a
-  road but not past its end. This removed connectors between dead-end streets
-  and similar paths that continue in line with a road (for example ways
-  102021058 and 308498820 in Madison, WI) and kept every confirmed side path.
-- **Angle (2026-10-16):** the maximum angle was lowered from 20° to 15°. This
-  removed shallow crossings (for example the Southwest Path across Commonwealth
-  Avenue in Madison, WI) and the Mountain View Park loop in Bend, OR, and kept
-  every confirmed side path. 10° was tested and removed real side paths.
-- **Gap fill distance (2026-10-16):** a gap is filled only if it stays within 40
-  m of a road. Every stretch this removed in the test cities was judged a path
-  or acceptable either way. 60 m was also tested.
-- **Levels (2026-10-15):** a path is compared only with roads at the same level
-  (bridge, tunnel or ground). Including highways made freeways passing overhead
-  the nearest road for paths beneath them, which failed the angle check (East
-  Burnside Street under I-205) or passed it wrongly (the Delaware River Trail
-  under I-95). Matching levels fixed these and still counts PBLs on bridges. The
-  angle check still excludes crossings where bridges are untagged. This replaces
-  the earlier decision not to use `bridge` tags. Physical PBL miles changed from
-  18.3 to 18.4 (Bozeman), 18.5 to 18.7 (Bend), 7.9 to 7.7 (Providence), 41.0 to
-  41.5 (Madison), 52.3 to 53.3 (Portland) and 44.2 to 43.9 (Philadelphia).
-- **Second paths (2026-10-15):** a path just beyond a side path is accepted as a
-  Known Limitation rather than adding a closest-path rule (see Known
-  Limitations).
-- **Test cities:** Providence, RI; Philadelphia, PA; Portland, OR; Bend, OR;
-  Bozeman, MT; and Madison, WI.
-- **Residential streets** count: a path alongside a residential street is still
-  an alternative to riding on it.
-- **Single threshold:** because side paths count, there is no need to separate
-  curb-side PBLs from side paths. A two-threshold variant tested in Bend is
-  therefore not needed.
-- **Chains (2026-10-08):** candidate ways are joined into chains before
-  detection. This replaces the earlier "no chaining" decision: done once per
-  run, joining is fast (about 9 seconds for all of Philadelphia) and it fixes
-  gaps at crossings and in finely split trails.
-- **Buffer (2026-10-08):** 20 m, based on agreement with Philadelphia's
-  `is_sidepath` tags.
-- **Gap fill (2026-10-08):** gaps of up to 400 m between parallel stretches on
-  the same path count, for side paths that dip away from the road and come back.
-  In Bend, this added two segments (Larkspur Trail and West Bend Trail), both
-  judged correct.
-- **No minimum length (2026-10-09):** the 60 m minimum stretch was removed. With
-  chains and the angle check, it no longer changed agreement with mappers, so it
-  was dropped to keep the method simple.
-- **Segment rule (2026-10-08):** a segment is labeled by where at least half of
-  it lies. This is fixed rather than adjustable.
-- **Highways and freeways (2026-10-14):** `motorway`, `motorway_link`, `trunk`
-  and `trunk_link` are included in the road buffer. A path along a highway
-  offers a route along the same corridor (for example the SR 520 Trail). This
-  reverses the earlier decision to exclude them.
-- **Allow-list:** car roads are chosen by naming the types that count, reusing
-  the road types and access rules of `functional_class.sql`, instead of
-  excluding types. In Bend, the old exclusion approach let in `construction`,
-  `proposed` (unbuilt), `corridor` (indoor) and `raceway` ways.
-- **Adjusting parameters:** thresholds are constants edited in code (like the
-  existing traffic-signal search distance), not command-line options.
-- **Living streets:** `living_street` is excluded from the road buffer.
-  `functional_class.sql` also assigns it to `highway=pedestrian` ways that allow
-  bikes, and a cycleway beside a pedestrian street is not a PBL.
-- **Other path types (2026-10-08):** `highway=path` ways are candidates when
-  tagged `bicycle=yes` or `bicycle=designated` and paved (`paved`, `asphalt`,
-  `concrete`, `concrete:plates`, `concrete:lanes`, `paving_stones` or
-  `chipseal`). Unpaved or untagged-surface paths are not (for example the
-  unpaved Waterline Trail in Bend).
-- **Mileage inside the boundary (2026-10-13):** because this change already
-  edits `calculate_mileage.sql`, it also limits all mileage to the length inside
-  the city boundary, in line with the policy that ratings only consider what is
-  inside a city.
-- **Separate reporting:** PBL mileage is not reported separately; it is part of
-  the `track` total.
+1. **Philadelphia.** Do the reference ways and the agreement with mappers'
+   `is_sidepath` tags hold up in Philadelphia with the final rules? It was last
+   run before flat buffer ends, the 15° angle and the 40 m gap distance.
