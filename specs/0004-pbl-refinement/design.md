@@ -18,9 +18,10 @@ or ground) and joins connected candidate bike paths into chains, both once per
 run. It then finds where each chain lies inside the buffer for its own level,
 keeps the pieces that run in the road's direction, fills short gaps between
 them, and labels each candidate segment by where at least half of its length
-lies. Direction comes from the one-way tags on the segment's OSM way. Three
-constants in `core/compute.py` (buffer, maximum angle, maximum gap) are passed
-into the SQL through the existing parameter-substitution runner.
+lies. Direction comes from the one-way tags on the segment's OSM way. Four
+constants in `core/compute.py` (buffer, maximum angle, maximum gap, maximum gap
+distance) are passed into the SQL through the existing parameter-substitution
+runner.
 
 `features/calculate_mileage.sql` changes in two ways: a segment labeled as a PBL
 is no longer also counted as `path`, and every category counts only the length
@@ -72,15 +73,17 @@ neighborhood_osm_full_line (candidates) ─► join into chains ┘
 
 ### C1. Settings and wiring (`core/compute.py`)
 
-- Add three constants next to `NB_SIGCTL_SEARCH_DIST`: `NB_PBL_BUFFER_M = 20`,
-  `NB_PBL_MAX_ANGLE_DEG = 20` and `NB_PBL_MAX_GAP_M = 400`. The `NB_` prefix
-  ("neighborhood", the analysis area) follows the existing naming.
+- Add four constants next to `NB_SIGCTL_SEARCH_DIST`: `NB_PBL_BUFFER_M = 20`,
+  `NB_PBL_MAX_ANGLE_DEG = 15`, `NB_PBL_MAX_GAP_M = 400` and
+  `NB_PBL_MAX_GAP_DIST_M = 40`. The `NB_` prefix ("neighborhood", the analysis
+  area) follows the existing naming.
 - `bike_infra.sql` is currently run as written (`execute_sql_file`). It must
   instead be run with `execute_sqlfile_with_substitutions`, which replaces
   placeholders in the file (`:pbl_buffer_m`, `:pbl_max_angle_deg`,
-  `:pbl_max_gap_m`) with the values of these constants before running it. The
-  replacement only matches these exact names, so the many tag names with colons
-  already in `bike_infra.sql` (for example `"cycleway:right"`) are unaffected.
+  `:pbl_max_gap_m`, `:pbl_max_gap_dist_m`) with the values of these constants
+  before running it. The replacement only matches these exact names, so the many
+  tag names with colons already in `bike_infra.sql` (for example
+  `"cycleway:right"`) are unaffected.
 
 ### C2. PBL detection (end of `features/bike_infra.sql`)
 
@@ -98,8 +101,9 @@ The step runs these statements:
 1. **Roads** (`pbl_roads`): allow-listed road segments (Requirement 2) with
    their level, indexed.
 2. **Road buffer** (`pbl_road_buf`): the union of
-   `ST_Buffer(geom, :pbl_buffer_m)` over `pbl_roads`, one per level, split into
-   tiles with `ST_Subdivide` and indexed.
+   `ST_Buffer(geom, :pbl_buffer_m, 'endcap=flat')` over `pbl_roads`, one per
+   level, split into tiles with `ST_Subdivide` and indexed. Flat ends keep the
+   buffer beside each road and stop it at the road's end.
 3. **Chains** (`pbl_chains`): `ST_LineMerge(ST_Union(way))` over candidate ways
    in `neighborhood_osm_full_line` (Requirement 1), split into single lines and
    indexed. Each candidate way is also kept with its chain and level
@@ -111,7 +115,9 @@ The step runs these statements:
    nearest road in `pbl_roads` at the same level, sampled every 5 m along the
    piece, is at most `:pbl_max_angle_deg`.
 6. **Gap fill**: for consecutive stretches on the same chain, add the part of
-   the chain between them when it is at most `:pbl_max_gap_m` long.
+   the chain between them when it is at most `:pbl_max_gap_m` long and no point
+   on it, sampled every 5 m, is farther than `:pbl_max_gap_dist_m` from the
+   nearest road in `pbl_roads`.
 7. **Labels**: `UPDATE neighborhood_ways` for candidate segments that have no
    existing `ft_bike_infra`/`tf_bike_infra` label, setting `'track'` when at
    least half of the segment lies within stretches (measured against the
@@ -126,9 +132,10 @@ The step runs these statements:
 
 ### C4. Lint placeholders (`pyproject.toml`)
 
-- Add `pbl_buffer_m = 20`, `pbl_max_angle_deg = 20` and `pbl_max_gap_m = 400`
-  under `[tool.sqlfluff.templater.placeholder]` so `sqlfluff` can lint the new
-  SQL. These are lint-only values, not runtime defaults.
+- Add `pbl_buffer_m = 20`, `pbl_max_angle_deg = 15`, `pbl_max_gap_m = 400` and
+  `pbl_max_gap_dist_m = 40` under `[tool.sqlfluff.templater.placeholder]` so
+  `sqlfluff` can lint the new SQL. These are lint-only values, not runtime
+  defaults.
 
 ### C5. Direction
 
@@ -261,7 +268,7 @@ manual scripts run on real cities.
 
 ## Deployment Considerations
 
-- **No new configuration.** The three settings are constants in `compute.py`,
+- **No new configuration.** The four settings are constants in `compute.py`,
   with no command-line options or environment variables. To test other values,
   edit the constants and re-run.
 - **No data migration.** Nothing is stored between runs; results are recomputed

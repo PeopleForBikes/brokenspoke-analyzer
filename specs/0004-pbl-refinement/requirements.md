@@ -16,20 +16,22 @@ people an alternative to riding on a street.
 **A stretch of bike path counts when it:**
 
 - **Runs right alongside a street,** within about 20 meters (65 feet) of the
-  street's centerline. That's close enough to include curb-side protected lanes
-  and side paths set back behind a grass or tree strip, including along wide
-  arterials. In Philadelphia, this matched mappers' own judgment for 93% of the
-  bike paths they had tagged as side paths or not.
-- **Follows the street,** roughly in the same direction (within about 20°). This
-  keeps out paths that just cross a street, including ones that pass under a
-  bridge at a shallow angle.
+  street's centerline, beside the street rather than past the end of it. That's
+  close enough to include curb-side protected lanes and side paths set back
+  behind a grass or tree strip, including along wide arterials. In Philadelphia,
+  this matched mappers' own judgment for 93% of the bike paths they had tagged
+  as side paths or not.
+- **Follows the street,** roughly in the same direction (within about 15°). This
+  keeps out paths that just cross a street, including ones that cross at a
+  shallow angle or pass under a bridge.
 - **Is at the same level as the street.** A path on a bridge is compared with
   roads on bridges, and a path on the ground with roads on the ground. A freeway
   passing overhead, or a road passing under a path bridge, doesn't count.
 - **Is judged as a whole path.** Bike paths that mappers split into short pieces
   are joined back together first, including their street crossings. If a side
   path dips away from the street for a short distance (up to 400 meters, about a
-  quarter mile) and then comes back, that dip still counts.
+  quarter mile) and then comes back, that dip still counts, as long as it stays
+  within 40 meters (130 feet) of a road.
 
 **What's included:**
 
@@ -125,7 +127,8 @@ the Background section.
 - **Level**: whether a way is on a bridge, in a tunnel, or on the ground, from
   its OSM `bridge` and `tunnel` tags. `bridge=boardwalk` counts as ground.
 - **Road buffer**: the area within `pbl_buffer_m` meters of any car road, merged
-  into one shape per level.
+  into one shape per level. The buffer has flat ends: it covers the area beside
+  each road but not past the end of it.
 - **Overlap piece**: one continuous part of a chain that lies inside the road
   buffer for its own level.
 - **Parallel stretch**: an overlap piece whose median angle to the nearest car
@@ -209,21 +212,30 @@ mappers or the import split the path.
    treat the piece as a parallel stretch only if the median angle is at most
    `pbl_max_angle_deg`. This excludes paths that cross a road at a shallow
    angle, including where the road or path is not tagged as a bridge (for
-   example way 39947864 under SW Reed Market Road in Bend, OR).
+   example way 39947864 under SW Reed Market Road in Bend, OR, and the Southwest
+   Path, way 1417451441, crossing Commonwealth Avenue in Madison, WI).
 5. WHEN a chain runs alongside a road for only part of its length, the system
-   SHALL detect only that part (for example way 1354189308 in Providence, RI, or
-   the part of Haul Road Trail 297308987 in Bend, OR along Colorado Avenue).
+   SHALL detect only that part (for example the part of Haul Road Trail
+   297308987 in Bend, OR along Colorado Avenue).
 6. WHERE a bike path is split into many short OSM ways, or into separately
    mapped crossings (`cycleway=crossing`) along the road, the system SHALL judge
    the joined chain, so that each piece takes the label of the stretch it lies
    in (for example the Delaware River Trail along Columbus Boulevard and the
    East Coast Greenway crossings along East Allegheny Avenue in Philadelphia).
 7. WHEN two parallel stretches on the same chain are separated by a gap of at
-   most `pbl_max_gap_m`, the system SHALL treat the gap as part of the parallel
-   stretch, so that a side path that dips away from the road for a short
-   distance still counts (for example the Larkspur Trail along NE 15th Street in
-   Bend, OR, which dips into the woods, and the Martin Luther King Jr. Drive
-   Trail in Philadelphia, which bows out toward the river).
+   most `pbl_max_gap_m`, and no point of the gap is farther than
+   `pbl_max_gap_dist_m` from a car road, the system SHALL treat the gap as part
+   of the parallel stretch, so that a side path that dips away from the road for
+   a short distance still counts (for example the West Bend Trail along
+   Skyliners Road in Bend, OR, way 266268193, and the Marine Drive Trail in
+   Portland, OR, way 5520929).
+8. WHEN a gap strays farther than `pbl_max_gap_dist_m` from every car road, the
+   system SHALL NOT fill it (for example way 1421068993 in Madison, WI, which
+   runs behind houses, up to about 45 m from the road).
+9. The system SHALL build the road buffer with flat ends, so that a path that
+   continues past the end of a road, such as a connector between two dead-end
+   streets, does not count as running alongside it (for example way 102021058
+   between Parman Terrace and the Southwest Path in Madison, WI).
 
 ### Requirement 4: Segment labeling
 
@@ -320,19 +332,20 @@ editing the SQL logic.
 
 #### Acceptance Criteria
 
-1. The system SHALL define `pbl_buffer_m`, `pbl_max_angle_deg` and
-   `pbl_max_gap_m` once, alongside the other internal analysis constants, and
-   pass them to the SQL as parameters.
+1. The system SHALL define `pbl_buffer_m`, `pbl_max_angle_deg`, `pbl_max_gap_m`
+   and `pbl_max_gap_dist_m` once, alongside the other internal analysis
+   constants, and pass them to the SQL as parameters.
 2. The system SHALL NOT hard-code these values in the SQL.
 3. The system SHALL NOT add command-line options for these values in this
    iteration.
 4. The starting defaults SHALL be:
 
-   | Parameter           | Default | Reason                                                                                                                                 |
-   | ------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-   | `pbl_buffer_m`      | 20 m    | Best agreement with Philadelphia mappers' `is_sidepath` tags (93%); also covers side paths set back on wide arterials (see Background) |
-   | `pbl_max_angle_deg` | 20°     | Ignores paths that cross a road at a shallow angle                                                                                     |
-   | `pbl_max_gap_m`     | 400 m   | Fills short gaps where a side path dips away from the road and comes back                                                              |
+   | Parameter            | Default | Reason                                                                                                                                 |
+   | -------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+   | `pbl_buffer_m`       | 20 m    | Best agreement with Philadelphia mappers' `is_sidepath` tags (93%); also covers side paths set back on wide arterials (see Background) |
+   | `pbl_max_angle_deg`  | 15°     | Ignores paths that cross a road at a shallow angle                                                                                     |
+   | `pbl_max_gap_m`      | 400 m   | Fills short gaps where a side path dips away from the road and comes back                                                              |
+   | `pbl_max_gap_dist_m` | 40 m    | Does not fill gaps where the path heads away from the road, for example behind houses                                                  |
 
 5. The system SHALL use one value of each parameter for all roads. Values that
    vary by road class are out of scope, to keep the method simple.
@@ -360,30 +373,36 @@ trust the method before it ships.
 2. A validation query or test SHALL report, per OSM way, the number of segments
    and the number labeled `track`. This is how mixed labels are detected.
 
-| Way                   | Place          | Expected                                       |
-| --------------------- | -------------- | ---------------------------------------------- |
-| 1480451437            | Bend, OR       | PBL, one-way `ft` (raised, NE Olney Ave)       |
-| 1480451438            | Bend, OR       | PBL, one-way `ft` (NE Olney Ave)               |
-| 1474322573            | Bend, OR       | PBL, one-way `ft` (NE Franklin Ave)            |
-| 1092208840            | Portland, OR   | PBL, two-way (SW Naito Parkway)                |
-| 1354189308            | Providence, RI | PBL along the road, path after                 |
-| 1497195035-1497195040 | Bend, OR       | PBL where parallel (side paths)                |
-| 277177723             | Bend, OR       | PBL where parallel (side path)                 |
-| 297308987             | Bend, OR       | PBL along Colorado Ave, path elsewhere (trail) |
-| 416137820             | Bend, OR       | PBL along NE 9th/10th, path elsewhere (trail)  |
-| 532649750             | Bend, OR       | Path (Larkspur Trail, only crosses roads)      |
-| 935195280             | Bend, OR       | Path (Deschutes River Trail, only crosses)     |
-| 39947864              | Bend, OR       | Path (passes under SW Reed Market Rd bridge)   |
-| 1346549973-1346549986 | Philadelphia   | PBL (Delaware River Trail, many short pieces)  |
-| 748844480, 748844482  | Philadelphia   | PBL (East Coast Greenway crossings)            |
-| 132508834             | Philadelphia   | PBL (Schuylkill River Trail, Kelly Drive)      |
-| 206503757             | Philadelphia   | PBL (PNE Trail, paved `highway=path`)          |
-| 680608875             | Philadelphia   | PBL (Lincoln Drive Trail, `bridge=boardwalk`)  |
-| 1101812320            | Philadelphia   | Path (Delaware River Trail, under I-95)        |
-| 192545206             | Philadelphia   | Path (Grays Ferry Crescent)                    |
-| 52233661, 111662265   | Portland, OR   | PBL (East Burnside Street, under I-205)        |
-| 130668349             | Providence, RI | Path (path bridge)                             |
-| 90091980              | Providence, RI | Path (India Point Park Bridge)                 |
+| Way                                            | Place          | Expected                                                                                  |
+| ---------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------- |
+| 1480451437                                     | Bend, OR       | PBL, one-way `ft` (raised, NE Olney Ave)                                                  |
+| 1480451438                                     | Bend, OR       | PBL, one-way `ft` (NE Olney Ave)                                                          |
+| 1474322573                                     | Bend, OR       | PBL, one-way `ft` (NE Franklin Ave)                                                       |
+| 1092208840                                     | Portland, OR   | PBL, two-way (SW Naito Parkway)                                                           |
+| 1354189308                                     | Providence, RI | PBL (last segment beside the RI 10 on-ramp, a known limitation)                           |
+| 1497195035, 1497195036, 1497195039, 1497195040 | Bend, OR       | PBL where parallel (side paths; 1497195037 and 1497195038 were deleted from OSM)          |
+| 277177723                                      | Bend, OR       | PBL where parallel (side path)                                                            |
+| 297308987                                      | Bend, OR       | PBL along Colorado Ave, path elsewhere (trail)                                            |
+| 416137820                                      | Bend, OR       | PBL along NE 9th/10th, path elsewhere (trail)                                             |
+| 532649750                                      | Bend, OR       | Path (Larkspur Trail, only crosses roads)                                                 |
+| 935195280                                      | Bend, OR       | Path (Deschutes River Trail, only crosses)                                                |
+| 39947864                                       | Bend, OR       | Path (passes under SW Reed Market Rd bridge)                                              |
+| 1346549973-1346549986                          | Philadelphia   | PBL (Delaware River Trail, many short pieces)                                             |
+| 748844480, 748844482                           | Philadelphia   | PBL (East Coast Greenway crossings)                                                       |
+| 132508834                                      | Philadelphia   | PBL (Schuylkill River Trail, Kelly Drive)                                                 |
+| 206503757                                      | Philadelphia   | PBL (PNE Trail, paved `highway=path`)                                                     |
+| 680608875                                      | Philadelphia   | PBL (Lincoln Drive Trail, `bridge=boardwalk`)                                             |
+| 1101812320                                     | Philadelphia   | Path under I-95; the segments past Richmond Street are PBL by gap fill (known limitation) |
+| 192545206                                      | Philadelphia   | Path (Grays Ferry Crescent)                                                               |
+| 52233661, 111662265                            | Portland, OR   | PBL (East Burnside Street, under I-205)                                                   |
+| 130668349                                      | Providence, RI | Path (path bridge)                                                                        |
+| 90091980                                       | Providence, RI | Path (India Point Park Bridge)                                                            |
+| 124607001                                      | Portland, OR   | PBL (NE 82nd Avenue, gap fill)                                                            |
+| 473843985                                      | Bend, OR       | Path (Mountain View Park loop)                                                            |
+| 102021058                                      | Madison, WI    | Path (connector between two dead-end streets)                                             |
+| 1417451441                                     | Madison, WI    | Path (Southwest Path crossing Commonwealth Avenue)                                        |
+| 1421068993                                     | Madison, WI    | Path behind houses (beyond 40 m); PBL only at the ends along Redan Dr and Rustic Pine Rd  |
+| 308498820                                      | Madison, WI    | Path (Capital City Path)                                                                  |
 
 ## Background: Bend, OR test (2026-10-05)
 
@@ -481,12 +500,43 @@ at 15 m) but removed most gaps at crossings and in finely split trails.
   (for example part of the Vera Katz Eastbank Esplanade, way 115809984, beside
   the Marquam Bridge in Portland, OR), because OSM does not say whether the road
   is beside or above the path.
+- **Roads that change height without tags.** A road that climbs or drops beside
+  a path without a `bridge` or `tunnel` tag, such as a ramp on an embankment or
+  in a cut, is treated as ground level. For example, the last segment (about 90
+  m) of way 1354189308 in Providence, RI is labeled PBL because it runs 9-17 m
+  from, and parallel to, an on-ramp to the Huntington Expressway (RI 10), way
+  1084625129, with the expressway itself 13-15 m away. The ramp changes height
+  beside the path, but OSM maps it as an ordinary ground-level road. Removing
+  highway ramps from the road list was tested and not adopted: the stretch stays
+  PBL because of the expressway, and Portland, OR would lose about 3.4 mi of
+  real side paths along the I-205 Multi-Use Path.
 - **Second path beside a side path.** A path running just beyond a side path,
   still within the buffer, is also labeled PBL (for example the Waterfront Park
   Trail, ways 103611804 and 119557003, beyond the SW Naito Parkway side path in
   Portland, OR). This was under 1% of PBL mileage in every test city. A rule
   that only the path closest to the road counts was considered and not adopted:
   it would also remove part of the Larkspur Trail in Bend, OR, which counts.
+- **Short pieces anchoring gap fill.** A short parallel piece, where a path
+  briefly comes close to a road, can anchor a gap fill and label the stretch
+  between as PBL when the gap stays within 40 m (for example two segments of the
+  Delaware River Trail, way 1101812320, past Richmond Street in Philadelphia). A
+  minimum stretch length for gap fill (10-30 m) and a rule that the gap be no
+  longer than the stretches on both sides were tested and not adopted: both
+  removed about as much real side path (for example NE 82nd Avenue in Portland,
+  OR) as wrongly filled length.
+- **Gap fill distance.** Gaps that stray more than 40 m from a road are not
+  filled, so some real dips become paths (for example parts of the Larkspur
+  Trail, way 434843594, and the West Bend Trail, way 266268202, in Bend, OR, and
+  of the I-205 Multi-Use Path in Portland, OR). These were judged acceptable as
+  trails. A rule allowing farther dips when both sides follow the same street
+  was tested and not adopted, to keep the method simple.
+- **Paths near the buffer edge.** A path set back just under 20 m from a wide
+  road can be labeled PBL even when it is a park path (for example the loop in
+  Farewell Bend Park, way 142063148, 18-19 m from SW Reed Market Road in Bend,
+  OR), and a side path just over 20 m from a freeway is not detected unless gap
+  fill reaches it (for example a 424 m segment of the West Beltline Bike Path,
+  way 572643454, 21-22 m from the West Beltline Highway in Madison, WI). A wider
+  buffer for freeways was considered and not adopted.
 - **Switchback ramps.** A ramp that zigzags beside a road (for example the ramp
   to the pedestrian bridge over I-195 along Portugal Parkway in Providence, RI)
   runs back and forth parallel to the road, so it may be labeled PBL. Adding a
@@ -508,6 +558,19 @@ at 15 m) but removed most gaps at crossings and in finely split trails.
   by shared use with pedestrians.
 - **Simplicity:** one buffer for all roads, rather than a buffer that varies by
   road class.
+- **Roads only (2026-10-16):** detection uses only roads and paths and their
+  tags. Other OSM features, such as buildings, walls or land use, are not used.
+- **Flat buffer ends (2026-10-16):** the road buffer covers the area beside a
+  road but not past its end. This removed connectors between dead-end streets
+  and similar paths that continue in line with a road (for example ways
+  102021058 and 308498820 in Madison, WI) and kept every confirmed side path.
+- **Angle (2026-10-16):** the maximum angle was lowered from 20° to 15°. This
+  removed shallow crossings (for example the Southwest Path across Commonwealth
+  Avenue in Madison, WI) and the Mountain View Park loop in Bend, OR, and kept
+  every confirmed side path. 10° was tested and removed real side paths.
+- **Gap fill distance (2026-10-16):** a gap is filled only if it stays within 40
+  m of a road. Every stretch this removed in the test cities was judged a path
+  or acceptable either way. 60 m was also tested.
 - **Levels (2026-10-15):** a path is compared only with roads at the same level
   (bridge, tunnel or ground). Including highways made freeways passing overhead
   the nearest road for paths beneath them, which failed the angle check (East
