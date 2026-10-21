@@ -31,7 +31,7 @@ MT; and Madison, WI. Philadelphia was left out of repeated test runs from
   detection. Done once per run, joining is fast (about 9 seconds for all of
   Philadelphia) and it fixes gaps at crossings and in finely split trails.
 - **Buffer (2026-10-08):** 20 m, based on agreement with Philadelphia's
-  `is_sidepath` tags (see Test Results).
+  `is_sidepath` tags (see Test Results). Widened to 25 m on 2026-10-21 (below).
 - **Gap fill (2026-10-08):** gaps of up to 400 m between parallel stretches on
   the same path count, for side paths that dip away from the road and come back.
 - **Segment rule (2026-10-08):** a segment is labeled by where at least half of
@@ -72,6 +72,25 @@ MT; and Madison, WI. Philadelphia was left out of repeated test runs from
 - **Angle 15° (2026-10-16):** lowered from 20°. This removed shallow crossings
   (for example the Southwest Path across Commonwealth Avenue in Madison) and the
   Mountain View Park loop in Bend, and kept every confirmed side path.
+- **Buffer 25 m (2026-10-21):** widened from 20 m. Real side paths along wide
+  roads sat 20-30 m from the centerline and were missed (the west side of N 19th
+  Ave and the north side of W Oak St in Bozeman, the Marine Drive Trail in
+  Portland, the West Beltline Bike Path in Madison), while the matching path on
+  the other side of the street was detected. Philadelphia's `is_sidepath`
+  agreement was also slightly higher at 25 m (94.1%) than at 20 m (93.4%). The
+  path behind houses in Madison stays a path; part of the Mountain View Park
+  loop in Bend comes back as PBL.
+- **No sharrow mileage (2026-10-21):** `sharrow` is removed from the mileage
+  table because shared lane markings are not tagged consistently in OSM. The
+  labels are still set and used for stress, so scores do not change.
+- **Counting direction (2026-10-20):** a detected PBL counts once unless it is
+  mapped as two-way for bikes (`oneway:bicycle`, or else `oneway`, set to `no`).
+  Counting every untagged path in both directions overcounted streets with a
+  side path on each side (for example in Bozeman). In the five test cities,
+  about 9% of candidate paths are tagged two-way. On-street tracks keep the
+  BNA's per-direction count. The labels carry the change (option A), so the
+  mileage step is unchanged; routing direction and stress do not use the labels
+  on paths, so scores do not change.
 - **Gap fill distance 40 m (2026-10-16):** a gap is filled only if it stays
   within 40 m of a road. Every stretch this removed in the test cities was
   judged a path or acceptable either way, including way 1421068993 in Madison,
@@ -79,24 +98,27 @@ MT; and Madison, WI. Philadelphia was left out of repeated test runs from
 
 ## Alternatives Tested and Not Adopted
 
-| Idea                                                   | Why not                                                                                                                             |
-| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Per-segment test (`pbl-methodology` branch)            | Labeled trail crossings as PBLs, split ways into mixed labels, and counted one-way PBLs twice (see Test Results)                    |
-| No chaining                                            | Left gaps at crossings and in finely split trails                                                                                   |
-| 60 m minimum stretch                                   | No effect on agreement once chains and the angle check were in place                                                                |
-| Separate thresholds for curb-side PBLs and side paths  | Not needed, since both count                                                                                                        |
-| Excluding highways                                     | Missed real side paths along freeways (SR 520 Trail, I-205 Multi-Use Path)                                                          |
-| Excluding highway ramps                                | Portland lost about 3.4 mi of the I-205 Multi-Use Path, and the Providence on-ramp case stayed PBL because of the expressway itself |
-| Wider buffer for freeways                              | Would fix a few side paths just over 20 m from a freeway, at the cost of a second buffer value                                      |
-| Only the path closest to the road counts               | Would also remove part of the Larkspur Trail in Bend                                                                                |
-| Rule against paths that double back (switchback ramps) | Extra complexity for a rare case                                                                                                    |
-| Minimum stretch length for gap fill (10, 20, 30 m)     | Removed about as much real side path (NE 82nd Avenue in Portland, Bozeman side paths) as wrongly filled length                      |
-| Gap no longer than the stretches on both sides         | Removed real side paths in Bozeman and did not fix the Bend park loop                                                               |
-| Same street on both sides of a gap                     | Broke the I-205 Multi-Use Path, where the nearest road switches between the unnamed freeway, ramps and cross streets                |
-| 40 m, or 60 m when both sides follow the same street   | Matched the judged examples but was fitted to them and harder to explain                                                            |
-| Gap distance cap of 60 m                               | Kept gaps judged wrong, such as the path behind houses in Madison (45 m)                                                            |
-| Angle of 20° or 10°                                    | 20° let shallow crossings through; 10° removed real side paths (West Bend Trail, Larkspur Trail)                                    |
-| Buildings, walls or other non-road features            | Outside the roads-only principle                                                                                                    |
+| Idea                                                      | Why not                                                                                                                             |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Per-segment test (`pbl-methodology` branch)               | Labeled trail crossings as PBLs, split ways into mixed labels, and counted one-way PBLs twice (see Test Results)                    |
+| No chaining                                               | Left gaps at crossings and in finely split trails                                                                                   |
+| 60 m minimum stretch                                      | No effect on agreement once chains and the angle check were in place                                                                |
+| Separate thresholds for curb-side PBLs and side paths     | Not needed, since both count                                                                                                        |
+| Excluding highways                                        | Missed real side paths along freeways (SR 520 Trail, I-205 Multi-Use Path)                                                          |
+| Excluding highway ramps                                   | Portland lost about 3.4 mi of the I-205 Multi-Use Path, and the Providence on-ramp case stayed PBL because of the expressway itself |
+| Wider buffer for freeways                                 | Would fix a few side paths just over 20 m from a freeway, at the cost of a second buffer value                                      |
+| Only the path closest to the road counts                  | Would also remove part of the Larkspur Trail in Bend                                                                                |
+| Rule against paths that double back (switchback ramps)    | Extra complexity for a rare case                                                                                                    |
+| Minimum stretch length for gap fill (10, 20, 30 m)        | Removed about as much real side path (NE 82nd Avenue in Portland, Bozeman side paths) as wrongly filled length                      |
+| Gap no longer than the stretches on both sides            | Removed real side paths in Bozeman and did not fix the Bend park loop                                                               |
+| Same street on both sides of a gap                        | Broke the I-205 Multi-Use Path, where the nearest road switches between the unnamed freeway, ramps and cross streets                |
+| 40 m, or 60 m when both sides follow the same street      | Matched the judged examples but was fitted to them and harder to explain                                                            |
+| Buffer of 20 m                                            | Missed real side paths 20-30 m from wide roads (Bozeman, Portland, Madison)                                                         |
+| Gap distance cap of 60 m                                  | Kept gaps judged wrong, such as the path behind houses in Madison (45 m)                                                            |
+| Counting untagged detected PBLs in both directions        | Overcounted streets with a side path on each side                                                                                   |
+| Keeping both labels and counting once in the mileage step | Labels and mileage would no longer match; more complex than changing the labels                                                     |
+| Angle of 20° or 10°                                       | 20° let shallow crossings through; 10° removed real side paths (West Bend Trail, Larkspur Trail)                                    |
+| Buildings, walls or other non-road features               | Outside the roads-only principle                                                                                                    |
 
 ## Test Results
 
@@ -154,14 +176,14 @@ count. These numbers predate the final rules and should be rechecked.
 
 ### Physical PBL miles as the rules changed
 
-| City         | Highways added (2026-10-14) | Levels (2026-10-15) | Flat ends (2026-10-16) | 15°       | 40 m gap cap (final) |
-| ------------ | --------------------------- | ------------------- | ---------------------- | --------- | -------------------- |
-| Bozeman      | 18.3                        | 18.4                | 18.3                   | 18.2      | 18.2                 |
-| Bend         | 18.5                        | 18.7                | 18.7                   | 18.1      | 17.7                 |
-| Providence   | 7.9                         | 7.7                 | 7.7                    | 7.6       | 7.5                  |
-| Madison      | 41.0                        | 41.5                | 40.6                   | 39.7      | 39.2                 |
-| Portland     | 52.3                        | 53.3                | 52.5                   | 51.6      | 50.6                 |
-| Philadelphia | 44.1                        | 43.9                | not rerun              | not rerun | not rerun            |
+| City         | Highways (10-14) | Levels (10-15) | Flat ends (10-16) | 15°       | 40 m gap cap | 25 m buffer (final) |
+| ------------ | ---------------- | -------------- | ----------------- | --------- | ------------ | ------------------- |
+| Bozeman      | 18.3             | 18.4           | 18.3              | 18.2      | 18.2         | 20.0                |
+| Bend         | 18.5             | 18.7           | 18.7              | 18.1      | 17.7         | 19.5                |
+| Providence   | 7.9              | 7.7            | 7.7               | 7.6       | 7.5          | 7.5                 |
+| Madison      | 41.0             | 41.5           | 40.6              | 39.7      | 39.2         | 42.1                |
+| Portland     | 52.3             | 53.3           | 52.5              | 51.6      | 50.6         | 53.9                |
+| Philadelphia | 44.1             | 43.9           | not rerun         | not rerun | not rerun    | not rerun           |
 
 Gap fill added about 6.8 mi across the five cities at 15° with flat ends, before
 the 40 m cap; the cap removed about 1.9 mi of it. A second path just beyond a

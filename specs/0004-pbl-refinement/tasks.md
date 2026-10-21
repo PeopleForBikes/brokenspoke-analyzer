@@ -9,7 +9,7 @@ cities.
 ## Tasks
 
 - [x] 1. Settings and wiring
-  - Add `NB_PBL_BUFFER_M = 20`, `NB_PBL_MAX_ANGLE_DEG = 15`,
+  - Add `NB_PBL_BUFFER_M = 25`, `NB_PBL_MAX_ANGLE_DEG = 15`,
     `NB_PBL_MAX_GAP_M = 400` and `NB_PBL_MAX_GAP_DIST_M = 40` to
     `core/compute.py`.
   - Run `bike_infra.sql` with `execute_sqlfile_with_substitutions`, passing the

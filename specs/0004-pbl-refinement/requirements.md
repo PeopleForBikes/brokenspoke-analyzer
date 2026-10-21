@@ -16,12 +16,12 @@ people an alternative to riding on a street.
 
 **A stretch of bike path counts when it:**
 
-- **Runs right alongside a street,** within about 20 meters (65 feet) of the
+- **Runs right alongside a street,** within about 25 meters (80 feet) of the
   street's centerline, beside the street rather than past the end of it. That's
   close enough to include curb-side protected lanes and side paths set back
-  behind a grass or tree strip, including along wide arterials. In Philadelphia,
-  this matched mappers' own judgment for 93% of the bike paths they had tagged
-  as side paths or not.
+  behind a grass or tree strip, including along wide arterials and freeways. In
+  Philadelphia, this matched mappers' own judgment for 94% of the bike paths
+  they had tagged as side paths or not.
 - **Follows the street,** roughly in the same direction (within about 15°). This
   keeps out paths that just cross a street, including ones that cross at a
   shallow angle or pass under a bridge.
@@ -54,13 +54,15 @@ people an alternative to riding on a street.
   with `bicycle=yes` or `bicycle=designated` and a paved surface.
 - Trails, or parts of trails, that don't follow a street.
 
-**How it's counted:** protected lane mileage is counted per direction of travel,
-like the BNA's other bike lanes. A two-way path counts twice, a one-way path
-once. These miles are counted as protected lanes instead of off-street paths,
+**How it's counted:** a detected protected lane or side path counts its length
+once, unless it is mapped as two-way for bikes (`oneway=no`), in which case it
+counts twice. This avoids overcounting streets with a side path on each side.
+On-street protected lanes keep the BNA's usual count, once per direction that
+has one. These miles are counted as protected lanes instead of off-street paths,
 never as both.
 
 **Known gaps:** a few kinds of paths are labeled inconsistently, such as paths
-circling a roundabout or park paths just under 20 meters from a wide road. They
+circling a roundabout or park paths just under 25 meters from a wide road. They
 are a small share of total mileage; see Known Limitations.
 
 ## Introduction
@@ -134,8 +136,8 @@ each segment separately and labeled road crossings on trails as PBLs (see
   road at the same level is at most `pbl_max_angle_deg`. A path crossing a road
   produces a piece at a steep angle; a path running alongside a road produces a
   piece at a small angle.
-- **One-way variant**: any tag combination that marks a cycleway as carrying
-  bikes in one direction only. See Requirement 5.
+- **Bike direction tag**: `oneway:bicycle` if it is set, otherwise `oneway`. See
+  Requirement 5.
 
 ## Requirements
 
@@ -252,25 +254,24 @@ lies, so that partial PBLs are handled and short stubs are not labeled.
 
 ### Requirement 5: Direction
 
-**User Story:** As an analyst, I want one-way PBLs counted once and two-way PBLs
-counted in both directions, so that PBL mileage is not overstated.
+**User Story:** As an analyst, I want a detected PBL counted in both directions
+only when it is mapped as two-way, so that streets with a side path on each side
+are not overcounted.
 
 #### Acceptance Criteria
 
-1. WHEN a detected PBL has no one-way variant, the system SHALL set both
+1. WHEN a detected PBL's bike direction tag is `no`, the system SHALL set both
    `ft_bike_infra` and `tf_bike_infra` to `'track'`.
-2. WHEN a detected PBL has a one-way variant in the direction the way is drawn,
-   the system SHALL set only `ft_bike_infra` to `'track'`.
-3. WHEN a detected PBL has a one-way variant against the direction the way is
-   drawn (for example `oneway=-1`), the system SHALL set only `tf_bike_infra` to
-   `'track'`.
-4. The system SHALL interpret one-way tags the same way as the rest of the BNA:
-   `oneway` = `yes` or `1` means one-way in the drawn direction, `oneway = -1`
-   means one-way against it, and `oneway:bicycle = no` makes a way two-way for
-   bikes.
-5. WHEN both a one-way tag and a two-way override are present (for example
-   `oneway=yes` with `oneway:bicycle=no`), the system SHALL treat the PBL as
-   two-way.
+2. WHEN a detected PBL's bike direction tag is `-1`, the system SHALL set only
+   `tf_bike_infra` to `'track'`.
+3. In every other case, including when no direction tag is set, the system SHALL
+   set only `ft_bike_infra` to `'track'`.
+4. `oneway:bicycle` takes precedence over `oneway`, so `oneway=yes` with
+   `oneway:bicycle=no` is two-way, and `oneway=no` with `oneway:bicycle=yes` is
+   one-way.
+5. The system SHALL NOT change the routing direction (`one_way`), which stays as
+   set from the car one-way tags, so an untagged path remains rideable in both
+   directions.
 
 ### Requirement 6: No exclusions by tag
 
@@ -287,24 +288,27 @@ the road are included.
 
 ### Requirement 7: Mileage
 
-**User Story:** As an analyst, I want PBL mileage counted per direction and in
-one category only, so that it matches how other bike infrastructure is counted
-and the mileage table can be trusted.
+**User Story:** As an analyst, I want PBL mileage counted in one category only,
+following the direction labels, so that the mileage table can be trusted.
 
 #### Acceptance Criteria
 
-1. The system SHALL count bike infrastructure mileage per direction, as it does
-   today for lanes and on-street tracks: a two-way PBL segment counts its length
-   twice in `track`, and a one-way PBL segment counts it once.
+1. The system SHALL count bike infrastructure mileage per labeled direction, as
+   it does today for lanes and on-street tracks: a segment labeled `track` in
+   both directions counts its length twice, and one labeled in one direction
+   counts it once (see Requirement 5 for detected PBLs).
 2. The system SHALL NOT count a detected PBL segment in the `path` mileage.
 3. The system SHALL continue to count undetected candidate segments in the
    `path` mileage, once per segment.
 4. The system SHALL count only the part of each segment that lies inside the
    city boundary, for every mileage category (`track`, `path`, `lane`,
-   `buffered_lane`, `sharrow`). The import keeps whole OSM ways that touch the
-   city, so without this, segments mostly outside the city are counted in full
-   (for example Bend cycleway 143517588, where one 1,168 m segment has only 34 m
+   `buffered_lane`). The import keeps whole OSM ways that touch the city, so
+   without this, segments mostly outside the city are counted in full (for
+   example Bend cycleway 143517588, where one 1,168 m segment has only 34 m
    inside the city).
+5. The system SHALL NOT report `sharrow` in the mileage table, because shared
+   lane markings are not tagged consistently in OSM. Sharrow labels on roads are
+   unchanged and still used for stress.
 
 ### Requirement 8: No side effects on routing, scoring or outputs
 
@@ -338,12 +342,12 @@ editing the SQL logic.
    iteration.
 4. The starting defaults SHALL be:
 
-   | Parameter            | Default | Reason                                                                                                                        |
-   | -------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
-   | `pbl_buffer_m`       | 20 m    | Covers curb-side PBLs and side paths set back on wide arterials; best agreement with Philadelphia mappers' `is_sidepath` tags |
-   | `pbl_max_angle_deg`  | 15°     | Ignores paths that cross a road at a shallow angle                                                                            |
-   | `pbl_max_gap_m`      | 400 m   | Fills short gaps where a side path dips away from the road and comes back                                                     |
-   | `pbl_max_gap_dist_m` | 40 m    | Does not fill gaps where the path heads away from the road, for example behind houses                                         |
+   | Parameter            | Default | Reason                                                                                                                                     |
+   | -------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+   | `pbl_buffer_m`       | 25 m    | Covers curb-side PBLs and side paths set back on wide arterials and freeways; best agreement with Philadelphia mappers' `is_sidepath` tags |
+   | `pbl_max_angle_deg`  | 15°     | Ignores paths that cross a road at a shallow angle                                                                                         |
+   | `pbl_max_gap_m`      | 400 m   | Fills short gaps where a side path dips away from the road and comes back                                                                  |
+   | `pbl_max_gap_dist_m` | 40 m    | Does not fill gaps where the path heads away from the road, for example behind houses                                                      |
 
 5. The system SHALL use one value of each parameter for all roads.
 
@@ -370,36 +374,39 @@ trust the method before it ships.
 2. A validation query or test SHALL report, per OSM way, the number of segments
    and the number labeled `track`. This is how mixed labels are detected.
 
-| Way                                            | Place          | Expected                                                                                  |
-| ---------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------- |
-| 1480451437                                     | Bend, OR       | PBL, one-way `ft` (raised, NE Olney Ave)                                                  |
-| 1480451438                                     | Bend, OR       | PBL, one-way `ft` (NE Olney Ave)                                                          |
-| 1474322573                                     | Bend, OR       | PBL, one-way `ft` (NE Franklin Ave)                                                       |
-| 1092208840                                     | Portland, OR   | PBL, two-way (SW Naito Parkway)                                                           |
-| 1354189308                                     | Providence, RI | PBL (last segment beside the RI 10 on-ramp, a known limitation)                           |
-| 1497195035, 1497195036, 1497195039, 1497195040 | Bend, OR       | PBL where parallel (side paths; 1497195037 and 1497195038 were deleted from OSM)          |
-| 277177723                                      | Bend, OR       | PBL where parallel (side path)                                                            |
-| 297308987                                      | Bend, OR       | PBL along Colorado Ave, path elsewhere (trail)                                            |
-| 416137820                                      | Bend, OR       | PBL along NE 9th/10th, path elsewhere (trail)                                             |
-| 532649750                                      | Bend, OR       | Path (Larkspur Trail, only crosses roads)                                                 |
-| 935195280                                      | Bend, OR       | Path (Deschutes River Trail, only crosses)                                                |
-| 39947864                                       | Bend, OR       | Path (passes under SW Reed Market Rd bridge)                                              |
-| 1346549973-1346549986                          | Philadelphia   | PBL (Delaware River Trail, many short pieces)                                             |
-| 748844480, 748844482                           | Philadelphia   | PBL (East Coast Greenway crossings)                                                       |
-| 132508834                                      | Philadelphia   | PBL (Schuylkill River Trail, Kelly Drive)                                                 |
-| 206503757                                      | Philadelphia   | PBL (PNE Trail, paved `highway=path`)                                                     |
-| 680608875                                      | Philadelphia   | PBL (Lincoln Drive Trail, `bridge=boardwalk`)                                             |
-| 1101812320                                     | Philadelphia   | Path under I-95; the segments past Richmond Street are PBL by gap fill (known limitation) |
-| 192545206                                      | Philadelphia   | Path (Grays Ferry Crescent)                                                               |
-| 52233661, 111662265                            | Portland, OR   | PBL (East Burnside Street, under I-205)                                                   |
-| 130668349                                      | Providence, RI | Path (path bridge)                                                                        |
-| 90091980                                       | Providence, RI | Path (India Point Park Bridge)                                                            |
-| 124607001                                      | Portland, OR   | PBL (NE 82nd Avenue, gap fill)                                                            |
-| 473843985                                      | Bend, OR       | Path (Mountain View Park loop)                                                            |
-| 102021058                                      | Madison, WI    | Path (connector between two dead-end streets)                                             |
-| 1417451441                                     | Madison, WI    | Path (Southwest Path crossing Commonwealth Avenue)                                        |
-| 1421068993                                     | Madison, WI    | Path behind houses (beyond 40 m); PBL only at the ends along Redan Dr and Rustic Pine Rd  |
-| 308498820                                      | Madison, WI    | Path (Capital City Path)                                                                  |
+| Way                                            | Place          | Expected                                                                                       |
+| ---------------------------------------------- | -------------- | ---------------------------------------------------------------------------------------------- |
+| 1480451437                                     | Bend, OR       | PBL, one-way `ft` (raised, NE Olney Ave)                                                       |
+| 1480451438                                     | Bend, OR       | PBL, one-way `ft` (NE Olney Ave)                                                               |
+| 1474322573                                     | Bend, OR       | PBL, one-way `ft` (NE Franklin Ave)                                                            |
+| 1092208840                                     | Portland, OR   | PBL, two-way (SW Naito Parkway)                                                                |
+| 1354189308                                     | Providence, RI | PBL (last segment beside the RI 10 on-ramp, a known limitation)                                |
+| 1497195035, 1497195036, 1497195039, 1497195040 | Bend, OR       | PBL where parallel (side paths; 1497195037 and 1497195038 were deleted from OSM)               |
+| 277177723                                      | Bend, OR       | PBL where parallel (side path)                                                                 |
+| 297308987                                      | Bend, OR       | PBL along Colorado Ave, path elsewhere (trail)                                                 |
+| 416137820                                      | Bend, OR       | PBL along NE 9th/10th, path elsewhere (trail)                                                  |
+| 532649750                                      | Bend, OR       | Path (Larkspur Trail, only crosses roads)                                                      |
+| 935195280                                      | Bend, OR       | Path (Deschutes River Trail, only crosses)                                                     |
+| 39947864                                       | Bend, OR       | Path (passes under SW Reed Market Rd bridge)                                                   |
+| 1346549973-1346549986                          | Philadelphia   | PBL (Delaware River Trail, many short pieces)                                                  |
+| 748844480, 748844482                           | Philadelphia   | PBL (East Coast Greenway crossings)                                                            |
+| 132508834                                      | Philadelphia   | PBL (Schuylkill River Trail, Kelly Drive)                                                      |
+| 206503757                                      | Philadelphia   | PBL (PNE Trail, paved `highway=path`)                                                          |
+| 680608875                                      | Philadelphia   | PBL (Lincoln Drive Trail, `bridge=boardwalk`)                                                  |
+| 1101812320                                     | Philadelphia   | Path under I-95; the segments past Richmond Street are PBL by gap fill (known limitation)      |
+| 192545206                                      | Philadelphia   | Path (Grays Ferry Crescent)                                                                    |
+| 52233661, 111662265                            | Portland, OR   | PBL (East Burnside Street, under I-205)                                                        |
+| 130668349                                      | Providence, RI | Path (path bridge)                                                                             |
+| 90091980                                       | Providence, RI | Path (India Point Park Bridge)                                                                 |
+| 124607001                                      | Portland, OR   | PBL (NE 82nd Avenue, gap fill)                                                                 |
+| 473843985                                      | Bend, OR       | Mostly path (Mountain View Park loop); the side along NE Conners Ave is PBL (known limitation) |
+| 102021058                                      | Madison, WI    | Path (connector between two dead-end streets)                                                  |
+| 1417451441                                     | Madison, WI    | Path (Southwest Path crossing Commonwealth Avenue)                                             |
+| 1421068993                                     | Madison, WI    | Path behind houses (beyond 40 m); PBL only at the ends along Redan Dr and Rustic Pine Rd       |
+| 308498820                                      | Madison, WI    | Path (Capital City Path)                                                                       |
+| 996106676                                      | Bozeman, MT    | PBL (side path on the west side of N 19th Ave, 24-27 m away)                                   |
+| 572643454                                      | Madison, WI    | PBL (West Beltline Bike Path, 21-22 m from the freeway)                                        |
+| 30262881                                       | Portland, OR   | PBL where within 25 m of NE Marine Drive, path where it moves farther (Marine Drive Trail)     |
 
 ## Known Limitations
 
@@ -427,11 +434,10 @@ trust the method before it ships.
 - **Gap fill distance.** Some real dips stray more than 40 m from the road and
   become paths (for example parts of the Larkspur Trail, way 434843594, and the
   West Bend Trail, way 266268202, in Bend, OR).
-- **Paths near the buffer edge.** A park path just under 20 m from a wide road
-  can be labeled PBL (for example way 142063148, 18-19 m from SW Reed Market
-  Road in Bend, OR), and a side path just over 20 m from a freeway is missed
-  unless gap fill reaches it (for example part of the West Beltline Bike Path,
-  way 572643454, in Madison, WI).
+- **Park paths near a wide road.** A park path within 25 m of a wide road can be
+  labeled PBL where it runs parallel to it (for example way 142063148, 18-19 m
+  from SW Reed Market Road, and part of the Mountain View Park loop, way
+  473843985, in Bend, OR).
 - **Switchback ramps.** A ramp that zigzags beside a road runs parallel to it,
   so it may be labeled PBL (for example the ramp to the pedestrian bridge over
   I-195 along Portugal Parkway in Providence, RI).

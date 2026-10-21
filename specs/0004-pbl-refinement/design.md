@@ -73,7 +73,7 @@ neighborhood_osm_full_line (candidates) ─► join into chains ┘
 
 ### C1. Settings and wiring (`core/compute.py`)
 
-- Add four constants next to `NB_SIGCTL_SEARCH_DIST`: `NB_PBL_BUFFER_M = 20`,
+- Add four constants next to `NB_SIGCTL_SEARCH_DIST`: `NB_PBL_BUFFER_M = 25`,
   `NB_PBL_MAX_ANGLE_DEG = 15`, `NB_PBL_MAX_GAP_M = 400` and
   `NB_PBL_MAX_GAP_DIST_M = 40`. The `NB_` prefix ("neighborhood", the analysis
   area) follows the existing naming.
@@ -132,26 +132,26 @@ The step runs these statements:
 
 ### C4. Lint placeholders (`pyproject.toml`)
 
-- Add `pbl_buffer_m = 20`, `pbl_max_angle_deg = 15`, `pbl_max_gap_m = 400` and
+- Add `pbl_buffer_m = 25`, `pbl_max_angle_deg = 15`, `pbl_max_gap_m = 400` and
   `pbl_max_gap_dist_m = 40` under `[tool.sqlfluff.templater.placeholder]` so
   `sqlfluff` can lint the new SQL. These are lint-only values, not runtime
   defaults.
 
 ### C5. Direction
 
-Reuse the BNA's existing one-way interpretation rather than defining a new one:
+A detected PBL is labeled in both directions only when it is mapped as two-way
+for bikes. The bike direction tag is `COALESCE("oneway:bicycle", oneway)` on the
+segment's OSM way:
 
-- `one_way.sql` already sets `one_way_car` on every segment, including
-  cycleways: `oneway` = `yes` or `1` gives `ft`, `oneway = -1` gives `tf`, and
-  anything else is two-way.
-- As elsewhere in `bike_infra.sql`, `oneway:bicycle = no` overrides this to
-  two-way.
-- A PBL segment gets `ft_bike_infra = 'track'` when it is two-way or `ft`, and
-  `tf_bike_infra = 'track'` when it is two-way or `tf`.
+- `no`: `ft_bike_infra` and `tf_bike_infra` are both `'track'`.
+- `-1`: only `tf_bike_infra` is `'track'`.
+- Anything else, including no tag: only `ft_bike_infra` is `'track'`.
 
-The existing `one_way` update earlier in `bike_infra.sql` is unaffected: for a
-one-way cycleway it already equals `one_way_car`, and for a two-way cycleway it
-stays empty.
+Labels on `path` segments feed only the mileage and the exported data. Routing
+direction comes from the `one_way` column, which is set from `one_way_car`
+earlier in `bike_infra.sql`, before this step, so an untagged path stays two-way
+for routing. Path stress is set to 1 in both directions by `stress_path.sql`
+regardless of labels.
 
 ## Data Models
 
@@ -184,11 +184,10 @@ These must hold for every city:
 2. **Existing labels win.** A segment that already has a label from tags keeps
    it.
 3. **Only one new value.** The step writes only `'track'`.
-4. **Direction is consistent.** A one-way PBL has exactly one direction labeled
-   (`ft` or `tf`, matching `one_way_car` and `oneway:bicycle`); a two-way PBL
-   has both. Direction comes only from the bike path's own tags, never from the
-   adjacent road, so a two-way path beside a one-way street is labeled in both
-   directions.
+4. **Direction is consistent.** A detected PBL has both directions labeled only
+   when its bike direction tag is `no`, and exactly one otherwise (`tf` for
+   `-1`, `ft` for anything else). Direction comes only from the bike path's own
+   tags, never from the adjacent road, and `one_way` is unchanged.
 5. **Nothing else changes.** `functional_class`, stress values, `path_id` and
    `neighborhood_paths` are identical with and without the step, so scores do
    not change.
@@ -258,8 +257,8 @@ manual scripts run on real cities.
 4. **Correctness properties.** Queries on a finished run that check:
    non-candidate segments have unchanged labels; stress values and
    `functional_class` are identical with and without the change; no segment is
-   counted in both `track` and `path`; one-way PBLs have exactly one direction
-   labeled; and no temporary tables remain.
+   counted in both `track` and `path`; detected PBLs not tagged two-way have
+   exactly one direction labeled; and no temporary tables remain.
 5. **Mileage.** Compare `mileage.csv` before and after for a test city: `track`
    rises, `path` falls by the detected physical miles, and other categories
    change only by the inside-the-boundary clipping.
