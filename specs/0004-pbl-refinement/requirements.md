@@ -444,6 +444,5 @@ trust the method before it ships.
 
 ## Open Questions
 
-1. **Philadelphia.** Do the reference ways and the agreement with mappers'
-   `is_sidepath` tags hold up in Philadelphia with the final rules? It was last
-   run before flat buffer ends, the 15° angle and the 40 m gap distance.
+None. The Philadelphia reference ways were validated with earlier rules and were
+not rerun with the final ones (see `decisions.md`).

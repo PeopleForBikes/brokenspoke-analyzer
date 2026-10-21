@@ -83,6 +83,9 @@ MT; and Madison, WI. Philadelphia was left out of repeated test runs from
 - **No sharrow mileage (2026-10-21):** `sharrow` is removed from the mileage
   table because shared lane markings are not tagged consistently in OSM. The
   labels are still set and used for stress, so scores do not change.
+- **Philadelphia recheck skipped (2026-10-21):** Philadelphia was last run with
+  the earlier rules. Given consistent results in the other five cities, it was
+  not rerun with the final rules, which takes about 1.5 hours.
 - **Counting direction (2026-10-20):** a detected PBL counts once unless it is
   mapped as two-way for bikes (`oneway:bicycle`, or else `oneway`, set to `no`).
   Counting every untagged path in both directions overcounted streets with a

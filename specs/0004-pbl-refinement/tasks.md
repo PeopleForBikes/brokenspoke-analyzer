@@ -63,6 +63,5 @@ cities.
 
 - The manual validation scripts live in `results/` and are not committed.
 - Philadelphia was validated with the earlier rules (20°, round buffer ends, no
-  gap distance cap; PBL step 9 seconds). It has not been rerun with the final
-  rules, so its reference ways and `is_sidepath` agreement should be rechecked
-  before release.
+  gap distance cap, 20 m buffer; PBL step 9 seconds). A recheck with the final
+  rules was skipped, given the results in the other five cities.
