@@ -17,6 +17,10 @@ from brokenspoke_analyzer.core import constant
 from brokenspoke_analyzer.core.database import dbcore
 
 NB_SIGCTL_SEARCH_DIST = 25
+NB_PBL_BUFFER_M = 25
+NB_PBL_MAX_ANGLE_DEG = 15
+NB_PBL_MAX_GAP_M = 400
+NB_PBL_MAX_GAP_DIST_M = 40
 
 
 def execute_sqlfile_with_substitutions(
@@ -75,14 +79,19 @@ def features(
     sql_script = sql_feature_script_dir / "paths.sql"
     bind_params = {"nb_output_srid": output_srid}
     execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
-    sql_scripts = [
-        "speed_limit.sql",
-        "lanes.sql",
-        "park.sql",
-        "bike_infra.sql",
-        "class_adjustments.sql",
-        "legs.sql",
-    ]
+    sql_scripts = ["speed_limit.sql", "lanes.sql", "park.sql"]
+    for script in sql_scripts:
+        sql_script = sql_feature_script_dir / script
+        dbcore.execute_sql_file(engine, sql_script)
+    sql_script = sql_feature_script_dir / "bike_infra.sql"
+    bind_params = {
+        "pbl_buffer_m": NB_PBL_BUFFER_M,
+        "pbl_max_angle_deg": NB_PBL_MAX_ANGLE_DEG,
+        "pbl_max_gap_m": NB_PBL_MAX_GAP_M,
+        "pbl_max_gap_dist_m": NB_PBL_MAX_GAP_DIST_M,
+    }
+    execute_sqlfile_with_substitutions(engine, sql_script, bind_params)
+    sql_scripts = ["class_adjustments.sql", "legs.sql"]
     for script in sql_scripts:
         sql_script = sql_feature_script_dir / script
         dbcore.execute_sql_file(engine, sql_script)
