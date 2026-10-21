@@ -38,7 +38,7 @@ def compose(
     block_size: common.BlockSize = common.DEFAULT_BLOCK_SIZE,
     buffer: common.Buffer = common.DEFAULT_BUFFER,
     cache_dir: common.CacheDir = None,
-    city_speed_limit: common.SpeedLimit = common.DEFAULT_CITY_SPEED_LIMIT,
+    city_speed_limit: common.SpeedLimit = None,
     data_dir: common.DataDir = common.DEFAULT_DATA_DIR,
     export_dir: common.ExportDirOpt = common.DEFAULT_EXPORT_DIR,
     lodes_year: common.LODESYear = None,
@@ -109,7 +109,7 @@ async def run_(  # noqa: C901, PLR0912, PLR0915
     block_size: int = common.DEFAULT_BLOCK_SIZE,
     buffer: int = common.DEFAULT_BUFFER,
     cache_dir: pathlib.Path | None = None,
-    city_speed_limit: int = common.DEFAULT_CITY_SPEED_LIMIT,
+    city_speed_limit: int | None = None,
     data_dir: pathlib.Path = common.DEFAULT_DATA_DIR,
     export_dir: pathlib.Path = common.DEFAULT_EXPORT_DIR,
     fips_code: str = common.DEFAULT_CITY_FIPS_CODE,
@@ -148,6 +148,9 @@ async def run_(  # noqa: C901, PLR0912, PLR0915
     else:
         # Ensure FIPS code has the default value for non-US cities.
         fips_code = common.DEFAULT_CITY_FIPS_CODE
+        # Non-US cities have no city or state speed limit data to fall back on.
+        if city_speed_limit is None:
+            city_speed_limit = common.DEFAULT_CITY_SPEED_LIMIT
 
     # Prepare the database connection.
     engine = dbcore.create_psycopg_engine(database_url)
@@ -191,7 +194,9 @@ async def run_(  # noqa: C901, PLR0912, PLR0915
             fips_code=fips_code,
             lodes_year=lodes_year,
             region=region or country,
-            city_speed_limit_override=str(city_speed_limit),
+            city_speed_limit_override=(
+                str(city_speed_limit) if city_speed_limit is not None else None
+            ),
         )
 
     # Compute.

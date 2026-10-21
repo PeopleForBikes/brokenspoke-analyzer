@@ -105,8 +105,8 @@ Retries = Annotated[
     typer.Option(help="number of times to retry downloading files"),
 ]
 SpeedLimit = Annotated[
-    int,
-    typer.Option(help="override the default speed limit (in mph)"),
+    int | None,
+    typer.Option(help="override the city default speed limit (in mph)"),
 ]
 State = Annotated[str | None, typer.Argument(help="US state")]
 WithBundle = Annotated[bool, typer.Option(help="bundle all the files in a zip archive")]
