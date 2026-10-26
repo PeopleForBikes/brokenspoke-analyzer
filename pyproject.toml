@@ -119,6 +119,7 @@ ignore = [
   "EM101",   # raw-string-in-exception
   "EM102",   # f-string-in-exception
   "FIX",     # flake8-fixme
+  "ICN001",  # unconventional-import-alias
   "INP001",  # implicit-namespace-package
   "PLR0913", # too-many-arguments
   "PLR0917", # too-many-positional-arguments -- Remove before releasing 4.0.0
