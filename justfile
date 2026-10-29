@@ -26,7 +26,7 @@ lint-python:
     uv run isort --check .
     uv run ruff format --check {{ src_dirs }} {{ test_dirs }} {{ utils_dir }}
     uv run ruff check {{ src_dirs }} {{ test_dirs }} {{ utils_dir }}
-    uv run ty check {{ src_dirs }}
+    uv run ty check {{ src_dirs }} {{ test_dirs }}
 
 # Lint SQL files.
 lint-sql:

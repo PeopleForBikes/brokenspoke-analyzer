@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import (
+    TYPE_CHECKING,
+    cast,
+)
 
 import pytest
 from obstore.store import MemoryStore
@@ -13,6 +16,8 @@ from brokenspoke_analyzer_lib import (
 
 if TYPE_CHECKING:
     import pathlib
+
+    import aiohttp
 
 
 class DummyContent:
@@ -49,7 +54,7 @@ class DummySession:
 async def test_fetch_to_cache_removes_partial_object(tmp_path: pathlib.Path) -> None:
     bna_store = datastore.BNADataStore(tmp_path, datastore.CacheType.USER_CACHE)
     bna_store.cache = MemoryStore()
-    session = DummySession()
+    session = cast("aiohttp.ClientSession", DummySession())
 
     with pytest.raises(RuntimeError, match="stream failed"):
         await bna_store.fetch_to_cache(

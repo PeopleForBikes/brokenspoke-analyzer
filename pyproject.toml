@@ -203,6 +203,14 @@ ignore_words_regex = "ST_."
 [tool.sqlfluff.rules.layout.long_lines]
 ignore_comment_lines = true
 
+[tool.ty.environment]
+# Same reason as [tool.ruff] src: the workspace members live under
+# packages/*/src.
+root = [
+  "packages/brokenspoke-analyzer-cli/src",
+  "packages/brokenspoke-analyzer-lib/src",
+]
+
 [tool.ty.src]
 exclude = ["boto3", "geopandas", "osmnx", "shapely", "us"]
 
