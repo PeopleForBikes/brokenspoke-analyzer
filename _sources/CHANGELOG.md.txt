@@ -7,7 +7,22 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
-## [3.2.5] - 2026-0904
+## [3.3.0] - 2026-10-29
+
+### Fixed
+
+- Fixed the `--city-speed-limit` flag in the CLI. [#1242]
+
+### Changed
+
+- Refined the specs for detecting protected bike lanes. [#1250]
+
+[#1242]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1242
+[#1250]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1250
+[3.3.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/3.3.0
+
+## [3.2.5] - 2026-09-04
 
 ### Fixed
 

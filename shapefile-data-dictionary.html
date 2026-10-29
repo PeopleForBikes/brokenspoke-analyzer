@@ -6,11 +6,12 @@
 <link rel="author" title="About these documents" href="about.html"><link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Community Code of Conduct" href="code-of-conduct.html"><link rel="prev" title="Regions" href="regions.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Shapefile Data Dictionary - Brokenspoke Analyzer 3.2.5 documentation</title>
+        <title>Data Dictionary - Brokenspoke Analyzer 3.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx_autodoc_typehints.css?v=057ac668" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
@@ -202,7 +203,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">Brokenspoke Analyzer 3.2.5 documentation</div></a>
+      <a href="index.html"><div class="brand">Brokenspoke Analyzer 3.3.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -213,7 +214,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -223,7 +224,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
-  <span class="sidebar-brand-text">Brokenspoke Analyzer 3.2.5 documentation</span>
+  <span class="sidebar-brand-text">Brokenspoke Analyzer 3.3.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -249,7 +250,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="commands.html">Commands</a></li>
 <li class="toctree-l1"><a class="reference internal" href="regions.html">Regions</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Shapefile Data Dictionary</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Data Dictionary</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">DEVELOPMENT:</span></p>
 <ul>
@@ -289,13 +290,16 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="shapefile-data-dictionary">
-<h1>Shapefile Data Dictionary<a class="headerlink" href="#shapefile-data-dictionary" title="Link to this heading">¶</a></h1>
+          <section class="tex2jax_ignore mathjax_ignore" id="data-dictionary">
+<h1>Data Dictionary<a class="headerlink" href="#data-dictionary" title="Link to this heading">¶</a></h1>
+<p>Describe the fields in the analysis outputs.</p>
+<section id="shapefiles">
+<h2>Shapefiles<a class="headerlink" href="#shapefiles" title="Link to this heading">¶</a></h2>
 <p>Describe the fields that exist in shapefiles like <code class="docutils literal notranslate"><span class="pre">neighborhood_ways.shp</span></code>.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
@@ -390,6 +394,42 @@
 </table>
 </div>
 </section>
+<section id="mileage-csv">
+<h2>mileage.csv<a class="headerlink" href="#mileage-csv" title="Link to this heading">¶</a></h2>
+<p>Total miles of bike infrastructure inside the city boundary, by type. Shared
+lane markings (sharrows) are not included, because they are not tagged
+consistently in OpenStreetMap. Segments that extend past the boundary count only
+the part inside it.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>feature_type</strong></p></th>
+<th class="head"><p><strong>What it includes</strong></p></th>
+<th class="head"><p><strong>How it is counted</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">track</span></code></p></td>
+<td><p>Protected bike lanes: on-street <code class="docutils literal notranslate"><span class="pre">cycleway=track</span></code>, and separate paths detected as running alongside a road</p></td>
+<td><p>Per direction. A separate path counts once unless it is mapped as two-way for bikes (<code class="docutils literal notranslate"><span class="pre">oneway=no</span></code>), then twice</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">buffered_lane</span></code></p></td>
+<td><p>Buffered bike lanes</p></td>
+<td><p>Per direction</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lane</span></code></p></td>
+<td><p>Bike lanes</p></td>
+<td><p>Per direction</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">path</span></code></p></td>
+<td><p>Off-street paths not detected as protected bike lanes</p></td>
+<td><p>Once: a two-way path counts its length once</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
 
         </article>
       </div>
@@ -441,13 +481,33 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Data Dictionary</a><ul>
+<li><a class="reference internal" href="#shapefiles">Shapefiles</a></li>
+<li><a class="reference internal" href="#mileage-csv">mileage.csv</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=176445f9"></script>
+</div><script src="_static/documentation_options.js?v=3eb8911e"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
