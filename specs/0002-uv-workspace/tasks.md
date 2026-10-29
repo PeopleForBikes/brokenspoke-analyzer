@@ -247,7 +247,7 @@ instead of at the very end.
         (spot-checked).
   - _Requirements: 1.3, 3.4, 7.1, 7.2_
 
-- [ ] 11. Rebase onto `main`
+- [x] 11. Rebase onto `main`
   - [x] Port `main`'s changes to the old `brokenspoke_analyzer/` paths into
         `packages/` (`cli/common.py`, `cli/prepare.py`, `cli/run.py`,
         `cli/run_with.py`, `core/compute.py`, the `features/` SQL scripts), and
@@ -261,7 +261,7 @@ instead of at the very end.
         relative to `main`'s lockfile).
   - [x] Drop `Sync uv.lock metadata with bumped dependency pins`, which became
         empty once the lock was regenerated on top of `main`.
-  - [ ] Re-run tasks 4.1, 6.1 and 10 after the rebase.
+  - [x] Re-run tasks 4.1, 6.1 and 10 after the rebase.
     - [x] In a clean worktree: `just lint-python` (ruff, isort, ty over `src`
           and `tests`), `uv lock --check`, `just docs`, `just test` (all but the
           network-bound `test_osmnx_query_multipolygon`), `bna --version`
@@ -272,7 +272,9 @@ instead of at the very end.
           (verified on 2026-10-29).
     - [x] `just test` passes in full, including the network-bound
           `test_osmnx_query_multipolygon` (verified on 2026-10-29).
-    - [ ] CI green on the PR after the force-push.
+    - [x] CI green on the PR after the force-push (`ci / lint`, `ci / test`,
+          `lint-sql`, `osm2pgrouting3`, `integration`, `docker-integration`;
+          verified on 2026-10-29).
     - [x] `just docker-build` and `docker run ... --help` on the rebased branch
           (verified on 2026-10-29).
   - _Requirements: 3.4, 4.1, 4.3_

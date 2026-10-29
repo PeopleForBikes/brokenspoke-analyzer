@@ -343,12 +343,12 @@ and the fix is `tasks.md` task 4.2.
 
 ## Verification status
 
-Everything in `tasks.md` was completed except one open item:
+Everything in `tasks.md` was completed.
 
-- **Task 11** — the rebase onto `main` and the `VERSION` bump to `3.3.0` are
-  done, and `just lint-sql`, `just lint-md`, the full `just test`,
-  `just docker-build` and the image's `bna --help` pass on the rebased branch.
-  Still to confirm: CI on the force-pushed PR.
+- **Task 11** — the branch was rebased onto `main` and `VERSION` bumped to
+  `3.3.0`. `just lint-sql`, `just lint-md`, the full `just test`,
+  `just docker-build` and the image's `bna --help` pass on the rebased branch,
+  and every CI job is green on the force-pushed PR (verified on 2026-10-29).
 
 An earlier revision of `tasks.md` marked plain `just docker-build` (`:latest`)
 as verified in task 10 while task 6.1 said it had not been run. It has since
