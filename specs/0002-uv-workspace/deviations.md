@@ -49,8 +49,8 @@ as the current version. The repository was at `3.2.5` when the work started, so
 the root `VERSION` file was seeded with `3.2.5`. (An earlier revision of this
 document said `3.2.4`, which was wrong.)
 
-`main` has since released `3.3.0`, so `VERSION` must be bumped to `3.3.0` when
-the branch is rebased (`tasks.md` task 11).
+`main` has since released `3.3.0`; `VERSION` was bumped to `3.3.0` when the
+branch was rebased onto it (`tasks.md` task 11).
 
 ### 2. The root declares `dynamic = ["version"]`
 
@@ -345,7 +345,9 @@ and the fix is `tasks.md` task 4.2.
 
 Everything in `tasks.md` was completed except one open item:
 
-- **Task 11** (rebase onto `main` and bump `VERSION` to `3.3.0`).
+- **Task 11** — the rebase onto `main` and the `VERSION` bump to `3.3.0` are
+  done; re-running `just lint-sql`, `just lint-md`, `just docker-build` and CI
+  against the rebased branch is still to be confirmed outside the sandbox.
 
 An earlier revision of `tasks.md` marked plain `just docker-build` (`:latest`)
 as verified in task 10 while task 6.1 said it had not been run. It has since

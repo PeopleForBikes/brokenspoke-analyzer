@@ -248,13 +248,27 @@ instead of at the very end.
   - _Requirements: 1.3, 3.4, 7.1, 7.2_
 
 - [ ] 11. Rebase onto `main`
-  - Port `main`'s changes to the old `brokenspoke_analyzer/` paths into
-    `packages/` (`cli/common.py`, `cli/prepare.py`, `cli/run.py`,
-    `cli/run_with.py`, `core/compute.py`, the `features/` SQL scripts), and
-    reconcile `pyproject.toml`, `uv.lock`, `ci.yaml`, `e2e.yaml`, `release.yaml`
-    with this branch.
-  - Set `VERSION` to `main`'s released version (`3.3.0`) and re-run `uv lock`.
-  - Re-run tasks 4.1, 6.1 and 10 after the rebase.
+  - [x] Port `main`'s changes to the old `brokenspoke_analyzer/` paths into
+        `packages/` (`cli/common.py`, `cli/prepare.py`, `cli/run.py`,
+        `cli/run_with.py`, `core/compute.py`, the `features/` SQL scripts), and
+        reconcile `pyproject.toml`, `uv.lock`, `ci.yaml`, `e2e.yaml`,
+        `release.yaml` with this branch. Git carried the code changes through
+        the renames; `main`'s dependency pins were split between the two
+        members' `pyproject.toml`; the branch's own changes are identical
+        before and after the rebase.
+  - [x] Set `VERSION` to `main`'s released version (`3.3.0`) and re-run
+        `uv lock` (`uv lock --check` passes; only the workspace entries changed
+        relative to `main`'s lockfile).
+  - [x] Drop `Sync uv.lock metadata with bumped dependency pins`, which became
+        empty once the lock was regenerated on top of `main`.
+  - [ ] Re-run tasks 4.1, 6.1 and 10 after the rebase.
+    - [x] In a clean worktree: `just lint-python` (ruff, isort, ty over `src`
+          and `tests`), `uv lock --check`, `just docs`, `just test` (all but
+          the network-bound `test_osmnx_query_multipolygon`), `bna --version`
+          (`3.3.0`), `uv build --all-packages --wheel`.
+    - [ ] `just lint-sql`, `just lint-md`, the network-bound test, and CI green
+          on the PR after the force-push.
+    - [ ] `just docker-build` and `docker run ... --help` on the rebased branch.
   - _Requirements: 3.4, 4.1, 4.3_
 
 ## Notes
