@@ -20,7 +20,7 @@ Deviations fall into three kinds:
 
 | #   | Kind          | Area          | Deviation                                                          |
 | :-- | :------------ | :------------ | :----------------------------------------------------------------- |
-| 1   | Stale fact    | Versioning    | Shared version is `3.2.4`, not `3.1.1`                             |
+| 1   | Stale fact    | Versioning    | Shared version is `3.2.5`, not `3.1.1`                             |
 | 2   | Spec conflict | Versioning    | Root declares `dynamic = ["version"]`, not a static literal        |
 | 3   | Gap           | Architecture  | The library imported from the CLI; `common.py` had to be split     |
 | 4   | Gap           | Architecture  | Typer `Annotated` aliases in `core/compute.py` became plain types  |
@@ -36,16 +36,21 @@ Deviations fall into three kinds:
 | 14  | Stale fact    | CI            | The external reusable workflows need no workaround                 |
 | 15  | Gap           | Documentation | Sphinx needed `suppress_warnings` and one docstring fix            |
 | 16  | Gap           | Packaging     | Member sdists do not contain `VERSION`                             |
+| 17  | Gap           | Packaging     | The root lists both members as workspace sources and dev deps      |
+| 18  | Gap           | Tooling       | `docker-prepare-all` runs the `:dev` image                         |
+| 19  | Gap           | Tooling       | The test trees are not type-checked yet                            |
 
 ## Details
 
-### 1. The shared version is `3.2.4`, not `3.1.1`
+### 1. The shared version is `3.2.5`, not `3.1.1`
 
 `design.md` ("Shared version source") and `tasks.md` (task 1) both name `3.1.1`
-as the current version. The repository was at `3.2.4` when the work started, so
-the root `VERSION` file was seeded with `3.2.4`.
+as the current version. The repository was at `3.2.5` when the work started, so
+the root `VERSION` file was seeded with `3.2.5`. (An earlier revision of this
+document said `3.2.4`, which was wrong.)
 
-No impact beyond the literal.
+`main` has since released `3.3.0`, so `VERSION` must be bumped to `3.3.0` when
+the branch is rebased (`tasks.md` task 11).
 
 ### 2. The root declares `dynamic = ["version"]`
 
@@ -300,13 +305,58 @@ today. It must be resolved before any member is published independently — most
 likely by switching `[tool.hatch.version]` to a `hatch-vcs` git-tag source,
 which `requirements.md` 4.1 already allows.
 
+### 17. The root lists both members as workspace sources
+
+Not shown in `design.md`'s original root snippet. Because the root is virtual
+and never installed, `uv sync` only installs the members if something in the
+root depends on them. The root therefore declares
+`[tool.uv.sources] brokenspoke-analyzer-lib = { workspace = true }` and
+`brokenspoke-analyzer-cli = { workspace = true }`, and lists both members in
+`[dependency-groups] dev`. This is what makes Requirement 1.3 hold.
+
+### 18. `docker-prepare-all` runs the `:dev` image
+
+`design.md` and `tasks.md` 5 list `docker-prepare-all` as unchanged. It ran the
+hard-coded `peopleforbikes/brokenspoke-analyzer:latest`, which could resolve to
+any image present locally rather than the one built from the branch. It now runs
+`{{ docker_image }}:dev`, the image built by `just docker-build-devcontainer`.
+
+### 19. The test trees were not type-checked
+
+Requirement 7.4 asks that type-checking cover both members' source _and test_
+trees. `lint-python` ran `ty check` on the `src` trees only, as it did on
+`main`.
+
+Unlike the other entries, here the **code was wrong**: the requirement stands,
+and the fix is `tasks.md` task 4.2.
+
+- `[tool.ty.environment] root` now lists both members' `src/`, for the same
+  reason as `[tool.ruff] src` (deviation 10). Without it, ty only finds the
+  members through their editable installs, so a virtualenv synced from another
+  branch makes every first-party import unresolved. (An earlier revision of this
+  entry reported 3 `unresolved-import` errors in the tests; those came from such
+  a stale virtualenv, not from the tests.)
+- `lint-python` runs `ty check` over `test_dirs` too.
+- The one genuine finding was fixed: `test_datastore.py` passed its
+  `DummySession` test double where `aiohttp.ClientSession` is expected; it now
+  goes through `cast`.
+
 ## Verification status
 
-Everything in `tasks.md` was completed. All items requiring verification outside
-the implementation sandbox — **Task 8.1** (CI green on the PR) and **Task 10**
-(the full manual verification pass, including the dev container round-trip and
-an `integration/` spot-check) — have since been confirmed by the user outside
-the sandbox.
+Everything in `tasks.md` was completed except one open item:
+
+- **Task 11** (rebase onto `main` and bump `VERSION` to `3.3.0`).
+
+An earlier revision of `tasks.md` marked plain `just docker-build` (`:latest`)
+as verified in task 10 while task 6.1 said it had not been run. It has since
+been run on 2026-10-29: the image builds, and
+`docker run --rm ghcr.io/peopleforbikes/brokenspoke-analyzer --help` lists every
+pipeline stage, closing tasks 6.1 and 10.
+
+All other items requiring verification outside the implementation sandbox —
+**Task 8.1** (CI green on the PR) and the rest of **Task 10** (including the dev
+container round-trip and an `integration/` spot-check) — have been confirmed by
+the user outside the sandbox.
 
 `just lint-sql` and `just lint-md` could not be invoked through `just` in the
 implementation sandbox (sqlfluff walks parent directories to `/`; npm could not
@@ -319,5 +369,5 @@ unambiguously exercises the image built from this branch rather than whatever
 `:latest` happens to resolve to locally (a real ambiguity the original recipe
 had). `dev` shares the `builder`/`main` stages with the plain `docker-build`
 target, so this exercises the same `uv export --all-packages`/two-wheel-install
-path described in deviation 13. Plain `just docker-build` (`:latest`) itself was
-not separately re-run.
+path described in deviation 13. Plain `just docker-build` (`:latest`) has since
+been run as well, and its image runs `bna` (see above).
