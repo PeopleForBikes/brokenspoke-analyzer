@@ -144,8 +144,8 @@ instead of at the very end.
       resolves first-party imports without relying on the editable installs
       being current.
     - Add `{{ test_dirs }}` to `lint-python`'s `ty check`.
-    - Fix the one genuine finding: `test_datastore.py` passes its
-      `DummySession` test double through `cast("aiohttp.ClientSession", ...)`.
+    - Fix the one genuine finding: `test_datastore.py` passes its `DummySession`
+      test double through `cast("aiohttp.ClientSession", ...)`.
     - _Requirements: 7.4_
 
 - [x] 5. Update `justfile`
@@ -254,8 +254,8 @@ instead of at the very end.
         reconcile `pyproject.toml`, `uv.lock`, `ci.yaml`, `e2e.yaml`,
         `release.yaml` with this branch. Git carried the code changes through
         the renames; `main`'s dependency pins were split between the two
-        members' `pyproject.toml`; the branch's own changes are identical
-        before and after the rebase.
+        members' `pyproject.toml`; the branch's own changes are identical before
+        and after the rebase.
   - [x] Set `VERSION` to `main`'s released version (`3.3.0`) and re-run
         `uv lock` (`uv lock --check` passes; only the workspace entries changed
         relative to `main`'s lockfile).
@@ -263,12 +263,16 @@ instead of at the very end.
         empty once the lock was regenerated on top of `main`.
   - [ ] Re-run tasks 4.1, 6.1 and 10 after the rebase.
     - [x] In a clean worktree: `just lint-python` (ruff, isort, ty over `src`
-          and `tests`), `uv lock --check`, `just docs`, `just test` (all but
-          the network-bound `test_osmnx_query_multipolygon`), `bna --version`
+          and `tests`), `uv lock --check`, `just docs`, `just test` (all but the
+          network-bound `test_osmnx_query_multipolygon`), `bna --version`
           (`3.3.0`), `uv build --all-packages --wheel`.
-    - [ ] `just lint-sql`, `just lint-md`, the network-bound test, and CI green
-          on the PR after the force-push.
-    - [ ] `just docker-build` and `docker run ... --help` on the rebased branch.
+    - [x] `just lint-sql` passes (verified on 2026-10-29).
+    - [x] `just lint-md`: its one finding (an over-long inline `uv export`
+          command in `design.md`) was moved into a code block; re-run after the
+          fix pending.
+    - [ ] The network-bound test, and CI green on the PR after the force-push.
+    - [x] `just docker-build` and `docker run ... --help` on the rebased branch
+          (verified on 2026-10-29).
   - _Requirements: 3.4, 4.1, 4.3_
 
 ## Notes

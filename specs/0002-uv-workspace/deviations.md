@@ -346,8 +346,9 @@ and the fix is `tasks.md` task 4.2.
 Everything in `tasks.md` was completed except one open item:
 
 - **Task 11** — the rebase onto `main` and the `VERSION` bump to `3.3.0` are
-  done; re-running `just lint-sql`, `just lint-md`, `just docker-build` and CI
-  against the rebased branch is still to be confirmed outside the sandbox.
+  done, and `just lint-sql`, `just docker-build` and the image's `bna --help`
+  pass on the rebased branch. Still to confirm: `just lint-md` after its one
+  fix, the network-bound test, and CI on the force-pushed PR.
 
 An earlier revision of `tasks.md` marked plain `just docker-build` (`:latest`)
 as verified in task 10 while task 6.1 said it had not been run. It has since

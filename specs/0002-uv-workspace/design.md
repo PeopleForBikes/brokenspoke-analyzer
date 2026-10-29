@@ -323,8 +323,12 @@ Version pins follow `main` and Dependabot; the ones above are illustrative.
 
 - `builder` stage: `COPY . .` still works (whole repo). Against a virtual root,
   a plain `uv export` resolves the root's own (empty) dependency list, so the
-  export runs as
-  `uv export --all-packages --no-emit-workspace --format requirements-txt --all-extras --no-group dev --no-hashes`:
+  export runs as:
+
+  ```sh
+  uv export --all-packages --no-emit-workspace --format requirements-txt --all-extras --no-group dev --no-hashes
+  ```
+
   `--all-packages` takes the union of both members' runtime dependencies, and
   `--no-emit-workspace` keeps the members themselves out of the requirements
   file. The wheels are built with `uv build --all-packages --wheel`.
