@@ -267,10 +267,12 @@ instead of at the very end.
           network-bound `test_osmnx_query_multipolygon`), `bna --version`
           (`3.3.0`), `uv build --all-packages --wheel`.
     - [x] `just lint-sql` passes (verified on 2026-10-29).
-    - [x] `just lint-md`: its one finding (an over-long inline `uv export`
-          command in `design.md`) was moved into a code block; re-run after the
-          fix pending.
-    - [ ] The network-bound test, and CI green on the PR after the force-push.
+    - [x] `just lint-md` passes, after moving its one finding (an over-long
+          inline `uv export` command in `design.md`) into a code block
+          (verified on 2026-10-29).
+    - [x] `just test` passes in full, including the network-bound
+          `test_osmnx_query_multipolygon` (verified on 2026-10-29).
+    - [ ] CI green on the PR after the force-push.
     - [x] `just docker-build` and `docker run ... --help` on the rebased branch
           (verified on 2026-10-29).
   - _Requirements: 3.4, 4.1, 4.3_
