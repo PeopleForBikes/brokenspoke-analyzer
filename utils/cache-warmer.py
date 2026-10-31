@@ -33,15 +33,17 @@ import rich
 import typer
 from pyrosm import data
 
-from brokenspoke_analyzer.cli import (
+from brokenspoke_analyzer_cli import (
     common,
     root,
 )
-from brokenspoke_analyzer.core import (
-    datasource,
+from brokenspoke_analyzer_lib import (
     datastore,
-    exporter,
     file_utils,
+)
+from brokenspoke_analyzer_lib.core import (
+    datasource,
+    exporter,
 )
 
 # Ensure DC is considered a US state.
