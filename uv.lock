@@ -467,7 +467,7 @@ requires-dist = [
     { name = "rasterio", specifier = ">=1.5.2" },
     { name = "shapely", specifier = ">=2.1.2" },
     { name = "sqlalchemy", extras = ["asyncio", "postgresql-psycopg"], specifier = ">=2.1.6,<3" },
-    { name = "us", specifier = ">=3.2.0,<4" },
+    { name = "us", specifier = ">=3.2.0,<5" },
     { name = "yarl", specifier = ">=1.24.5" },
 ]
 
@@ -2972,14 +2972,14 @@ wheels = [
 
 [[package]]
 name = "us"
-version = "3.2.0"
+version = "4.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jellyfish" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/35/12/06f87be706ccc5794569d14f903c2f755aa98e1a9d53e4e7e17d9986e9d1/us-3.2.0.tar.gz", hash = "sha256:cb223e85393dcc5171ead0dd212badc47f9667b23700fea3e7ea5f310d545338", size = 16046, upload-time = "2024-07-22T01:09:42.736Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c1/5f/45de6be7854358eb2faa3cada1098c03dcdfcb2354543415446a8a4f7ac5/us-4.0.0.tar.gz", hash = "sha256:7dd4c4e603c9427b72d7e07be700d8f643bdcd7f5195a12bc639f1b7e38e7496", size = 57492, upload-time = "2026-09-29T15:13:55.947Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/65/a8/1791660a87f03d10a3bce00401a66035999c91f5a9a6987569b84df5719d/us-3.2.0-py3-none-any.whl", hash = "sha256:571714ad6d473c72bbd2058a53404cdf4ecc0129e4f19adfcbeb4e2d7e3dc3e7", size = 13775, upload-time = "2024-07-22T01:09:41.432Z" },
+    { url = "https://files.pythonhosted.org/packages/15/1f/f75a3dfcf70e352d5c18844f258d033d244c40f020dad24f0da49da9bd76/us-4.0.0-py3-none-any.whl", hash = "sha256:3e7dd072efc65ecc6f765ced861f49fe7635067e760bbe2a527f16e5477011c0", size = 57543, upload-time = "2026-09-29T15:13:54.605Z" },
 ]
 
 [[package]]
