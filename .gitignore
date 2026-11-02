@@ -1,5 +1,6 @@
 __pycache__/
 .cache
+.claude/settings.local.json
 .coverage
 .coverage.*
 .DS_Store
@@ -38,8 +39,8 @@ eggs/
 env/
 examples/data/
 htmlcov/
-lib/
-lib64/
+/lib/
+/lib64/
 nosetests.xml
 osm_cache/
 parts/
@@ -56,3 +57,4 @@ venv/
 
 # Exceptions
 !integration/e2e-cities*.csv
+.claude/settings.local.json

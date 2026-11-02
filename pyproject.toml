@@ -1,6 +1,6 @@
 [project]
 name = "brokenspoke-analyzer"
-version = "3.2.0"
+dynamic = ["version"]
 description = "Run a BNA analysis locally."
 authors = [
   { name = "Rémy Greinhofer", email = "remy.greinhofer@gmail.com" },
@@ -9,90 +9,85 @@ authors = [
 ]
 requires-python = "~=3.13.0"
 license = "MIT"
-dependencies = [
-  "aiohttp>=3.14.3,<4",
-  "beautifulsoup4>=4.15.0",
-  "boto3>=1.43.62,<2",
-  "geopandas>=1.1.4,<2",
-  "loguru>=0.7.3,<0.8",
-  "numpy>=2.5.1",
-  "obstore>=0.11.0",
-  "osmnx>=2.1.1,<3",
-  "platformdirs>=4.11.0",
-  "pycountry>=26.2.16",
-  "pygris>=0.2.1",
-  "pyrosm>=0.13.1",
-  "python-dotenv>=1.2.2,<2",
-  "python-slugify>=8.0.4,<9",
-  "rasterio>=1.5.0",
-  "rich>=15.0.0,<16",
-  "shapely>=2.1.2",
-  "sqlalchemy[asyncio, postgresql_psycopg]>=2.0.51,<3",
-  "tenacity>=9.1.4,<10",
-  "trio>=0.33.0",
-  "typer>=0.27.0,<0.28",
-  "us>=3.2.0,<4",
-  "yarl>=1.24.5",
+
+[tool.uv.workspace]
+members = [
+  "packages/brokenspoke-analyzer-lib",
+  "packages/brokenspoke-analyzer-cli",
 ]
 
-[project.scripts]
-bna = "brokenspoke_analyzer.cli.root:app"
+[tool.uv]
+# The root is a virtual project: it declares the workspace and the shared
+# tooling configuration, but is never built, installed nor published.
+package = false
+
+[tool.uv.sources]
+brokenspoke-analyzer-lib = { workspace = true }
+brokenspoke-analyzer-cli = { workspace = true }
 
 [dependency-groups]
 dev = [
+  "brokenspoke-analyzer-cli",
+  "brokenspoke-analyzer-lib",
   "bpython>=0.26,<0.27",
   "furo>=2025.12.19,<2026",
-  "isort>=8.0.1,<9",
-  "jupyterlab>=4.6.2,<5",
-  "minijinja>=2.21.0",
+  "isort>=9.0.1,<10",
+  "jupyterlab>=4.6.3,<5",
+  "minijinja>=3.0.4",
   "myst-parser>=5.1.0,<6",
   "pandas-stubs>=3.0.5.260730,<4",
-  "pytest-asyncio>=1.4.0",
+  "pytest-asyncio>=1.4.1",
   "pytest-cov>=7.1.0,<8",
-  "pytest-mock>=3.15.1,<4",
-  "pytest-rerunfailures~=16.4",
-  "pytest-socket>=0.8.0,<0.9",
+  "pytest-mock>=3.17.0,<4",
+  "pytest-rerunfailures>=16.6.1,<16.8.0",
+  "pytest-socket>=0.8.1,<0.9",
   "pytest-xdist>=3.8.0,<4",
-  "pytest>=9.1.1,<10",
-  "ruff>=0.16.1",
+  "pytest>=9.2.0,<10",
+  "ruff>=0.17.3",
   "sphinx-autobuild>=2025.8.25,<2026",
-  "sphinx-autodoc-typehints>=3.13.0,<4",
+  "sphinx-autodoc-typehints>=3.17.4,<4",
   "sphinx-copybutton>=0.5.2,<0.6",
   "Sphinx>=9.1.0,<10",
-  "sqlfluff>=4.2.2,<5",
-  "ty>=0.0.65",
+  "sqlfluff>=4.3.0,<5",
+  "ty>=0.0.94",
   "types-beautifulsoup4>=4.12.0.20250516",
-  "types-boto3>=1.43.62",
+  "types-boto3>=1.43.121",
   "types-colorama>=0.4.15.20260508,<0.5",
   "types-decorator>=5.2.0.20260712,<6",
   "types-jsonschema>=4.26.0.20260518,<5",
-  "types-pygments>=2.20.0.20260728,<3",
+  "types-pygments>=2.21.0.20260819,<3",
   "types-python-slugify>=8.0.2.20240310,<9",
   "types-six>=1.17.0.20260724,<2",
   "xdoctest>=1.3.2,<2",
 ]
 
+[tool.hatch.version]
+path = "VERSION"
+pattern = "(?P<version>.+)"
+
 [tool.isort]
 profile = "black"
 force_grid_wrap = 2
+known_first_party = ["brokenspoke_analyzer_cli", "brokenspoke_analyzer_lib"]
 
 [tool.coverage.run]
 omit = [
   "*/__init__.py",
-  "brokenspoke_analyzer/cli_.py",
-  "brokenspoke_analyzer/cli/*",
-  "brokenspoke_analyzer/core/constant.py",
-  "brokenspoke_analyzer/core/database/*",
-  "brokenspoke_analyzer/core/downloader.py",
-  "brokenspoke_analyzer/core/ingestor.py",
-  "brokenspoke_analyzer/core/compute.py",
-  "brokenspoke_analyzer/main.py",
-  "brokenspoke_analyzer/pyrosm/*",
+  "*/brokenspoke_analyzer_cli/*",
+  "*/brokenspoke_analyzer_lib/constant.py",
+  "*/brokenspoke_analyzer_lib/core/compute.py",
+  "*/brokenspoke_analyzer_lib/core/downloader.py",
+  "*/brokenspoke_analyzer_lib/core/ingestor.py",
+  "*/brokenspoke_analyzer_lib/database/*",
 ]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-p no:warnings --cov-report term-missing --cov-report html --xdoctest"
+testpaths = [
+  "packages/brokenspoke-analyzer-lib/tests",
+  "packages/brokenspoke-analyzer-cli/tests",
+]
 markers = [
   "australia",
   "canada",
@@ -110,7 +105,12 @@ markers = [
 ]
 
 [tool.ruff]
-extend-exclude = ["brokenspoke_analyzer/pyrosm"]
+# The workspace members live under packages/*/src, so ruff needs to be told
+# where first-party code is to keep its import sorting in sync with isort.
+src = [
+  "packages/brokenspoke-analyzer-cli/src",
+  "packages/brokenspoke-analyzer-lib/src",
+]
 
 [tool.ruff.lint]
 select = ["ALL"]
@@ -121,6 +121,7 @@ ignore = [
   "EM101",   # raw-string-in-exception
   "EM102",   # f-string-in-exception
   "FIX",     # flake8-fixme
+  "ICN001",  # unconventional-import-alias
   "INP001",  # implicit-namespace-package
   "PLR0913", # too-many-arguments
   "PLR0917", # too-many-positional-arguments -- Remove before releasing 4.0.0
@@ -130,6 +131,23 @@ ignore = [
   "SLF001",  # private-member-access
   "TD003",   # missing-todo-link
   "TRY003",  # raise-vanilla-args
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["brokenspoke_analyzer_cli", "brokenspoke_analyzer_lib"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = [
+  "ANN201",  # missing-return-type-undocumented-public-function
+  "D101",    # undocumented-public-class
+  "D102",    # undocumented-public-method
+  "D103",    # undocumented-public-function
+  "D105",    # undocumented-magic-method
+  "D107",    # undocumented-public-init
+  "PLR2004", # magic-value-comparison
+  "PYI034",  # non-self-return-type
+  "S101",    # assert
+  "T201",    # print
 ]
 
 [tool.ruff.lint.pydocstyle]
@@ -160,6 +178,10 @@ nb_boundary_buffer = 2680
 nb_max_trip_distance = 2680
 nb_output_srid = 32613
 opportunity = 99
+pbl_buffer_m = 25
+pbl_max_angle_deg = 15
+pbl_max_gap_dist_m = 40
+pbl_max_gap_m = 400
 people = 99
 primary_lanes = 2
 primary_speed = 40
@@ -181,15 +203,16 @@ ignore_words_regex = "ST_."
 [tool.sqlfluff.rules.layout.long_lines]
 ignore_comment_lines = true
 
-[tool.ty.src]
-exclude = [
-  "brokenspoke_analyzer/pyrosm/**",
-  "boto3",
-  "geopandas",
-  "osmnx",
-  "shapely",
-  "us",
+[tool.ty.environment]
+# Same reason as [tool.ruff] src: the workspace members live under
+# packages/*/src.
+root = [
+  "packages/brokenspoke-analyzer-cli/src",
+  "packages/brokenspoke-analyzer-lib/src",
 ]
+
+[tool.ty.src]
+exclude = ["boto3", "geopandas", "osmnx", "shapely", "us"]
 
 [build-system]
 requires = ["hatchling"]

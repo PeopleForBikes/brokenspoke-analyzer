@@ -40,6 +40,13 @@
 
 .. toctree::
    :maxdepth: 1
+   :caption: API REFERENCE:
+
+   lib/index
+   cli/index
+
+.. toctree::
+   :maxdepth: 1
    :caption: DEVELOPMENT:
 
    code-of-conduct

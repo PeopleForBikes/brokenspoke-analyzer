@@ -7,9 +7,87 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [3.3.0] - 2026-10-29
+
+### Fixed
+
+- Fixed the `--city-speed-limit` flag in the CLI. [#1242]
+
+### Changed
+
+- Refined the specs for detecting protected bike lanes. [#1250]
+
+[#1242]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1242
+[#1250]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1250
+[3.3.0]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/3.3.0
+
+## [3.2.5] - 2026-09-04
+
+### Fixed
+
+- Fixed the OSM download for Czech Republic. [#1209]
+- Honored the `--city-speed-limit` flag. [#1213]
+- Fixed the import of US job data only when available from the US Census Bureau.
+  [#1214]
+- Fixed the population grid provided by WorldPop. [#1215] [#1216]
+
+[#1209]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1209
+[#1213]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1213
+[#1214]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1214
+[#1215]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1215
+[#1216]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1216
+[3.2.5]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/3.2.5
+
+## [3.2.4] - 2026-08-21
+
+### Fixed
+
+- Updated custom OSM region mapping for Geofabrik. [#1201]
+
+[#1201]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1198
+[3.2.4]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/3.2.4
+
+## [3.2.3] - 2026-08-15
+
+### Fixed
+
+- Handled unsupported or ambiguous places in `pyrosm`. [#1198]
+
+[#1198]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1198
+[3.2.3]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/3.2.3
+
+## [3.2.2] - 2026-08-10
+
+### Fixed
+
+- Fixed country name conversion to ISO 3166 representation. [#1195]
+
+[#1195]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1195
+[3.2.2]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/3.2.2
+
+## [3.2.1] - 2026-08-09
+
+### Fixed
+
+- Fixed export issues cause by using the `trio` async framework. [#1190]
+
+### Changed
+
+- Updated the logic of the `cache-warmer` script. [#1191]
+
+[#1190]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1190
+[#1191]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1191
+[3.2.1]:
+  https://github.com/PeopleForBikes/brokenspoke-analyzer/releases/tag/3.2.1
+
 ## [3.2.0] - 2026-08-02
 
-## Changed
+### Changed
 
 - Expand the exporter to support more object stores. [#1059]
 - Add SourceAdapters to BNAStore. [#1069]

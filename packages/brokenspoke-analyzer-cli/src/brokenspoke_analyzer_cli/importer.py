@@ -1,0 +1,116 @@
+"""Define the import sub-command."""
+
+import asyncio
+from typing import Annotated
+
+import typer
+
+from brokenspoke_analyzer_cli import common
+from brokenspoke_analyzer_lib.core import (
+    ingestor,
+)
+
+StateAbbreviation = Annotated[str, typer.Argument(help="two-letter US state name")]
+
+app = typer.Typer()
+
+
+@app.command(name="all")
+def all_(
+    data_dir: common.DataDir,
+    database_url: common.DatabaseURL,
+    country: common.Country,
+    city: common.City,
+    region: common.Region = None,
+    fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
+    lodes_year: common.LODESYear = None,
+) -> None:
+    """Import all files into database."""
+    # Make MyPy happy.
+    if not fips_code:
+        raise ValueError("`fips_code` must be set")
+
+    # Set the region as the country if it was not provided.
+    if not region:
+        region = country
+
+    asyncio.run(
+        ingestor.all_wrapper(
+            city=city,
+            country=country,
+            data_dir=data_dir,
+            database_url=database_url,
+            fips_code=fips_code,
+            lodes_year=lodes_year,
+            region=region,
+        ),
+    )
+
+
+@app.command()
+def neighborhood(
+    data_dir: common.DataDir,
+    database_url: common.DatabaseURL,
+    country: common.Country,
+    city: common.City,
+    region: common.Region = None,
+    buffer: common.Buffer = common.DEFAULT_BUFFER,
+) -> None:
+    """Import neighborhood data."""
+    # Make MyPy happy.
+    if not region:
+        raise ValueError("`region` must be set")
+    if not buffer:
+        raise ValueError("`buffer` must be set")
+
+    ingestor.neighborhood_wrapper(
+        city=city,
+        country=country,
+        data_dir=data_dir,
+        database_url=database_url,
+        region=region,
+    )
+
+
+@app.command()
+def jobs(
+    data_dir: common.DataDir,
+    database_url: common.DatabaseURL,
+    state_abbreviation: StateAbbreviation,
+    lodes_year: common.LODESYear = None,
+) -> None:
+    """Import US census job data."""
+    asyncio.run(
+        ingestor.jobs_wrapper(
+            data_dir=data_dir,
+            database_url=database_url,
+            lodes_year=lodes_year,
+            state_abbreviation=state_abbreviation,
+        ),
+    )
+
+
+@app.command()
+def osm(
+    data_dir: common.DataDir,
+    database_url: common.DatabaseURL,
+    country: common.Country,
+    city: common.City,
+    region: common.Region = None,
+    fips_code: common.FIPSCode = common.DEFAULT_CITY_FIPS_CODE,
+) -> None:
+    """Import OSM data."""
+    # Make mypy happy.
+    if not region:
+        raise ValueError("`region` must be set")
+    if not fips_code:
+        raise ValueError("`fips_code` must be set")
+
+    ingestor.osm_wrapper(
+        city=city,
+        country=country,
+        data_dir=data_dir,
+        database_url=database_url,
+        fips_code=fips_code,
+        region=region,
+    )
