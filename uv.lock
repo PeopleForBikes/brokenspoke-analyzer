@@ -1858,6 +1858,21 @@ wheels = [
 ]
 
 [[package]]
+name = "pyarrow"
+version = "26.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/bc/5e/9cb2a56d5e293aab4e2fbecc5b0620d93227d66b8d5a63c554c31e1f80fe/pyarrow-26.0.1.tar.gz", hash = "sha256:93affcbd8a343e98dc19e9ec8fe17271ebf8fe98102d8b7454175074409f8b72", size = 1237985, upload-time = "2026-11-03T10:54:17.563Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/15/b8/c31c51fbe7df901817d88c73eeec25079d0da5f7c7b67fc0bf071f6a2df5/pyarrow-26.0.1-cp313-cp313-macosx_12_0_arm64.whl", hash = "sha256:4cb739ccb87292c673e1f69819b68432a73bb8bb456e8599641bba9183a8a1dd", size = 37292947, upload-time = "2026-11-03T10:50:12.333Z" },
+    { url = "https://files.pythonhosted.org/packages/fd/63/0c2559ae33ce59d2ca5ce74117676f8ff8da4cf102729a158ea46415eb50/pyarrow-26.0.1-cp313-cp313-macosx_12_0_x86_64.whl", hash = "sha256:50b40aea92f43b2b6da3427548a5337741b4b93b92e8015a8a3eefc0e75acca2", size = 39767535, upload-time = "2026-11-03T10:50:18.254Z" },
+    { url = "https://files.pythonhosted.org/packages/31/02/d9462d1ae4e54c3964af38316a802b29c28970b7d375722ef190af736640/pyarrow-26.0.1-cp313-cp313-manylinux_2_28_aarch64.whl", hash = "sha256:a3a79661404ba3d41b7c9a45cb56113246a244b38cb1393fadae289bc66b91b4", size = 51815955, upload-time = "2026-11-03T10:50:25.332Z" },
+    { url = "https://files.pythonhosted.org/packages/96/54/33c2df56948d88a4d83a52999a4a81a4871b2de481ff25ccd6f5ccd2589a/pyarrow-26.0.1-cp313-cp313-manylinux_2_28_x86_64.whl", hash = "sha256:f71221bbc7707e3fad920d0478db9350791d4714ec445299ee0d56559fbc156c", size = 55038406, upload-time = "2026-11-03T10:50:32.551Z" },
+    { url = "https://files.pythonhosted.org/packages/99/57/8e1f886ee96c7edab89ab6f15fbb00c85c2bb2173f3cb504925731d00564/pyarrow-26.0.1-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:8ccfb9958bcd09f34678c64fb42a0e270b47cd092ae79578da51e0d7bb144296", size = 55437362, upload-time = "2026-11-03T10:50:39.89Z" },
+    { url = "https://files.pythonhosted.org/packages/8c/c3/d87939a5f6cd30bb406bad6c20926fcedafc52ec5629f6eb27e4cd5db709/pyarrow-26.0.1-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:029e881af986375a2731da79c999fe734a72547fabb16503d65fc079d4bc7eb2", size = 58618865, upload-time = "2026-11-03T10:50:48.029Z" },
+    { url = "https://files.pythonhosted.org/packages/c1/9e/b6c8afec2ffc06bbd00a88326826f9d66e4bbca752c0837ee8e2dbf2238f/pyarrow-26.0.1-cp313-cp313-win_amd64.whl", hash = "sha256:8196f36a2f4cb8d2d6ef3651941b80e5ccf125d7653657d99af5bb298e7a7026", size = 28989592, upload-time = "2026-11-03T10:50:53.384Z" },
+]
+
+[[package]]
 name = "pycountry"
 version = "26.2.16"
 source = { registry = "https://pypi.org/simple" }
@@ -1949,24 +1964,25 @@ wheels = [
 
 [[package]]
 name = "pyrosm"
-version = "0.26.0"
+version = "0.28.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "certifi" },
     { name = "geopandas" },
     { name = "protobuf" },
+    { name = "pyarrow" },
     { name = "python-rapidjson" },
     { name = "setuptools" },
     { name = "shapely" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/46/b1/e9467209b18c890a94eafb47104a4766f9a983841c864f3d710ff8fdc70c/pyrosm-0.26.0.tar.gz", hash = "sha256:cd089e9abbffabb0ead65cd245517535296aeb651645c47c7f12530d8a1cfe94", size = 8430473, upload-time = "2026-10-27T20:09:44.172Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/97/7f/8bb02fd56ce78b21453ed131c90297e683752e7ac6221aaa194c3489737b/pyrosm-0.28.0.tar.gz", hash = "sha256:1edbd6a14d4e93916f704f4f2c41e762ed4790f2b694d5c4759cb975f1cf2d3f", size = 8507838, upload-time = "2026-10-31T10:32:38.508Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/76/51/2606a29441f6826415c93cb472dde57b939ad1bbdd5bc19c20ac00600d2e/pyrosm-0.26.0-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:710beb69a0111c0e567e8736eac4dac4fe7cda6f6e52b09264581d3dc8bc211c", size = 5488305, upload-time = "2026-10-27T20:09:18.609Z" },
-    { url = "https://files.pythonhosted.org/packages/f0/b3/718dc6295b847cc846c80424fcde202a386e82c28263e3e91edb225a5859/pyrosm-0.26.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:037c51a8323ab2594250fa30ece1743ec2590c00c78a38a457c9f9f8c7b5b9d3", size = 5390726, upload-time = "2026-10-27T20:09:20.54Z" },
-    { url = "https://files.pythonhosted.org/packages/97/74/c1549f46d9ab77beefd2bce06fd316a429be87d5b3c47698113c61295ad2/pyrosm-0.26.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:ec8383a0552ee86020f44248e74a735064d49dc0e383afbdbf13221b8bd324c9", size = 5739441, upload-time = "2026-10-27T20:09:22.455Z" },
-    { url = "https://files.pythonhosted.org/packages/75/89/5ee7b9c87670e255da228a6921fd02f7cfd800de36bc68c129fee2319f9d/pyrosm-0.26.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:34c64ed68b57a243aaa2c041107ea88e1eb74eca8601c5de00e1c118d0fc82bd", size = 5986092, upload-time = "2026-10-27T20:09:23.986Z" },
-    { url = "https://files.pythonhosted.org/packages/b9/fd/bb9206d124b85857da7bc0a269ae8bb52bb7b6f727c9c928635bd89a4b26/pyrosm-0.26.0-cp313-cp313-win_amd64.whl", hash = "sha256:df4f76bca5572d62e329c352bb7bf9e42465f15c8e0c5b6a36ecdad92d002973", size = 4980941, upload-time = "2026-10-27T20:09:25.597Z" },
+    { url = "https://files.pythonhosted.org/packages/96/4f/f7916b875f704dc97183038c2a1c07125644316145e3a8803598b1aa9b4c/pyrosm-0.28.0-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:7a009c1b11fdb5e59c5cf11fad8482df982aacab1c40deb8608165086071e69f", size = 5525855, upload-time = "2026-10-31T10:32:07.997Z" },
+    { url = "https://files.pythonhosted.org/packages/9f/2f/701d1d96062fc9f13dae5f6050703dcd2a323353f4acc03311806bf70334/pyrosm-0.28.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:fd3b8ff4661b2bd010521cea570b48f85b73cbf44eebfbea2ce3aa57e4e2e132", size = 5424046, upload-time = "2026-10-31T10:32:09.989Z" },
+    { url = "https://files.pythonhosted.org/packages/02/18/b737b48a81118030822cc5d51b631a95a30c4b3be1e6eb26614788800d86/pyrosm-0.28.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:b3221cb97959459c83d7c4fe11d5af97a8f1f3250b6b93f45d7108626078d2d6", size = 5775270, upload-time = "2026-10-31T10:32:12.011Z" },
+    { url = "https://files.pythonhosted.org/packages/50/3a/33573f7ccff1595f9bf49ba5e50cf1dc2024b1d43e610b1b9f2d8ebbde44/pyrosm-0.28.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:f17f710df51288fe3dbaefabb41e7e6460295901f29db912e706b7943dfa3d81", size = 6016329, upload-time = "2026-10-31T10:32:14.249Z" },
+    { url = "https://files.pythonhosted.org/packages/e9/e9/88bd9cddaee838d1356bac626b349972707a7f35df6452f039afb2077bb9/pyrosm-0.28.0-cp313-cp313-win_amd64.whl", hash = "sha256:5b7d98312b9be0a16084a26f2247480d8d243188b2b318d6a74edc8e0a1d67be", size = 5017411, upload-time = "2026-10-31T10:32:16.007Z" },
 ]
 
 [[package]]
