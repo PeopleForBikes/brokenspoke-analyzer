@@ -16,11 +16,10 @@ env:
 
 jobs:
   osm2pgrouting3:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: install dependencies
         run: |
-          sudo apt-get update
           DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends \
           build-essential \
           cmake \
@@ -47,7 +46,7 @@ jobs:
           if-no-files-found: error
 
   integration:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: osm2pgrouting3
 
     env:

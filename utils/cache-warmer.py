@@ -129,9 +129,11 @@ async def _run_downloads(
 
         # Build the list of regions to download.
         osm_regions = []
-        osm_regions.extend(chain.from_iterable(data.available["regions"].values()))  # ty:ignore[unresolved-attribute]
+        osm_regions.extend(chain.from_iterable(data.available["regions"].values()))  # # ty:ignore[missing-attribute]
         osm_regions.extend(
-            map(str.lower, chain.from_iterable(data.available["subregions"].values()))  # ty:ignore[unresolved-attribute]
+            map(
+                str.lower, chain.from_iterable(data.available["subregions"].values())
+            )  # # ty:ignore[missing-attribute]
         )
         osm_regions.extend(
             [

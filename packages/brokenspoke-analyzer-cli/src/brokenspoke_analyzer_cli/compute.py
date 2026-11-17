@@ -49,7 +49,7 @@ def compute_cmd(
     country = utils.normalize_country_name(country)
     _, _, slug = analysis.osmnx_query(country, city, region)
     traversable = resources.files("brokenspoke_analyzer_lib.scripts.sql")
-    res = pathlib.Path(traversable._paths[0])  # ty:ignore[unresolved-attribute]
+    res = pathlib.Path(traversable._paths[0])  # # ty:ignore[missing-attribute]
     sql_script_dir = res.resolve(strict=True)
     boundary_file = data_dir / f"{slug}.shp"
 
