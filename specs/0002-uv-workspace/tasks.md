@@ -268,8 +268,8 @@ instead of at the very end.
           (`3.3.0`), `uv build --all-packages --wheel`.
     - [x] `just lint-sql` passes (verified on 2026-10-29).
     - [x] `just lint-md` passes, after moving its one finding (an over-long
-          inline `uv export` command in `design.md`) into a code block
-          (verified on 2026-10-29).
+          inline `uv export` command in `design.md`) into a code block (verified
+          on 2026-10-29).
     - [x] `just test` passes in full, including the network-bound
           `test_osmnx_query_multipolygon` (verified on 2026-10-29).
     - [x] CI green on the PR after the force-push (`ci / lint`, `ci / test`,

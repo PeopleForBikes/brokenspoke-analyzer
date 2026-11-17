@@ -332,6 +332,7 @@ Version pins follow `main` and Dependabot; the ones above are illustrative.
   `--all-packages` takes the union of both members' runtime dependencies, and
   `--no-emit-workspace` keeps the members themselves out of the requirements
   file. The wheels are built with `uv build --all-packages --wheel`.
+
 - `main` stage: installs the vendored dependency wheels, then both member wheels
   (`brokenspoke_analyzer_lib-*.whl` and `brokenspoke_analyzer_cli-*.whl`) in a
   single `pip install`, so the cli → lib dependency resolves locally.

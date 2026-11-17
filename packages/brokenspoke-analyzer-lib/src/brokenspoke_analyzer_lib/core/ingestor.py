@@ -313,7 +313,7 @@ def manage_speed_limits(
 ) -> None:
     """Manage the state and city speed limits.."""
     # Prepare speed tables.
-    sql_script_dir = pathlib.Path(script_dir._paths[0]) / "sql"  # ty:ignore[unresolved-attribute]
+    sql_script_dir = pathlib.Path(script_dir._paths[0]) / "sql"  # # ty:ignore[missing-attribute]
     speed_table_script = sql_script_dir / "speed_tables.sql"
     dbcore.execute_sql_file(engine, speed_table_script)
 
@@ -436,7 +436,7 @@ def import_osm_data(
     # Note(rgreinho): do we still need this step too?
 
     # Import the osm with highways.
-    dir_ = pathlib.Path(script_dir._paths[0])  # ty:ignore[unresolved-attribute]
+    dir_ = pathlib.Path(script_dir._paths[0])  # # ty:ignore[missing-attribute]
     logger.info("Importing OSM data with highways...")
     runner.run_osm2pgrouting(
         database_url,

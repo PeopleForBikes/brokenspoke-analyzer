@@ -204,7 +204,7 @@ async def run_(  # noqa: C901, PLR0912, PLR0915
     # Compute.
     console.log("[green]Computing the data...")
     traversable = resources.files("brokenspoke_analyzer_lib.scripts.sql")
-    res = pathlib.Path(traversable._paths[0])  # ty:ignore[unresolved-attribute]
+    res = pathlib.Path(traversable._paths[0])  # # ty:ignore[missing-attribute]
     sql_script_dir = res.resolve(strict=True)  # noqa: ASYNC240
     boundary_file = input_dir / f"{slug}.shp"
     output_srid = utils.get_srid(boundary_file.resolve(strict=True))
