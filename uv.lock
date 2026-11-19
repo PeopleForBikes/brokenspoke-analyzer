@@ -10,6 +10,7 @@ resolution-markers = [
 [manifest]
 members = [
     "brokenspoke-analyzer",
+    "brokenspoke-analyzer-batch",
     "brokenspoke-analyzer-cache-warmer",
     "brokenspoke-analyzer-cli",
     "brokenspoke-analyzer-lib",
@@ -344,6 +345,7 @@ source = { virtual = "." }
 [package.dev-dependencies]
 dev = [
     { name = "bpython" },
+    { name = "brokenspoke-analyzer-batch" },
     { name = "brokenspoke-analyzer-cache-warmer" },
     { name = "brokenspoke-analyzer-cli" },
     { name = "brokenspoke-analyzer-lib" },
@@ -383,6 +385,7 @@ dev = [
 [package.metadata.requires-dev]
 dev = [
     { name = "bpython", specifier = ">=0.26,<0.27" },
+    { name = "brokenspoke-analyzer-batch", editable = "packages/brokenspoke-analyzer-batch" },
     { name = "brokenspoke-analyzer-cache-warmer", editable = "packages/brokenspoke-analyzer-cache-warmer" },
     { name = "brokenspoke-analyzer-cli", editable = "packages/brokenspoke-analyzer-cli" },
     { name = "brokenspoke-analyzer-lib", editable = "packages/brokenspoke-analyzer-lib" },
@@ -418,6 +421,22 @@ dev = [
 ]
 
 [[package]]
+name = "brokenspoke-analyzer-batch"
+source = { editable = "packages/brokenspoke-analyzer-batch" }
+dependencies = [
+    { name = "brokenspoke-analyzer-cli" },
+    { name = "brokenspoke-analyzer-lib" },
+    { name = "typer" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "brokenspoke-analyzer-cli", editable = "packages/brokenspoke-analyzer-cli" },
+    { name = "brokenspoke-analyzer-lib", editable = "packages/brokenspoke-analyzer-lib" },
+    { name = "typer", specifier = ">=0.29.2,<0.30" },
+]
+
+[[package]]
 name = "brokenspoke-analyzer-cache-warmer"
 source = { editable = "packages/brokenspoke-analyzer-cache-warmer" }
 dependencies = [
@@ -439,7 +458,7 @@ requires-dist = [
     { name = "pycountry", specifier = ">=26.2.16" },
     { name = "pyrosm", specifier = ">=0.26.0" },
     { name = "rich", specifier = ">=15.0.0,<16" },
-    { name = "typer", specifier = ">=0.27.3,<0.28" },
+    { name = "typer", specifier = ">=0.29.2,<0.30" },
     { name = "us", specifier = ">=3.2.0,<5" },
 ]
 
