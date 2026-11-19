@@ -3,12 +3,12 @@ Wraps the bna run-with command to process a batch of cities from a CSV file.
 
 From the root of this repository run:
 ```bash
-uv run python utils/bna-batch.py
+uv run bna-batch --help
 ```
 ## Usage
 
 ```bash
-bna-batch.py [OPTIONS] [BATCH_FILE]
+bna-batch [OPTIONS] [BATCH_FILE]
 ```
 
 ### options
@@ -83,7 +83,7 @@ def main(
     batch_file: BatchFile = pathlib.Path("cities.csv"),
     export_dir: common.ExportDirOpt = common.DEFAULT_EXPORT_DIR,
     lodes_year: common.LODESYear = None,
-    parts: common.ComputeParts = None,
+    with_parts: common.ComputeParts = None,
     worldpop_year: common.WorldPopYear = common.DEFAULT_WORLDPOP_YEAR,
 ) -> None:
     """Process a batch of cities."""
@@ -96,8 +96,8 @@ def main(
     # Enable cache.
     os.environ["BNA_CACHING_STRATEGY"] = "USER_CACHE"
 
-    if not parts:
-        parts = [constant.ComputePart.MEASURE]
+    if not with_parts:
+        with_parts = [constant.ComputePart.MEASURE]
 
     # Read the CSV file.
     with batch_file.open() as f:
@@ -118,10 +118,15 @@ def main(
                 fips_code=fips_code,
                 lodes_year=lodes_year,
                 region=region,
-                with_parts=parts,
+                with_parts=with_parts,
                 worldpop_year=worldpop_year,
             )
 
 
-if __name__ == "__main__":
+def app() -> None:
+    """Run the batch command line."""
     typer.run(main)
+
+
+if __name__ == "__main__":
+    app()

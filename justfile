@@ -3,8 +3,9 @@ set positional-arguments
 lib_pkg := "packages/brokenspoke-analyzer-lib"
 cli_pkg := "packages/brokenspoke-analyzer-cli"
 cache_warmer_pkg := "packages/brokenspoke-analyzer-cache-warmer"
-src_dirs := lib_pkg / "src" + " " + cli_pkg / "src" + " " + cache_warmer_pkg / "src"
-test_dirs := lib_pkg / "tests" + " " + cli_pkg / "tests" + " " + cache_warmer_pkg / "tests"
+batch_pkg := "packages/brokenspoke-analyzer-batch"
+src_dirs := lib_pkg / "src" + " " + cli_pkg / "src" + " " + cache_warmer_pkg / "src" + " " + batch_pkg / "src"
+test_dirs := lib_pkg / "tests" + " " + cli_pkg / "tests" + " " + cache_warmer_pkg / "tests" + " " + batch_pkg / "tests"
 sql_dir := lib_pkg / "src/brokenspoke_analyzer_lib/scripts/sql"
 utils_dir := "utils"
 docker_image := "ghcr.io/peopleforbikes/brokenspoke-analyzer"
@@ -58,7 +59,7 @@ fmt-python:
 
 # Run the unit tests across all the workspace members.
 test *extra_args='':
-    uv run pytest --cov=brokenspoke_analyzer_lib --cov=brokenspoke_analyzer_cli --cov=brokenspoke_analyzer_cache_warmer -x $@
+    uv run pytest --cov=brokenspoke_analyzer_lib --cov=brokenspoke_analyzer_cli --cov=brokenspoke_analyzer_cache_warmer --cov=brokenspoke_analyzer_batch -x $@
 
 # Build the documentation
 docs:

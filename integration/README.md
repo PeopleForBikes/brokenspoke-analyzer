@@ -42,14 +42,14 @@ complete...) or it can use the files partitioned by test sizes (e.g.
 `e2e-cities-xs.csv).
 
 ```bash
-uv run python utils/bna-batch.py e2e-cities-xs.csv
+uv run bna-batch e2e-cities-xs.csv
 ```
 
 Specifying the analysis part to only be `measure` significantly speeds up the
 tests while running through the full process:
 
 ```bash
-uv run python utils/bna-batch.py --with-parts measure e2e-cities-xs.csv
+uv run bna-batch --with-parts measure e2e-cities-xs.csv
 ```
 
 ### Individual
