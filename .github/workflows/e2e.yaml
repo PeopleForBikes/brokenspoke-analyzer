@@ -23,12 +23,11 @@ env:
   TEST_STATE: "new mexico"
   TEST_CITY: "santa rosa"
   TEST_FIPS: "3570670"
-  # Geofabrik refuses connections from the GitHub-hosted runner IP ranges, so the
-  # OSM region file is downloaded from the `e2e-fixtures` release of this
-  # repository instead, then cached. The data does not need to be fresh: to
-  # refresh it, replace the release assets and bump the cache key suffix.
-  OSM_CACHE_KEY: e2e-osm-new-mexico-v1
-  OSM_URL: ${{ github.server_url }}/${{ github.repository }}/releases/download/e2e-fixtures/new-mexico-latest.osm.pbf
+  # The OSM region file is downloaded from Geofabrik once, then cached, so the
+  # test jobs never hit Geofabrik themselves. The data does not need to be
+  # fresh: to refresh it, bump the cache key suffix.
+  OSM_CACHE_KEY: e2e-osm-new-mexico-v2
+  OSM_URL: https://download.geofabrik.de/north-america/us/new-mexico/new-mexico-latest.osm.pbf
 
 jobs:
   osm-data:
