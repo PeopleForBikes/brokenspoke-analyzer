@@ -168,8 +168,15 @@ mapping is in the [Data Models](design.md#data-models) section of `design.md`.
     - `test_bna_is_a_namespace_package`: `import bna`, assert
       `bna.__file__ is None`, and assert the library's own `src/bna` directory
       (`Path(__file__).resolve().parents[1] / "src" / "bna"`) is in
-      `bna.__path__`.
+      `bna.__path__`, comparing resolved paths.
   - _Requirements: 3.2, 4.1, 4.2, 4.3, 4.4_
+  - [x] 6.1 Bundled script tests (added after the spec review)
+    - Create `packages/lib/tests/test_scripts.py`: each SQL script folder
+      (`connectivity`, `features`, `stress`) resolves from `bna.lib.scripts.sql`
+      and holds SQL files, and `ingestor.script_dir` holds
+      `mapconfig_cycleway.xml`, `mapconfig_highway.xml` and `pfb.style`.
+    - Hiding one of the files makes its test fail.
+    - _Requirements: 3.6_
 
 - [x] 7. Checkpoint: code and tests
   - `just lint-python` and `just lint-sql` pass.
@@ -178,15 +185,17 @@ mapping is in the [Data Models](design.md#data-models) section of `design.md`.
     `bna/cache_warmer` are excluded by the root `[tool.coverage.run] omit`,
     exactly as their old names were before the rename.)
   - `uv run pytest --collect-only -q` collects the baseline from task 1 plus the
-    2 guardrail tests and the 2 `--version` regression tests of task 5.2.
+    2 guardrail tests, the 2 `--version` regression tests of task 5.2 and the 6
+    bundled script tests of task 6.1.
   - `cd packages/<member> && uv run pytest` passes for each of the four members,
     and the library run includes the guardrail tests.
   - `uv run python -c "import bna.lib, bna.cli, bna.batch, bna.cache_warmer"`
     succeeds.
   - Prove the guardrail: create an empty `packages/batch/src/bna/__init__.py`,
     confirm both guardrail tests fail and the first names
-    `packages/batch/src/bna/__init__.py`, then delete the file and confirm they
-    pass again.
+    `packages/batch/src/bna/__init__.py`, then delete the file and the
+    `__pycache__/` the failing import left next to it, and confirm they pass
+    again.
   - _Requirements: 3.3, 4.1, 4.2, 4.3, 4.4, 6.2, 6.3, 6.4, 7.1_
 
 - [x] 8. Update the `Dockerfile`

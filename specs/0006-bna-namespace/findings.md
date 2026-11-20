@@ -5,15 +5,20 @@ looks like a bug unless you know it is deliberate, traps in the libraries and
 tools, and what worked. Each entry says what the rule is, how it was caught, and
 what it cost.
 
-Status: complete for tasks 1–10; task 11 verified except the Docker image check
-(Docker is denied in the implementation sandbox) and `git log --follow` (needs
-the staged moves committed). Keep it current as the code changes.
+Status: complete for tasks 1–10. Task 11: everything passes except the two
+checks run inside the Docker image (`--help`, and the SQL lookup with the
+entrypoint overridden), which are still pending. Docker is denied in the
+implementation sandbox, so `just docker-build` was run by a developer on their
+own machine on 2026-11-20 and succeeded, installing the `bna_lib` and `bna_cli`
+wheels. Every other check ran in the sandbox. `git log --follow` passes since
+the moves were committed on their own (`9f4d632`). Keep it current as the code
+changes.
 
 ## 1. Behavior that does not survive a naive implementation
 
 ### 1.1 A stale distribution name broke every `bna` subcommand
 
-`packages/cli/src/bna/cli/root.py:63` reads the version with
+`_version_callback` in `packages/cli/src/bna/cli/root.py` reads the version with
 `metadata.version("<distribution name>")` inside the `--version` option
 callback. Click runs option callbacks on every invocation (with `value=False`
 when the flag is absent), and the lookup happens before the `if value:` check,
@@ -73,6 +78,19 @@ failed with "No such file or directory".
 **Cost**: none after recovery; the index was verified back at 143 renames, 0
 insertions, 0 deletions. Use `sed`/copies, not stash, to toggle a fix in a
 partially staged tree.
+
+### 2.3 `bna.__path__` keeps `sys.path` entries as given
+
+The portions in `bna.__path__` come from `sys.path` (the editable installs'
+`.pth` files) and are not resolved, while a test's own location usually goes
+through `Path(__file__).resolve()`. Comparing the two as strings fails when the
+checkout is reached through a symlink, even though the namespace is fine.
+`packages/lib/tests/test_namespace.py` resolves every portion before comparing.
+
+**Caught by**: the spec review of the guardrail test.
+
+**Cost**: none yet: no developer has used a symlinked checkout. The fixed test
+passes when run through a symlink to the repository.
 
 ## 3. Method — what actually worked
 

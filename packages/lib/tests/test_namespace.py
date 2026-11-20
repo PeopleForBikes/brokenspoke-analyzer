@@ -29,4 +29,6 @@ def test_no_member_ships_a_bna_init() -> None:
 def test_bna_is_a_namespace_package() -> None:
     """Ensure ``bna`` imports as a namespace package including this member."""
     assert bna.__file__ is None, f"bna is a regular package from {bna.__file__}"
-    assert str(LIB_MEMBER_DIR / "src" / "bna") in list(bna.__path__)
+    # Compare resolved paths: sys.path entries keep symlinks as given.
+    portions = {pathlib.Path(portion).resolve() for portion in bna.__path__}
+    assert LIB_MEMBER_DIR / "src" / "bna" in portions
