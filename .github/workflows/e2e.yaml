@@ -6,6 +6,16 @@ on:
       - opened
       - synchronize
       - reopened
+  # Runs on `main` seed the OSM cache: caches created by a pull request are only
+  # visible to that pull request, whereas caches created on `main` are visible
+  # to every pull request. The schedule keeps the cache from being evicted
+  # (GitHub drops entries that are not accessed for 7 days).
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "0 6 * * 0"
+  workflow_dispatch:
 
 env:
   TEST_TAG: test/brokenspoke-analyzer:test
@@ -13,6 +23,10 @@ env:
   TEST_STATE: "new mexico"
   TEST_CITY: "santa rosa"
   TEST_FIPS: "3570670"
+  # Geofabrik rate-limits/blocks the GitHub-hosted runner IP ranges, so the OSM
+  # region file is cached instead of being downloaded on every run. The data
+  # does not need to be fresh: bump the suffix to force a new download.
+  OSM_CACHE_KEY: e2e-osm-new-mexico-v1
 
 jobs:
   osm2pgrouting3:
@@ -96,9 +110,22 @@ jobs:
       - name: Configure Docker
         run: |
           uv run bna configure docker
+      - name: Restore the cached OSM region file
+        id: restore-osm
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/bna-cache/osm
+          key: ${{ env.OSM_CACHE_KEY }}
       - name: Prepare the files for the analysis
         run: |
-          uv run bna prepare "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
+          mkdir -p "${{ runner.temp }}/bna-cache"
+          uv run bna prepare --cache-dir "${{ runner.temp }}/bna-cache" "${{ env.TEST_COUNTRY }}" "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
+      - name: Save the OSM region file to the cache
+        if: steps.restore-osm.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/bna-cache/osm
+          key: ${{ env.OSM_CACHE_KEY }}
 
       - name: Import the files for the analysis
         run: |
@@ -158,11 +185,27 @@ jobs:
         run: >
           docker run --rm --network ${{ job.services.postgres.network }} -e DATABASE_URL
           ${{ env.TEST_TAG }} -vv configure custom 4 4096 postgres
+      - name: Restore the cached OSM region file
+        id: restore-osm
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/bna-cache/osm
+          key: ${{ env.OSM_CACHE_KEY }}
+      - name: Create the cache directory
+        # Must exist beforehand, otherwise Docker creates it as root.
+        run: mkdir -p "${{ runner.temp }}/bna-cache"
       - name: Run full analysis
         run: >
-          docker run --rm --network ${{ job.services.postgres.network }} -e DATABASE_URL
-          ${{ env.TEST_TAG }} -vv run --no-cache "${{ env.TEST_COUNTRY }}" "${{
-          env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
+          docker run --rm --network ${{ job.services.postgres.network }} -u "$(id
+          -u):$(id -g)" -v "${{ runner.temp }}/bna-cache:/cache" -e DATABASE_URL
+          ${{ env.TEST_TAG }} -vv run --cache-dir /cache "${{ env.TEST_COUNTRY }}"
+          "${{ env.TEST_CITY }}" "${{ env.TEST_STATE }}" "${{ env.TEST_FIPS }}"
+      - name: Save the OSM region file to the cache
+        if: steps.restore-osm.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/bna-cache/osm
+          key: ${{ env.OSM_CACHE_KEY }}
       - name: Export the results
         run: >
           docker run --rm --network ${{ job.services.postgres.network }} -u $(id
