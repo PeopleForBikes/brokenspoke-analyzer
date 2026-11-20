@@ -28,18 +28,51 @@ GEOFABRIK = "https://download.geofabrik.de"
             "castilla y león",
             "europe/spain/castilla-y-leon/castilla-y-leon-latest.osm.pbf",
         ),
+        ("act", "australia-oceania/australia/act/act-latest.osm.pbf"),
+        (
+            "cocos islands",
+            "australia-oceania/australia/cocos-islands/cocos-islands-latest.osm.pbf",
+        ),
         # From the custom region name mapping.
+        (
+            "australian capital territory",
+            "australia-oceania/australia/act/act-latest.osm.pbf",
+        ),
+        ("berlin", "europe/germany/berlin/berlin-latest.osm.pbf"),
+        ("bremen", "europe/germany/bremen/bremen-latest.osm.pbf"),
+        (
+            "bristol",
+            "europe/united-kingdom/england/bristol/bristol-latest.osm.pbf",
+        ),
+        (
+            "brunei",
+            "asia/malaysia-singapore-brunei/malaysia-singapore-brunei-latest.osm.pbf",
+        ),
+        ("czechia", "europe/czech-republic/czech-republic-latest.osm.pbf"),
+        ("georgia", "north-america/us/georgia/georgia-latest.osm.pbf"),
+        ("groningen", "europe/netherlands/groningen/groningen-latest.osm.pbf"),
+        ("hamburg", "europe/germany/hamburg/hamburg-latest.osm.pbf"),
+        (
+            "ireland",
+            "europe/ireland-and-northern-ireland/ireland-and-northern-ireland-latest.osm.pbf",
+        ),
         ("madrid", "europe/spain/madrid/madrid-latest.osm.pbf"),
         (
             "malaysia",
             "asia/malaysia-singapore-brunei/malaysia-singapore-brunei-latest.osm.pbf",
         ),
-        # From the custom URL mapping.
-        ("georgia", "north-america/us/georgia/georgia-latest.osm.pbf"),
-        ("berlin", "europe/germany/berlin/berlin-latest.osm.pbf"),
         (
-            "cocos islands",
-            "australia-oceania/australia/cocos-islands/cocos-islands-latest.osm.pbf",
+            "northern ireland",
+            "europe/ireland-and-northern-ireland/ireland-and-northern-ireland-latest.osm.pbf",
+        ),
+        (
+            "singapore",
+            "asia/malaysia-singapore-brunei/malaysia-singapore-brunei-latest.osm.pbf",
+        ),
+        ("utrecht", "europe/netherlands/utrecht/utrecht-latest.osm.pbf"),
+        (
+            "victoria",
+            "australia-oceania/australia/victoria/victoria-latest.osm.pbf",
         ),
     ],
 )
