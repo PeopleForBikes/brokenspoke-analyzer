@@ -26,6 +26,56 @@ from brokenspoke_analyzer_lib.utils import unzip
 # TIGER base URL -- Topologically Integrated Geographic Encoding and Referencing.
 TIGER_URL = yarl.URL("https://www2.census.gov/geo/tiger/")
 
+# Suffix of the latest Geofabrik extracts.
+GEOFABRIK_LATEST_SUFFIX = "-latest.osm.pbf"
+
+
+def nest_geofabrik_url(url: yarl.URL) -> yarl.URL:
+    """
+    Move a flat Geofabrik extract URL into the extract's own directory.
+
+    This is a temporary workaround for an outdated `pyrosm` URL scheme.
+
+    On 2026-11-20, every OSM region download started failing, which first
+    showed up as failing e2e tests. Geofabrik had moved every extract from
+    ``<parent>/<name>-latest.osm.pbf`` to
+    ``<parent>/<name>/<name>-latest.osm.pbf`` (see
+    https://download.geofabrik.de/index-v1-nogeom.json), and the old URLs no
+    longer work. `pyrosm`, which we use to look up the extract URLs, still
+    builds the flat URLs, even in its latest release at the time (0.29.0). As a
+    result, the analyzer could no longer download any region, so we rewrite
+    the URLs here.
+
+    The `pyrosm` maintainers were informed in
+    https://github.com/pyrosm/pyrosm/issues/1081. Once a `pyrosm` release
+    returns the nested URLs, bump the dependency and remove this function.
+    Until then, URLs that are already nested are returned unchanged.
+
+    Only Geofabrik URLs are supported.
+
+    Parameters:
+        url: Geofabrik extract URL.
+
+    Returns:
+        The URL of the extract inside its own directory.
+
+    Example:
+        >>> u = yarl.URL("https://download.geofabrik.de/north-america/us/new-mexico-latest.osm.pbf")
+        >>> str(nest_geofabrik_url(u))
+        'https://download.geofabrik.de/north-america/us/new-mexico/new-mexico-latest.osm.pbf'
+        >>> u = yarl.URL("https://download.geofabrik.de/europe/germany-latest.osm.pbf")
+        >>> str(nest_geofabrik_url(u))
+        'https://download.geofabrik.de/europe/germany/germany-latest.osm.pbf'
+        >>> str(nest_geofabrik_url(nest_geofabrik_url(u)))
+        'https://download.geofabrik.de/europe/germany/germany-latest.osm.pbf'
+    """
+    if not url.name.endswith(GEOFABRIK_LATEST_SUFFIX):
+        return url
+    name = url.name.removesuffix(GEOFABRIK_LATEST_SUFFIX)
+    if url.parent.name == name:
+        return url
+    return url.parent / name / url.name
+
 
 class SourceAdapter(ABC):
     """Abstract base class for data source adapters."""
@@ -376,10 +426,13 @@ class OSMAdapter(SourceAdapter):
           we must define an exception for the countries of Malaysia, Singapore
           and Brunei as they have been grouped together in the Geofabrik
           dataset.
+        - Madrid is both a Spanish community and a BBBike city extract in
+          `pyrosm`, so it must be qualified with its region.
 
         """
         custom_region_mapping: dict[str, str] = {
             "brunei": "malaysia_singapore_brunei",
+            "madrid": "spain/madrid",
             "malaysia": "malaysia_singapore_brunei",
             "singapore": "malaysia_singapore_brunei",
         }
@@ -393,8 +446,6 @@ class OSMAdapter(SourceAdapter):
 
         Exception list:
         ---------------
-        - Spanish regions are not yet supported upstream due to a bug in `pyrosm`
-            (https://github.com/pyrosm/pyrosm/pull/381).
         - Australian regions are not yet supported upstream.
         - Georgia points to the US state on purpose.
         - Removing `pyrosm` ambiguities between cities and regions for multiple cities:
@@ -410,40 +461,24 @@ class OSMAdapter(SourceAdapter):
             "act": u / "australia-oceania/australia/act-latest.osm.pbf",
             "australian_capital_territory": u
             / "australia-oceania/australia/act-latest.osm.pbf",
-            "andalucia": u / "europe/spain/andalucia-latest.osm.pbf",
-            "aragon": u / "europe/spain/aragón-latest.osm.pbf",
             "ashmore_cartier": u
             / "australia-oceania/australia/ashmore-cartier-latest.osm.pbf",
-            "asturias": u / "europe/spain/asturias-latest.osm.pbf",
             "berlin": u / "europe/germany/berlin-latest.osm.pbf",
             "bremen": u / "europe/germany/bremen-latest.osm.pbf",
             "bristol": u / "europe/united-kingdom/england/bristol-latest.osm.pbf",
-            "cantabria": u / "europe/spain/cantabria-latest.osm.pbf",
-            "castilla_y_leon": u / "europe/spain/castilla-y-leon-latest.osm.pbf",
-            "castilla_la_mancha": u / "europe/spain/castilla-la-mancha-latest.osm.pbf",
-            "cataluna": u / "europe/spain/cataluna-latest.osm.pbf",
-            "ceuta": u / "europe/spain/ceuta-latest.osm.pbf",
             "christmas_island": u
             / "australia-oceania/australia/christmas-island-latest.osm.pbf",
             "cocos_islands": u
-            / "australia-oceania/australia/cocos-keeling-latest.osm.pbf",
+            / "australia-oceania/australia/cocos-islands-latest.osm.pbf",
             "coral_sea_islands": u
             / "australia-oceania/australia/coral-sea-islands-latest.osm.pbf",
             "czechia": u / "europe/czech-republic-latest.osm.pbf",
-            "extremadura": u / "europe/spain/extremadura-latest.osm.pbf",
-            "galicia": u / "europe/spain/galicia-latest.osm.pbf",
             "georgia": u / "north-america/us/georgia-latest.osm.pbf",
             "groningen": u / "europe/netherlands/groningen-latest.osm.pbf",
             "hamburg": u / "europe/germany/hamburg-latest.osm.pbf",
             "heard_mcdonald": u
             / "australia-oceania/australia/heard-mcdonald-latest.osm.pbf",
             "ireland": u / "europe/ireland-and-northern-ireland-latest.osm.pbf",
-            "islas_baleares": u / "europe/spain/islas-baleares-latest.osm.pbf",
-            "la_rioja": u / "europe/spain/la-rioja-latest.osm.pbf",
-            "madrid": u / "europe/spain/madrid-latest.osm.pbf",
-            "melilla": u / "europe/spain/melilla-latest.osm.pbf",
-            "murcia": u / "europe/spain/murcia-latest.osm.pbf",
-            "navarra": u / "europe/spain/navarra-latest.osm.pbf",
             "new_south_wales": u
             / "australia-oceania/australia/new-south-wales-latest.osm.pbf",
             "norfolk_island": u
@@ -452,13 +487,11 @@ class OSMAdapter(SourceAdapter):
             / "australia-oceania/australia/northern-territory-latest.osm.pbf",
             "northern_ireland": u
             / "europe/ireland-and-northern-ireland-latest.osm.pbf",
-            "pais_vasco": u / "europe/spain/pais-vasco-latest.osm.pbf",
             "queensland": u / "australia-oceania/australia/queensland-latest.osm.pbf",
             "south_australia": u
             / "australia-oceania/australia/south-australia-latest.osm.pbf",
             "tasmania": u / "australia-oceania/australia/tasmania-latest.osm.pbf",
             "utrecht": u / "europe/netherlands/utrecht-latest.osm.pbf",
-            "valencia": u / "europe/spain/valencia-latest.osm.pbf",
             "victoria": u / "australia-oceania/australia/victoria-latest.osm.pbf",
             "western_australia": u
             / "australia-oceania/australia/western-australia-latest.osm.pbf",
@@ -472,13 +505,16 @@ class OSMAdapter(SourceAdapter):
 
         # Lookup for a custom URL mapping for the region.
         if custom_url := self.map_region_url(region):
+            custom_url = nest_geofabrik_url(custom_url)
             return {"name": custom_url.name, "url": str(custom_url)}
 
         # lookup for a custom region mapping for the region.
         region = self.map_region_name(region)
 
-        # Retrieve the dataset metadata from pyrosm.
-        return data.search_source(region)
+        # Retrieve the dataset metadata from pyrosm, fixing its outdated URLs.
+        dataset = dict(data.search_source(region))
+        dataset["url"] = str(nest_geofabrik_url(yarl.URL(dataset["url"])))
+        return dataset
 
     def validate(self, datastore: pathlib.Path) -> None:
         """Validate downloaded data."""
