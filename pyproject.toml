@@ -85,7 +85,9 @@ omit = [
 minversion = "6.0"
 addopts = "-p no:warnings --cov-report term-missing --cov-report html --xdoctest"
 testpaths = [
+  "packages/brokenspoke-analyzer-lib/src",
   "packages/brokenspoke-analyzer-lib/tests",
+  "packages/brokenspoke-analyzer-cli/src",
   "packages/brokenspoke-analyzer-cli/tests",
 ]
 markers = [
