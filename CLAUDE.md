@@ -113,6 +113,9 @@ The pipeline is: **prepare → configure → import → compute → export**, an
   command, so it is unaffected by the package split.
 - `utils/` — standalone maintenance scripts, linted/formatted alongside the
   members but not part of any installed package.
+- `specs/learnings/` (at the root and in workspace members) — documented
+  solutions to past problems and team decisions, by category, with frontmatter
+  (`modules`, `tags`); relevant when working in those areas.
 
 ## Conventions
 
