@@ -47,6 +47,7 @@ jobs:
           cd bna-cache/osm
           for url in "${OSM_URL}.md5" "${OSM_URL}"; do
             curl --fail --location --verbose --silent --show-error \
+              --user-agent "GitHubActions-OSM-Pipeline/1.0" \
               --connect-timeout 30 --retry 5 --retry-all-errors --retry-delay 30 \
               --remote-name "${url}"
           done
