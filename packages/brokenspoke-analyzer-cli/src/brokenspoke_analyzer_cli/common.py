@@ -18,6 +18,7 @@ DEFAULT_BUFFER = constant.DEFAULT_BUFFER
 DEFAULT_CITY_FIPS_CODE = constant.DEFAULT_CITY_FIPS_CODE
 DEFAULT_COMPUTE_PARTS = constant.DEFAULT_COMPUTE_PARTS
 DEFAULT_MAX_TRIP_DISTANCE = constant.DEFAULT_MAX_TRIP_DISTANCE
+DEFAULT_RETRIES = constant.DEFAULT_RETRIES
 
 # Default constants specific to the CLI.
 DEFAULT_BLOCK_POPULATION = 100
@@ -28,7 +29,6 @@ DEFAULT_DATA_DIR = pathlib.Path("./data").resolve()
 DEFAULT_DOCKER_IMAGE = "azavea/pfb-network-connectivity:0.19.0"
 DEFAULT_EXPORT_DIR = pathlib.Path("./results").resolve()
 DEFAULT_LODES_YEAR = 2022
-DEFAULT_RETRIES = 2
 DEFAULT_WORLDPOP_YEAR: int = datetime.now(tz=UTC).year
 
 # Default Typer Arguments/Options.
@@ -105,8 +105,7 @@ Region = Annotated[
     typer.Argument(help="world region (e.g., state, province, community, etc...)"),
 ]
 Retries = Annotated[
-    int,
-    typer.Option(help="number of times to retry downloading files"),
+    int, typer.Option(min=0, help="number of times to retry downloading files")
 ]
 SpeedLimit = Annotated[
     int | None,

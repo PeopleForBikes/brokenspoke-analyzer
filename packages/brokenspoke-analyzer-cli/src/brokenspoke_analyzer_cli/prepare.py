@@ -53,8 +53,6 @@ def prepare_cmd(
         raise ValueError("`block_size` must be set")
     if not block_population:
         raise ValueError("`block_population` must be set")
-    if not retries:
-        raise ValueError("`retries` must be set")
 
     # Handles us/usa as the same country.
     country = utils.normalize_country_name(country)
@@ -82,6 +80,7 @@ def prepare_cmd(
             mirror=mirror or None,
             no_cache=bool(no_cache),
             region=region or None,
+            retries=retries,
             worldpop_year=worldpop_year,
         ),
     )
@@ -101,6 +100,7 @@ async def prepare_(  # noqa: PLR0915
     lodes_year: int | None,
     mirror: str | None,
     region: str | None,
+    retries: int,
     worldpop_year: int,
 ) -> None:
     """Prepare and kicks off the analysis."""
@@ -128,6 +128,7 @@ async def prepare_(  # noqa: PLR0915
         caching_strategy,
         mirror=mirror,
         custom_dir=cache_dir,
+        retries=retries,
     )
 
     # Derive some information from the input.

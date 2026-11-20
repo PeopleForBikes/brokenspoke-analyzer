@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import enum
 import pathlib
 from typing import TYPE_CHECKING
@@ -38,6 +39,44 @@ if TYPE_CHECKING:
 
 
 CHUNK_SIZE = 5 * 1024 * 1024  # 5MB
+
+# HTTP statuses worth retrying: the server is overloaded, rate limiting, or timed
+# out. Any other error status (e.g. 403 when being blocked, 404) fails right away.
+RETRYABLE_HTTP_STATUSES = frozenset({408, 425, 429, 500, 502, 503, 504})
+
+
+def is_retryable(exc: BaseException) -> bool:
+    """
+    Check whether a download error is transient and worth retrying.
+
+    Parameters:
+        exc: the exception raised while downloading.
+
+    Returns:
+        ``True`` for timeouts, connection failures, truncated payloads and
+        retryable HTTP statuses, ``False`` otherwise.
+
+    Example:
+        >>> import aiohttp
+        >>> is_retryable(TimeoutError())
+        True
+        >>> is_retryable(aiohttp.ServerDisconnectedError())
+        True
+        >>> def http_error(status):
+        ...     return aiohttp.ClientResponseError(None, (), status=status)
+        >>> is_retryable(http_error(503))
+        True
+        >>> is_retryable(http_error(403))
+        False
+        >>> is_retryable(ValueError())
+        False
+    """
+    if isinstance(exc, aiohttp.ClientResponseError):
+        return exc.status in RETRYABLE_HTTP_STATUSES
+    return isinstance(
+        exc,
+        TimeoutError | aiohttp.ClientConnectionError | aiohttp.ClientPayloadError,
+    )
 
 
 def exists(store: ObjectStore, path: str) -> bool:
@@ -82,6 +121,8 @@ class BNADataStore:
         *,
         mirror: str | None = None,
         custom_dir: pathlib.Path | None = None,
+        retries: int = constant.DEFAULT_RETRIES,
+        retry_delay: float = constant.DEFAULT_RETRY_DELAY,
     ) -> None:
         """
         Initialize the BNA data store.
@@ -95,10 +136,24 @@ class BNADataStore:
 
         If a mirror is specified, it is used instead of the original URL.
 
+        Downloads failing with a transient error (see `is_retryable`) are
+        retried up to `retries` times, waiting `retry_delay` seconds before the
+        first retry and doubling the delay after each one.
+
+        Raises:
+            ValueError: if `path` is not absolute, if `retries` or
+                `retry_delay` is negative, or if `cache_type` is `CUSTOM`
+                without a `custom_dir`.
         """
         # `path` MUST start with '/'.
         if not str(path).startswith("/"):
             raise ValueError(f"path must start with '/': {path}")
+        if retries < 0:
+            raise ValueError(f"retries must be positive or zero: {retries}")
+        if retry_delay < 0:
+            raise ValueError(f"retry_delay must be positive or zero: {retry_delay}")
+        self.retries = retries
+        self.retry_delay = retry_delay
 
         # Define the common data store options.
         client_options = {"timeout": "1h"}
@@ -192,7 +247,14 @@ class BNADataStore:
         url: str,
         path: str,
     ) -> None:
-        """Fetch a file into the cache."""
+        """
+        Fetch a file into the cache, retrying on transient errors.
+
+        Raises:
+            aiohttp.ClientError: if the download fails with a non-retryable
+                error, or if it still fails after all the retries.
+            TimeoutError: if the download still times out after all the retries.
+        """
         logger.debug(f"fetching {url}")
         # Check whether the file already exists in the cache.
         if self.is_cached(path):
@@ -200,6 +262,30 @@ class BNADataStore:
             return
 
         # If not, download it from the url and store it into the cache data store.
+        attempt = 0
+        while True:
+            try:
+                await self.download_to_cache(session, url, path)
+            except (aiohttp.ClientError, TimeoutError) as exc:
+                if attempt >= self.retries or not is_retryable(exc):
+                    raise
+                delay = self.retry_delay * 2**attempt
+                attempt += 1
+                logger.warning(
+                    f"failed to fetch {url} ({exc!r}), "
+                    f"retry {attempt}/{self.retries} in {delay:g}s"
+                )
+                await asyncio.sleep(delay)
+            else:
+                return
+
+    async def download_to_cache(
+        self,
+        session: aiohttp.ClientSession,
+        url: str,
+        path: str,
+    ) -> None:
+        """Download a file into the cache, removing any partial artifact on error."""
         async with session.get(url) as resp:
             resp.raise_for_status()
             try:
