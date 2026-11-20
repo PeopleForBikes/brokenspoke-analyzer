@@ -15,7 +15,7 @@ The cache will be populated with the following items:
 
 From the root of this repository run:
 ```bash
-uv run python utils/cache-warmer.py
+uv run bna-cache-warmer --help
 ```
 """
 
@@ -129,11 +129,12 @@ async def _run_downloads(
 
         # Build the list of regions to download.
         osm_regions = []
-        osm_regions.extend(chain.from_iterable(data.available["regions"].values()))  # # ty:ignore[missing-attribute]
+        osm_regions.extend(chain.from_iterable(data.available["regions"].values()))  # ty:ignore[missing-union-attribute]
         osm_regions.extend(
             map(
-                str.lower, chain.from_iterable(data.available["subregions"].values())
-            )  # # ty:ignore[missing-attribute]
+                str.lower,
+                chain.from_iterable(data.available["subregions"].values()),  # ty:ignore[missing-union-attribute]
+            )
         )
         osm_regions.extend(
             [
