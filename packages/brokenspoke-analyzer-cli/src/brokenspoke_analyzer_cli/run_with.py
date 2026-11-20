@@ -46,6 +46,7 @@ def compose(
     lodes_year: common.LODESYear = None,
     max_trip_distance: common.MaxTripDistance = common.DEFAULT_MAX_TRIP_DISTANCE,
     mirror: common.Mirror = None,
+    retries: common.Retries = common.DEFAULT_RETRIES,
     s3_bucket: str | None = None,
     with_export: exporter.Exporter = exporter.Exporter.local,
     with_parts: common.ComputeParts = common.DEFAULT_COMPUTE_PARTS,
@@ -81,6 +82,7 @@ def compose(
                 mirror=mirror,
                 no_cache=no_cache,
                 region=region,
+                retries=retries,
                 s3_bucket=s3_bucket,
                 with_bundle=with_bundle,
                 with_export=with_export,
@@ -120,6 +122,7 @@ async def run_(  # noqa: C901, PLR0912, PLR0915
     mirror: common.Mirror = None,
     no_cache: common.NoCache = False,
     region: str | None = None,
+    retries: int = common.DEFAULT_RETRIES,
     s3_bucket: str | None = None,
     s3_dir: pathlib.Path | None = None,
     with_bundle: bool = False,
@@ -180,6 +183,7 @@ async def run_(  # noqa: C901, PLR0912, PLR0915
         mirror=mirror,
         no_cache=bool(no_cache),
         region=region,
+        retries=retries,
         worldpop_year=worldpop_year,
     )
 
