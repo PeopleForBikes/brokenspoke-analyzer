@@ -1,7 +1,7 @@
-brokenspoke_analyzer_lib.core.compute
-=====================================
+bna.lib.core.compute
+====================
 
-.. automodule:: brokenspoke_analyzer_lib.core.compute
+.. automodule:: bna.lib.core.compute
    :members:
    :undoc-members:
    :show-inheritance:

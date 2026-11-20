@@ -10,12 +10,12 @@ import rich
 import typer
 from loguru import logger
 
-from brokenspoke_analyzer_cli import common
-from brokenspoke_analyzer_lib import (
+from bna.cli import common
+from bna.lib import (
     datastore,
     utils,
 )
-from brokenspoke_analyzer_lib.core import (
+from bna.lib.core import (
     analysis,
     downloader,
     runner,

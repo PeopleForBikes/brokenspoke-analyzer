@@ -10,16 +10,16 @@ from loguru import logger
 from sqlalchemy import text
 lazy from sqlalchemy.engine import Engine
 
-from brokenspoke_analyzer_lib import (
+from bna.lib import (
     constant,
     utils,
 )
-from brokenspoke_analyzer_lib.core import (
+from bna.lib.core import (
     analysis,
     downloader,
     runner,
 )
-from brokenspoke_analyzer_lib.database import dbcore
+from bna.lib.database import dbcore
 
 # Define table constants.
 BOUNDARY_TABLE = "neighborhood_boundary"
@@ -29,7 +29,7 @@ STATE_SPEED_TABLE = "state_speed"
 RESIDENTIAL_SPEED_LIMIT_TABLE = "residential_speed_limit"
 US_MIN_OVERLAP_RATIO = 0.5
 INTERNATIONAL_MIN_OVERLAP_RATIO = 0.25
-script_dir = resources.files("brokenspoke_analyzer_lib.scripts")
+script_dir = resources.files("bna.lib.scripts")
 
 # https://gis.stackexchange.com/questions/48949/epsg-3857-or-4326-for-web-mapping
 # The data in Open Street Map database is stored in a gcs with units decimal

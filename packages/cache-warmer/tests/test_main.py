@@ -2,7 +2,7 @@
 
 from typer.testing import CliRunner
 
-from brokenspoke_analyzer_cache_warmer import main
+from bna.cache_warmer import main
 
 runner = CliRunner()
 

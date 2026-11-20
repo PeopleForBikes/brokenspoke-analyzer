@@ -1,7 +1,7 @@
-brokenspoke_analyzer_cli.export
-===============================
+bna.cli.export
+==============
 
-.. automodule:: brokenspoke_analyzer_cli.export
+.. automodule:: bna.cli.export
    :members:
    :undoc-members:
    :show-inheritance:

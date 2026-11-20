@@ -1,7 +1,7 @@
-brokenspoke_analyzer_cli.cache
-==============================
+bna.cli.cache
+=============
 
-.. automodule:: brokenspoke_analyzer_cli.cache
+.. automodule:: bna.cli.cache
    :members:
    :undoc-members:
    :show-inheritance:

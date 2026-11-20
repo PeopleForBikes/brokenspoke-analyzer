@@ -5,8 +5,8 @@ from typing import Annotated
 
 import typer
 
-from brokenspoke_analyzer_cli import common
-from brokenspoke_analyzer_lib.core import (
+from bna.cli import common
+from bna.lib.core import (
     ingestor,
 )
 

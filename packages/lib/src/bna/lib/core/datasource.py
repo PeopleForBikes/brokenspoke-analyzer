@@ -18,10 +18,10 @@ from loguru import logger
 from pyrosm import data
 from shapely.geometry import shape
 
-from brokenspoke_analyzer_lib import (
+from bna.lib import (
     utils,
 )
-from brokenspoke_analyzer_lib.utils import unzip
+from bna.lib.utils import unzip
 
 # TIGER base URL -- Topologically Integrated Geographic Encoding and Referencing.
 TIGER_URL = yarl.URL("https://www2.census.gov/geo/tiger/")

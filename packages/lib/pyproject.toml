@@ -1,5 +1,5 @@
 [project]
-name = "brokenspoke-analyzer-lib"
+name = "bna-lib"
 dynamic = ["version"]
 description = "Core functionality of the BNA analysis."
 authors = [
@@ -28,6 +28,11 @@ dependencies = [
   "yarl>=1.24.5",
 ]
 
+[tool.hatch.build.targets.wheel]
+# bna is a namespace package shared by every member: hatchling cannot detect
+# it, and no member may ship src/bna/__init__.py.
+packages = ["src/bna"]
+
 [tool.hatch.version]
 path = "../../VERSION"
 pattern = "(?P<version>.+)"
@@ -35,11 +40,11 @@ pattern = "(?P<version>.+)"
 [tool.coverage.run]
 omit = [
   "*/__init__.py",
-  "*/brokenspoke_analyzer_lib/constant.py",
-  "*/brokenspoke_analyzer_lib/core/compute.py",
-  "*/brokenspoke_analyzer_lib/core/downloader.py",
-  "*/brokenspoke_analyzer_lib/core/ingestor.py",
-  "*/brokenspoke_analyzer_lib/database/*",
+  "*/bna/lib/constant.py",
+  "*/bna/lib/core/compute.py",
+  "*/bna/lib/core/downloader.py",
+  "*/bna/lib/core/ingestor.py",
+  "*/bna/lib/database/*",
 ]
 
 [tool.pytest.ini_options]

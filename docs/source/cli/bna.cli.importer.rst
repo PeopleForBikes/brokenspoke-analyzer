@@ -1,7 +1,7 @@
-brokenspoke_analyzer_cli.importer
-=================================
+bna.cli.importer
+================
 
-.. automodule:: brokenspoke_analyzer_cli.importer
+.. automodule:: bna.cli.importer
    :members:
    :undoc-members:
    :show-inheritance:

@@ -20,16 +20,16 @@ from osmnx import (
 )
 from osmnx._errors import InsufficientResponseError
 
-from brokenspoke_analyzer_lib import (
+from bna.lib import (
     constant,
     file_utils,
 )
-from brokenspoke_analyzer_lib.core import (
+from bna.lib.core import (
     analysis,
     datasource,
     downloader,
 )
-from brokenspoke_analyzer_lib.core.datasource import (
+from bna.lib.core.datasource import (
     CountySubdivisionAdapter,
     PlaceAdapter,
 )

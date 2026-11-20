@@ -12,7 +12,7 @@ from typing import (
 
 import typer
 
-from brokenspoke_analyzer_lib import (
+from bna.lib import (
     constant,
 )
 

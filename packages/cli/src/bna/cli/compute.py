@@ -10,18 +10,18 @@ import typer
 from loguru import logger
 from rich.console import Console
 
-from brokenspoke_analyzer_cli import (
+from bna.cli import (
     common,
 )
-from brokenspoke_analyzer_lib import (
+from bna.lib import (
     utils,
 )
-from brokenspoke_analyzer_lib.core import (
+from bna.lib.core import (
     analysis,
     compute,
     ingestor,
 )
-from brokenspoke_analyzer_lib.database import dbcore
+from bna.lib.database import dbcore
 
 app = typer.Typer()
 console = rich.get_console()
@@ -48,7 +48,7 @@ def compute_cmd(
     # Prepare directories.
     country = utils.normalize_country_name(country)
     _, _, slug = analysis.osmnx_query(country, city, region)
-    traversable = resources.files("brokenspoke_analyzer_lib.scripts.sql")
+    traversable = resources.files("bna.lib.scripts.sql")
     res = pathlib.Path(traversable._paths[0])  # # ty:ignore[missing-attribute]
     sql_script_dir = res.resolve(strict=True)
     boundary_file = data_dir / f"{slug}.shp"

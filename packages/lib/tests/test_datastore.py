@@ -10,7 +10,7 @@ from typing import (
 import pytest
 from obstore.store import MemoryStore
 
-from brokenspoke_analyzer_lib import (
+from bna.lib import (
     datastore,
 )
 

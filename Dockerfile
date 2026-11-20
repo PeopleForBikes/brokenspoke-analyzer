@@ -62,8 +62,8 @@ COPY --from=builder /usr/src/app/dist ./pkg/dist
 COPY --from=osm2pgrouting3 /usr/src/osm2pgrouting/build/osm2pgrouting /usr/bin/osm2pgrouting
 RUN  pip install pkg/deps/* \
   && pip install \
-  pkg/dist/brokenspoke_analyzer_lib-*-py3-none-any.whl \
-  pkg/dist/brokenspoke_analyzer_cli-*-py3-none-any.whl \
+  pkg/dist/bna_lib-*-py3-none-any.whl \
+  pkg/dist/bna_cli-*-py3-none-any.whl \
   && rm -fr /usr/src/app/pkg \
   && addgroup --system --gid 1001 bna \
   && adduser --system --uid 1001 bna \

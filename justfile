@@ -1,13 +1,13 @@
 set positional-arguments
 
 pkg := "packages"
-lib_pkg := pkg / "brokenspoke-analyzer-lib"
-cache_warmer_pkg := pkg / "brokenspoke-analyzer-cache-warmer"
-cli_pkg := pkg / "brokenspoke-analyzer-cli"
-batch_pkg := pkg / "brokenspoke-analyzer-batch"
+lib_pkg := pkg / "lib"
+cache_warmer_pkg := pkg / "cache-warmer"
+cli_pkg := pkg / "cli"
+batch_pkg := pkg / "batch"
 src_dirs := lib_pkg / "src" + " " + cli_pkg / "src" + " " + cache_warmer_pkg / "src" + " " + batch_pkg / "src"
 test_dirs := lib_pkg / "tests" + " " + cli_pkg / "tests" + " " + cache_warmer_pkg / "tests" + " " + batch_pkg / "tests"
-sql_dir := lib_pkg / "src/brokenspoke_analyzer_lib/scripts/sql"
+sql_dir := lib_pkg / "src/bna/lib/scripts/sql"
 docker_image := "ghcr.io/peopleforbikes/brokenspoke-analyzer"
 e2e_test_dir := "integration"
 e2e_cities_csv := e2e_test_dir / "e2e-cities.csv"
@@ -59,7 +59,7 @@ fmt-python:
 
 # Run the unit tests across all the workspace members.
 test *extra_args='':
-    uv run pytest --cov=brokenspoke_analyzer_lib --cov=brokenspoke_analyzer_cli --cov=brokenspoke_analyzer_cache_warmer --cov=brokenspoke_analyzer_batch -x $@
+    uv run pytest --cov=bna.lib --cov=bna.cli --cov=bna.cache_warmer --cov=bna.batch -x $@
 
 # Build the documentation
 docs:

@@ -1,5 +1,5 @@
-brokenspoke-analyzer-cli
-========================
+bna-cli
+=======
 
 Command line frontend exposing the analysis pipeline as the ``bna``
 command.
@@ -7,13 +7,13 @@ command.
 .. toctree::
    :maxdepth: 1
 
-   brokenspoke_analyzer_cli.root
-   brokenspoke_analyzer_cli.cache
-   brokenspoke_analyzer_cli.common
-   brokenspoke_analyzer_cli.compute
-   brokenspoke_analyzer_cli.configure
-   brokenspoke_analyzer_cli.export
-   brokenspoke_analyzer_cli.importer
-   brokenspoke_analyzer_cli.prepare
-   brokenspoke_analyzer_cli.run
-   brokenspoke_analyzer_cli.run_with
+   bna.cli.root
+   bna.cli.cache
+   bna.cli.common
+   bna.cli.compute
+   bna.cli.configure
+   bna.cli.export
+   bna.cli.importer
+   bna.cli.prepare
+   bna.cli.run
+   bna.cli.run_with

@@ -39,6 +39,25 @@ dependencies, run:
 uv sync --all-extras --dev
 ```
 
+#### Workspace layout
+
+The repository is a
+[uv workspace](https://docs.astral.sh/uv/concepts/projects/workspaces/). Each
+tool is a member under `packages/`:
+
+| Directory               | Distribution       | Import name        |
+| :---------------------- | :----------------- | :----------------- |
+| `packages/lib`          | `bna-lib`          | `bna.lib`          |
+| `packages/cli`          | `bna-cli`          | `bna.cli`          |
+| `packages/batch`        | `bna-batch`        | `bna.batch`        |
+| `packages/cache-warmer` | `bna-cache-warmer` | `bna.cache_warmer` |
+
+Every member installs its code under the shared `bna` namespace package, in
+`packages/<member>/src/bna/<member>/`. `bna` must stay a namespace package:
+never add a `src/bna/__init__.py` to a member. Python would then load `bna` from
+that member only, and the other members' code could no longer be imported.
+`packages/lib/tests/test_namespace.py` fails if such a file appears.
+
 #### Database
 
 The [brokenspoke-analyzer] requires a PosgreSQL/PostGIS server to run the
@@ -146,12 +165,12 @@ Close the container and return to your local environment by running the command
 ### Debugging
 
 You can make changes to the source code of `brokenspoke-analyzer` and run the
-debugger to see the effect of your changes. But since the
-`brokenspoke-analyzer-lib` and `brokenspoke-analyzer-cli` packages are already
-installed in the dev container, running the system `python` interpreter in
-`/usr/local/bin/python/` will run the ones installed in
-`/usr/local/lib/python3.15/site-packages`. What we need to do is run the
-debugger using the sources in `/usr/src/app` so we create a virtual environment:
+debugger to see the effect of your changes. But since the `bna-lib` and
+`bna-cli` packages are already installed in the dev container, running the
+system `python` interpreter in `/usr/local/bin/python/` will run the ones
+installed in `/usr/local/lib/python3.15/site-packages`. What we need to do is
+run the debugger using the sources in `/usr/src/app` so we create a virtual
+environment:
 
 ```bash
 uv sync

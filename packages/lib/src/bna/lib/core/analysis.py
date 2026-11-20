@@ -12,11 +12,11 @@ import numpy as np
 import shapely
 from slugify import slugify
 
-from brokenspoke_analyzer_lib import (
+from bna.lib import (
     constant,
     utils,
 )
-from brokenspoke_analyzer_lib.core import (
+from bna.lib.core import (
     runner,
 )
 

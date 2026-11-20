@@ -9,22 +9,22 @@ import rich
 import typer
 from loguru import logger
 
-from brokenspoke_analyzer_cli import (
+from bna.cli import (
     common,
     configure,
     export,
     prepare,
 )
-from brokenspoke_analyzer_lib import (
+from bna.lib import (
     utils,
 )
-from brokenspoke_analyzer_lib.core import (
+from bna.lib.core import (
     analysis,
     compute,
     exporter,
     ingestor,
 )
-from brokenspoke_analyzer_lib.database import dbcore
+from bna.lib.database import dbcore
 
 app = typer.Typer()
 verbose = False
@@ -207,7 +207,7 @@ async def run_(  # noqa: C901, PLR0912, PLR0915
 
     # Compute.
     console.log("[green]Computing the data...")
-    traversable = resources.files("brokenspoke_analyzer_lib.scripts.sql")
+    traversable = resources.files("bna.lib.scripts.sql")
     res = pathlib.Path(traversable._paths[0])  # # ty:ignore[missing-attribute]
     sql_script_dir = res.resolve(strict=True)  # noqa: ASYNC240
     boundary_file = input_dir / f"{slug}.shp"

@@ -1,5 +1,5 @@
 [project]
-name = "brokenspoke-analyzer-batch"
+name = "bna-batch"
 dynamic = ["version"]
 description = "Run the BNA analysis for a batch of cities."
 authors = [
@@ -10,24 +10,29 @@ authors = [
 requires-python = "~=3.15.0"
 license = "MIT"
 dependencies = [
-  "brokenspoke-analyzer-cli",
-  "brokenspoke-analyzer-lib",
+  "bna-cli",
+  "bna-lib",
   "typer>=0.29.2,<0.30",
 ]
 
 [project.scripts]
-bna-batch = "brokenspoke_analyzer_batch.main:app"
+bna-batch = "bna.batch.main:app"
 
 [tool.uv.sources]
-brokenspoke-analyzer-cli = { workspace = true }
-brokenspoke-analyzer-lib = { workspace = true }
+bna-cli = { workspace = true }
+bna-lib = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+# bna is a namespace package shared by every member: hatchling cannot detect
+# it, and no member may ship src/bna/__init__.py.
+packages = ["src/bna"]
 
 [tool.hatch.version]
 path = "../../VERSION"
 pattern = "(?P<version>.+)"
 
 [tool.coverage.run]
-omit = ["*/__init__.py", "*/brokenspoke_analyzer_batch/*"]
+omit = ["*/__init__.py", "*/bna/batch/*"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"

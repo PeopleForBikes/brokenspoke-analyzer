@@ -1,7 +1,7 @@
-brokenspoke_analyzer_lib.core.downloader
-========================================
+bna.lib.core.downloader
+=======================
 
-.. automodule:: brokenspoke_analyzer_lib.core.downloader
+.. automodule:: bna.lib.core.downloader
    :members:
    :undoc-members:
    :show-inheritance:

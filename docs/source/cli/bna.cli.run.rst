@@ -1,7 +1,7 @@
-brokenspoke_analyzer_cli.run
-============================
+bna.cli.run
+===========
 
-.. automodule:: brokenspoke_analyzer_cli.run
+.. automodule:: bna.cli.run
    :members:
    :undoc-members:
    :show-inheritance:
