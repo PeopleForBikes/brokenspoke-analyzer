@@ -2,8 +2,10 @@ set positional-arguments
 
 lib_pkg := "packages/brokenspoke-analyzer-lib"
 cli_pkg := "packages/brokenspoke-analyzer-cli"
-src_dirs := lib_pkg / "src" + " " + cli_pkg / "src"
-test_dirs := lib_pkg / "tests" + " " + cli_pkg / "tests"
+cache_warmer_pkg := "packages/brokenspoke-analyzer-cache-warmer"
+batch_pkg := "packages/brokenspoke-analyzer-batch"
+src_dirs := lib_pkg / "src" + " " + cli_pkg / "src" + " " + cache_warmer_pkg / "src" + " " + batch_pkg / "src"
+test_dirs := lib_pkg / "tests" + " " + cli_pkg / "tests" + " " + cache_warmer_pkg / "tests" + " " + batch_pkg / "tests"
 sql_dir := lib_pkg / "src/brokenspoke_analyzer_lib/scripts/sql"
 utils_dir := "utils"
 docker_image := "ghcr.io/peopleforbikes/brokenspoke-analyzer"
@@ -29,8 +31,10 @@ lint-python:
     uv run ty check {{ src_dirs }} {{ test_dirs }}
 
 # Lint SQL files.
+# Only the repository configuration is read, in a single process, so the
+# recipe also runs inside sandboxes denying access outside the repository.
 lint-sql:
-    uv run sqlfluff lint {{ sql_dir }}
+    uv run sqlfluff lint --ignore-local-config --config pyproject.toml --processes 1 {{ sql_dir }}
 
 # Check uv.lock is synced
 lint-uv:
@@ -55,7 +59,7 @@ fmt-python:
 
 # Run the unit tests across all the workspace members.
 test *extra_args='':
-    uv run pytest --cov=brokenspoke_analyzer_lib --cov=brokenspoke_analyzer_cli -x $@
+    uv run pytest --cov=brokenspoke_analyzer_lib --cov=brokenspoke_analyzer_cli --cov=brokenspoke_analyzer_cache_warmer --cov=brokenspoke_analyzer_batch -x $@
 
 # Build the documentation
 docs:

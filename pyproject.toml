@@ -12,8 +12,10 @@ license = "MIT"
 
 [tool.uv.workspace]
 members = [
-  "packages/brokenspoke-analyzer-lib",
+  "packages/brokenspoke-analyzer-batch",
+  "packages/brokenspoke-analyzer-cache-warmer",
   "packages/brokenspoke-analyzer-cli",
+  "packages/brokenspoke-analyzer-lib",
 ]
 
 [tool.uv]
@@ -24,9 +26,13 @@ package = false
 [tool.uv.sources]
 brokenspoke-analyzer-lib = { workspace = true }
 brokenspoke-analyzer-cli = { workspace = true }
+brokenspoke-analyzer-cache-warmer = { workspace = true }
+brokenspoke-analyzer-batch = { workspace = true }
 
 [dependency-groups]
 dev = [
+  "brokenspoke-analyzer-batch",
+  "brokenspoke-analyzer-cache-warmer",
   "brokenspoke-analyzer-cli",
   "brokenspoke-analyzer-lib",
   "bpython>=0.26,<0.27",
@@ -68,11 +74,18 @@ pattern = "(?P<version>.+)"
 [tool.isort]
 profile = "black"
 force_grid_wrap = 2
-known_first_party = ["brokenspoke_analyzer_cli", "brokenspoke_analyzer_lib"]
+known_first_party = [
+  "brokenspoke_analyzer_batch",
+  "brokenspoke_analyzer_cache_warmer",
+  "brokenspoke_analyzer_cli",
+  "brokenspoke_analyzer_lib",
+]
 
 [tool.coverage.run]
 omit = [
   "*/__init__.py",
+  "*/brokenspoke_analyzer_batch/*",
+  "*/brokenspoke_analyzer_cache_warmer/*",
   "*/brokenspoke_analyzer_cli/*",
   "*/brokenspoke_analyzer_lib/constant.py",
   "*/brokenspoke_analyzer_lib/core/compute.py",
@@ -83,12 +96,14 @@ omit = [
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-p no:warnings --cov-report term-missing --cov-report html --xdoctest"
+addopts = "-p no:warnings --cov-report term-missing --cov-report html --xdoctest --import-mode=importlib"
 testpaths = [
   "packages/brokenspoke-analyzer-lib/src",
   "packages/brokenspoke-analyzer-lib/tests",
   "packages/brokenspoke-analyzer-cli/src",
   "packages/brokenspoke-analyzer-cli/tests",
+  "packages/brokenspoke-analyzer-cache-warmer/tests",
+  "packages/brokenspoke-analyzer-batch/tests",
 ]
 markers = [
   "australia",
@@ -110,6 +125,8 @@ markers = [
 # The workspace members live under packages/*/src, so ruff needs to be told
 # where first-party code is to keep its import sorting in sync with isort.
 src = [
+  "packages/brokenspoke-analyzer-batch/src",
+  "packages/brokenspoke-analyzer-cache-warmer/src",
   "packages/brokenspoke-analyzer-cli/src",
   "packages/brokenspoke-analyzer-lib/src",
 ]
@@ -136,7 +153,12 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["brokenspoke_analyzer_cli", "brokenspoke_analyzer_lib"]
+known-first-party = [
+  "brokenspoke_analyzer_batch",
+  "brokenspoke_analyzer_cache_warmer",
+  "brokenspoke_analyzer_cli",
+  "brokenspoke_analyzer_lib",
+]
 
 [tool.ruff.lint.per-file-ignores]
 "**/tests/**" = [
@@ -209,6 +231,8 @@ ignore_comment_lines = true
 # Same reason as [tool.ruff] src: the workspace members live under
 # packages/*/src.
 root = [
+  "packages/brokenspoke-analyzer-batch/src",
+  "packages/brokenspoke-analyzer-cache-warmer/src",
   "packages/brokenspoke-analyzer-cli/src",
   "packages/brokenspoke-analyzer-lib/src",
 ]

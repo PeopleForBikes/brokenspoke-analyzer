@@ -16,7 +16,8 @@ scripts to compute connectivity and stress metrics, then exports the results.
 - `just lint` — runs `lint-md`, `lint-python`, `lint-sql`, `lint-uv`
 - `just fmt` — runs `fmt-md`, `fmt-python`, `fmt-just`
 - `just test` — pytest across every workspace member, with combined coverage
-  (`--cov=brokenspoke_analyzer_lib --cov=brokenspoke_analyzer_cli`)
+  (one `--cov=<importable package>` per member, e.g.
+  `--cov=brokenspoke_analyzer_lib`)
   - Run a single test: `uv run pytest path/to/test_file.py::test_name -x`
   - Tests use `xdoctest` (via `addopts`), so doctests in source files are also
     collected and run.
@@ -32,6 +33,10 @@ scripts to compute connectivity and stress metrics, then exports the results.
 Individual linters/formatters can be run directly with `uv run <tool>`, e.g.
 `uv run ruff check packages/*/src utils`, `uv run ty check packages/*/src`,
 `uv run sqlfluff lint packages/brokenspoke-analyzer-lib/src/brokenspoke_analyzer_lib/scripts/sql/`.
+Run sqlfluff through `just lint-sql` though: it passes
+`--ignore-local-config --config pyproject.toml --processes 1` so that sqlfluff
+neither lists the directories above the repository nor needs POSIX semaphores,
+both of which sandboxes such as nono deny.
 
 ## Running the CLI
 
@@ -89,6 +94,15 @@ The pipeline is: **prepare → configure → import → compute → export**, an
   `export.py`, `run.py`, `run_with.py`, `cache.py`), wired together in
   `root.py`, plus `common.py` for the shared Typer arguments/options. CLI
   modules are thin wrappers that parse options and delegate to the library.
+- `packages/brokenspoke-analyzer-cache-warmer/` — pre-populates the analyzer
+  cache (locally or in S3), importable as `brokenspoke_analyzer_cache_warmer`
+  and installed as the `bna-cache-warmer` console script (`local` and `s3`
+  subcommands). Depends on both the library and the CLI through uv workspace
+  sources.
+- `packages/brokenspoke-analyzer-batch/` — runs `bna run-with compose` for every
+  city of a CSV file (used by the `integration/` end-to-end suites), importable
+  as `brokenspoke_analyzer_batch` and installed as the `bna-batch` console
+  script. Depends on both the library and the CLI through uv workspace sources.
 - Each member owns its tests under `packages/<member>/tests/`, mirroring that
   member's `src/` layout, and each is independently runnable
   (`cd packages/<member> && uv run pytest`).
