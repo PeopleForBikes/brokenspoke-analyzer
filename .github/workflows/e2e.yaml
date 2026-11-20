@@ -23,11 +23,12 @@ env:
   TEST_STATE: "new mexico"
   TEST_CITY: "santa rosa"
   TEST_FIPS: "3570670"
-  # Geofabrik rate-limits/blocks the GitHub-hosted runner IP ranges, so the OSM
-  # region file is cached instead of being downloaded on every run. The data
-  # does not need to be fresh: bump the suffix to force a new download.
+  # Geofabrik refuses connections from the GitHub-hosted runner IP ranges, so the
+  # OSM region file is downloaded from the `e2e-fixtures` release of this
+  # repository instead, then cached. The data does not need to be fresh: to
+  # refresh it, replace the release assets and bump the cache key suffix.
   OSM_CACHE_KEY: e2e-osm-new-mexico-v1
-  OSM_URL: https://download.geofabrik.de/north-america/us/new-mexico-latest.osm.pbf
+  OSM_URL: ${{ github.server_url }}/${{ github.repository }}/releases/download/e2e-fixtures/new-mexico-latest.osm.pbf
 
 jobs:
   osm-data:
@@ -46,8 +47,7 @@ jobs:
           mkdir -p bna-cache/osm
           cd bna-cache/osm
           for url in "${OSM_URL}.md5" "${OSM_URL}"; do
-            curl --fail --location --verbose --silent --show-error \
-              --user-agent "GitHubActions-OSM-Pipeline/1.0" \
+            curl --fail --location --silent --show-error \
               --connect-timeout 30 --retry 5 --retry-all-errors --retry-delay 30 \
               --remote-name "${url}"
           done
