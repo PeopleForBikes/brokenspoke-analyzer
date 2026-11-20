@@ -250,7 +250,7 @@ mapping is in the [Data Models](design.md#data-models) section of `design.md`.
     - `"module": "bna.cli"`.
     - _Requirements: 7.6_
 
-- [ ] 11. Checkpoint: full verification
+- [x] 11. Checkpoint: full verification
   - `just ci` passes.
   - Old names: a search for
     `brokenspoke[-_]analyzer[-_](lib|cli|batch|cache[-_]warmer)` across the
