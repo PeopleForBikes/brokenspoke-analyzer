@@ -193,9 +193,10 @@ It contains two tests:
    root. This test works whatever is installed.
 2. **`test_bna_is_a_namespace_package`**: imports `bna` and asserts that it is a
    namespace package (`bna.__file__ is None`), and that the library's own
-   `src/bna` directory is part of `bna.__path__`. This catches a regular `bna`
-   package coming from anywhere on `sys.path`, including a stray installed
-   wheel, which the file check cannot see.
+   `src/bna` directory is part of `bna.__path__`, comparing resolved paths
+   (`sys.path` entries keep symlinks as given, the test's own path does not).
+   This catches a regular `bna` package coming from anywhere on `sys.path`,
+   including a stray installed wheel, which the file check cannot see.
 
 The module follows the project conventions: full type hints, a pep257 module
 docstring, and the per-file ignores the root `pyproject.toml` already applies to
@@ -311,7 +312,8 @@ import `brokenspoke_analyzer_<m>`.
 6. **Unchanged command line**: the console script names, their commands, options
    and behavior are identical before and after.
 7. **Same tests**: the set of collected tests equals the previous set plus the
-   two guardrail tests and the two `--version` regression tests.
+   two guardrail tests, the two `--version` regression tests and the bundled
+   script tests.
 
 ## Error Handling
 
@@ -364,7 +366,14 @@ import `brokenspoke_analyzer_<m>`.
 - **Guardrail tests** (`packages/lib/tests/test_namespace.py`): both tests pass
   on the renamed tree. To prove they work, temporarily create
   `packages/batch/src/bna/__init__.py`, confirm both fail and the first names
-  the file, then delete it.
+  the file, then delete it (and the `__pycache__/` the failing import leaves
+  next to it).
+- **Bundled script tests** (`packages/lib/tests/test_scripts.py`): the SQL
+  script folders (`connectivity`, `features`, `stress`) resolve from
+  `bna.lib.scripts.sql` and hold SQL files, and `ingestor.script_dir` holds
+  `mapconfig_cycleway.xml`, `mapconfig_highway.xml` and `pfb.style`. This turns
+  Requirement 3.6 into an automated check instead of a full pipeline run. (Added
+  after the spec review.)
 - **Existing tests**: all existing tests pass in their new locations, through
   `just test` and through each member's own `uv run pytest`. The collected test
   count from `uv run pytest --collect-only -q` is compared before and after.
