@@ -12,10 +12,10 @@ lazy import pathlib
 from loguru import logger
 lazy from sqlalchemy.engine import Engine
 
-from brokenspoke_analyzer_lib import (
+from bna.lib import (
     constant,
 )
-from brokenspoke_analyzer_lib.database import dbcore
+from bna.lib.database import dbcore
 
 NB_SIGCTL_SEARCH_DIST = 25
 NB_PBL_BUFFER_M = 25

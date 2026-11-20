@@ -5,8 +5,8 @@ from typing import Annotated
 import rich
 import typer
 
-from brokenspoke_analyzer_lib.database import dbcore
-lazy from brokenspoke_analyzer_cli import common
+from bna.lib.database import dbcore
+lazy from bna.cli import common
 
 Cores = Annotated[int, typer.Argument(help="number of cores")]
 MemoryMB = Annotated[int, typer.Argument(help="memory amount in MB")]

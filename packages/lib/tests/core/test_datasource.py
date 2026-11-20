@@ -2,7 +2,7 @@
 
 import pytest
 
-from brokenspoke_analyzer_lib.core import datasource
+from bna.lib.core import datasource
 
 GEOFABRIK = "https://download.geofabrik.de"
 

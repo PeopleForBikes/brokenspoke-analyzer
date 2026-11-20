@@ -1,7 +1,7 @@
-brokenspoke_analyzer_lib.file_utils
-===================================
+bna.lib.file_utils
+==================
 
-.. automodule:: brokenspoke_analyzer_lib.file_utils
+.. automodule:: bna.lib.file_utils
    :members:
    :undoc-members:
    :show-inheritance:

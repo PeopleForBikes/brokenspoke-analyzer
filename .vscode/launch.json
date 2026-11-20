@@ -5,7 +5,7 @@
       "type": "debugpy",
       "justMyCode": false,
       "request": "launch",
-      "module": "brokenspoke_analyzer_cli",
+      "module": "bna.cli",
       "console": "integratedTerminal",
       "args": [
         "run",

@@ -1,7 +1,7 @@
-brokenspoke_analyzer_cli.prepare
-================================
+bna.cli.prepare
+===============
 
-.. automodule:: brokenspoke_analyzer_cli.prepare
+.. automodule:: bna.cli.prepare
    :members:
    :undoc-members:
    :show-inheritance:

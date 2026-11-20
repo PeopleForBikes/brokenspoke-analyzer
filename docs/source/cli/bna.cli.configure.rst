@@ -1,7 +1,7 @@
-brokenspoke_analyzer_cli.configure
-==================================
+bna.cli.configure
+=================
 
-.. automodule:: brokenspoke_analyzer_cli.configure
+.. automodule:: bna.cli.configure
    :members:
    :undoc-members:
    :show-inheritance:

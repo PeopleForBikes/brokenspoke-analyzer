@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 from platformdirs import PlatformDirs
 
-from brokenspoke_analyzer_lib import (
+from bna.lib import (
     constant,
 )
 

@@ -1,7 +1,7 @@
-brokenspoke_analyzer_cli.common
-===============================
+bna.cli.common
+==============
 
-.. automodule:: brokenspoke_analyzer_cli.common
+.. automodule:: bna.cli.common
    :members:
    :undoc-members:
    :show-inheritance:

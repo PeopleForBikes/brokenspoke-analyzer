@@ -5,7 +5,7 @@ from osmnx import (
     settings,
 )
 
-from brokenspoke_analyzer_lib.core import (
+from bna.lib.core import (
     analysis,
 )
 

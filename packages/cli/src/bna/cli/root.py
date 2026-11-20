@@ -10,7 +10,7 @@ import typer
 from loguru import logger
 from rich.logging import RichHandler
 
-from brokenspoke_analyzer_cli import (
+from bna.cli import (
     cache,
     compute,
     configure,
@@ -60,7 +60,7 @@ def _verbose_callback(value: int) -> None:
 
 def _version_callback(*, value: bool) -> None:
     """Get the package's version."""
-    package_version = metadata.version("brokenspoke-analyzer-cli")
+    package_version = metadata.version("bna-cli")
     if value:
         typer.echo(f"brokenspoke-analyzer version: {package_version}")
         raise typer.Exit

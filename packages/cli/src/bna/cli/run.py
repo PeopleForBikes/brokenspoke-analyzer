@@ -6,11 +6,11 @@ lazy import pathlib
 
 import typer
 
-from brokenspoke_analyzer_cli import (
+from bna.cli import (
     common,
     run_with,
 )
-from brokenspoke_analyzer_lib.core import (
+from bna.lib.core import (
     exporter,
 )
 

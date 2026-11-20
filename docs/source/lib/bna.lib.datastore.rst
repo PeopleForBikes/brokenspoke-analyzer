@@ -1,7 +1,7 @@
-brokenspoke_analyzer_lib.datastore
-==================================
+bna.lib.datastore
+=================
 
-.. automodule:: brokenspoke_analyzer_lib.datastore
+.. automodule:: bna.lib.datastore
    :members:
    :undoc-members:
    :show-inheritance:

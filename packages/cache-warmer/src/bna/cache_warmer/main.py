@@ -33,15 +33,15 @@ import rich
 import typer
 from pyrosm import data
 
-from brokenspoke_analyzer_cli import (
+from bna.cli import (
     common,
     root,
 )
-from brokenspoke_analyzer_lib import (
+from bna.lib import (
     datastore,
     file_utils,
 )
-from brokenspoke_analyzer_lib.core import (
+from bna.lib.core import (
     datasource,
     exporter,
 )

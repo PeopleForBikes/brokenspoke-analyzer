@@ -9,7 +9,7 @@ from sqlalchemy import (
 )
 lazy from sqlalchemy.engine import Engine
 
-from brokenspoke_analyzer_lib.core import (
+from bna.lib.core import (
     runner,
 )
 

@@ -35,10 +35,10 @@ import yarl
 from loguru import logger
 from obstore.store import from_url
 
-from brokenspoke_analyzer_lib.core import (
+from bna.lib.core import (
     runner,
 )
-from brokenspoke_analyzer_lib.database import dbcore
+from bna.lib.database import dbcore
 
 if TYPE_CHECKING:
     from obstore.store import ObjectStore

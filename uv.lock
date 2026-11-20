@@ -9,11 +9,11 @@ resolution-markers = [
 
 [manifest]
 members = [
+    "bna-batch",
+    "bna-cache-warmer",
+    "bna-cli",
+    "bna-lib",
     "brokenspoke-analyzer",
-    "brokenspoke-analyzer-batch",
-    "brokenspoke-analyzer-cache-warmer",
-    "brokenspoke-analyzer-cli",
-    "brokenspoke-analyzer-lib",
 ]
 
 [[package]]
@@ -300,6 +300,114 @@ wheels = [
 ]
 
 [[package]]
+name = "bna-batch"
+source = { editable = "packages/batch" }
+dependencies = [
+    { name = "bna-cli" },
+    { name = "bna-lib" },
+    { name = "typer" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "bna-cli", editable = "packages/cli" },
+    { name = "bna-lib", editable = "packages/lib" },
+    { name = "typer", specifier = ">=0.29.2,<0.30" },
+]
+
+[[package]]
+name = "bna-cache-warmer"
+source = { editable = "packages/cache-warmer" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "bna-cli" },
+    { name = "bna-lib" },
+    { name = "pycountry" },
+    { name = "pyrosm" },
+    { name = "rich" },
+    { name = "typer" },
+    { name = "us" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aiohttp", specifier = ">=3.14.5,<4" },
+    { name = "bna-cli", editable = "packages/cli" },
+    { name = "bna-lib", editable = "packages/lib" },
+    { name = "pycountry", specifier = ">=26.2.16" },
+    { name = "pyrosm", specifier = ">=0.26.0" },
+    { name = "rich", specifier = ">=15.0.0,<16" },
+    { name = "typer", specifier = ">=0.29.2,<0.30" },
+    { name = "us", specifier = ">=3.2.0,<5" },
+]
+
+[[package]]
+name = "bna-cli"
+source = { editable = "packages/cli" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "bna-lib" },
+    { name = "geopandas" },
+    { name = "loguru" },
+    { name = "pycountry" },
+    { name = "rich" },
+    { name = "typer" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aiohttp", specifier = ">=3.14.5,<4" },
+    { name = "bna-lib", editable = "packages/lib" },
+    { name = "geopandas", specifier = ">=1.1.4,<2" },
+    { name = "loguru", specifier = ">=0.7.3,<0.9" },
+    { name = "pycountry", specifier = ">=26.2.16" },
+    { name = "rich", specifier = ">=15.0.0,<16" },
+    { name = "typer", specifier = ">=0.29.2,<0.30" },
+]
+
+[[package]]
+name = "bna-lib"
+source = { editable = "packages/lib" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "beautifulsoup4" },
+    { name = "boto3" },
+    { name = "geopandas" },
+    { name = "loguru" },
+    { name = "numpy" },
+    { name = "obstore" },
+    { name = "osmnx" },
+    { name = "platformdirs" },
+    { name = "pyrosm" },
+    { name = "python-slugify" },
+    { name = "rasterio" },
+    { name = "shapely" },
+    { name = "sqlalchemy", extra = ["asyncio", "postgresql-psycopg"] },
+    { name = "us" },
+    { name = "yarl" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aiohttp", specifier = ">=3.14.5,<4" },
+    { name = "beautifulsoup4", specifier = ">=4.15.0" },
+    { name = "boto3", specifier = ">=1.43.121,<2" },
+    { name = "geopandas", specifier = ">=1.1.4,<2" },
+    { name = "loguru", specifier = ">=0.7.3,<0.9" },
+    { name = "numpy", specifier = ">=2.5.2" },
+    { name = "obstore", specifier = ">=0.12.1" },
+    { name = "osmnx", specifier = ">=2.1.1,<3" },
+    { name = "platformdirs", specifier = ">=4.14.0" },
+    { name = "pyrosm", specifier = ">=0.29.1" },
+    { name = "python-slugify", specifier = ">=9.1.3,<10" },
+    { name = "rasterio", specifier = ">=1.5.2" },
+    { name = "shapely", specifier = ">=2.1.2" },
+    { name = "sqlalchemy", extras = ["asyncio", "postgresql-psycopg"], specifier = ">=2.1.6,<3" },
+    { name = "us", specifier = ">=3.2.0,<5" },
+    { name = "yarl", specifier = ">=1.24.5" },
+]
+
+[[package]]
 name = "boto3"
 version = "1.44.3"
 source = { registry = "https://pypi.org/simple" }
@@ -362,11 +470,11 @@ source = { virtual = "." }
 
 [package.dev-dependencies]
 dev = [
+    { name = "bna-batch" },
+    { name = "bna-cache-warmer" },
+    { name = "bna-cli" },
+    { name = "bna-lib" },
     { name = "bpython" },
-    { name = "brokenspoke-analyzer-batch" },
-    { name = "brokenspoke-analyzer-cache-warmer" },
-    { name = "brokenspoke-analyzer-cli" },
-    { name = "brokenspoke-analyzer-lib" },
     { name = "furo" },
     { name = "isort" },
     { name = "jupyterlab" },
@@ -402,11 +510,11 @@ dev = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "bna-batch", editable = "packages/batch" },
+    { name = "bna-cache-warmer", editable = "packages/cache-warmer" },
+    { name = "bna-cli", editable = "packages/cli" },
+    { name = "bna-lib", editable = "packages/lib" },
     { name = "bpython", specifier = ">=0.26,<0.27" },
-    { name = "brokenspoke-analyzer-batch", editable = "packages/brokenspoke-analyzer-batch" },
-    { name = "brokenspoke-analyzer-cache-warmer", editable = "packages/brokenspoke-analyzer-cache-warmer" },
-    { name = "brokenspoke-analyzer-cli", editable = "packages/brokenspoke-analyzer-cli" },
-    { name = "brokenspoke-analyzer-lib", editable = "packages/brokenspoke-analyzer-lib" },
     { name = "furo", specifier = ">=2025.12.19,<2026" },
     { name = "isort", specifier = ">=9.0.1,<10" },
     { name = "jupyterlab", specifier = ">=4.6.6,<5" },
@@ -436,114 +544,6 @@ dev = [
     { name = "types-python-slugify", specifier = ">=8.0.2.20240310,<9" },
     { name = "types-six", specifier = ">=1.17.0.20260724,<2" },
     { name = "xdoctest", specifier = ">=1.3.2,<2" },
-]
-
-[[package]]
-name = "brokenspoke-analyzer-batch"
-source = { editable = "packages/brokenspoke-analyzer-batch" }
-dependencies = [
-    { name = "brokenspoke-analyzer-cli" },
-    { name = "brokenspoke-analyzer-lib" },
-    { name = "typer" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "brokenspoke-analyzer-cli", editable = "packages/brokenspoke-analyzer-cli" },
-    { name = "brokenspoke-analyzer-lib", editable = "packages/brokenspoke-analyzer-lib" },
-    { name = "typer", specifier = ">=0.29.2,<0.30" },
-]
-
-[[package]]
-name = "brokenspoke-analyzer-cache-warmer"
-source = { editable = "packages/brokenspoke-analyzer-cache-warmer" }
-dependencies = [
-    { name = "aiohttp" },
-    { name = "brokenspoke-analyzer-cli" },
-    { name = "brokenspoke-analyzer-lib" },
-    { name = "pycountry" },
-    { name = "pyrosm" },
-    { name = "rich" },
-    { name = "typer" },
-    { name = "us" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "aiohttp", specifier = ">=3.14.5,<4" },
-    { name = "brokenspoke-analyzer-cli", editable = "packages/brokenspoke-analyzer-cli" },
-    { name = "brokenspoke-analyzer-lib", editable = "packages/brokenspoke-analyzer-lib" },
-    { name = "pycountry", specifier = ">=26.2.16" },
-    { name = "pyrosm", specifier = ">=0.26.0" },
-    { name = "rich", specifier = ">=15.0.0,<16" },
-    { name = "typer", specifier = ">=0.29.2,<0.30" },
-    { name = "us", specifier = ">=3.2.0,<5" },
-]
-
-[[package]]
-name = "brokenspoke-analyzer-cli"
-source = { editable = "packages/brokenspoke-analyzer-cli" }
-dependencies = [
-    { name = "aiohttp" },
-    { name = "brokenspoke-analyzer-lib" },
-    { name = "geopandas" },
-    { name = "loguru" },
-    { name = "pycountry" },
-    { name = "rich" },
-    { name = "typer" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "aiohttp", specifier = ">=3.14.5,<4" },
-    { name = "brokenspoke-analyzer-lib", editable = "packages/brokenspoke-analyzer-lib" },
-    { name = "geopandas", specifier = ">=1.1.4,<2" },
-    { name = "loguru", specifier = ">=0.7.3,<0.9" },
-    { name = "pycountry", specifier = ">=26.2.16" },
-    { name = "rich", specifier = ">=15.0.0,<16" },
-    { name = "typer", specifier = ">=0.29.2,<0.30" },
-]
-
-[[package]]
-name = "brokenspoke-analyzer-lib"
-source = { editable = "packages/brokenspoke-analyzer-lib" }
-dependencies = [
-    { name = "aiohttp" },
-    { name = "beautifulsoup4" },
-    { name = "boto3" },
-    { name = "geopandas" },
-    { name = "loguru" },
-    { name = "numpy" },
-    { name = "obstore" },
-    { name = "osmnx" },
-    { name = "platformdirs" },
-    { name = "pyrosm" },
-    { name = "python-slugify" },
-    { name = "rasterio" },
-    { name = "shapely" },
-    { name = "sqlalchemy", extra = ["asyncio", "postgresql-psycopg"] },
-    { name = "us" },
-    { name = "yarl" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "aiohttp", specifier = ">=3.14.5,<4" },
-    { name = "beautifulsoup4", specifier = ">=4.15.0" },
-    { name = "boto3", specifier = ">=1.43.121,<2" },
-    { name = "geopandas", specifier = ">=1.1.4,<2" },
-    { name = "loguru", specifier = ">=0.7.3,<0.9" },
-    { name = "numpy", specifier = ">=2.5.2" },
-    { name = "obstore", specifier = ">=0.12.1" },
-    { name = "osmnx", specifier = ">=2.1.1,<3" },
-    { name = "platformdirs", specifier = ">=4.14.0" },
-    { name = "pyrosm", specifier = ">=0.29.1" },
-    { name = "python-slugify", specifier = ">=9.1.3,<10" },
-    { name = "rasterio", specifier = ">=1.5.2" },
-    { name = "shapely", specifier = ">=2.1.2" },
-    { name = "sqlalchemy", extras = ["asyncio", "postgresql-psycopg"], specifier = ">=2.1.6,<3" },
-    { name = "us", specifier = ">=3.2.0,<5" },
-    { name = "yarl", specifier = ">=1.24.5" },
 ]
 
 [[package]]

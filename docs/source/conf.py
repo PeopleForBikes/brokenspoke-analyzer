@@ -17,7 +17,7 @@ from importlib import metadata
 # The workspace members live under packages/*/src: make them importable so
 # autodoc works even when they are not installed in the environment.
 REPOSITORY_ROOT = pathlib.Path(__file__).parents[2]
-for member in ("brokenspoke-analyzer-lib", "brokenspoke-analyzer-cli"):
+for member in ("lib", "cli"):
     sys.path.insert(0, str(REPOSITORY_ROOT / "packages" / member / "src"))
 
 # -- Project information -----------------------------------------------------
@@ -25,7 +25,7 @@ for member in ("brokenspoke-analyzer-lib", "brokenspoke-analyzer-cli"):
 project = "Brokenspoke Analyzer"
 copyright = "2022, PeopleForBikes"
 author = "PeopleForBikes"
-package = "brokenspoke-analyzer-cli"
+package = "bna-cli"
 
 # The full version, including alpha/beta/rc tags
 release = metadata.version(package)

@@ -2,7 +2,7 @@
 
 import typer
 
-from brokenspoke_analyzer_batch import main
+from bna.batch import main
 
 
 def test_command_exposes_the_options() -> None:

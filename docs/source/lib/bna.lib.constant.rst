@@ -1,7 +1,7 @@
-brokenspoke_analyzer_lib.constant
-=================================
+bna.lib.constant
+================
 
-.. automodule:: brokenspoke_analyzer_lib.constant
+.. automodule:: bna.lib.constant
    :members:
    :undoc-members:
    :show-inheritance:

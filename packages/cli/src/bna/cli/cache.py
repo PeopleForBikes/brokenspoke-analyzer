@@ -6,7 +6,7 @@ import rich
 import typer
 from loguru import logger
 
-from brokenspoke_analyzer_lib import (
+from bna.lib import (
     file_utils,
 )
 
