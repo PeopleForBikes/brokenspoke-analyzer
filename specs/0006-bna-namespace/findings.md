@@ -5,14 +5,15 @@ looks like a bug unless you know it is deliberate, traps in the libraries and
 tools, and what worked. Each entry says what the rule is, how it was caught, and
 what it cost.
 
-Status: complete for tasks 1–10. Task 11: everything passes except the two
-checks run inside the Docker image (`--help`, and the SQL lookup with the
-entrypoint overridden), which are still pending. Docker is denied in the
-implementation sandbox, so `just docker-build` was run by a developer on their
-own machine on 2026-11-20 and succeeded, installing the `bna_lib` and `bna_cli`
-wheels. Every other check ran in the sandbox. `git log --follow` passes since
-the moves were committed on their own (`9f4d632`). Keep it current as the code
-changes.
+Status: complete for tasks 1–11. Docker is denied in the implementation sandbox,
+so a developer ran the Docker checks on their own machine on 2026-11-20:
+`just docker-build` succeeded (installing the `bna_lib` and `bna_cli` wheels),
+the image's `bna --help` lists the same commands and options as before, and with
+the entrypoint overridden to `python`, `resources.files('bna.lib.scripts.sql')`
+lists `clip_osm.sql`, `connectivity`, `features`, `prepare_tables.sql`,
+`speed_tables.sql` and `stress`. Every other check ran in the sandbox.
+`git log --follow` passes since the moves were committed on their own
+(`9f4d632`). Keep it current as the code changes.
 
 ## 1. Behavior that does not survive a naive implementation
 
