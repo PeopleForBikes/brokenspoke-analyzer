@@ -99,12 +99,14 @@ The pipeline is: **prepare → configure → import → compute → export**, an
   delegate to the library.
 - `packages/cache-warmer/` (`bna-cache-warmer`) — pre-populates the analyzer
   cache (locally or in S3), importable as `bna.cache_warmer` and installed as
-  the `bna-cache-warmer` console script (`local` and `s3` subcommands). Depends
-  on both the library and the CLI through uv workspace sources.
+  the `bna-cache-warmer` console script (`local` and `s3` subcommands, and
+  `--version`). Depends on both the library and the CLI through uv workspace
+  sources.
 - `packages/batch/` (`bna-batch`) — runs `bna run-with compose` for every city
   of a CSV file (used by the `integration/` end-to-end suites), importable as
-  `bna.batch` and installed as the `bna-batch` console script. Depends on both
-  the library and the CLI through uv workspace sources.
+  `bna.batch` and installed as the `bna-batch` console script (with
+  `--version`). Depends on both the library and the CLI through uv workspace
+  sources.
 - Each member owns its tests under `packages/<member>/tests/`, mirroring the
   layout below its `src/bna/<member>/` (e.g.
   `packages/lib/tests/core/test_analysis.py`), and each is independently
@@ -133,7 +135,9 @@ The pipeline is: **prepare → configure → import → compute → export**, an
   longer be imported. `packages/lib/tests/test_namespace.py` guards this.
 - The library must never import from the CLI. Values both need (such as the
   `DEFAULT_*` pipeline defaults) live in `bna.lib.constant` and are re-exported
-  by `bna.cli.common`.
+  by `bna.cli.common`. `bna.cli.common.version_callback` builds the `--version`
+  option callback of every console script except `bna` itself; it only reads the
+  distribution metadata when the flag is given.
 - Python: full type hints, ruff (`select = ["ALL"]`, see `pyproject.toml` for
   the ignore list) for lint/format, `isort` (profile `black`,
   `force_grid_wrap = 2`) for imports, `ty` for type checking (mypy config also
