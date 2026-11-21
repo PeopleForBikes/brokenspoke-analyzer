@@ -13,7 +13,7 @@ dependencies = [
   "aiohttp>=3.14.5,<4",
   "brokenspoke-analyzer-lib",
   "geopandas>=1.1.4,<2",
-  "loguru>=0.7.3,<0.8",
+  "loguru>=0.7.3,<0.9",
   "pycountry>=26.2.16",
   "rich>=15.0.0,<16",
   "typer>=0.27.3,<0.28",
