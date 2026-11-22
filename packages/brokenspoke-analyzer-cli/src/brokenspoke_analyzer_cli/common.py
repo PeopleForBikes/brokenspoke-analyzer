@@ -5,7 +5,10 @@ from datetime import (
     UTC,
     datetime,
 )
-from typing import Annotated
+from typing import (
+    Annotated,
+    TypedDict,
+)
 
 import typer
 
@@ -77,15 +80,27 @@ DockerImage = Annotated[
     str | None,
     typer.Option(help="override the BNA Docker image"),
 ]
-export_dir_kwargs = {
+
+
+class ExportDirKwargs(TypedDict):
+    """Keyword arguments shared by the export directory argument and option."""
+
+    file_okay: bool
+    dir_okay: bool
+    writable: bool
+    readable: bool
+    help: str
+
+
+export_dir_kwargs: ExportDirKwargs = {
     "file_okay": False,
     "dir_okay": True,
     "writable": True,
     "readable": True,
     "help": "directory where to export the results",
 }
-ExportDirArg = Annotated[pathlib.Path, typer.Argument(**export_dir_kwargs)]  # ty:ignore[no-matching-overload]
-ExportDirOpt = Annotated[pathlib.Path, typer.Option(**export_dir_kwargs)]  # ty:ignore[no-matching-overload]
+ExportDirArg = Annotated[pathlib.Path, typer.Argument(**export_dir_kwargs)]
+ExportDirOpt = Annotated[pathlib.Path, typer.Option(**export_dir_kwargs)]
 FIPSCode = Annotated[str, typer.Argument(help="US city FIPS code")]
 LODESYear = Annotated[
     int | None,

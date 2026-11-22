@@ -1,7 +1,8 @@
 set positional-arguments
 
-lib_pkg := "packages/brokenspoke-analyzer-lib"
-cli_pkg := "packages/brokenspoke-analyzer-cli"
+pkg := "packages"
+lib_pkg := pkg / "brokenspoke-analyzer-lib"
+cli_pkg := pkg / "brokenspoke-analyzer-cli"
 src_dirs := lib_pkg / "src" + " " + cli_pkg / "src"
 test_dirs := lib_pkg / "tests" + " " + cli_pkg / "tests"
 sql_dir := lib_pkg / "src/brokenspoke_analyzer_lib/scripts/sql"
