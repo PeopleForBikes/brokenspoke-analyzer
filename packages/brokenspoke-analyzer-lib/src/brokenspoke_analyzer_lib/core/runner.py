@@ -2,10 +2,10 @@
 
 import json
 import multiprocessing
-import pathlib
 import subprocess
 import typing
 import urllib.parse
+lazy import pathlib
 
 from loguru import logger
 

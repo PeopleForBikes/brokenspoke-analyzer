@@ -502,7 +502,7 @@ class BNADataStore:
             try:
                 boundary_gdf = geocoder.geocode_to_gdf(structured_query)
                 analysis.ensure_gdf_class_boundary(boundary_gdf)
-            except (TypeError, InsufficientResponseError):
+            except TypeError, InsufficientResponseError:
                 boundary_gdf = geocoder.geocode_to_gdf(text_query)
                 analysis.ensure_gdf_class_boundary(boundary_gdf)
 
