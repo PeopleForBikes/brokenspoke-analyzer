@@ -30,8 +30,10 @@ lint-python:
     uv run ty check {{ src_dirs }} {{ test_dirs }}
 
 # Lint SQL files.
+# Only the repository configuration is read, in a single process, so the
+# recipe also runs inside sandboxes denying access outside the repository.
 lint-sql:
-    uv run sqlfluff lint {{ sql_dir }}
+    uv run sqlfluff lint --ignore-local-config --config pyproject.toml --processes 1 {{ sql_dir }}
 
 # Check uv.lock is synced
 lint-uv:
@@ -56,7 +58,7 @@ fmt-python:
 
 # Run the unit tests across all the workspace members.
 test *extra_args='':
-    uv run pytest --cov=brokenspoke_analyzer_lib --cov=brokenspoke_analyzer_cli -x $@
+    uv run pytest --cov=brokenspoke_analyzer_lib --cov=brokenspoke_analyzer_cli --cov=brokenspoke_analyzer_cache_warmer -x $@
 
 # Build the documentation
 docs:
