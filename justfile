@@ -124,13 +124,12 @@ nono-claude-login:
     nono run --profile nolabs-ai/claude --allow-launch-services -- claude "/login"
 
 # Use nono sandbox for Claude.
-nono-claude profile="claude":
+nono-claude profile="pfb-claude":
     nono run --allow-cwd --profile {{ profile }} -- claude
 
 # Use nono sandbox for Claude -- no internet, skip-permissions.
-nono-claude-danger profile="claude":
+nono-claude-danger profile="pfb-claude":
     nono run \
     --allow-cwd \
-    --allow-domain github.com \
     --profile {{ profile }} \
     -- claude --dangerously-skip-permissions

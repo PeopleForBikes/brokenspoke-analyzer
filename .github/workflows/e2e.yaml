@@ -17,6 +17,16 @@ on:
     - cron: "0 6 * * 0"
   workflow_dispatch:
 
+permissions:
+  # This is required for actions/checkout.
+  contents: read
+
+# Cancel the superseded runs of a pull request. The other runs get a unique
+# group, so they are never cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 env:
   TEST_TAG: test/brokenspoke-analyzer:test
   TEST_COUNTRY: "united states"
@@ -32,6 +42,7 @@ env:
 jobs:
   osm-data:
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
       - name: Restore the cached OSM region file
         id: restore-osm
@@ -59,41 +70,11 @@ jobs:
           path: ${{ runner.temp }}/bna-cache/osm
           key: ${{ env.OSM_CACHE_KEY }}
 
-  osm2pgrouting3:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: install dependencies
-        run: |
-          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends \
-          build-essential \
-          cmake \
-          expat \
-          git \
-          libboost-dev \
-          libboost-program-options-dev \
-          libexpat1-dev \
-          libpqxx-dev
-      - name: build osm2pgrouting 3
-        run: |
-          git clone https://github.com/pgRouting/osm2pgrouting.git
-          cd osm2pgrouting
-          cmake -H. -Bbuild
-          cd build
-          make
-          pwd
-          ls -lh
-          echo $PATH
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 #v7.0.2
-        with:
-          name: osm2pgrouting3
-          path: osm2pgrouting/build/osm2pgrouting
-          if-no-files-found: error
-
   integration:
-    runs-on: ubuntu-24.04
-    needs:
-      - osm-data
-      - osm2pgrouting3
+    # Ubuntu 26.04 is the first LTS to package osm2pgrouting 3.
+    runs-on: ubuntu-26.04
+    timeout-minutes: 30
+    needs: osm-data
 
     env:
       DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -117,23 +98,18 @@ jobs:
       - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d #v10.4.0
         with:
           enable-cache: true
+          # Pull requests restore the cache from `main`. Saving one per pull
+          # request fills up the cache quota of the repository.
+          save-cache: ${{ github.ref == 'refs/heads/main' }}
       - name: Set up Python
         run: uv python install
       - name: install dependencies
         run: |
           sudo apt-get update
           DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends \
-          osm2pgsql osmctools osmium-tool postgresql-client postgis libpqxx-7.8t64
-
-      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          name: osm2pgrouting3
-          path: /home/runner/.local/bin/
-      - name: Set osm2pgrouting permissions
-        run: chmod 755 /home/runner/.local/bin/osm2pgrouting
+          osm2pgrouting osm2pgsql osmctools osmium-tool postgresql-client postgis
       - name: Verify osm2pgrouting installation
         run: |
-          ls -lh /home/runner/.local/bin/
           which osm2pgrouting
           osm2pgrouting --version
       - name: Setup the project
@@ -173,7 +149,8 @@ jobs:
           test $ACTUAL -eq 23
 
   docker-integration:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
+    timeout-minutes: 30
     needs: osm-data
 
     env:
@@ -195,10 +172,12 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+        with:
+          # Build directly in the Docker engine, which avoids exporting the
+          # image from a builder container and loading it back.
+          driver: docker
       - name: Extract repository name
         id: repo-name
         run: echo "repo_name=${GITHUB_REPOSITORY##*/}" >> $GITHUB_OUTPUT

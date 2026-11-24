@@ -12,7 +12,7 @@ RUN apt-get update \
   libexpat1-dev \
   libpqxx-dev
 WORKDIR /usr/src/
-RUN git clone https://github.com/pgRouting/osm2pgrouting.git \
+RUN git clone --branch v3.0.0 --depth 1 https://github.com/pgRouting/osm2pgrouting.git \
   && cd osm2pgrouting \
   && cmake -H. -Bbuild \
   && cd build/ \
