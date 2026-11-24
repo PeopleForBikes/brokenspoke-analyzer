@@ -12,6 +12,7 @@ RUN apt-get update \
   libexpat1-dev \
   libpqxx-dev
 WORKDIR /usr/src/
+# Keep in sync with OSM2PGROUTING_VERSION in .github/workflows/e2e.yaml.
 RUN git clone --branch v3.0.0 --depth 1 https://github.com/pgRouting/osm2pgrouting.git \
   && cd osm2pgrouting \
   && cmake -H. -Bbuild \

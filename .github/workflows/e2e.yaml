@@ -38,6 +38,8 @@ env:
   # fresh: to refresh it, bump the cache key suffix.
   OSM_CACHE_KEY: e2e-osm-new-mexico-v2
   OSM_URL: https://download.geofabrik.de/north-america/us/new-mexico/new-mexico-latest.osm.pbf
+  # Keep in sync with the version built in the Dockerfile.
+  OSM2PGROUTING_VERSION: v3.0.0
 
 jobs:
   osm-data:
@@ -71,8 +73,10 @@ jobs:
           key: ${{ env.OSM_CACHE_KEY }}
 
   integration:
-    # Ubuntu 26.04 is the first LTS to package osm2pgrouting 3.
-    runs-on: ubuntu-26.04
+    # Ubuntu 24.04 only packages osm2pgrouting 2, so version 3 is compiled, then
+    # cached. Ubuntu 26.04 packages 3.0.0-1build1, but `osm2pgrouting --version`
+    # aborts there ("double free detected in tcache 2").
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     needs: osm-data
 
@@ -107,11 +111,42 @@ jobs:
         run: |
           sudo apt-get update
           DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends \
-          osm2pgrouting osm2pgsql osmctools osmium-tool postgresql-client postgis
+          osm2pgsql osmctools osmium-tool postgresql-client postgis libpqxx-7.8t64
+      - name: Restore the cached osm2pgrouting binary
+        id: restore-osm2pgrouting
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.local/bin/osm2pgrouting
+          key: osm2pgrouting-${{ env.OSM2PGROUTING_VERSION }}-ubuntu-24.04
+      - name: Build osm2pgrouting
+        if: steps.restore-osm2pgrouting.outputs.cache-hit != 'true'
+        working-directory: ${{ runner.temp }}
+        run: |
+          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends \
+          build-essential \
+          cmake \
+          expat \
+          git \
+          libboost-dev \
+          libboost-program-options-dev \
+          libexpat1-dev \
+          libpqxx-dev
+          git clone --branch "${OSM2PGROUTING_VERSION}" --depth 1 \
+            https://github.com/pgRouting/osm2pgrouting.git
+          cmake -S osm2pgrouting -B osm2pgrouting/build
+          cmake --build osm2pgrouting/build --parallel
+          install -D -m 755 osm2pgrouting/build/osm2pgrouting \
+            ~/.local/bin/osm2pgrouting
       - name: Verify osm2pgrouting installation
         run: |
           which osm2pgrouting
           osm2pgrouting --version
+      - name: Save the osm2pgrouting binary to the cache
+        if: steps.restore-osm2pgrouting.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.local/bin/osm2pgrouting
+          key: osm2pgrouting-${{ env.OSM2PGROUTING_VERSION }}-ubuntu-24.04
       - name: Setup the project
         run: uv sync --all-extras --dev
 
