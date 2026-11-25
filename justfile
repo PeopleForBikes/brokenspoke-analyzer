@@ -132,6 +132,5 @@ nono-claude profile="pfb-claude":
 nono-claude-danger profile="pfb-claude":
     nono run \
     --allow-cwd \
-    --allow-domain github.com \
     --profile {{ profile }} \
     -- claude --dangerously-skip-permissions
