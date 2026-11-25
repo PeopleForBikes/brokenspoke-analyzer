@@ -7,7 +7,7 @@ authors = [
   { name = "Luis Alvergue", email = "lalver1@gmail.com" },
   { name = "Grace Stonecipher", email = "grace@peopleforbikes.org" },
 ]
-requires-python = "~=3.13.0"
+requires-python = "~=3.15.0"
 license = "MIT"
 dependencies = [
   "brokenspoke-analyzer-cli",

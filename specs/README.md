@@ -85,7 +85,7 @@ rather than just a text generator.
 ```md
 Act as a Senior Software Engineer specializing in Specification-Driven LLM
 Development (SDLD). Your task is to collaborate with a team to draft a complete
-feature specification for a new caching mechanism in an existing Python 3.13
+feature specification for a new caching mechanism in an existing Python 3.15
 project called "brokenspoke-analyzer".
 
 We will work iteratively. Do not generate the final output immediately. Instead,
@@ -94,7 +94,7 @@ based on my inputs.
 
 ## Context & Initial State
 
-- **Project**: brokenspoke-analyzer (Python 3.13).
+- **Project**: brokenspoke-analyzer (Python 3.15).
 - **Goal**: Implement a file-based caching mechanism for datasets fetched from
   US Census, LODES employment data, and OpenStreetMap (OSM).
 - **Constraints**:

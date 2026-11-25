@@ -6,7 +6,7 @@ from abc import (
     ABC,
     abstractmethod,
 )
-from collections import abc
+lazy from collections import abc
 
 import geopandas as gpd
 import numpy as np

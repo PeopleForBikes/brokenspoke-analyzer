@@ -150,8 +150,8 @@ debugger to see the effect of your changes. But since the
 `brokenspoke-analyzer-lib` and `brokenspoke-analyzer-cli` packages are already
 installed in the dev container, running the system `python` interpreter in
 `/usr/local/bin/python/` will run the ones installed in
-`usr/local/lib/python3.13/site-packages`. What we need to do is run the debugger
-using the sources in `/usr/src/app` so we create a virtual environment:
+`/usr/local/lib/python3.15/site-packages`. What we need to do is run the
+debugger using the sources in `/usr/src/app` so we create a virtual environment:
 
 ```bash
 uv sync

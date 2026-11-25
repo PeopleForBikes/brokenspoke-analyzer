@@ -6,11 +6,11 @@ compute the BNA scores.
 """
 
 import dataclasses
-import pathlib
 import typing
+lazy import pathlib
 
 from loguru import logger
-from sqlalchemy.engine import Engine
+lazy from sqlalchemy.engine import Engine
 
 from brokenspoke_analyzer_lib import (
     constant,

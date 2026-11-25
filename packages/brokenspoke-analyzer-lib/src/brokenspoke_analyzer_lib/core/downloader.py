@@ -2,10 +2,10 @@
 
 import re
 
-import aiohttp
 import yarl
 from bs4 import BeautifulSoup
 from loguru import logger
+lazy import aiohttp
 
 PFB_PUBLIC_DOCUMENTS_URL = "https://s3.amazonaws.com/pfb-public-documents"
 TIGER_URL = "https://www2.census.gov/geo/tiger"
