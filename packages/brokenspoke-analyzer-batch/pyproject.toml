@@ -1,0 +1,39 @@
+[project]
+name = "brokenspoke-analyzer-batch"
+dynamic = ["version"]
+description = "Run the BNA analysis for a batch of cities."
+authors = [
+  { name = "Rémy Greinhofer", email = "remy.greinhofer@gmail.com" },
+  { name = "Luis Alvergue", email = "lalver1@gmail.com" },
+  { name = "Grace Stonecipher", email = "grace@peopleforbikes.org" },
+]
+requires-python = "~=3.13.0"
+license = "MIT"
+dependencies = [
+  "brokenspoke-analyzer-cli",
+  "brokenspoke-analyzer-lib",
+  "typer>=0.29.2,<0.30",
+]
+
+[project.scripts]
+bna-batch = "brokenspoke_analyzer_batch.main:app"
+
+[tool.uv.sources]
+brokenspoke-analyzer-cli = { workspace = true }
+brokenspoke-analyzer-lib = { workspace = true }
+
+[tool.hatch.version]
+path = "../../VERSION"
+pattern = "(?P<version>.+)"
+
+[tool.coverage.run]
+omit = ["*/__init__.py", "*/brokenspoke_analyzer_batch/*"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-p no:warnings --cov-report term-missing --cov-report html --xdoctest"
+testpaths = ["tests"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
