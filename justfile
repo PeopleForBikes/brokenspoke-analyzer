@@ -2,11 +2,12 @@ set positional-arguments
 
 pkg := "packages"
 lib_pkg := pkg / "brokenspoke-analyzer-lib"
+cache_warmer_pkg := pkg / "brokenspoke-analyzer-cache-warmer"
 cli_pkg := pkg / "brokenspoke-analyzer-cli"
-src_dirs := lib_pkg / "src" + " " + cli_pkg / "src"
-test_dirs := lib_pkg / "tests" + " " + cli_pkg / "tests"
+batch_pkg := pkg / "brokenspoke-analyzer-batch"
+src_dirs := lib_pkg / "src" + " " + cli_pkg / "src" + " " + cache_warmer_pkg / "src" + " " + batch_pkg / "src"
+test_dirs := lib_pkg / "tests" + " " + cli_pkg / "tests" + " " + cache_warmer_pkg / "tests" + " " + batch_pkg / "tests"
 sql_dir := lib_pkg / "src/brokenspoke_analyzer_lib/scripts/sql"
-utils_dir := "utils"
 docker_image := "ghcr.io/peopleforbikes/brokenspoke-analyzer"
 e2e_test_dir := "integration"
 e2e_cities_csv := e2e_test_dir / "e2e-cities.csv"
@@ -25,8 +26,8 @@ lint-md:
 # Lint python files.
 lint-python:
     uv run isort --check .
-    uv run ruff format --check {{ src_dirs }} {{ test_dirs }} {{ utils_dir }}
-    uv run ruff check {{ src_dirs }} {{ test_dirs }} {{ utils_dir }}
+    uv run ruff format --check {{ src_dirs }} {{ test_dirs }}
+    uv run ruff check {{ src_dirs }} {{ test_dirs }}
     uv run ty check {{ src_dirs }} {{ test_dirs }}
 
 # Lint SQL files.
@@ -53,12 +54,12 @@ fmt-md:
 # Format python files.
 fmt-python:
     uv run isort .
-    uv run ruff format {{ src_dirs }} {{ test_dirs }} {{ utils_dir }}
-    uv run ruff check --fix {{ src_dirs }} {{ test_dirs }} {{ utils_dir }}
+    uv run ruff format {{ src_dirs }} {{ test_dirs }}
+    uv run ruff check --fix {{ src_dirs }} {{ test_dirs }}
 
 # Run the unit tests across all the workspace members.
 test *extra_args='':
-    uv run pytest --cov=brokenspoke_analyzer_lib --cov=brokenspoke_analyzer_cli --cov=brokenspoke_analyzer_cache_warmer -x $@
+    uv run pytest --cov=brokenspoke_analyzer_lib --cov=brokenspoke_analyzer_cli --cov=brokenspoke_analyzer_cache_warmer --cov=brokenspoke_analyzer_batch -x $@
 
 # Build the documentation
 docs:
