@@ -8,7 +8,7 @@ from importlib import resources
 import aiohttp
 from loguru import logger
 from sqlalchemy import text
-from sqlalchemy.engine import Engine
+lazy from sqlalchemy.engine import Engine
 
 from brokenspoke_analyzer_lib import (
     constant,

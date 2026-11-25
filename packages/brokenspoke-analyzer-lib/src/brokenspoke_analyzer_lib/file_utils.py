@@ -56,7 +56,7 @@ def get_size(path: pathlib.Path) -> int:
     if path.is_file():
         try:
             return path.stat().st_size
-        except (OSError, FileNotFoundError):
+        except OSError:
             return 0
     elif path.is_dir():
         total_size: int = 0
@@ -66,9 +66,9 @@ def get_size(path: pathlib.Path) -> int:
                 if item.is_file():
                     try:
                         total_size += item.stat().st_size
-                    except (OSError, FileNotFoundError):
+                    except OSError:
                         continue
-        except (OSError, PermissionError):
+        except OSError:
             pass
         return total_size
     return 0

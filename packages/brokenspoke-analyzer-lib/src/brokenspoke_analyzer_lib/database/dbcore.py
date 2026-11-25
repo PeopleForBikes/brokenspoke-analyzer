@@ -1,13 +1,13 @@
 """Define functions used to manipulate database data."""
 
-import pathlib
 import typing
+lazy import pathlib
 
 from sqlalchemy import (
     create_engine,
     text,
 )
-from sqlalchemy.engine import Engine
+lazy from sqlalchemy.engine import Engine
 
 from brokenspoke_analyzer_lib.core import (
     runner,

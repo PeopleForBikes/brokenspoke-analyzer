@@ -1,8 +1,8 @@
 """Define the run command."""
 
 import asyncio
-import pathlib
 from typing import Annotated
+lazy import pathlib
 
 import typer
 

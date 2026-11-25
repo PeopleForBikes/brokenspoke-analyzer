@@ -1,4 +1,4 @@
-FROM python:3.13.9-slim-trixie AS base
+FROM python:3.15.2-slim-trixie AS base
 
 FROM base AS osm2pgrouting3
 RUN apt-get update \

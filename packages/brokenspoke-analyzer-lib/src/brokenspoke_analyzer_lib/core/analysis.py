@@ -1,11 +1,11 @@
 """Define functions used to perform an analysis."""
 
 import os
-import pathlib
 import random
 import string
 import warnings
 import zipfile
+lazy import pathlib
 
 import geopandas as gpd
 import numpy as np
