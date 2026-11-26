@@ -1,7 +1,7 @@
 ---
 title: Commit a large rename as moves only, so git keeps every file's history
 date: 2026-11-20
-updated: 2026-11-20
+updated: 2026-11-26
 category: workflow
 status: active
 tags: [git, rename, history, git-mv, refactoring]
@@ -17,7 +17,7 @@ superseded_by:
 
 Moving the workspace members from `packages/brokenspoke-analyzer-<member>/` to
 `packages/<member>/src/bna/<member>/` and renaming the Sphinx API pages
-(`specs/0006-bna-namespace/`): 143 files moved, and most of them also needed
+(`specs/0006-bna-namespace/`): 144 files moved, and most of them also needed
 content changes (imports, names).
 
 ## Symptom
@@ -25,7 +25,7 @@ content changes (imports, names).
 Git stores no renames: it guesses them from content similarity (50% by default).
 When moves and edits land in the same commit, small files fall under the
 threshold. Here, diffing across the move and the edits at once
-(`git diff -M --name-status 9f4d632~1 6affd73 -- docs/source/lib`) shows the
+(`git diff -M --name-status c700cde~1 a7c57d2 -- docs/source/lib`) shows the
 renamed `.rst` pages as `A`/`D` pairs instead of renames: their one changed line
 (the module name) is most of the file. `git log --follow` and blame then stop at
 the rename.
@@ -45,15 +45,16 @@ to git, a deletion plus an unrelated new file.
 
 Two commits:
 
-1. **Moves only**, done with `git mv` before any edit. `9f4d632` is 143 renames,
-   all `R100`: `git show --stat -M 9f4d632` reports
-   `143 files changed, 0 insertions(+), 0 deletions(-)`.
+1. **Moves only**, done with `git mv` before any edit. `c700cde` is 144 renames,
+   all `R100`: `git show --stat -M c700cde` reports
+   `144 files changed, 0 insertions(+), 0 deletions(-)`.
 2. **Everything else** (imports, configuration, docs) in the next commit
-   (`6affd73`). That commit does not need to build on its own; say so in the
+   (`a7c57d2`). That commit does not need to build on its own; say so in the
    first commit's message.
 
 `git log --follow docs/source/lib/bna.lib.utils.rst` then reaches commits from
-before the rename (`76a08d2`, #1175).
+before the rename (`76a08d2`, #1175). Both commits were merged with #1292, using
+"Rebase and merge": a squash merge would have folded them into one.
 
 Practical points:
 

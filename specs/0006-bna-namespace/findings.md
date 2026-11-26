@@ -13,7 +13,9 @@ the entrypoint overridden to `python`, `resources.files('bna.lib.scripts.sql')`
 lists `clip_osm.sql`, `connectivity`, `features`, `prepare_tables.sql`,
 `speed_tables.sql` and `stress`. Every other check ran in the sandbox.
 `git log --follow` passes since the moves were committed on their own
-(`9f4d632`). Keep it current as the code changes.
+(`c700cde`, merged with #1292; 144 renames there, since the rebase onto `main`
+also moved its new `test_datasource.py`, where this document says 143). Keep it
+current as the code changes.
 
 ## 1. Behavior that does not survive a naive implementation
 
