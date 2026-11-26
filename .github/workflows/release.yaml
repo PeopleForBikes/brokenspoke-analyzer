@@ -5,16 +5,20 @@ on:
     tags:
       - "[0-9]+.[0-9]+.[0-9]+"
 
+# Every job is granted only the permissions it needs.
 permissions:
-  # This is required for requesting the JWT.
-  id-token: write
-  # This is required for actions/checkout (read) and GitHub pages (write).
-  contents: write
-  # this is required to publish the packages..
-  packages: write
+  # This is required for actions/checkout.
+  contents: read
 
 jobs:
   docker:
+    permissions:
+      # This is required for actions/checkout.
+      contents: read
+      # This is required for requesting the JWT.
+      id-token: write
+      # This is required to publish the image to ghcr.io.
+      packages: write
     uses: PeopleForBikes/.github/.github/workflows/docker-build-publish-ghcr.yml@main
     with:
       push-to-ghcr: true
@@ -24,6 +28,10 @@ jobs:
       github-role: ${{ secrets.FEDERATED_GITHUB_ROLE_ARN_STAGING }}
 
   release:
+    permissions:
+      # This is required for pushing to the GitHub pages branch and publishing
+      # the release.
+      contents: write
     needs:
       - docker
     uses: PeopleForBikes/.github/.github/workflows/release-python-uv.yml@main
@@ -32,6 +40,9 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - release
+    permissions:
+      # This is required for attaching the distributions to the release.
+      contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
