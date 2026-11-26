@@ -114,10 +114,14 @@ native tools.
 
 Here is an example depicting how to use it:
 
-Start by exporting the `DATABASE_URL` environment variable:
+Start by exporting the `DATABASE_URL` environment variable and the image to use,
+and by creating the directories shared with the container (they must exist
+beforehand, otherwise Docker creates them as root):
 
 ```bash
 export DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
+export BNA_IMAGE=ghcr.io/peopleforbikes/brokenspoke-analyzer:3.3.0
+mkdir -p cache data results
 ```
 
 Then run each command using the container:
@@ -127,17 +131,22 @@ Then run each command using the container:
 # needs to connect to the host to get the info.
 # Use `docker info` to get the `CPUs` and `Total Memory` values and configure the
 # database using the `configure custom` command accordingly.
-docker run --rm --network brokenspoke-analyzer_default -e DATABASE_URL ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0 configure custom 4 1943 postgres
-docker run --rm -u $(id -u):$(id -g) -v ./data/container:/usr/src/app/data ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0 prepare all usa "santa rosa" "new mexico" 3570670 --output-dir /usr/src/app/data
-docker run --rm --network brokenspoke-analyzer_default -v ./data/container:/usr/src/app/data -e DATABASE_URL ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0 import all usa "santa rosa" "new mexico" 3570670 --input-dir /usr/src/app/data/santa-rosa-new-mexico-usa
-docker run --rm --network brokenspoke-analyzer_default -e DATABASE_URL ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0 compute usa "santa rosa" "new mexico" --input-dir /usr/src/app/data/santa-rosa-new-mexico-usa
+docker run --rm --network brokenspoke-analyzer_default -e DATABASE_URL "${BNA_IMAGE}" configure custom 4 1943 postgres
+docker run --rm -u $(id -u):$(id -g) -v ./cache:/cache -v ./data:/usr/src/app/data "${BNA_IMAGE}" prepare --cache-dir /cache usa "santa rosa" "new mexico" 3570670
+docker run --rm --network brokenspoke-analyzer_default -u $(id -u):$(id -g) -v ./data:/usr/src/app/data -e DATABASE_URL "${BNA_IMAGE}" import all usa "santa rosa" "new mexico" 3570670 --data-dir /usr/src/app/data/santa-rosa-new-mexico-usa
+docker run --rm --network brokenspoke-analyzer_default -u $(id -u):$(id -g) -v ./data:/usr/src/app/data -e DATABASE_URL "${BNA_IMAGE}" compute usa "santa rosa" "new mexico" --data-dir /usr/src/app/data/santa-rosa-new-mexico-usa
+docker run --rm --network brokenspoke-analyzer_default -u $(id -u):$(id -g) -v ./results:/usr/src/app/results -e DATABASE_URL "${BNA_IMAGE}" export local usa "santa rosa" "new mexico"
 ```
 
-Or with the `run` command:
+`prepare` stores the files of a city in a subdirectory of the data directory
+named after the city, region and country (`santa-rosa-new-mexico-usa` here):
+`import` and `compute` read them from there.
+
+Or with the `run` command, which prepares, imports, computes and exports the
+results in one go:
 
 ```bash
-docker run --rm --network brokenspoke-analyzer_default -e DATABASE_URL ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0 -vv run usa "santa rosa" "new mexico" 3570670
-docker run --rm --network brokenspoke-analyzer_default -u $(id -u):$(id -g) -v ./results:/usr/src/app/results -e DATABASE_URL ghcr.io/peopleforbikes/brokenspoke-analyzer:2.0.0  -vv export local usa "santa rosa" "new mexico"
+docker run --rm --network brokenspoke-analyzer_default -u $(id -u):$(id -g) -v ./cache:/cache -v ./data:/usr/src/app/data -v ./results:/usr/src/app/results -e DATABASE_URL "${BNA_IMAGE}" -vv run --cache-dir /cache usa "santa rosa" "new mexico" 3570670
 ```
 
 ## Using an existing database instance
