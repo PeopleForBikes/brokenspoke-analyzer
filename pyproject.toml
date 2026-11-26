@@ -79,9 +79,6 @@ known_first_party = ["bna"]
 [tool.coverage.run]
 omit = [
   "*/__init__.py",
-  "*/bna/batch/*",
-  "*/bna/cache_warmer/*",
-  "*/bna/cli/*",
   "*/bna/lib/constant.py",
   "*/bna/lib/core/compute.py",
   "*/bna/lib/core/downloader.py",
