@@ -124,6 +124,12 @@ The pipeline is: **prepare → configure → import → compute → export**, an
   shared dev tooling stays in the root `[dependency-groups] dev`.
 - Bumping the version means editing the root `VERSION` file and re-running
   `uv lock`; no member's `pyproject.toml` carries a version literal.
+- Changing the Python version means editing `requires-python` in the root
+  `pyproject.toml` and in every member, then re-running `uv lock`: uv cannot
+  make members inherit `[project]` fields, and a member without it builds
+  `py2.py3` wheels with no `Requires-Python`.
+  `packages/lib/tests/test_workspace.py` fails when a member differs from the
+  root.
 - `bna` is a PEP 420 namespace package shared by every member: never add a
   `src/bna/__init__.py` to any member. It would make `bna` a regular package
   rooted in that one member, and the other members' `bna.*` subpackages could no
