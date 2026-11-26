@@ -104,3 +104,13 @@ All 143 moves were done with `git mv` before any content edit, which
 `143 files changed, 0 insertions(+), 0 deletions(-)` (every rename at 100%
 similarity). Leaving every later edit unstaged keeps the index as a ready-made
 moves-only commit, without the implementation having to commit.
+
+### 3.2 Check wheels against `git ls-files`, not against a hand-written list
+
+`utils/check_wheels.py` compares each wheel's files with
+`git ls-files --cached --others --exclude-standard` run in the member's `src/`:
+hatchling packages exactly the files git tracks or does not ignore, so the two
+sets must match. A new data file or module needs no update to the check, and a
+file that would silently ship (or silently go missing) shows up by name. Proven
+on doctored wheels: an added `bna/__init__.py`, a removed `pfb.style`, a stray
+module and a missing wheel each fail with a one-line message.

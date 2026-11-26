@@ -5,10 +5,12 @@ from datetime import (
     UTC,
     datetime,
 )
+from importlib import metadata
 from typing import (
     Annotated,
     TypedDict,
 )
+lazy from collections.abc import Callable
 
 import typer
 
@@ -132,3 +134,36 @@ WorldPopYear = Annotated[
     int,
     typer.Option(help="year to use to retrieve WorldPop data"),
 ]
+
+
+def version_callback(distribution: str) -> Callable[..., None]:
+    """Build a ``--version`` option callback for a distribution.
+
+    The returned callback prints ``<distribution> version: <version>`` and
+    exits when the flag is given. Click runs option callbacks on every
+    invocation, so the version is only looked up when the flag is given:
+    the rest of the command line never depends on the distribution metadata.
+
+    Parameters
+    ----------
+    distribution
+        Name of the installed distribution whose version to print.
+
+    Returns
+    -------
+    Callable[..., None]
+        A callback to pass to ``typer.Option(callback=...)``.
+
+    Examples
+    --------
+    >>> callback = version_callback("bna-cli")
+    >>> callback(value=False)
+    """
+
+    def _callback(*, value: bool) -> None:
+        if value:
+            version = metadata.version(distribution)
+            typer.echo(f"{distribution} version: {version}")
+            raise typer.Exit
+
+    return _callback

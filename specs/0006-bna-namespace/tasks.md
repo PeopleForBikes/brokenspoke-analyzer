@@ -177,6 +177,17 @@ mapping is in the [Data Models](design.md#data-models) section of `design.md`.
       `mapconfig_cycleway.xml`, `mapconfig_highway.xml` and `pfb.style`.
     - Hiding one of the files makes its test fail.
     - _Requirements: 3.6_
+  - [x] 6.2 Wheel content check (added after the spec review)
+    - Create `utils/check_wheels.py` and a `check-wheels` recipe in `justfile`
+      that builds every member's wheel into a temporary directory and runs the
+      script on it; add `check-wheels` to the `ci` recipe.
+    - The script fails, naming the problem, when a member has no wheel, when a
+      wheel ships `bna/__init__.py`, or when a wheel's files differ from its
+      member's source files.
+    - Doctored wheels prove each case fails: an added `bna/__init__.py`, a
+      removed `pfb.style`, an added stray file, a missing wheel.
+    - Wiring the check into the GitHub workflows is left to the team.
+    - _Requirements: 2.5, 3.2, 3.4, 3.6_
 
 - [x] 7. Checkpoint: code and tests
   - `just lint-python` and `just lint-sql` pass.
