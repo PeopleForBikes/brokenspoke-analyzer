@@ -3,9 +3,6 @@
 import asyncio
 import pathlib
 
-import aiohttp
-import geopandas as gpd
-import pycountry
 import rich
 import typer
 from loguru import logger
@@ -22,9 +19,6 @@ from bna.lib.core import (
 )
 
 app = typer.Typer()
-
-AWS_REGION = "AWS_REGION"
-BNA_CACHE_AWS_S3_BUCKET = "BNA_CACHE_AWS_S3_BUCKET"
 
 
 @app.command(name="prepare")
@@ -135,7 +129,7 @@ async def prepare_(  # noqa: PLR0915
     state_abbrev, state_fips, _ = analysis.derive_state_info(region)
     osm_region = region or country
 
-    async with aiohttp.ClientSession() as session:
+    async with downloader.create_session() as session:
         # Download the city boundaries.
         console.log(f"[green]Fetching city boundaries for {city}...")
         with console.status("Downloading..."):
@@ -163,22 +157,18 @@ async def prepare_(  # noqa: PLR0915
 
     # Perform some specific operations for non-US cities.
     if state_fips == runner.NON_US_STATE_FIPS:
-        try:
-            country_iso = pycountry.countries.search_fuzzy(country)[0].alpha_3
-        except LookupError:
+        country_iso = utils.country_iso_alpha3(country)
+        if country_iso is None:
             # Create synthetic population.
             console.log("[green]Preparing synthetic population...")
-            cell_size = (block_size, block_size)
-            boundary_file = data_dir / f"{slug}.geojson"
-            city_boundaries_gdf = gpd.read_file(boundary_file)
-            synthetic_population = analysis.create_synthetic_population(
-                city_boundaries_gdf, *cell_size, population=block_population
+            synthetic_population = analysis.create_synthetic_population_from_file(
+                polygon_file, block_size, block_population
             )
             # Simulate the census blocks.
             console.log("[green]Simulating census blocks...")
             analysis.simulate_census_blocks(data_dir, synthetic_population)
         else:
-            async with aiohttp.ClientSession() as session:
+            async with downloader.create_session() as session:
                 console.log(f"[green]Fetching WorldPop ({worldpop_year}) data...")
                 with console.status("Downloading..."):
                     await bna_store.download_worldpop(
@@ -192,7 +182,7 @@ async def prepare_(  # noqa: PLR0915
         analysis.change_speed_limit(data_dir, city, state_abbrev, city_speed)
     else:
         # Fetch the data.
-        async with aiohttp.ClientSession() as session:
+        async with downloader.create_session() as session:
             console.log("[green]Fetching US state speed limits...")
             with console.status("Downloading..."):
                 await bna_store.download_state_speed_limits(session)
