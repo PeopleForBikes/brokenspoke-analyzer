@@ -13,6 +13,26 @@ CHUNK_SIZE = 65536
 LODES_URL = "https://lehd.ces.census.gov/data/lodes/LODES8"
 
 
+def create_session() -> aiohttp.ClientSession:
+    """
+    Create the HTTP session used to download the inputs of an analysis.
+
+    Use it as an asynchronous context manager, which closes it on exit.
+
+    Returns:
+        A new HTTP client session.
+
+    Examples:
+        >>> import asyncio
+        >>> async def is_open() -> bool:
+        ...     async with create_session() as session:
+        ...         return not session.closed
+        >>> asyncio.run(is_open())
+        True
+    """
+    return aiohttp.ClientSession()
+
+
 async def fetch_text(
     session: aiohttp.ClientSession,
     url: str,

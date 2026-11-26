@@ -8,6 +8,7 @@ import zipfile
 from enum import Enum
 
 import geopandas as gpd
+import pycountry
 from loguru import logger
 from slugify import slugify
 
@@ -244,3 +245,28 @@ def is_usa(country: str) -> bool:
 
     """
     return country.upper() in ["US", "USA", "UNITED STATES"]
+
+
+def country_iso_alpha3(country: str) -> str | None:
+    """
+    Return the ISO 3166-1 alpha-3 code of a country.
+
+    The country name is matched loosely, so it does not need to be exact.
+
+    Parameters:
+        country: name of the country
+
+    Returns:
+        The alpha-3 code of the best match, or `None` if no country matches.
+
+    Examples:
+        >>> country_iso_alpha3("France")
+        'FRA'
+
+        >>> country_iso_alpha3("atlantis") is None
+        True
+    """
+    try:
+        return pycountry.countries.search_fuzzy(country)[0].alpha_3
+    except LookupError:
+        return None

@@ -78,7 +78,7 @@ The pipeline is: **prepare → configure → import → compute → export**, an
     - `ingestor.py` — loads downloaded data into PostGIS (via `osm2pgrouting`,
       `osm2pgsql`)
     - `runner.py` — thin subprocess wrapper for external GIS tools (`osmium`,
-      `osm2pgrouting`, etc.), plus one async worker per pipeline step
+      `osm2pgrouting`, etc.)
     - `analysis.py` / `compute.py` — run the SQL scripts that compute
       connectivity/stress scores
     - `exporter.py` — export result tables (locally or to S3 via `boto3`)

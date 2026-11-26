@@ -211,6 +211,30 @@ def create_synthetic_population(
     return grid.to_crs(area.crs)
 
 
+def create_synthetic_population_from_file(
+    boundary_file: pathlib.Path,
+    block_size: int,
+    population: int,
+) -> gpd.GeoDataFrame:
+    """
+    Create the synthetic population of the area stored in a file.
+
+    The area is divided into square blocks (see `create_synthetic_population`).
+
+    Parameters:
+        boundary_file: file containing the boundaries of the area
+        block_size: length of the side of a block in meters
+        population: population to inject in each block
+
+    Returns:
+        A GeoDataFrame representing the synthetic population.
+    """
+    area = gpd.read_file(boundary_file)
+    return create_synthetic_population(
+        area, block_size, block_size, population=population
+    )
+
+
 def change_speed_limit(
     output: pathlib.Path,
     city: str,
