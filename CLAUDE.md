@@ -26,8 +26,11 @@ scripts to compute connectivity and stress metrics, then exports the results.
   Docker Compose
 - `just test-e2e-prepare` — regenerate `integration/e2e-cities-*.csv` splits and
   `integration/README.md` from `integration/e2e-cities.csv`
-- `just ci` runs all the CI tasks local. This is to be run before commiting
-  code.
+- `just check-wheels` — build every member's wheel and check its contents
+  (`utils/check_wheels.py`: no `bna/__init__.py`, exactly the member's source
+  files)
+- `just ci` runs all the CI tasks local (`lint`, `docs`, `test`,
+  `check-wheels`). This is to be run before commiting code.
 
 Individual linters/formatters can be run directly with `uv run <tool>`, e.g.
 `uv run ruff check packages/*/src utils`, `uv run ty check packages/*/src`,
