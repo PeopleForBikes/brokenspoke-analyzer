@@ -79,9 +79,6 @@ known_first_party = ["bna"]
 [tool.coverage.run]
 omit = [
   "*/__init__.py",
-  "*/bna/batch/*",
-  "*/bna/cache_warmer/*",
-  "*/bna/cli/*",
   "*/bna/lib/constant.py",
   "*/bna/lib/core/compute.py",
   "*/bna/lib/core/downloader.py",
@@ -97,7 +94,9 @@ testpaths = [
   "packages/lib/tests",
   "packages/cli/src",
   "packages/cli/tests",
+  "packages/cache-warmer/src",
   "packages/cache-warmer/tests",
+  "packages/batch/src",
   "packages/batch/tests",
 ]
 markers = [

@@ -35,7 +35,7 @@ path = "../../VERSION"
 pattern = "(?P<version>.+)"
 
 [tool.coverage.run]
-omit = ["*/__init__.py", "*/bna/cli/*"]
+omit = ["*/__init__.py"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
