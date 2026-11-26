@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed the download of the US job data when `--lodes-year` is given. [#1306]
+
+[#1306]: https://github.com/PeopleForBikes/brokenspoke-analyzer/pull/1306
+
 ## [3.3.0] - 2026-10-29
 
 ### Fixed
