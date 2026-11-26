@@ -37,13 +37,13 @@ path = "../../VERSION"
 pattern = "(?P<version>.+)"
 
 [tool.coverage.run]
-omit = ["*/__init__.py", "*/bna/cache_warmer/*"]
+omit = ["*/__init__.py"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-p no:warnings --cov-report term-missing --cov-report html --xdoctest"
-testpaths = ["tests"]
+testpaths = ["src", "tests"]
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.33.0,<2"]
 build-backend = "hatchling.build"

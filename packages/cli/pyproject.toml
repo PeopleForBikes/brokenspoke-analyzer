@@ -35,7 +35,7 @@ path = "../../VERSION"
 pattern = "(?P<version>.+)"
 
 [tool.coverage.run]
-omit = ["*/__init__.py", "*/bna/cli/*"]
+omit = ["*/__init__.py"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
@@ -58,5 +58,5 @@ markers = [
 ]
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.33.0,<2"]
 build-backend = "hatchling.build"
