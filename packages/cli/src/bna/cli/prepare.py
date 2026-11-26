@@ -205,20 +205,22 @@ async def prepare_(  # noqa: PLR0915
                 logger.warning(
                     f"There is no LODES data for the state of '{state_abbrev}'",
                 )
-            elif not lodes_year:
-                console.log("[green]Autodetecting latest LODES year...")
-                try:
-                    lodes_year = await downloader.autodetect_latest_lodes_year(
-                        session,
-                        state_abbrev,
-                    )
-                except ValueError as e:
-                    lehd_url = f"{downloader.LODES_URL}/{state_abbrev.lower()}/od"
-                    console.log(f"[red]Autodetection failed: {e}.")
-                    console.log(f"[red]Check {lehd_url} manually.")
-                    raise
-                console.log(f"[green]LODES year found: {lodes_year}")
+            else:
+                if not lodes_year:
+                    console.log("[green]Autodetecting latest LODES year...")
+                    try:
+                        lodes_year = await downloader.autodetect_latest_lodes_year(
+                            session,
+                            state_abbrev,
+                        )
+                    except ValueError as e:
+                        lehd_url = f"{downloader.LODES_URL}/{state_abbrev.lower()}/od"
+                        console.log(f"[red]Autodetection failed: {e}.")
+                        console.log(f"[red]Check {lehd_url} manually.")
+                        raise
+                    console.log(f"[green]LODES year found: {lodes_year}")
 
+                # Download the job data, whether its year was given or detected.
                 console.log(f"[green]Fetching US employment data ({lodes_year})...")
                 with console.status("Downloading..."):
                     await bna_store.download_lodes_data(
