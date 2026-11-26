@@ -381,6 +381,11 @@ import `brokenspoke_analyzer_<m>`.
 - **Build checks**: `uv build --all-packages --wheel`, then list each wheel's
   contents to confirm property 1 and property 2, and that `bna_lib` contains
   `bna/lib/scripts/sql/**.sql`, the two `mapconfig_*.xml` files and `pfb.style`.
+  Automated after the spec review by `just check-wheels` (part of `just ci`):
+  `utils/check_wheels.py` fails when a member has no wheel, when a wheel ships
+  `bna/__init__.py`, or when a wheel's files differ from its member's source
+  files (what git tracks or does not ignore under `packages/<member>/src/`,
+  which is what hatchling packages).
 - **Command line checks**: `uv run bna --help`, `uv run bna-batch --help`,
   `uv run bna-cache-warmer --help`, `uv run python -m bna.cli --help`.
 - **Docker check**: `just docker-build`, then run the image with `--help`, and

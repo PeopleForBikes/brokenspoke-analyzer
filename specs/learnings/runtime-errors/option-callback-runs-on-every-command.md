@@ -2,7 +2,7 @@
 title:
   Click option callbacks run on every command, not only when the flag is given
 date: 2026-11-20
-updated: 2026-11-20
+updated: 2026-11-26
 category: runtime-errors
 status: active
 tags: [typer, click, version, callback, cli, rename]
@@ -75,10 +75,10 @@ With the old name restored, both tests fail; with the fix, both pass.
 ## Prevention
 
 - Do the work of an option callback only when the flag is given: check `value`
-  first. The follow-up branch `cli-version-and-tests` (commit `deffdf7`, not yet
-  on `main` when this was written) adds `bna.cli.common.version_callback`, which
-  does exactly that, for `bna-batch` and `bna-cache-warmer`. `bna`'s own
-  callback still looks the version up unconditionally.
+  first. The follow-up #1294 (not yet merged when this was written) adds
+  `bna.cli.common.version_callback`, which does exactly that, for `bna-batch`
+  and `bna-cache-warmer`. `bna`'s own callback still looks the version up
+  unconditionally.
 - Test a CLI through a subcommand, not only through the root `--help`, so that
   root callbacks run.
 - When renaming a distribution, search for its name as a string as well

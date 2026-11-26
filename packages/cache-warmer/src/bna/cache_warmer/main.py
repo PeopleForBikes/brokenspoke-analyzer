@@ -56,6 +56,21 @@ ClearOsm = Annotated[bool, typer.Option(help="Delete OSM data before upload.")]
 app = typer.Typer(no_args_is_help=True)
 
 
+@app.callback()
+def callback(
+    version: Annotated[
+        bool | None,
+        typer.Option(
+            "--version",
+            help="Show the application's version and exit.",
+            callback=common.version_callback("bna-cache-warmer"),
+            is_eager=True,
+        ),
+    ] = None,
+) -> None:
+    """Pre-populate the analyzer cache, locally or in S3."""
+
+
 async def _run_downloads(
     bna_store: datastore.BNADataStore,
     *,

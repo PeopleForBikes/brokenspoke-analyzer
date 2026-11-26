@@ -40,6 +40,10 @@ bna-batch [OPTIONS] [BATCH_FILE]
 
     Defaults to `measure`.
 
+- `--version`
+
+  - Show the application's version and exit.
+
 ### Batch file format
 
 `cities.csv`:
@@ -85,6 +89,15 @@ def main(
     lodes_year: common.LODESYear = None,
     with_parts: common.ComputeParts = None,
     worldpop_year: common.WorldPopYear = common.DEFAULT_WORLDPOP_YEAR,
+    version: Annotated[  # noqa: ARG001
+        bool | None,
+        typer.Option(
+            "--version",
+            help="Show the application's version and exit.",
+            callback=common.version_callback("bna-batch"),
+            is_eager=True,
+        ),
+    ] = None,
 ) -> None:
     """Process a batch of cities."""
     # Disable logging.

@@ -8,13 +8,14 @@ batch_pkg := pkg / "batch"
 src_dirs := lib_pkg / "src" + " " + cli_pkg / "src" + " " + cache_warmer_pkg / "src" + " " + batch_pkg / "src"
 test_dirs := lib_pkg / "tests" + " " + cli_pkg / "tests" + " " + cache_warmer_pkg / "tests" + " " + batch_pkg / "tests"
 sql_dir := lib_pkg / "src/bna/lib/scripts/sql"
+utils_dir := "utils"
 docker_image := "ghcr.io/peopleforbikes/brokenspoke-analyzer"
 e2e_test_dir := "integration"
 e2e_cities_csv := e2e_test_dir / "e2e-cities.csv"
 e2e_cities_json := e2e_test_dir / "e2e-cities.json"
 
 # Meta task running ALL the CI tasks at onces.
-ci: lint docs test
+ci: lint docs test check-wheels
 
 # Meta task running all the linters at once.
 lint: lint-md lint-python lint-sql lint-uv
@@ -26,8 +27,8 @@ lint-md:
 # Lint python files.
 lint-python:
     uv run isort --check .
-    uv run ruff format --check {{ src_dirs }} {{ test_dirs }}
-    uv run ruff check {{ src_dirs }} {{ test_dirs }}
+    uv run ruff format --check {{ src_dirs }} {{ test_dirs }} {{ utils_dir }}
+    uv run ruff check {{ src_dirs }} {{ test_dirs }} {{ utils_dir }}
     uv run ty check {{ src_dirs }} {{ test_dirs }}
 
 # Lint SQL files.
@@ -54,12 +55,21 @@ fmt-md:
 # Format python files.
 fmt-python:
     uv run isort .
-    uv run ruff format {{ src_dirs }} {{ test_dirs }}
-    uv run ruff check --fix {{ src_dirs }} {{ test_dirs }}
+    uv run ruff format {{ src_dirs }} {{ test_dirs }} {{ utils_dir }}
+    uv run ruff check --fix {{ src_dirs }} {{ test_dirs }} {{ utils_dir }}
 
 # Run the unit tests across all the workspace members.
 test *extra_args='':
     uv run pytest --cov=bna.lib --cov=bna.cli --cov=bna.cache_warmer --cov=bna.batch -x $@
+
+# Build every member's wheel and check its contents.
+check-wheels:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    wheel_dir="$(mktemp -d)"
+    trap 'rm -rf "${wheel_dir}"' EXIT
+    uv build --all-packages --wheel --quiet --out-dir "${wheel_dir}"
+    uv run python utils/check_wheels.py "${wheel_dir}"
 
 # Build the documentation
 docs:
