@@ -159,3 +159,11 @@ The pipeline is: **prepare → configure → import → compute → export**, an
   `verb-noun`, following the existing style; one-off commands don't need one.
 - Markdown (including this file and `specs/`) is Prettier-checked; after editing
   it, run `npx prettier --write --prose-wrap always <file>`.
+- Use stacked pull requests whenever changes depend on each other. Each PR
+  targets the branch of the one before it (`gh pr create --base <branch>`) and
+  says "Stacked on #N" in its description. Independent changes go straight to
+  `main`. PRs are squash-merged and merged branches are deleted, so GitHub
+  retargets the next PR to `main` but it still carries the old commits. Once the
+  earlier PR has merged (not before), replay only its own commits:
+  `git rebase --onto main <merged-branch> <next-branch>`, then
+  `git push --force-with-lease`.
