@@ -1,3 +1,8 @@
+# The version of uv building the image (builder stage) and shipped in the dev
+# container. Bump it on purpose: an unpinned uv can change the exported
+# requirements or break the build with no change in this repository.
+ARG UV_VERSION=0.13.10
+
 FROM python:3.15.2-slim-trixie AS base
 
 FROM base AS osm2pgrouting3
@@ -30,9 +35,10 @@ RUN apt-get update \
   proj-bin \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+ARG UV_VERSION
 WORKDIR /usr/src/app
 COPY . .
-RUN pip install uv \
+RUN pip install "uv==${UV_VERSION}" \
   && uv export --all-packages --no-emit-workspace --format requirements-txt --all-extras --no-group dev --no-hashes -o requirements.txt \
   && mkdir -p deps \
   && pip wheel -r requirements.txt -w deps \
@@ -71,6 +77,7 @@ RUN  pip install pkg/deps/* \
 ENTRYPOINT [ "bna" ]
 
 FROM main AS dev
+ARG UV_VERSION
 RUN apt-get update && apt-get install -y --no-install-recommends \
   build-essential \
   curl \
@@ -86,7 +93,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN deluser --remove-home bna \
   && delgroup --only-if-empty bna \
   && chown -R root:root /usr/src/app \
-  && pip install uv \
+  && pip install "uv==${UV_VERSION}" \
   && useradd --create-home --shell /bin/bash bna
 RUN curl -o /etc/bash_completion.d/git-completion.bash \
   https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash
