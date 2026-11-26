@@ -42,7 +42,7 @@ omit = ["*/__init__.py", "*/bna/cache_warmer/*"]
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-p no:warnings --cov-report term-missing --cov-report html --xdoctest"
-testpaths = ["tests"]
+testpaths = ["src", "tests"]
 
 [build-system]
 requires = ["hatchling"]
