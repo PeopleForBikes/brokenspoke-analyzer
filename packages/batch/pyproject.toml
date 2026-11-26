@@ -40,5 +40,5 @@ addopts = "-p no:warnings --cov-report term-missing --cov-report html --xdoctest
 testpaths = ["src", "tests"]
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.33.0,<2"]
 build-backend = "hatchling.build"
